@@ -3,6 +3,7 @@ import {
   NAVIGATOR_ERROR,
   NAVIGATOR_SUCCESS
 } from '../actions/navigator'
+import { AUTH_LOGOUT } from '../actions/auth'
 
 import axios from 'axios'
 
@@ -18,7 +19,7 @@ const getters = {
 }
 
 const actions = {
-  [NAVIGATOR_REQUEST]: ({ commit }) => {
+  [NAVIGATOR_REQUEST]: ({ commit, dispatch }) => {
     return new Promise((resolve, reject) => {
       commit(NAVIGATOR_REQUEST)
       const url = 'https://web.leadertask.com/api/v1/navigator?show_compl_tasks=false'
@@ -28,6 +29,7 @@ const actions = {
           resolve(resp)
         }).catch(err => {
           commit(NAVIGATOR_ERROR, err)
+          dispatch(AUTH_LOGOUT)
           reject(err)
         })
     })

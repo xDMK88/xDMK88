@@ -34,6 +34,7 @@ const toggleLightDark = () => {
 const isNavBarVisible = computed(() => !store.state.isFullScreen)
 
 const isAsideMobileExpanded = computed(() => store.state.isAsideMobileExpanded)
+const navbarLabel = computed(() => store.state.navbar.label)
 
 // const userName = computed(() => store.state.userName)
 
@@ -79,6 +80,9 @@ const menuOpenLg = () => {
           :path="mdiMenu"
           size="24"
         />
+      </nav-bar-item>
+      <nav-bar-item>
+        {{ navbarLabel }}
       </nav-bar-item>
       <nav-bar-item>
         <nav-bar-search />

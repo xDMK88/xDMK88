@@ -17,7 +17,9 @@ import { AUTH_REQUEST, AUTH_REGISTER } from '@/store/actions/auth'
 const form = reactive({
   email: '',
   password: '',
-  username: ''
+  username: '',
+  showError: false,
+  errorMessage: ''
 })
 
 const showValues = reactive({
@@ -35,13 +37,40 @@ const submit = () => {
   }
 }
 
+const getOSName = () => {
+  let detectOS = 'web'
+
+  if (navigator.appVersion.indexOf('Mac') !== -1) {
+    detectOS = 'mac'
+  } else if (navigator.appVersion.indexOf('Win') !== -1) {
+    detectOS = 'windows'
+  } else if (navigator.appVersion.indexOf('Android') !== -1) {
+    detectOS = 'android'
+  } else if (navigator.appVersion.indexOf('iPhone') !== -1) {
+    detectOS = 'ios'
+  }
+
+  return detectOS
+}
+
+const isMobile = () => {
+  return navigator.userAgent.match(/(iPad)|(iPhone)|(iPod)|(android)|(webOS)/i)
+}
+
+const getSysType = () => {
+  return isMobile() ? 'mobile' : 'desktop'
+}
+
 const login = () => {
-  const data = { email: form.email, password: form.password }
-  store.dispatch(AUTH_REQUEST, data)
+  const uri = 'https://web.leadertask.com/api/v1/users/auth?login=' + form.email + '&password=' + form.password + '&system=' + getOSName() + '&type_device=' + getSysType()
+  store.dispatch(AUTH_REQUEST, uri)
     .then(() => {
       router.push('/')
     })
-    .catch((err) => console.log(err.message))
+    .catch(() => {
+      form.showError = true
+      form.errorMessage = 'Неверный email или пароль'
+    })
 }
 
 const register = () => {
@@ -58,7 +87,10 @@ const register = () => {
     .then(() => {
       router.push('/')
     })
-    .catch((err) => console.log(err.message))
+    .catch(() => {
+      form.showError = true
+      form.errorMessage = 'Unknown error'
+    })
 }
 
 const hideLoginInputs = () => {
@@ -115,6 +147,7 @@ const checkEmailExistense = () => {
           autocomplete="email"
           required
           @blur="checkEmailExistense"
+          @keyup.enter="checkEmailExistense"
         />
       </field>
 
@@ -132,6 +165,7 @@ const checkEmailExistense = () => {
           autocomplete="current-password"
         />
       </field>
+      <p class="text-red-400" v-if="form.showError">{{ form.errorMessage }}</p>
       <divider />
 
       <jb-buttons>
@@ -188,7 +222,6 @@ const checkEmailExistense = () => {
 </template>
 
 <style>
-
 .error-message {
   color: #8D021F;
   font-size: 14px;

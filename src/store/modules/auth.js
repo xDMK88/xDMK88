@@ -5,6 +5,7 @@ import {
   AUTH_LOGOUT,
   AUTH_REGISTER
 } from '../actions/auth'
+import { NAVIGATOR_REQUEST } from '../actions/navigator'
 import axios from 'axios'
 
 const state = {
@@ -19,16 +20,16 @@ const getters = {
 }
 
 const actions = {
-  [AUTH_REQUEST]: ({ commit }, user) => {
+  [AUTH_REQUEST]: ({ commit, dispatch }, uri) => {
     return new Promise((resolve, reject) => {
       commit(AUTH_REQUEST)
-      const url = 'https://web.leadertask.com/api/v1/users/auth?login=' + user.email + '&password=' + user.password + '&system=android&type_device=mobile'
-      axios({ url: url, method: 'POST' })
+      axios({ url: uri, method: 'POST' })
         .then(resp => {
           localStorage.setItem('user-token', resp.data.access_token)
           localStorage.setItem('user-refresh-token', resp.data.refresh_token)
           axios.defaults.headers.common.Authorization = resp.data.access_token
           commit(AUTH_SUCCESS, resp)
+          dispatch(NAVIGATOR_REQUEST)
           resolve(resp)
         }).catch(err => {
           commit(AUTH_ERROR, err)
@@ -40,8 +41,8 @@ const actions = {
   [AUTH_REGISTER]: ({ commit }, user) => {
     return new Promise((resolve, reject) => {
       commit(AUTH_REGISTER)
-      const url = 'https://web.leadertask.com/api/v1/users/new'
-      axios.post(url, user)
+      const uri = 'https://web.leadertask.com/api/v1/users/new'
+      axios({ url: uri, data: user, method: 'POST' })
         .then(resp => {
           console.log(resp)
           localStorage.setItem('user-token', resp.data.access_token)
@@ -66,10 +67,7 @@ const actions = {
           console.log(resp)
           resolve(resp)
         }).catch(err => {
-          console.log(err.message)
           commit(AUTH_ERROR, err)
-          localStorage.removeItem('user-token')
-          localStorage.removeItem('user-refresh-token')
           reject(err)
         })
       localStorage.removeItem('user-token')

@@ -13,19 +13,12 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['menu-click'])
-
 const isDropdownActive = ref(false)
-
 const componentIs = computed(() => props.item.to ? 'router-link' : 'a')
-
 const hasDropdown = computed(() => !!props.item.menu)
-
 const dropdownIcon = computed(() => isDropdownActive.value ? mdiMinus : mdiPlus)
-
 const itemTo = computed(() => props.item.to || null)
-
 const itemHref = computed(() => props.item.href || null)
-
 const itemTarget = computed(() => componentIs.value === 'a' && props.item.target ? props.item.target : null)
 
 const menuClick = event => {
@@ -37,8 +30,8 @@ const menuClick = event => {
 }
 
 const styleActive = 'font-bold text-dark'
-
 const styleInactive = 'text-dark-500'
+
 </script>
 
 <template>

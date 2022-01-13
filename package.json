@@ -12,9 +12,11 @@
   },
   "dependencies": {
     "@mdi/js": "^6.4.95",
+    "@syncfusion/ej2-vue-navigations": "^19.4.38",
     "axios": "^0.24.0",
     "chart.js": "^3.6.0",
     "core-js": "^3.6.5",
+    "he-tree-vue": "^3.0.3",
     "numeral": "^2.0.6",
     "v-calendar": "^3.0.0-alpha.6",
     "vue": "^3.0.0",

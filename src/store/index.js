@@ -4,6 +4,10 @@ import { darkModeKey } from '@/config.js'
 
 import auth from './modules/auth'
 import navigator from './modules/navigator'
+import calendar from './modules/calendar'
+import navbar from './modules/navbar'
+import user from './modules/user'
+import tasks from './modules/tasks'
 
 export default createStore({
   state: {
@@ -101,6 +105,10 @@ export default createStore({
   },
   modules: {
     auth,
-    navigator
+    navigator,
+    calendar,
+    user,
+    tasks,
+    navbar
   }
 })

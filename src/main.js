@@ -1,7 +1,6 @@
 import { createApp } from 'vue'
-
-import App from './App.vue'
 import axios from 'axios'
+import App from './App.vue'
 import router from './router'
 import store from './store'
 import { darkModeKey } from '@/config.js'
@@ -9,6 +8,18 @@ import { darkModeKey } from '@/config.js'
 import './css/main.css'
 
 const token = localStorage.getItem('user-token')
+
+function pad2 (n) {
+  return (n < 10 ? '0' : '') + n
+}
+
+const chosenDate = new Date()
+const month = pad2(chosenDate.getMonth() + 1)
+const day = pad2(chosenDate.getDate())
+const year = chosenDate.getFullYear()
+const formattedDate = day + '-' + month + '-' + year
+axios.defaults.headers.common.LocalDate = formattedDate
+
 if (token) {
   axios.defaults.headers.common.Authorization = token
 }

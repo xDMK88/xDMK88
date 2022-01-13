@@ -28,7 +28,8 @@ const props = defineProps({
   modelValue: {
     type: [String, Number, Boolean],
     default: null
-  }
+  },
+  hasButton: Boolean
 })
 
 const emit = defineEmits(['update:modelValue', 'cancel', 'confirm'])
@@ -70,10 +71,13 @@ const cancel = () => confirmCancel('cancel')
         <slot />
       </div>
 
-      <divider />
+      <divider
+        v-if="hasButton"
+      />
 
       <jb-buttons>
         <jb-button
+          v-if="hasButton"
           :label="buttonLabel"
           :color="button"
           @click="confirm"

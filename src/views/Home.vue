@@ -1,34 +1,41 @@
 <script setup>
-import { onBeforeMount, reactive, computed } from 'vue'
+import { onBeforeMount, computed } from 'vue'
 import { useStore } from 'vuex'
 import { TreeViewComponent } from '@syncfusion/ej2-vue-navigations'
 import MainSection from '@/components/MainSection.vue'
-// import { DataManager, ODataV4Adaptor } from '@syncfusion/ej2-data'
 
-import { TASKS_REQUEST } from '@/store/actions/tasks'
+import * as TASK from '@/store/actions/tasks'
 import { NAVIGATOR_REQUEST } from '@/store/actions/navigator'
 
 const store = useStore()
+const loadedTasks = computed(() => store.state.tasks.loadedTasks)
 
-const storeTasks = computed(() => { return { dataSource: store.state.tasks.tasks.tasks, id: 'uid', text: 'name', child: 'children', hasChildren: 'has_children' } })
-
-const mainTasks = reactive({
-  tasks: { dataSource: store.state.tasks.tasks.tasks, id: 'uid', text: 'name', child: 'children', hasChildren: 'has_children' }
+const storeTasks = computed(() => {
+  return {
+    dataSource: store.state.tasks.tasks.tasks,
+    id: 'uid',
+    text: 'name',
+    hasChildren: 'has_children'
+  }
 })
 
-// const remoteData = new DataManager({
-//   url: '',
-//   adaptor: new ODataV4Adaptor,
-//   crossDomain: true
-// })
+const nodeExpanding = (arg) => {
+  if (arg.isInteracted) {
+    if (loadedTasks.value[arg.nodeData.id]) return false
+    store.dispatch(TASK.SUBTASKS_REQUEST, arg.nodeData.id)
+      .then(() => {
+        store.commit(TASK.ADD_LOADED_TASK, arg.nodeData.id)
+        const tree = document.getElementById('treeview').ej2_instances[0]
+        tree.addNodes(store.state.tasks.subtasks.tasks, arg.nodeData.id)
+      })
+  }
+}
 
 const getTasks = () => {
   if (store.state.auth.token) {
-    store.dispatch(TASKS_REQUEST, new Date())
+    store.dispatch(TASK.TASKS_REQUEST, new Date())
       .then(() => {
-        const tasks = store.state.tasks.tasks
-        console.log('INITIAL TASK REQUEST', tasks)
-        mainTasks.tasks = { dataSource: tasks.tasks, id: 'uid', text: 'name', child: 'cihildren', hasChildren: 'has_children' }
+        store.commit(TASK.CLEAN_UP_LOADED_TASKS)
       })
       .catch((err) => console.log(err))
   }
@@ -47,12 +54,15 @@ onBeforeMount(() => {
 
 <template>
   <main-section>
+    <!-- <h1 v-if="storeTasks.dataSource.length">There are no tasks :(</h1> -->
     <TreeViewComponent
       id='treeview'
       :fields='storeTasks'
       :allowDragAndDrop='true'
       :allowMultiSelection='true'
       cssClass="custom"
+      @nodeExpanding="nodeExpanding"
+      @nodeCollapsing="nodeCollapsing"
     >
     </TreeViewComponent>
   </main-section>

@@ -1,5 +1,5 @@
 <script setup>
-import { computed, onBeforeMount, reactive, ref, onActivated, onRenderTriggered, onRenderTracked } from 'vue'
+import { computed, onBeforeMount, reactive, ref } from 'vue'
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
 import ModalBox from '@/components/ModalBox.vue'
@@ -7,13 +7,12 @@ import { TreeViewComponent } from '@syncfusion/ej2-vue-navigations'
 import { DatePicker } from 'v-calendar'
 import { mdiMenu } from '@mdi/js'
 import JbButton from '@/components/JbButton.vue'
-// import AsideMenuList from '@/components/AsideMenuList.vue'
 import AsideNavigatorList from '@/components/AsideNavigatorList.vue'
 import NavBarItem from '@/components/NavBarItem.vue'
 import Icon from '@/components/Icon.vue'
 
 import { NAVIGATOR_REQUEST } from '@/store/actions/navigator'
-import { TASKS_REQUEST } from '@/store/actions/tasks'
+import * as TASK from '@/store/actions/tasks'
 import { USER_REQUEST } from '@/store/actions/user'
 import { AUTH_LOGOUT } from '@/store/actions/auth'
 
@@ -27,6 +26,24 @@ defineProps({
 })
 
 let modalOneActive = ref(false)
+
+// Serves as linkage between requests from storage and tree view navigator
+const UID_TO_ACTION = {
+  '901841d9-0016-491d-ad66-8ee42d2b496b': TASK.TASKS_REQUEST, // get today's day
+  '46418722-a720-4c9e-b255-16db4e590c34': TASK.OVERDUE_TASKS_REQUEST,
+  '017a3e8c-79ac-452c-abb7-6652deecbd1c': TASK.OPENED_TASKS_REQUEST,
+  '5183b619-3968-4c3a-8d87-3190cfaab014': TASK.UNSORTED_TASKS_REQUEST,
+  'fa042915-a3d2-469c-bd5a-708cf0339b89': TASK.UNREAD_TASKS_REQUEST,
+  '2a5cae4b-e877-4339-8ca1-bd61426864ec': TASK.IN_WORK_TASKS_REQUEST,
+  '6fc44cc6-9d45-4052-917e-25b1189ab141': TASK.IN_FOCUS_TASKS_REQUEST,
+  'd35fe0bc-1747-4eb1-a1b2-3411e07a92a0': TASK.READY_FOR_COMPLITION_TASKS_REQUEST,
+  '169d728b-b88b-462d-bd8e-3ac76806605b': TASK.DELEGATED_TASKS_REQUEST,
+  '511d871c-c5e9-43f0-8b4c-e8c447e1a823': TASK.DELEGATED_TO_USER_TASKS_REQUEST,
+  '7af232ff-0e29-4c27-a33b-866b5fd6eade': TASK.PROJECT_TASKS_REQUEST, // private
+  '431a3531-a77a-45c1-8035-f0bf75c32641': TASK.PROJECT_TASKS_REQUEST, // shared
+  'd28e3872-9a23-4158-aea0-246e2874da73': TASK.EMPLOYEE_TASKS_REQUEST,
+  '00a5b3de-9474-404d-b3ba-83f488ac6d30': TASK.TAG_TASKS_REQUEST
+}
 
 const store = useStore()
 const isFullScreen = computed(() => store.state.isFullScreen)
@@ -42,9 +59,9 @@ const getNavigatorLanguage = () => (navigator.languages && navigator.languages.l
 const currentDate = computed({
   get: () => new Date(),
   set: val => {
-    console.log('changed value', val)
-    store.dispatch(TASKS_REQUEST, val)
+    store.dispatch(TASK.TASKS_REQUEST, val)
     store.commit('updateLabel', dateToLabelFormat(val))
+    store.commit(TASK.CLEAN_UP_LOADED_TASKS)
   }
 })
 
@@ -55,25 +72,17 @@ const navigatorMenu = reactive({
   currentDate: currentDate
 })
 
-onRenderTracked(() => {
-  console.log('on render tracked!')
-})
-
-onActivated(() => {
-  console.log('activated!')
-})
-
 const configureNavigator = (navigator) => {
   navigator.tasks.items[0].selected = true
   const dataArray = []
-  dataArray.push({ uid: '1', name: navigator.tasks.name, children: navigator.tasks.items, expanded: true })
-  dataArray.push({ uid: '2', name: navigator.delegate_iam.name, children: navigator.delegate_iam.items, expanded: true })
-  dataArray.push({ uid: '3', name: navigator.delegate_to_me.name, children: navigator.delegate_to_me.items, expanded: true })
-  dataArray.push({ uid: '4', name: navigator.private_projects.name, children: navigator.private_projects.items, expanded: true })
-  dataArray.push({ uid: '5', name: navigator.common_projects.name, children: navigator.common_projects.items, expanded: true })
-  dataArray.push({ uid: '6', name: navigator.emps.name, children: navigator.emps.items, expanded: true })
-  dataArray.push({ uid: '7', name: navigator.colors.name, children: navigator.colors.items, expanded: true })
-  dataArray.push({ uid: '8', name: navigator.tags.name, children: navigator.tags.items, expanded: true })
+  dataArray.push({ uid: 'uid', name: navigator.tasks.name, children: navigator.tasks.items, expanded: true, nodeSelecting: false })
+  dataArray.push({ uid: 'uid', name: navigator.delegate_iam.name, children: navigator.delegate_iam.items, expanded: true, disabled: true })
+  dataArray.push({ uid: 'uid', name: navigator.delegate_to_me.name, children: navigator.delegate_to_me.items, expanded: true, disabled: true })
+  dataArray.push({ uid: 'uid', name: navigator.private_projects.name, children: navigator.private_projects.items, expanded: true, disabled: true })
+  dataArray.push({ uid: 'uid', name: navigator.common_projects.name, children: navigator.common_projects.items, expanded: true, disabled: true })
+  dataArray.push({ uid: 'uid', name: navigator.emps.name, children: navigator.emps.items, expanded: true, disabled: true })
+  dataArray.push({ uid: 'uid', name: navigator.colors.name, children: navigator.colors.items, expanded: true, disabled: true })
+  dataArray.push({ uid: 'uid', name: navigator.tags.name, children: navigator.tags.items, expanded: true, disabled: true })
 
   navigatorMenu.foldableNavigator = { dataSource: dataArray, id: 'uid', text: 'name', child: 'children' }
   store.dispatch('setDots', navigator.calendar.dates_with_tasks)
@@ -96,14 +105,6 @@ function dateToLabelFormat (calendarDate) {
   return day + ' ' + month + ', ' + weekday
 }
 
-onRenderTriggered(() => {
-  console.log('render tracked')
-})
-
-function newDateSelected () {
-  console.log('NEW DATE SELECTED')
-}
-
 const getNavigator = () => {
   if (store.state.auth.token) {
     store.dispatch(NAVIGATOR_REQUEST)
@@ -119,7 +120,6 @@ const getNavigator = () => {
 const getUser = () => {
   store.dispatch(USER_REQUEST)
     .then((resp) => {
-      console.log(resp)
     })
     .catch((err) => console.log(err))
 }
@@ -133,12 +133,20 @@ onBeforeMount(() => {
   getUser()
 })
 
+const nodeSelected = (arg) => {
+  if (UID_TO_ACTION[arg.nodeData.id]) {
+    store.dispatch(UID_TO_ACTION[arg.nodeData.id])
+  }
+  console.log(UID_TO_ACTION[arg.nodeData.id])
+  store.commit('updateLabel', arg.nodeData.text)
+  store.commit(TASK.CLEAN_UP_LOADED_TASKS)
+}
+
 const asideLgClose = () => {
   store.dispatch('asideLgToggle', false)
 }
 
 const menuClick = (event, item) => {
-  console.log(event)
 }
 </script>
 
@@ -210,7 +218,6 @@ const menuClick = (event, item) => {
         show-weeknumbers
         :locale='navigatorMenu.lang'
         :attributes='attrs'
-        @input='newDateSelected'
         v-model='navigatorMenu.currentDate'
         color='yellow'
         :is-dark='isDark'
@@ -225,6 +232,7 @@ const menuClick = (event, item) => {
       <TreeViewComponent
       :fields='navigatorMenu.foldableNavigator'
       cssClass="navigator-tree"
+      @nodeSelected='nodeSelected'
       >
       </TreeViewComponent>
       <!-- <template v-for="(menuGroup, index) in menu">

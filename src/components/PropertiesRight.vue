@@ -17,6 +17,9 @@ const store = useStore()
 const isFullScreen = computed(() => store.state.isFullScreen)
 // const isAsideMobileExpanded = computed(() => store.state.isAsideMobileExpanded)
 const isAsideLgActive = computed(() => store.state.isAsideLgActive)
+const selectedTask = computed(() => store.state.tasks.selectedTask)
+
+const statuses = ['Не начиналась', 'Выполнена', 'Ссылка', 'Заметка', 'В работе', 'Готово к сдаче', 'На паузе', 'Отменено', 'Отклонено', 'На дороботку']
 
 const asideLgClose = () => {
   store.dispatch('asideLgToggle', false)
@@ -49,11 +52,24 @@ const menuClick = (event, item) => {
           size="24"
         />
       </nav-bar-item>
-      <div class="flex-1 px-3">
-        <span>Будущие свойства задачи</span>
+      <div class="flex-1 px-5">
       </div>
     </div>
-    <div>
+    <div class="p-3">
+      <p><strong>{{ selectedTask.name }}</strong></p>
+      <p class="mt-3">{{ selectedTask.comment }}</p>
+      <p class="mt-3">Дата создания: {{ selectedTask.date_create }}</p>
+      <p>Исполнитель: {{ selectedTask.email_performer }}</p>
+      <p>Статус: {{ statuses[selectedTask.status] }}</p>
+      <p>План: {{ selectedTask.plan }}</p>
+      <p>Задача открыта для: {{ selectedTask.email }}</p>
+      <p>Чек-лист: {{ selectedTask.checklist }}</p>
+      <p>Задачу создал: {{ selectedTask.customer_name }}</p>
+      <!-- <ul>
+        <li v-for="(item, index) in selectedTask.checklist" :key="item">
+          {{ index }}
+        </li>
+      </ul> -->
       <template v-for="(menuGroup, index) in menu">
         <p
           v-if="typeof menuGroup === 'string'"

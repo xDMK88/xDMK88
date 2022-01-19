@@ -45,6 +45,13 @@ const getNavigator = () => {
   store.dispatch(NAVIGATOR_REQUEST)
 }
 
+const nodeSelected = (arg) => {
+  const tree = document.getElementById('treeview').ej2_instances[0]
+  const treeNodeData = tree.getTreeData(arg.nodeData.id)[0]
+  console.log(treeNodeData)
+  store.commit(TASK.SELECT_TASK, treeNodeData)
+}
+
 onBeforeMount(() => {
   getTasks()
   getNavigator()
@@ -62,7 +69,7 @@ onBeforeMount(() => {
       :allowMultiSelection='true'
       cssClass="custom"
       @nodeExpanding="nodeExpanding"
-      @nodeCollapsing="nodeCollapsing"
+      @nodeSelected="nodeSelected"
     >
     </TreeViewComponent>
   </main-section>

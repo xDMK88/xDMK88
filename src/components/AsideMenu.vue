@@ -42,6 +42,7 @@ const UID_TO_ACTION = {
   '7af232ff-0e29-4c27-a33b-866b5fd6eade': TASK.PROJECT_TASKS_REQUEST, // private
   '431a3531-a77a-45c1-8035-f0bf75c32641': TASK.PROJECT_TASKS_REQUEST, // shared
   'd28e3872-9a23-4158-aea0-246e2874da73': TASK.EMPLOYEE_TASKS_REQUEST,
+  'ed8039ae-f3de-4369-8f32-829d401056e9': TASK.COLOR_TASKS_REQUEST,
   '00a5b3de-9474-404d-b3ba-83f488ac6d30': TASK.TAG_TASKS_REQUEST
 }
 
@@ -74,20 +75,21 @@ const navigatorMenu = reactive({
 
 const configureNavigator = (navigator) => {
   navigator.tasks.items[0].selected = true
+
   const dataArray = []
-  dataArray.push({ uid: 'uid', name: navigator.tasks.name, children: navigator.tasks.items, expanded: true, nodeSelecting: false })
-  dataArray.push({ uid: 'uid', name: navigator.delegate_iam.name, children: navigator.delegate_iam.items, expanded: true, disabled: true })
-  dataArray.push({ uid: 'uid', name: navigator.delegate_to_me.name, children: navigator.delegate_to_me.items, expanded: true, disabled: true })
-  dataArray.push({ uid: 'uid', name: navigator.private_projects.name, children: navigator.private_projects.items, expanded: true, disabled: true })
-  dataArray.push({ uid: 'uid', name: navigator.common_projects.name, children: navigator.common_projects.items, expanded: true, disabled: true })
-  dataArray.push({ uid: 'uid', name: navigator.emps.name, children: navigator.emps.items, expanded: true, disabled: true })
-  dataArray.push({ uid: 'uid', name: navigator.colors.name, children: navigator.colors.items, expanded: true, disabled: true })
-  dataArray.push({ uid: 'uid', name: navigator.tags.name, children: navigator.tags.items, expanded: true, disabled: true })
+
+  dataArray.push({ uid: navigator.tasks.uid, name: navigator.tasks.name, children: navigator.tasks.items, expanded: true })
+  dataArray.push({ uid: navigator.delegate_iam.uid, name: navigator.delegate_iam.name, children: navigator.delegate_iam.items, expanded: true })
+  dataArray.push({ uid: navigator.delegate_to_me.uid, name: navigator.delegate_to_me.name, children: navigator.delegate_to_me.items, expanded: true })
+  dataArray.push({ uid: navigator.private_projects.uid, name: navigator.private_projects.name, children: navigator.private_projects.items, expanded: true })
+  dataArray.push({ uid: navigator.common_projects.uid, name: navigator.common_projects.name, children: navigator.common_projects.items, expanded: true })
+  dataArray.push({ uid: navigator.emps.uid, name: navigator.emps.name, children: navigator.emps.items, expanded: true })
+  dataArray.push({ uid: navigator.colors.uid, name: navigator.colors.name, children: navigator.colors.items, expanded: true })
+  dataArray.push({ uid: navigator.tags.uid, name: navigator.tags.name, children: navigator.tags.items, expanded: true })
 
   navigatorMenu.foldableNavigator = { dataSource: dataArray, id: 'uid', text: 'name', child: 'children' }
   store.dispatch('setDots', navigator.calendar.dates_with_tasks)
   attrs = computed(() => store.state.calendar.calendar)
-  return { dataSource: dataArray, id: 'uid', text: 'name', child: 'children' }
 }
 
 const storeNavigator = computed(() => store.state.navigator.navigator)
@@ -136,8 +138,15 @@ onBeforeMount(() => {
 const nodeSelected = (arg) => {
   if (UID_TO_ACTION[arg.nodeData.id]) {
     store.dispatch(UID_TO_ACTION[arg.nodeData.id])
+  } else if (UID_TO_ACTION[arg.nodeData.parentID]) {
+    const tree = document.getElementById('navigator-tree').ej2_instances[0]
+    const treeNodeData = tree.getTreeData(arg.nodeData.id)[0]
+    if (treeNodeData.email) {
+      store.dispatch(UID_TO_ACTION[arg.nodeData.parentID], treeNodeData.email)
+    } else {
+      store.dispatch(UID_TO_ACTION[arg.nodeData.parentID], treeNodeData.uid)
+    }
   }
-  console.log(UID_TO_ACTION[arg.nodeData.id])
   store.commit('updateLabel', arg.nodeData.text)
   store.commit(TASK.CLEAN_UP_LOADED_TASKS)
 }
@@ -230,6 +239,7 @@ const menuClick = (event, item) => {
         @menu-click="menuClick"
       />
       <TreeViewComponent
+      id="navigator-tree"
       :fields='navigatorMenu.foldableNavigator'
       cssClass="navigator-tree"
       @nodeSelected='nodeSelected'

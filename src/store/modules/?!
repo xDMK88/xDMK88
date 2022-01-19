@@ -10,7 +10,7 @@ function pad2 (n) {
 const state = {
   tasks: false,
   subtasks: false,
-  selectedTask: undefined,
+  selectedTask: false,
   status: '',
   hasLoadedOnce: false,
   loadedTasks: {}
@@ -280,9 +280,6 @@ const mutations = {
   },
   [TASK.CLEAN_UP_LOADED_TASKS]: state => {
     state.loadedTasks = {}
-  },
-  [TASK.SELECT_TASK]: (state, task) => {
-    state.selectedTask = task
   }
 }
 

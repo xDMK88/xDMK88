@@ -30,6 +30,7 @@ const store = useStore()
 const toggleLightDark = () => {
   store.dispatch('darkMode')
 }
+const localization = computed(() => store.state.localization.localization)
 
 const isNavBarVisible = computed(() => !store.state.isFullScreen)
 
@@ -40,7 +41,9 @@ const navbarLabel = computed(() => store.state.navbar.label)
 
 const menuToggleMobileIcon = computed(() => isAsideMobileExpanded.value ? mdiBackburger : mdiForwardburger)
 
-const menuToggleMobile = () => store.dispatch('asideMobileToggle')
+const menuToggleMobile = () => {
+  store.dispatch('asideMobileToggle')
+}
 
 const isMenuNavBarActive = ref(false)
 
@@ -85,7 +88,7 @@ const menuOpenLg = () => {
         {{ navbarLabel }}
       </nav-bar-item>
       <nav-bar-item>
-        <nav-bar-search />
+        <nav-bar-search :placeholder="localization.search" />
       </nav-bar-item>
     </div>
     <div class="flex-none items-stretch flex h-14 lg:hidden">

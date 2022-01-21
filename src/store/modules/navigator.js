@@ -4,6 +4,11 @@ import {
   NAVIGATOR_SUCCESS
 } from '../actions/navigator'
 import { AUTH_LOGOUT } from '../actions/auth'
+import { ADD_TASK_TAGS } from '../actions/tasks'
+import { PUSH_EMPLOYEE } from '../actions/employees'
+import { PUSH_PROJECT } from '../actions/projects'
+import { PUSH_COLOR } from '../actions/colors'
+import { visitChildren } from '../helpers/functions'
 
 import axios from 'axios'
 
@@ -26,6 +31,43 @@ const actions = {
       axios({ url: url, method: 'GET' })
         .then(resp => {
           commit(NAVIGATOR_SUCCESS, resp)
+          if (resp.data.emps.items) {
+            for (const employee of resp.data.emps.items) {
+              commit(PUSH_EMPLOYEE, employee)
+            }
+          }
+          // process colors in shared vuex storage
+          if (resp.data.colors.items) {
+            commit(PUSH_COLOR, resp.data.colors.items)
+          }
+          // process private projects then put them in shared vuex storage
+          if (resp.data.private_projects.items) {
+            const myPrivateProjects = []
+            visitChildren(resp.data.private_projects.items, value => {
+              value.global_property_uid = resp.data.private_projects.uid
+              myPrivateProjects.push(value)
+            })
+            commit(PUSH_PROJECT, myPrivateProjects)
+          }
+          // process shared projects then put them in shared vuex storage
+          if (resp.data.common_projects.items) {
+            const myCommonProjects = []
+            visitChildren(resp.data.common_projects.items, value => {
+              value.global_property_uid = resp.data.common_projects.uid
+              myCommonProjects.push(value)
+            })
+            commit(PUSH_PROJECT, myCommonProjects)
+          }
+          // process tags then put them in shared vuex storage
+          if (resp.data.tags.items) {
+            const myTags = []
+            visitChildren(resp.data.tags.items, (value) => {
+              // TODO: how to remove children without hurt actual data?
+              // if (value.children) value.children = []
+              myTags.push(value)
+            })
+            commit(ADD_TASK_TAGS, myTags)
+          }
           resolve(resp)
         }).catch(err => {
           commit(NAVIGATOR_ERROR, err)

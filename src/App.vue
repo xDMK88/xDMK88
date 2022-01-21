@@ -7,6 +7,7 @@ import AsideMenu from '@/components/AsideMenu.vue'
 import PropertiesRight from '@/components/PropertiesRight.vue'
 // import FooterBar from '@/components/FooterBar.vue'
 import Overlay from '@/components/Overlay.vue'
+import { LOCALIZATION_REQUEST } from '@/store/actions/localization'
 
 import '../node_modules/@syncfusion/ej2-base/styles/material.css'
 import '../node_modules/@syncfusion/ej2-inputs/styles/material.css'
@@ -15,11 +16,8 @@ import '../node_modules/@syncfusion/ej2-vue-navigations/styles/material.css'
 
 const store = useStore()
 
-store.commit('user', {
-  name: 'Dmitry Gashilov',
-  email: 'john@example.com',
-  avatar: 'https://avatars.dicebear.com/api/avataaars/example.svg?options[top][]=shortHair&options[accessoriesChance]=93'
-})
+console.log('localization request', LOCALIZATION_REQUEST)
+store.dispatch(LOCALIZATION_REQUEST)
 
 const isAsideLgActive = computed(() => store.state.isAsideLgActive)
 

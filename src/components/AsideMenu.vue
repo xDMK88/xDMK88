@@ -51,6 +51,7 @@ const isFullScreen = computed(() => store.state.isFullScreen)
 const isAsideMobileExpanded = computed(() => store.state.isAsideMobileExpanded)
 const isAsideLgActive = computed(() => store.state.isAsideLgActive)
 const isDark = computed(() => store.state.darkMode)
+const localization = computed(() => store.state.localization.localization)
 
 let attrs = computed(() => store.state.calendar.calendar)
 const user = computed(() => store.state.user.user)
@@ -79,13 +80,13 @@ const configureNavigator = (navigator) => {
   const dataArray = []
 
   dataArray.push({ uid: navigator.tasks.uid, name: navigator.tasks.name, children: navigator.tasks.items, expanded: true })
-  dataArray.push({ uid: navigator.delegate_iam.uid, name: navigator.delegate_iam.name, children: navigator.delegate_iam.items, expanded: true })
-  dataArray.push({ uid: navigator.delegate_to_me.uid, name: navigator.delegate_to_me.name, children: navigator.delegate_to_me.items, expanded: true })
-  dataArray.push({ uid: navigator.private_projects.uid, name: navigator.private_projects.name, children: navigator.private_projects.items, expanded: true })
-  dataArray.push({ uid: navigator.common_projects.uid, name: navigator.common_projects.name, children: navigator.common_projects.items, expanded: true })
-  dataArray.push({ uid: navigator.emps.uid, name: navigator.emps.name, children: navigator.emps.items, expanded: true })
-  dataArray.push({ uid: navigator.colors.uid, name: navigator.colors.name, children: navigator.colors.items, expanded: true })
-  dataArray.push({ uid: navigator.tags.uid, name: navigator.tags.name, children: navigator.tags.items, expanded: true })
+  dataArray.push({ uid: navigator.delegate_iam.uid, name: localization.value.Delegate_i, children: navigator.delegate_iam.items, expanded: true })
+  dataArray.push({ uid: navigator.delegate_to_me.uid, name: localization.value.Delegate_tome, children: navigator.delegate_to_me.items, expanded: true })
+  dataArray.push({ uid: navigator.private_projects.uid, name: localization.value.Projects, children: navigator.private_projects.items, expanded: true })
+  dataArray.push({ uid: navigator.common_projects.uid, name: localization.value.SharedProjects, children: navigator.common_projects.items, expanded: true })
+  dataArray.push({ uid: navigator.emps.uid, name: localization.value.Emps, children: navigator.emps.items, expanded: true })
+  dataArray.push({ uid: navigator.colors.uid, name: localization.value.Colors, children: navigator.colors.items, expanded: true })
+  dataArray.push({ uid: navigator.tags.uid, name: localization.value.Labels, children: navigator.tags.items, expanded: true })
 
   navigatorMenu.foldableNavigator = { dataSource: dataArray, id: 'uid', text: 'name', child: 'children' }
   store.dispatch('setDots', navigator.calendar.dates_with_tasks)
@@ -112,7 +113,6 @@ const getNavigator = () => {
     store.dispatch(NAVIGATOR_REQUEST)
       .then(() => {
         const navigator = store.state.navigator.navigator
-        console.log(navigator)
         configureNavigator(navigator)
       })
       .catch((err) => console.log(err))
@@ -135,18 +135,30 @@ onBeforeMount(() => {
   getUser()
 })
 
+// Nice logic how to handle click on navigator link
 const nodeSelected = (arg) => {
+  const tree = document.getElementById('navigator-tree').ej2_instances[0]
+  const treeNodeData = tree.getTreeData(arg.nodeData.id)[0]
+
   if (UID_TO_ACTION[arg.nodeData.id]) {
     store.dispatch(UID_TO_ACTION[arg.nodeData.id])
   } else if (UID_TO_ACTION[arg.nodeData.parentID]) {
-    const tree = document.getElementById('navigator-tree').ej2_instances[0]
-    const treeNodeData = tree.getTreeData(arg.nodeData.id)[0]
     if (treeNodeData.email) {
-      store.dispatch(UID_TO_ACTION[arg.nodeData.parentID], treeNodeData.email)
+      console.log('We found data with email ', treeNodeData, arg.nodeData)
+      if (UID_TO_ACTION[arg.nodeData.parentID] === TASK.EMPLOYEE_TASKS_REQUEST) {
+        store.dispatch(UID_TO_ACTION[arg.nodeData.parentID], treeNodeData.uid)
+        console.log('is employee request')
+      } else {
+        store.dispatch(UID_TO_ACTION[arg.nodeData.parentID], treeNodeData.email)
+        console.log('isnt employee request')
+      }
     } else {
       store.dispatch(UID_TO_ACTION[arg.nodeData.parentID], treeNodeData.uid)
     }
+  } else if (UID_TO_ACTION[treeNodeData.global_property_uid]) {
+    store.dispatch(UID_TO_ACTION[treeNodeData.global_property_uid], treeNodeData.uid)
   }
+
   store.commit('updateLabel', arg.nodeData.text)
   store.commit(TASK.CLEAN_UP_LOADED_TASKS)
 }
@@ -172,7 +184,7 @@ const menuClick = (event, item) => {
     <span>{{ user.current_user_email }}</span>
     <br>
     <br>
-    <strong>License owner: </strong>
+    <strong>{{ localization.owner_license }}</strong>
     <br>
     <span>{{ user.owner_title }}</span>
     <br>
@@ -190,7 +202,7 @@ const menuClick = (event, item) => {
     <br>
     <br>
     <strong>Used server storage </strong>
-    <span> {{ user.total_mb }} Mb ({{ user.percent_mb }}%)</span>
+    <span> {{ user.total_mb }} {{ localization.megabytes }} ({{ user.percent_mb }}%)</span>
     <br>
     <br>
     <jb-button

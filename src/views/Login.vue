@@ -1,5 +1,5 @@
 <script setup>
-import { reactive } from 'vue'
+import { reactive, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import axios from 'axios'
 import store from '@/store'
@@ -28,6 +28,7 @@ const showValues = reactive({
 })
 
 const router = useRouter()
+const localization = computed(() => store.state.localization.localization)
 
 const submit = () => {
   if (showValues.showLoginInputsValue) {
@@ -69,7 +70,7 @@ const login = () => {
     })
     .catch(() => {
       form.showError = true
-      form.errorMessage = 'Неверный email или пароль'
+      form.errorMessage = localization.value.InvalidNameOrPassword
     })
 }
 
@@ -137,8 +138,7 @@ const checkEmailExistense = () => {
       @submit.prevent="submit"
     >
       <field
-        label="Email"
-        help="Please enter your email"
+        :label="localization.YourEmail"
       >
         <control
           v-model="form.email"
@@ -154,8 +154,7 @@ const checkEmailExistense = () => {
   <transition-group name="slide-fade">
     <div v-if="showValues.showLoginInputsValue">
       <field
-        label="Password"
-        help="Please enter your password"
+        :label="localization.Password"
         >
         <control
           v-model="form.password"
@@ -172,7 +171,7 @@ const checkEmailExistense = () => {
         <jb-button
           type="submit"
           color="info"
-          label="Вход"
+          :label="localization.EnterSystem"
         />
       </jb-buttons>
     </div>
@@ -181,8 +180,7 @@ const checkEmailExistense = () => {
   <transition-group name="slide-fade">
     <div v-if="showValues.showRegisterInputsValue">
       <field
-        label="Password"
-        help="Please enter your password"
+        :label="localization.Password"
       >
         <control
           v-model="form.password"
@@ -195,7 +193,6 @@ const checkEmailExistense = () => {
 
       <field
         label="Username"
-        help="Plase enter your username"
       >
         <control
           v-model="form.username"
@@ -211,7 +208,7 @@ const checkEmailExistense = () => {
         <jb-button
           type="submit"
           color="info"
-          label="Зарегистрироваться"
+          :label="localization.EnterLeaderTask"
         />
       </jb-buttons>
     </div>

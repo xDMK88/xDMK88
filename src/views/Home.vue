@@ -5,7 +5,9 @@ import { TreeViewComponent } from '@syncfusion/ej2-vue-navigations'
 import MainSection from '@/components/MainSection.vue'
 
 import * as TASK from '@/store/actions/tasks'
-import { NAVIGATOR_REQUEST } from '@/store/actions/navigator'
+import { MESSAGES_REQUEST, REFRESH_MESSAGES } from '@/store/actions/taskmessages'
+import { FILES_REQUEST, REFRESH_FILES } from '@/store/actions/taskfiles'
+// import { NAVIGATOR_REQUEST } from '@/store/actions/navigator'
 
 const store = useStore()
 const loadedTasks = computed(() => store.state.tasks.loadedTasks)
@@ -18,6 +20,10 @@ const storeTasks = computed(() => {
     hasChildren: 'has_children'
   }
 })
+
+// const propertiesToggleMobile = () => {
+//   store.dispatch('asidePropertiesToggle', true)
+// }
 
 const nodeExpanding = (arg) => {
   if (arg.isInteracted) {
@@ -41,27 +47,30 @@ const getTasks = () => {
   }
 }
 
-const getNavigator = () => {
-  store.dispatch(NAVIGATOR_REQUEST)
-}
-
 const nodeSelected = (arg) => {
+  store.commit(REFRESH_FILES)
+  store.commit(REFRESH_MESSAGES)
   const tree = document.getElementById('treeview').ej2_instances[0]
   const treeNodeData = tree.getTreeData(arg.nodeData.id)[0]
   console.log(treeNodeData)
   store.commit(TASK.SELECT_TASK, treeNodeData)
+  if (treeNodeData.has_msgs) {
+    store.dispatch(MESSAGES_REQUEST, treeNodeData.uid)
+  }
+  if (treeNodeData.has_files) {
+    store.dispatch(FILES_REQUEST, treeNodeData.uid)
+  }
+  // propertiesToggleMobile()
 }
 
 onBeforeMount(() => {
   getTasks()
-  getNavigator()
 })
 
 </script>
 
 <template>
   <main-section>
-    <!-- <h1 v-if="storeTasks.dataSource.length">There are no tasks :(</h1> -->
     <TreeViewComponent
       id='treeview'
       :fields='storeTasks'

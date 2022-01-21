@@ -9,6 +9,7 @@ function pad2 (n) {
 
 const state = {
   tasks: false,
+  tags: {},
   subtasks: false,
   selectedTask: undefined,
   status: '',
@@ -32,11 +33,13 @@ const actions = {
       const day = pad2(chosenDate.getDate())
       const year = chosenDate.getFullYear()
       const formattedDate = day + '-' + month + '-' + year
-      console.log(formattedDate)
       const url = 'https://web.leadertask.com/api/v1/tasks/withdate?value=' + formattedDate
       axios({ url: url, method: 'GET' })
         .then(resp => {
           commit(TASK.TASKS_SUCCESS, resp)
+          if (resp.data.anothers_tags.length) {
+            commit(TASK.ADD_TASK_TAGS, resp.data.anothers_tags)
+          }
           resolve(resp)
         }).catch(err => {
           commit(TASK.TASKS_ERROR, err)
@@ -52,6 +55,9 @@ const actions = {
       axios({ url: url, method: 'GET' })
         .then(resp => {
           commit(TASK.SUBTASKS_SUCCESS, resp)
+          if (resp.data.anothers_tags.length) {
+            commit(TASK.ADD_TASK_TAGS, resp.data.anothers_tags)
+          }
           resolve(resp)
         }).catch(err => {
           commit(TASK.TASKS_ERROR, err)
@@ -67,6 +73,9 @@ const actions = {
       axios({ url: url, method: 'GET' })
         .then(resp => {
           commit(TASK.TASKS_SUCCESS, resp)
+          if (resp.data.anothers_tags.length) {
+            commit(TASK.ADD_TASK_TAGS, resp.data.anothers_tags)
+          }
           resolve(resp)
         }).catch(err => {
           commit(TASK.TASKS_ERROR, err)
@@ -82,6 +91,9 @@ const actions = {
       axios({ url: url, method: 'GET' })
         .then(resp => {
           commit(TASK.TASKS_SUCCESS, resp)
+          if (resp.data.anothers_tags.length) {
+            commit(TASK.ADD_TASK_TAGS, resp.data.anothers_tags)
+          }
           resolve(resp)
         }).catch(err => {
           commit(TASK.TASKS_ERROR, err)
@@ -97,6 +109,9 @@ const actions = {
       axios({ url: url, method: 'GET' })
         .then(resp => {
           commit(TASK.TASKS_SUCCESS, resp)
+          if (resp.data.anothers_tags.length) {
+            commit(TASK.ADD_TASK_TAGS, resp.data.anothers_tags)
+          }
           resolve(resp)
         }).catch(err => {
           commit(TASK.TASKS_ERROR, err)
@@ -112,6 +127,9 @@ const actions = {
       axios({ url: url, method: 'GET' })
         .then(resp => {
           commit(TASK.TASKS_SUCCESS, resp)
+          if (resp.data.anothers_tags.length) {
+            commit(TASK.ADD_TASK_TAGS, resp.data.anothers_tags)
+          }
           resolve(resp)
         }).catch(err => {
           commit(TASK.TASKS_ERROR, err)
@@ -127,6 +145,9 @@ const actions = {
       axios({ url: url, method: 'GET' })
         .then(resp => {
           commit(TASK.TASKS_SUCCESS, resp)
+          if (resp.data.anothers_tags.length) {
+            commit(TASK.ADD_TASK_TAGS, resp.data.anothers_tags)
+          }
           resolve(resp)
         }).catch(err => {
           commit(TASK.TASKS_ERROR, err)
@@ -142,6 +163,9 @@ const actions = {
       axios({ url: url, method: 'GET' })
         .then(resp => {
           commit(TASK.TASKS_SUCCESS, resp)
+          if (resp.data.anothers_tags.length) {
+            commit(TASK.ADD_TASK_TAGS, resp.data.anothers_tags)
+          }
           resolve(resp)
         }).catch(err => {
           commit(TASK.TASKS_ERROR, err)
@@ -157,6 +181,9 @@ const actions = {
       axios({ url: url, method: 'GET' })
         .then(resp => {
           commit(TASK.TASKS_SUCCESS, resp)
+          if (resp.data.anothers_tags.length) {
+            commit(TASK.ADD_TASK_TAGS, resp.data.anothers_tags)
+          }
           resolve(resp)
         }).catch(err => {
           commit(TASK.TASKS_ERROR, err)
@@ -172,6 +199,9 @@ const actions = {
       axios({ url: url, method: 'GET' })
         .then(resp => {
           commit(TASK.TASKS_SUCCESS, resp)
+          if (resp.data.anothers_tags.length) {
+            commit(TASK.ADD_TASK_TAGS, resp.data.anothers_tags)
+          }
           resolve(resp)
         }).catch(err => {
           commit(TASK.TASKS_ERROR, err)
@@ -187,6 +217,9 @@ const actions = {
       axios({ url: url, method: 'GET' })
         .then(resp => {
           commit(TASK.TASKS_SUCCESS, resp)
+          if (resp.data.anothers_tags.length) {
+            commit(TASK.ADD_TASK_TAGS, resp.data.anothers_tags)
+          }
           resolve(resp)
         }).catch(err => {
           commit(TASK.TASKS_ERROR, err)
@@ -202,6 +235,9 @@ const actions = {
       axios({ url: url, method: 'GET' })
         .then(resp => {
           commit(TASK.TASKS_SUCCESS, resp)
+          if (resp.data.anothers_tags.length) {
+            commit(TASK.ADD_TASK_TAGS, resp.data.anothers_tags)
+          }
           resolve(resp)
         }).catch(err => {
           commit(TASK.TASKS_ERROR, err)
@@ -217,6 +253,9 @@ const actions = {
       axios({ url: url, method: 'GET' })
         .then(resp => {
           commit(TASK.TASKS_SUCCESS, resp)
+          if (resp.data.anothers_tags.length) {
+            commit(TASK.ADD_TASK_TAGS, resp.data.anothers_tags)
+          }
           resolve(resp)
         }).catch(err => {
           commit(TASK.TASKS_ERROR, err)
@@ -232,6 +271,9 @@ const actions = {
       axios({ url: url, method: 'GET' })
         .then(resp => {
           commit(TASK.TASKS_SUCCESS, resp)
+          if (resp.data.anothers_tags.length) {
+            commit(TASK.ADD_TASK_TAGS, resp.data.anothers_tags)
+          }
           resolve(resp)
         }).catch(err => {
           commit(TASK.TASKS_ERROR, err)
@@ -247,6 +289,9 @@ const actions = {
       axios({ url: url, method: 'GET' })
         .then(resp => {
           commit(TASK.TASKS_SUCCESS, resp)
+          if (resp.data.anothers_tags.length) {
+            commit(TASK.ADD_TASK_TAGS, resp.data.anothers_tags)
+          }
           resolve(resp)
         }).catch(err => {
           commit(TASK.TASKS_ERROR, err)
@@ -283,6 +328,11 @@ const mutations = {
   },
   [TASK.SELECT_TASK]: (state, task) => {
     state.selectedTask = task
+  },
+  [TASK.ADD_TASK_TAGS]: (state, tags) => {
+    for (const tag of tags) {
+      state.tags[tag.uid] = tag
+    }
   }
 }
 

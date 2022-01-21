@@ -8,6 +8,12 @@ import calendar from './modules/calendar'
 import navbar from './modules/navbar'
 import user from './modules/user'
 import tasks from './modules/tasks'
+import taskmessages from './modules/taskmessages'
+import taskfiles from './modules/taskfiles'
+import employees from './modules/employees'
+import projects from './modules/projects'
+import colors from './modules/colors'
+import localization from './modules/localization'
 
 export default createStore({
   state: {
@@ -21,6 +27,7 @@ export default createStore({
 
     /* Aside */
     isAsideMobileExpanded: false,
+    isPropertiesMobileExpanded: false,
     isAsideLgActive: false,
 
     /* Dark mode */
@@ -56,6 +63,17 @@ export default createStore({
     asideMobileToggle ({ commit, state }, payload = null) {
       const isShow = payload !== null ? payload : !state.isAsideMobileExpanded
       document.getElementById('app').classList[isShow ? 'add' : 'remove']('ml-80', 'lg:ml-0')
+      document.documentElement.classList[isShow ? 'add' : 'remove']('m-clipped')
+
+      commit('basic', {
+        key: 'isAsideMobileExpanded',
+        value: isShow
+      })
+    },
+
+    asidePropertiesToggle ({ commit, state }, payload = null) {
+      const isShow = payload !== null ? payload : !state.isPropertiesMobileExpanded
+      document.getElementById('app').classList[isShow ? 'add' : 'remove']('mr-80', 'lg:mr-0')
       document.documentElement.classList[isShow ? 'add' : 'remove']('m-clipped')
 
       commit('basic', {
@@ -109,6 +127,12 @@ export default createStore({
     calendar,
     user,
     tasks,
-    navbar
+    navbar,
+    taskmessages,
+    taskfiles,
+    employees,
+    projects,
+    colors,
+    localization
   }
 })

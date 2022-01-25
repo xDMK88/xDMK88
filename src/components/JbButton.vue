@@ -16,6 +16,10 @@ const props = defineProps({
     type: String,
     default: null
   },
+  rounded: {
+    type: String,
+    default: 'rounded'
+  },
   target: {
     type: String,
     default: null
@@ -66,7 +70,7 @@ const computedType = computed(() => {
   return null
 })
 
-const labelClass = computed(() => props.small && props.icon ? 'px-1' : 'px-2')
+const labelClass = computed(() => props.small && props.icon ? 'px-0.5' : 'px-1')
 
 const componentClass = computed(() => {
   const base = [
@@ -79,8 +83,9 @@ const componentClass = computed(() => {
     'transition-colors',
     'focus:ring',
     'duration-150',
+    'py-2.5',
     'border',
-    'rounded',
+    'rounded-lg',
     props.active ? 'ring ring-black dark:ring-white' : 'ring-blue-700',
     props.small ? 'p-1' : 'p-2',
     getButtonColor(props.color, props.outline, !props.disabled)
@@ -104,13 +109,13 @@ const componentClass = computed(() => {
     :target="target"
     :disabled="disabled"
   >
-    <icon
-      v-if="icon"
-      :path="icon"
-    />
     <span
       v-if="label"
       :class="labelClass"
     >{{ label }}</span>
+    <icon
+      v-if="icon"
+      :path="icon"
+    />
   </component>
 </template>

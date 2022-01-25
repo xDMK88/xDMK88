@@ -18,7 +18,7 @@ const props = defineProps({
   },
   rounded: {
     type: String,
-    default: 'md:rounded'
+    default: 'rounded-md'
   },
   hasTable: Boolean,
   empty: Boolean,
@@ -57,7 +57,7 @@ const submit = e => {
   <component
     :is="is"
     :class="componentClass"
-    class="bg-white border border-gray-100 dark:bg-gray-900 dark:border-gray-900"
+    class="bg-white"
     @submit="submit"
   >
     <header

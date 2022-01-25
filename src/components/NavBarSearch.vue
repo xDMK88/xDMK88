@@ -1,5 +1,20 @@
 <script setup>
+
+import { reactive, computed } from 'vue'
+import { useStore } from 'vuex'
+import { SEARCH_TASK } from '@/store/actions/tasks'
 import Control from '@/components/Control.vue'
+
+const store = useStore()
+
+const form = reactive({
+  text: ''
+})
+
+const status = computed(() => store.state.tasks.status)
+const sendSearchRequest = () => {
+  store.dispatch(SEARCH_TASK, form.text)
+}
 
 const props = defineProps({
   placeholder: {
@@ -12,9 +27,10 @@ const props = defineProps({
 <template>
   <control
     ref="root"
+    v-model="form.text"
     :placeholder="props.placeholder"
-    ctrl-k-focus
-    transparent
+    @keyup.enter="sendSearchRequest"
     borderless
   />
+  <p class="pl-3"><strong>Status:</strong> {{ status }}</p>
 </template>

@@ -27,7 +27,7 @@ const actions = {
   [NAVIGATOR_REQUEST]: ({ commit, dispatch }) => {
     return new Promise((resolve, reject) => {
       commit(NAVIGATOR_REQUEST)
-      const url = 'https://web.leadertask.com/api/v1/navigator?show_compl_tasks=false'
+      const url = 'https://web.leadertask.com/api/v1/navigator'
       axios({ url: url, method: 'GET' })
         .then(resp => {
           commit(NAVIGATOR_SUCCESS, resp)

@@ -7,7 +7,6 @@ import MainSection from '@/components/MainSection.vue'
 import * as TASK from '@/store/actions/tasks'
 import { MESSAGES_REQUEST, REFRESH_MESSAGES } from '@/store/actions/taskmessages'
 import { FILES_REQUEST, REFRESH_FILES } from '@/store/actions/taskfiles'
-// import { NAVIGATOR_REQUEST } from '@/store/actions/navigator'
 
 const store = useStore()
 const loadedTasks = computed(() => store.state.tasks.loadedTasks)

@@ -21,7 +21,7 @@ const tags = computed(() => store.state.tasks.tags)
 const employees = computed(() => store.state.employees.employees)
 const projects = computed(() => store.state.projects.projects)
 const localization = computed(() => store.state.localization.localization)
-// const colors = computed(() => store.state.colors.colors)
+const colors = computed(() => store.state.colors.colors)
 
 const statuses = [
   'status_not_begin',
@@ -49,6 +49,7 @@ const menuClick = (event, item) => {
 
 <template>
   <aside
+    v-if="selectedTask.name"
     v-show="!isFullScreen"
     id="aside"
     class="-right-96 w-96 fixed top-0 z-40 h-screen bg-white transition-position lg:right-0 dark:border-r dark:border-gray-800 dark:bg-gray-900"
@@ -77,7 +78,7 @@ const menuClick = (event, item) => {
       <p><strong>Исполнитель:</strong> {{ selectedTask.email_performer }}</p>
       <p><strong>{{ localization.gc_status }}: </strong> {{ localization[statuses[selectedTask.status]] }}</p>
       <p v-if="selectedTask.uid_project !== '00000000-0000-0000-0000-000000000000'"><strong>{{ localization.props_prj }}: </strong> {{ projects[selectedTask.uid_project].name }}</p>
-      <!-- <p v-if="selectedTask.uid_marker"><strong>Цвет:</strong> {{ colors[selectedTask.uid_marker].name }}</p> -->
+      <p v-if="selectedTask.uid_marker !== '00000000-0000-0000-0000-000000000000'"><strong>Цвет:</strong> <span :style="{'background-color': colors[selectedTask.uid_marker].back_color}" class="p-1">{{ colors[selectedTask.uid_marker].name }}</span></p>
       <p v-if="selectedTask.plan"><strong>План:</strong> {{ selectedTask.plan }}</p>
       <p v-if="selectedTask.email"><strong>Задача открыта для:</strong> {{ selectedTask.email }}</p>
       <p v-if="selectedTask.checklist"><strong>Чек-лист:</strong> {{ selectedTask.checklist }}</p>

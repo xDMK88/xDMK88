@@ -155,9 +155,7 @@ const checkEmailExistense = () => {
           :icon="form.emailMdi"
           name="email"
           :iconClass="form.emailIconClass"
-          :placeholder="localization.login_lt"
           autocomplete="email"
-          type="email"
           required
           @blur="checkEmailExistense"
           @keyup.enter="checkEmailExistense"
@@ -178,7 +176,7 @@ const checkEmailExistense = () => {
           </field>
           <p
             v-if="form.showError"
-            class="text-red-500 text-xs pb-3"
+            class="text-red-400"
           >
             {{ form.errorMessage }}
           </p>
@@ -189,7 +187,7 @@ const checkEmailExistense = () => {
             :icon="mdiArrowRight"
             :label="localization.EnterSystem"
           />
-          <a
+          <a 
             href=""
             class="text-xs mt-5 text-blue-500 underline decoration-1"
           >
@@ -222,7 +220,7 @@ const checkEmailExistense = () => {
               :icon="mdiAccountOutline"
               name="username"
               autocomplete="username"
-              :placeholder="localization.name_emp"
+              :placeholder="Username"
             />
           </field>
 

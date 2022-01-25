@@ -1,5 +1,6 @@
 import * as TASK from '../actions/tasks'
 import { AUTH_LOGOUT } from '../actions/auth'
+import { PUSH_COLOR } from '../actions/colors'
 
 import axios from 'axios'
 
@@ -40,6 +41,30 @@ const actions = {
           if (resp.data.anothers_tags.length) {
             commit(TASK.ADD_TASK_TAGS, resp.data.anothers_tags)
           }
+          if (resp.data.anothers_markers.length) {
+            commit(PUSH_COLOR, resp.data.anothers_markers)
+          }
+          resolve(resp)
+        }).catch(err => {
+          commit(TASK.TASKS_ERROR, err)
+          dispatch(AUTH_LOGOUT)
+          reject(err)
+        })
+    })
+  },
+  [TASK.SEARCH_TASK]: ({ commit, dispatch }, text) => {
+    return new Promise((resolve, reject) => {
+      commit(TASK.TASKS_REQUEST)
+      const url = 'https://web.leadertask.com/api/v1/tasks/search?text=' + text
+      axios({ url: url, method: 'GET' })
+        .then(resp => {
+          commit(TASK.TASKS_SUCCESS, resp)
+          if (resp.data.anothers_tags.length) {
+            commit(TASK.ADD_TASK_TAGS, resp.data.anothers_tags)
+          }
+          if (resp.data.anothers_markers.length) {
+            commit(PUSH_COLOR, resp.data.anothers_markers)
+          }
           resolve(resp)
         }).catch(err => {
           commit(TASK.TASKS_ERROR, err)
@@ -58,6 +83,9 @@ const actions = {
           if (resp.data.anothers_tags.length) {
             commit(TASK.ADD_TASK_TAGS, resp.data.anothers_tags)
           }
+          if (resp.data.anothers_markers.length) {
+            commit(PUSH_COLOR, resp.data.anothers_markers)
+          }
           resolve(resp)
         }).catch(err => {
           commit(TASK.TASKS_ERROR, err)
@@ -75,6 +103,9 @@ const actions = {
           commit(TASK.TASKS_SUCCESS, resp)
           if (resp.data.anothers_tags.length) {
             commit(TASK.ADD_TASK_TAGS, resp.data.anothers_tags)
+          }
+          if (resp.data.anothers_markers.length) {
+            commit(PUSH_COLOR, resp.data.anothers_markers)
           }
           resolve(resp)
         }).catch(err => {
@@ -112,6 +143,9 @@ const actions = {
           if (resp.data.anothers_tags.length) {
             commit(TASK.ADD_TASK_TAGS, resp.data.anothers_tags)
           }
+          if (resp.data.anothers_markers.length) {
+            commit(PUSH_COLOR, resp.data.anothers_markers)
+          }
           resolve(resp)
         }).catch(err => {
           commit(TASK.TASKS_ERROR, err)
@@ -129,6 +163,9 @@ const actions = {
           commit(TASK.TASKS_SUCCESS, resp)
           if (resp.data.anothers_tags.length) {
             commit(TASK.ADD_TASK_TAGS, resp.data.anothers_tags)
+          }
+          if (resp.data.anothers_markers.length) {
+            commit(PUSH_COLOR, resp.data.anothers_markers)
           }
           resolve(resp)
         }).catch(err => {
@@ -148,6 +185,9 @@ const actions = {
           if (resp.data.anothers_tags.length) {
             commit(TASK.ADD_TASK_TAGS, resp.data.anothers_tags)
           }
+          if (resp.data.anothers_markers.length) {
+            commit(PUSH_COLOR, resp.data.anothers_markers)
+          }
           resolve(resp)
         }).catch(err => {
           commit(TASK.TASKS_ERROR, err)
@@ -165,6 +205,9 @@ const actions = {
           commit(TASK.TASKS_SUCCESS, resp)
           if (resp.data.anothers_tags.length) {
             commit(TASK.ADD_TASK_TAGS, resp.data.anothers_tags)
+          }
+          if (resp.data.anothers_markers.length) {
+            commit(PUSH_COLOR, resp.data.anothers_markers)
           }
           resolve(resp)
         }).catch(err => {
@@ -202,6 +245,9 @@ const actions = {
           if (resp.data.anothers_tags.length) {
             commit(TASK.ADD_TASK_TAGS, resp.data.anothers_tags)
           }
+          if (resp.data.anothers_markers.length) {
+            commit(PUSH_COLOR, resp.data.anothers_markers)
+          }
           resolve(resp)
         }).catch(err => {
           commit(TASK.TASKS_ERROR, err)
@@ -219,6 +265,9 @@ const actions = {
           commit(TASK.TASKS_SUCCESS, resp)
           if (resp.data.anothers_tags.length) {
             commit(TASK.ADD_TASK_TAGS, resp.data.anothers_tags)
+          }
+          if (resp.data.anothers_markers.length) {
+            commit(PUSH_COLOR, resp.data.anothers_markers)
           }
           resolve(resp)
         }).catch(err => {
@@ -238,6 +287,9 @@ const actions = {
           if (resp.data.anothers_tags.length) {
             commit(TASK.ADD_TASK_TAGS, resp.data.anothers_tags)
           }
+          if (resp.data.anothers_markers.length) {
+            commit(PUSH_COLOR, resp.data.anothers_markers)
+          }
           resolve(resp)
         }).catch(err => {
           commit(TASK.TASKS_ERROR, err)
@@ -253,6 +305,9 @@ const actions = {
       axios({ url: url, method: 'GET' })
         .then(resp => {
           commit(TASK.TASKS_SUCCESS, resp)
+          if (resp.data.anothers_markers.length) {
+            commit(PUSH_COLOR, resp.data.anothers_markers)
+          }
           if (resp.data.anothers_tags.length) {
             commit(TASK.ADD_TASK_TAGS, resp.data.anothers_tags)
           }
@@ -274,6 +329,9 @@ const actions = {
           if (resp.data.anothers_tags.length) {
             commit(TASK.ADD_TASK_TAGS, resp.data.anothers_tags)
           }
+          if (resp.data.anothers_markers.length) {
+            commit(PUSH_COLOR, resp.data.anothers_markers)
+          }
           resolve(resp)
         }).catch(err => {
           commit(TASK.TASKS_ERROR, err)
@@ -291,6 +349,9 @@ const actions = {
           commit(TASK.TASKS_SUCCESS, resp)
           if (resp.data.anothers_tags.length) {
             commit(TASK.ADD_TASK_TAGS, resp.data.anothers_tags)
+          }
+          if (resp.data.anothers_markers.length) {
+            commit(PUSH_COLOR, resp.data.anothers_markers)
           }
           resolve(resp)
         }).catch(err => {

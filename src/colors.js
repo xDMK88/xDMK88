@@ -4,7 +4,8 @@ export const colorsBg = {
   success: 'bg-emerald-500 text-white',
   danger: 'bg-red-500 text-white',
   warning: 'bg-yellow-500 text-white',
-  info: 'bg-blue-500 text-white'
+  info: 'bg-blue-500 text-white',
+  login: 'main-button text-white'
 }
 
 export const colorsBgHover = {
@@ -13,7 +14,8 @@ export const colorsBgHover = {
   success: 'hover:bg-emerald-600',
   danger: 'hover:bg-red-600',
   warning: 'hover:bg-yellow-600',
-  info: 'hover:bg-blue-600'
+  info: 'hover:bg-blue-600',
+  login: 'main-button text-white'
 }
 
 export const colorsBorders = {
@@ -22,7 +24,8 @@ export const colorsBorders = {
   success: 'border-emerald-600',
   danger: 'border-red-600',
   warning: 'border-yellow-600',
-  info: 'border-blue-600'
+  info: 'border-blue-600',
+  login: 'border-none rounded-lg'
 }
 
 export const colorsText = {
@@ -31,7 +34,8 @@ export const colorsText = {
   success: 'text-emerald-500',
   danger: 'text-red-500',
   warning: 'text-yellow-500',
-  info: 'text-blue-500'
+  info: 'text-blue-500',
+  login: 'text-white'
 }
 
 export const colorsOutline = {

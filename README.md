@@ -9,14 +9,12 @@
 1. Clone the repo (Vue3 project)
    ```sh
       git clone https://github.com/LeaderTask/Web.git
-      `````
-      3. Install NPM packages
-         ```sh
-            npm install
-            `````
-            4. Run the development server 
-               ```sh
-                    npm run serve 
-                     `````````
-            ````
-      ````
+    ```
+2. Install NPM packages
+    ```sh
+        npm install
+    ```
+3. Run the development server 
+    ```sh
+        npm run serve 
+    ```

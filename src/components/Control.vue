@@ -41,9 +41,11 @@ const props = defineProps({
     default: ''
   },
   required: Boolean,
+  disabled: Boolean,
   borderless: Boolean,
   transparent: Boolean,
-  ctrlKFocus: Boolean
+  ctrlKFocus: Boolean,
+  valid: Boolean
 })
 
 const emit = defineEmits(['update:modelValue', 'right-icon-click', 'blur'])
@@ -61,11 +63,14 @@ const blur = e => {
 
 const inputElClass = computed(() => {
   const base = [
-    'px-3 py-2 max-w-full text-sm border-gray-300 focus:border-stone-500 focus:bg-amber-50 focus:ring-0 rounded-lg w-full',
+    'px-3 py-2 max-w-full text-sm border-gray-300 disabled:border-stone-500 disabled:bg-amber-50 disabled:ring-0 focus:ring-0 rounded-lg w-full',
+    // 'focus:border-stone-500 focus:bg-amber-50',
+    'focus:border-gray-300',
     'dark:placeholder-gray-400',
     computedType.value === 'textarea' ? 'h-24' : 'h-12',
     props.borderless ? 'border-0' : 'border-2',
-    props.transparent ? 'bg-transparent' : 'bg-white dark:bg-gray-800'
+    props.transparent ? 'bg-transparent' : 'bg-white dark:bg-gray-800',
+    props.valid ? 'border-stone-500 bg-amber-50' : ''
   ]
 
   if (props.icon) {
@@ -154,6 +159,7 @@ if (props.ctrlKFocus) {
       :placeholder="placeholder"
       :type="computedType"
       :class="inputElClass"
+      :disabled="disabled"
       @blur="blur"
     >
     <control-icon

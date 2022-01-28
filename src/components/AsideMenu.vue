@@ -11,8 +11,8 @@ import AsideNavigatorList from '@/components/AsideNavigatorList.vue'
 import NavBarItem from '@/components/NavBarItem.vue'
 import Icon from '@/components/Icon.vue'
 
-import { NAVIGATOR_REQUEST } from '@/store/actions/navigator'
 import * as TASK from '@/store/actions/tasks'
+import { NAVIGATOR_REQUEST } from '@/store/actions/navigator'
 import { USER_REQUEST } from '@/store/actions/user'
 import { AUTH_LOGOUT } from '@/store/actions/auth'
 
@@ -52,7 +52,6 @@ const isAsideMobileExpanded = computed(() => store.state.isAsideMobileExpanded)
 const isAsideLgActive = computed(() => store.state.isAsideLgActive)
 const isDark = computed(() => store.state.darkMode)
 const localization = computed(() => store.state.localization.localization)
-
 let attrs = computed(() => store.state.calendar.calendar)
 const user = computed(() => store.state.user.user)
 
@@ -176,7 +175,10 @@ const menuClick = (event, item) => {
     v-model="modalOneActive"
     title="Profile"
   >
-    <img :src="user.foto_link" class="mx-auto rounded-full">
+    <img
+      :src="user.foto_link"
+      class="mx-auto rounded-full"
+    >
     <strong>Current user: </strong>
     <br>
     <span>{{ user.current_user_name }}</span>
@@ -231,19 +233,24 @@ const menuClick = (event, item) => {
         />
       </nav-bar-item>
       <div class="flex-1 px-3">
-        <span @click="modalOneActive = true" class="cursor-pointer">{{ user.current_user_name }}</span>
+        <span
+          class="cursor-pointer"
+          @click="modalOneActive = true"
+        >
+          {{ user.current_user_name }}
+        </span>
       </div>
     </div>
     <nav-bar-item>
       <DatePicker
+        v-model="navigatorMenu.currentDate"
         show-weeknumbers
-        :locale='navigatorMenu.lang'
-        :attributes='attrs'
-        v-model='navigatorMenu.currentDate'
-        color='yellow'
-        :is-dark='isDark'
+        color="yellow"
         is-expanded
-        />
+        :locale="navigatorMenu.lang"
+        :attributes="attrs"
+        :is-dark="isDark"
+      />
     </nav-bar-item>
     <div>
       <aside-navigator-list
@@ -251,27 +258,12 @@ const menuClick = (event, item) => {
         @menu-click="menuClick"
       />
       <TreeViewComponent
-      id="navigator-tree"
-      :fields='navigatorMenu.foldableNavigator'
-      cssClass="navigator-tree"
-      @nodeSelected='nodeSelected'
+        id="navigator-tree"
+        :fields="navigatorMenu.foldableNavigator"
+        cssClass="navigator-tree"
+        @nodeSelected="nodeSelected"
       >
       </TreeViewComponent>
-      <!-- <template v-for="(menuGroup, index) in menu">
-        <p
-          v-if="typeof menuGroup === 'string'"
-          :key="`a-${index}`"
-          class="p-3 text-xs uppercase text-gray-400"
-        >
-          {{ menuGroup }}
-        </p>
-        <aside-menu-list
-          v-else
-          :key="`b-${index}`"
-          :menu="menuGroup"
-          @menu-click="menuClick"
-        />
-      </template> -->
     </div>
   </aside>
 </template>

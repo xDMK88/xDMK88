@@ -51,6 +51,15 @@ const routes = [
   },
   {
     meta: {
+      title: 'Settings'
+    },
+    path: '/settings',
+    name: 'settings',
+    component: () => import(/* webpackChunkName: "forms" */ '@/views/Settings.vue'),
+    beforeEnter: ifAuthenticated
+  },
+  {
+    meta: {
       title: 'Profile'
     },
     path: '/profile',

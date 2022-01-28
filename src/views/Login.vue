@@ -3,10 +3,11 @@ import { reactive, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import axios from 'axios'
 import store from '@/store'
-import { mdiEmailOutline, mdiEyeOffOutline, mdiAccountOutline, mdiArrowRight, mdiCheck } from '@mdi/js'
+import { mdiEmailOutline, mdiEyeOffOutline, mdiAccountOutline, mdiArrowRight, mdiCheckBold, mdiChevronLeft } from '@mdi/js'
 import FullScreenSection from '@/components/FullScreenSection.vue'
 import CardComponent from '@/components/CardComponent.vue'
 import Field from '@/components/Field.vue'
+import Icon from '@/components/Icon.vue'
 import Control from '@/components/Control.vue'
 import JbButton from '@/components/JbButton.vue'
 // import JbButtons from '@/components/JbButtons.vue'
@@ -23,7 +24,10 @@ const form = reactive({
   errorMessage: '',
   emailMdi: mdiEmailOutline,
   emailIconClass: '',
-  startScreenText: localization.value.EnterLeaderTask
+  emailControlDisabled: false,
+  startScreenText: localization.value.EnterLeaderTask,
+  showCheckButton: true,
+  showBackButton: false
 })
 
 const showValues = reactive({
@@ -97,6 +101,19 @@ const register = () => {
     })
 }
 
+const getBack = () => {
+  hideLoginInputs()
+  hideRegisterInputs()
+  form.emailControlDisabled = false
+  form.email = ''
+  form.password = ''
+  form.username = ''
+  form.emailMdi = mdiEmailOutline
+  form.emailIconClass = ''
+  form.showCheckButton = true
+  form.showBackButton = false
+}
+
 const hideLoginInputs = () => {
   showValues.showLoginInputsValue = false
 }
@@ -121,15 +138,21 @@ const checkEmailExistense = () => {
     axios.get(uri)
       .then(() => {
         showLoginInputs()
-        form.emailMdi = mdiCheck
+        form.emailMdi = mdiCheckBold
         form.startScreenText = localization.value.hithere
         form.emailIconClass = 'text-lime-500'
+        form.emailControlDisabled = true
+        form.showCheckButton = false
+        form.showBackButton = true
       })
       .catch(() => {
         showRegisterInputs()
-        form.emailMdi = mdiCheck
+        form.emailMdi = mdiCheckBold
         form.startScreenText = localization.value.create_account
         form.emailIconClass = 'text-lime-500'
+        form.emailControlDisabled = true
+        form.showCheckButton = false
+        form.showBackButton = true
       })
   }
 }
@@ -140,13 +163,24 @@ const checkEmailExistense = () => {
     v-slot="{ cardClass, cardRounded }"
     bg="leadertask"
   >
+    <img
+      src="https://www.leadertask.ru/templates/default/img/logo.svg"
+      class="mb-10"
+    />
     <card-component
       :class="cardClass"
       :rounded="cardRounded"
       form
       @submit.prevent="submit"
     >
-      <p class="pb-4 pt-5 text-center text-2xl font-bold">
+      <icon
+        v-if="form.showBackButton"
+        :path="mdiChevronLeft"
+        class="cursor-pointer"
+        size="24"
+        @click="getBack"
+      />
+      <p class="pb-4 pt-5 text-center text-2xl font-bold dark:text-black">
         {{ form.startScreenText }}
       </p>
       <field>
@@ -159,10 +193,19 @@ const checkEmailExistense = () => {
           autocomplete="email"
           type="email"
           required
+          :disabled="form.emailControlDisabled"
           @blur="checkEmailExistense"
           @keyup.enter="checkEmailExistense"
         />
       </field>
+      <jb-button
+        v-if="form.showCheckButton"
+        class="w-full rounded-lg text-sm"
+        color="login"
+        :icon="mdiArrowRight"
+        label="Continue"
+        @click="checkEmailExistense"
+      />
 
       <transition-group name="slide-fade">
         <div v-if="showValues.showLoginInputsValue">
@@ -174,6 +217,7 @@ const checkEmailExistense = () => {
               name="password"
               autocomplete="current-password"
               :placeholder="localization.Password"
+              :valid="form.password.length > 7"
             />
           </field>
           <p
@@ -184,7 +228,7 @@ const checkEmailExistense = () => {
           </p>
           <jb-button
             type="submit"
-            class="w-full rounded-lg"
+            class="w-full rounded-lg text-sm"
             color="login"
             :icon="mdiArrowRight"
             :label="localization.EnterSystem"
@@ -202,6 +246,8 @@ const checkEmailExistense = () => {
         <div v-if="showValues.showRegisterInputsValue">
           <field
             :help="localization.PasswordMin"
+            :max-count="8"
+            :actual-count="form.password.length"
           >
             <control
               v-model="form.password"
@@ -210,11 +256,14 @@ const checkEmailExistense = () => {
               name="password"
               :placeholder="localization.Password"
               autocomplete="current-password"
+              :valid="form.password.length > 7"
             />
           </field>
 
           <field
             :help="localization.EnterYourName"
+            :max-count="3"
+            :actual-count="form.username.length"
           >
             <control
               v-model="form.username"
@@ -223,13 +272,14 @@ const checkEmailExistense = () => {
               name="username"
               autocomplete="username"
               :placeholder="localization.name_emp"
+              :valid="form.username.length > 2"
             />
           </field>
 
           <jb-button
             type="submit"
             color="login"
-            class="w-full rounded-lg"
+            class="w-full rounded-lg text-sm"
             :icon="mdiArrowRight"
             :label="localization.create_account"
           />

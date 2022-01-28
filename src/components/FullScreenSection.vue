@@ -21,7 +21,7 @@ const componentClass = computed(() => {
     loginDark: 'bg-gradient-to-tr from-purple-900 via-pink-900 to-red-900',
     error: 'bg-gradient-to-tr from-pink-400 via-red-500 to-yellow-500',
     errorDark: 'bg-gradient-to-tr from-pink-900 via-red-900 to-yellow-900',
-    leadertask: 'bg-slate-50'
+    leadertask: 'bg-orange-100 bg-no-repeat bg-left-bottom md:bg-[url("@/assets/images/pic.png")]'
   }
 
   const bgKey = darkMode.value ? `${props.bg}Dark` : props.bg
@@ -31,9 +31,12 @@ const componentClass = computed(() => {
 </script>
 
 <template>
-  <main-section :class="componentClass">
+  <main-section
+    :class="componentClass"
+    class="flex flex-col"
+  >
     <slot
-      card-class="w-8/12 md:w-5/12 lg:w-4/12 xl:w-3/12 shadow"
+      card-class="w-8/12 md:w-5/12 lg:w-4/12 xl:w-3/12 shadow bg-white dark:bg-white"
       card-rounded="rounded-3xl"
     />
   </main-section>

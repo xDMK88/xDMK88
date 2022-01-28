@@ -22,6 +22,7 @@ const form = reactive({
   username: '',
   showError: false,
   errorMessage: '',
+  isEmailValid: false,
   emailMdi: mdiEmailOutline,
   emailIconClass: '',
   emailControlDisabled: false,
@@ -40,7 +41,7 @@ const router = useRouter()
 const submit = () => {
   if (showValues.showLoginInputsValue) {
     login()
-  } else if (showValues.showRegisterInputsValue) {
+  } else if (showValues.showRegisterInputsValue && form.password.length > 7) {
     register()
   }
 }
@@ -132,28 +133,37 @@ const showRegisterInputs = () => {
   hideLoginInputs()
 }
 
+const validateEmail = () => {
+  if (/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(.\w{2,3})+$/.test(form.email)) {
+    return true
+  }
+  return false
+}
+
 const checkEmailExistense = () => {
   if (form.email) {
-    const uri = 'https://web.leadertask.com/api/v1/users/exists?email=' + form.email
-    axios.get(uri)
-      .then(() => {
-        showLoginInputs()
-        form.emailMdi = mdiCheckBold
-        form.startScreenText = localization.value.hithere
-        form.emailIconClass = 'text-lime-500'
-        form.emailControlDisabled = true
-        form.showCheckButton = false
-        form.showBackButton = true
-      })
-      .catch(() => {
-        showRegisterInputs()
-        form.emailMdi = mdiCheckBold
-        form.startScreenText = localization.value.create_account
-        form.emailIconClass = 'text-lime-500'
-        form.emailControlDisabled = true
-        form.showCheckButton = false
-        form.showBackButton = true
-      })
+    if (validateEmail()) {
+      const uri = 'https://web.leadertask.com/api/v1/users/exists?email=' + form.email
+      axios.get(uri)
+        .then(() => {
+          showLoginInputs()
+          form.emailMdi = mdiCheckBold
+          form.startScreenText = localization.value.hithere
+          form.emailIconClass = 'text-lime-500'
+          form.emailControlDisabled = true
+          form.showCheckButton = false
+          form.showBackButton = true
+        })
+        .catch(() => {
+          showRegisterInputs()
+          form.emailMdi = mdiCheckBold
+          form.startScreenText = localization.value.create_account
+          form.emailIconClass = 'text-lime-500'
+          form.emailControlDisabled = true
+          form.showCheckButton = false
+          form.showBackButton = true
+        })
+    }
   }
 }
 
@@ -166,7 +176,7 @@ const checkEmailExistense = () => {
     <img
       src="https://www.leadertask.ru/templates/default/img/logo.svg"
       class="mb-10"
-    />
+    >
     <card-component
       :class="cardClass"
       :rounded="cardRounded"
@@ -181,14 +191,14 @@ const checkEmailExistense = () => {
         @click="getBack"
       />
       <p class="pb-4 pt-5 text-center text-2xl font-bold dark:text-black">
-        {{ form.startScreenText }}
+        {{ localization.EnterLeaderTask }}
       </p>
       <field>
         <control
           v-model="form.email"
           :icon="form.emailMdi"
           name="email"
-          :iconClass="form.emailIconClass"
+          :icon-class="form.emailIconClass"
           :placeholder="localization.login_lt"
           autocomplete="email"
           type="email"
@@ -203,7 +213,7 @@ const checkEmailExistense = () => {
         class="w-full rounded-lg text-sm"
         color="login"
         :icon="mdiArrowRight"
-        label="Continue"
+        :label="localization.EnterSystem"
         @click="checkEmailExistense"
       />
 

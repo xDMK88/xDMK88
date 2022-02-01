@@ -1,7 +1,6 @@
 <script setup>
 import { computed } from 'vue'
 import { useStore } from 'vuex'
-import menu from '@/menu.js'
 import NavBar from '@/components/NavBar.vue'
 import AsideMenu from '@/components/AsideMenu.vue'
 import PropertiesRight from '@/components/PropertiesRight.vue'
@@ -19,6 +18,7 @@ const store = useStore()
 console.log('localization request', LOCALIZATION_REQUEST)
 store.dispatch(LOCALIZATION_REQUEST)
 
+const menu = computed(() => store.state.navigator.menu)
 const isAsideLgActive = computed(() => store.state.isAsideLgActive)
 
 const overlayClick = () => {

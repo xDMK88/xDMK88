@@ -18,3 +18,20 @@
     ```sh
         npm run serve 
     ```
+### Folders 
+    ```sh
+      Web/src:
+
+      App.vue         // Main component
+      assets
+      colors.js       // tailwind theme colors 
+      components      
+      config.js       // config
+      css
+      main.js         // init App main component and define auth headers
+      menu.js         
+      router          // routes
+      store           // vuex store
+      views           // main views assembled from components
+
+    ```

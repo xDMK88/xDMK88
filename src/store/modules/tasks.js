@@ -8,6 +8,18 @@ function pad2 (n) {
   return (n < 10 ? '0' : '') + n
 }
 
+const getDefaultState = () => {
+  return {
+    tasks: false,
+    tags: {},
+    subtasks: false,
+    selectedTask: undefined,
+    status: '',
+    hasLoadedOnce: false,
+    loadedTasks: {}
+  }
+}
+
 const state = {
   tasks: false,
   tags: {},
@@ -394,6 +406,9 @@ const mutations = {
     for (const tag of tags) {
       state.tags[tag.uid] = tag
     }
+  },
+  [TASK.RESET_STATE_TASKS]: (state) => {
+    Object.assign(state, getDefaultState())
   }
 }
 

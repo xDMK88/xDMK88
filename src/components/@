@@ -11,8 +11,6 @@ import AsideNavigatorList from '@/components/AsideNavigatorList.vue'
 import NavBarItem from '@/components/NavBarItem.vue'
 import Icon from '@/components/Icon.vue'
 
-import AsideMenuList from '@/components/AsideMenuList.vue'
-
 import * as TASK from '@/store/actions/tasks'
 import { AUTH_LOGOUT } from '@/store/actions/auth'
 
@@ -120,11 +118,11 @@ const asideLgClose = () => {
 }
 
 const menuClick = (event, item) => {
-  console.log(event, item)
 }
 </script>
 
 <template>
+
   <!-- Profile modal -->
   <modal-box
     v-model="modalOneActive"
@@ -206,6 +204,7 @@ const menuClick = (event, item) => {
         is-expanded
         :locale="navigatorMenu.lang"
         :attributes="attrs"
+        order="1"
         :is-dark="isDark"
       />
     </nav-bar-item>
@@ -220,24 +219,6 @@ const menuClick = (event, item) => {
         :fields="computedNavigator"
         @nodeSelected="nodeSelected"
       />
-    </div>
-    <div>
-      <template v-for="(menuGroup, index) in menu">
-        <p
-          v-if="typeof menuGroup === 'string'"
-          :key="`a-${index}`"
-          class="p-3 text-xs"
-          :class="[ asideMenuLabelStyle ]"
-        >
-          {{ menuGroup }}
-        </p>
-        <aside-menu-list
-          v-else
-          :key="`b-${index}`"
-          :menu="menuGroup"
-          @menu-click="menuClick"
-        />
-      </template>
     </div>
   </aside>
 </template>

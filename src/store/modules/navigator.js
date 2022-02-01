@@ -11,12 +11,14 @@ import { PUSH_EMPLOYEE } from '../actions/employees'
 import { PUSH_PROJECT } from '../actions/projects'
 import { PUSH_COLOR } from '../actions/colors'
 import { visitChildren } from '../helpers/functions'
+import { computed } from 'vue'
 
 import axios from 'axios'
 
 const state = {
   navigator: false,
   status: '',
+  computedNavigator: false,
   hasLoadedOnce: false
 }
 
@@ -26,12 +28,13 @@ const getters = {
 }
 
 const actions = {
-  [NAVIGATOR_REQUEST]: ({ commit, dispatch }) => {
+  [NAVIGATOR_REQUEST]: ({ commit, dispatch, rootState }) => {
     return new Promise((resolve, reject) => {
       commit(NAVIGATOR_REQUEST)
       const url = 'https://web.leadertask.com/api/v1/navigator'
       axios({ url: url, method: 'GET' })
         .then(resp => {
+          resp.rootState = rootState
           commit(NAVIGATOR_SUCCESS, resp)
           if (resp.data.emps.items) {
             for (const employee of resp.data.emps.items) {
@@ -70,6 +73,7 @@ const actions = {
             })
             commit(ADD_TASK_TAGS, myTags)
           }
+          dispatch('setDots', resp.data.calendar.dates_with_tasks)
           resolve(resp)
         }).catch(err => {
           commit(NAVIGATOR_ERROR, err)
@@ -78,12 +82,13 @@ const actions = {
         })
     })
   },
-  [PATCH_SETTINGS]: ({ commit, dispatch }, settings) => {
+  [PATCH_SETTINGS]: ({ commit, dispatch, rootState }, settings) => {
     return new Promise((resolve, reject) => {
       commit(NAVIGATOR_REQUEST)
       const url = 'https://web.leadertask.com/api/v1/settings/all'
       axios({ url: url, method: 'PATCH', data: settings })
         .then(resp => {
+          resp.rootState = rootState
           commit(NAVIGATOR_SUCCESS, resp)
           if (resp.data.emps.items) {
             for (const employee of resp.data.emps.items) {
@@ -140,6 +145,62 @@ const mutations = {
     state.status = 'success'
     state.navigator = resp.data
     state.hasLoadedOnce = true
+
+    console.log('Root state ', resp.rootState)
+    const localization = computed(() => resp.rootState.localization.localization)
+    resp.data.tasks.items[0].selected = true
+
+    const dataArray = []
+    dataArray.push({
+      uid: resp.data.tasks.uid,
+      name: resp.data.tasks.name,
+      children: resp.data.tasks.items,
+      expanded: true
+    })
+    dataArray.push({
+      uid: resp.data.delegate_iam.uid,
+      name: localization.value.Delegate_i,
+      children: resp.data.delegate_iam.items,
+      expanded: true
+    })
+    dataArray.push({
+      uid: resp.data.delegate_to_me.uid,
+      name: localization.value.Delegate_tome,
+      children: resp.data.delegate_to_me.items,
+      expanded: true
+    })
+    dataArray.push({
+      uid: resp.data.private_projects.uid,
+      name: localization.value.Projects,
+      children: resp.data.private_projects.items,
+      expanded: true
+    })
+    dataArray.push({
+      uid: resp.data.common_projects.uid,
+      name: localization.value.SharedProjects,
+      children: resp.data.common_projects.items,
+      expanded: true
+    })
+    dataArray.push({
+      uid: resp.data.emps.uid,
+      name: localization.value.Emps,
+      children: resp.data.emps.items,
+      expanded: true
+    })
+    dataArray.push({
+      uid: resp.data.colors.uid,
+      name: localization.value.Colors,
+      children: resp.data.colors.items,
+      expanded: true
+    })
+    dataArray.push({
+      uid: resp.data.tags.uid,
+      name: localization.value.Labels,
+      children: resp.data.tags.items,
+      expanded: true
+    })
+
+    state.computedNavigator = { dataSource: dataArray, id: 'uid', text: 'name', child: 'children' }
   },
   [NAVIGATOR_ERROR]: state => {
     state.status = 'error'

@@ -1,5 +1,4 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import Home from '@/views/Home.vue'
 import store from '@/store'
 
 const ifNotAuthenticated = (to, from, next) => {
@@ -27,7 +26,7 @@ const routes = [
     },
     path: '/',
     name: 'home',
-    component: Home,
+    component: import('@/views/Home.vue'),
     beforeEnter: ifAuthenticated
   },
   {

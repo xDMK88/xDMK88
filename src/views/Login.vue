@@ -41,7 +41,7 @@ const router = useRouter()
 const submit = () => {
   if (showValues.showLoginInputsValue) {
     login()
-  } else if (showValues.showRegisterInputsValue && form.password.length > 7) {
+  } else if (showValues.showRegisterInputsValue && form.password.length > 7 && form.email.length > 2) {
     register()
   }
 }

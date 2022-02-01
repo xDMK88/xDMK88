@@ -1,5 +1,5 @@
 <script setup>
-import { computed, onBeforeMount, reactive, ref } from 'vue'
+import { computed, reactive, ref } from 'vue'
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
 import ModalBox from '@/components/ModalBox.vue'
@@ -12,8 +12,6 @@ import NavBarItem from '@/components/NavBarItem.vue'
 import Icon from '@/components/Icon.vue'
 
 import * as TASK from '@/store/actions/tasks'
-import { NAVIGATOR_REQUEST } from '@/store/actions/navigator'
-import { USER_REQUEST } from '@/store/actions/user'
 import { AUTH_LOGOUT } from '@/store/actions/auth'
 
 const router = useRouter()
@@ -52,8 +50,9 @@ const isAsideMobileExpanded = computed(() => store.state.isAsideMobileExpanded)
 const isAsideLgActive = computed(() => store.state.isAsideLgActive)
 const isDark = computed(() => store.state.darkMode)
 const localization = computed(() => store.state.localization.localization)
-let attrs = computed(() => store.state.calendar.calendar)
+const attrs = computed(() => store.state.calendar.calendar)
 const user = computed(() => store.state.user.user)
+const computedNavigator = computed(() => store.state.navigator.computedNavigator)
 
 const getNavigatorLanguage = () => (navigator.languages && navigator.languages.length) ? navigator.languages[0] : navigator.userLanguage || navigator.language || navigator.browserLanguage || 'en'
 
@@ -73,27 +72,6 @@ const navigatorMenu = reactive({
   currentDate: currentDate
 })
 
-const configureNavigator = (navigator) => {
-  navigator.tasks.items[0].selected = true
-
-  const dataArray = []
-
-  dataArray.push({ uid: navigator.tasks.uid, name: navigator.tasks.name, children: navigator.tasks.items, expanded: true })
-  dataArray.push({ uid: navigator.delegate_iam.uid, name: localization.value.Delegate_i, children: navigator.delegate_iam.items, expanded: true })
-  dataArray.push({ uid: navigator.delegate_to_me.uid, name: localization.value.Delegate_tome, children: navigator.delegate_to_me.items, expanded: true })
-  dataArray.push({ uid: navigator.private_projects.uid, name: localization.value.Projects, children: navigator.private_projects.items, expanded: true })
-  dataArray.push({ uid: navigator.common_projects.uid, name: localization.value.SharedProjects, children: navigator.common_projects.items, expanded: true })
-  dataArray.push({ uid: navigator.emps.uid, name: localization.value.Emps, children: navigator.emps.items, expanded: true })
-  dataArray.push({ uid: navigator.colors.uid, name: localization.value.Colors, children: navigator.colors.items, expanded: true })
-  dataArray.push({ uid: navigator.tags.uid, name: localization.value.Labels, children: navigator.tags.items, expanded: true })
-
-  navigatorMenu.foldableNavigator = { dataSource: dataArray, id: 'uid', text: 'name', child: 'children' }
-  store.dispatch('setDots', navigator.calendar.dates_with_tasks)
-  attrs = computed(() => store.state.calendar.calendar)
-}
-
-const storeNavigator = computed(() => store.state.navigator.navigator)
-
 const logout = () => {
   modalOneActive = false
   store.dispatch(AUTH_LOGOUT)
@@ -106,33 +84,6 @@ function dateToLabelFormat (calendarDate) {
   const weekday = calendarDate.toLocaleString('default', { weekday: 'short' })
   return day + ' ' + month + ', ' + weekday
 }
-
-const getNavigator = () => {
-  if (store.state.auth.token) {
-    store.dispatch(NAVIGATOR_REQUEST)
-      .then(() => {
-        const navigator = store.state.navigator.navigator
-        configureNavigator(navigator)
-      })
-      .catch((err) => console.log(err))
-  }
-}
-
-const getUser = () => {
-  store.dispatch(USER_REQUEST)
-    .then((resp) => {
-    })
-    .catch((err) => console.log(err))
-}
-
-onBeforeMount(() => {
-  if (storeNavigator.value) {
-    configureNavigator(storeNavigator)
-  } else {
-    getNavigator()
-  }
-  getUser()
-})
 
 // Nice logic how to handle click on navigator link
 const nodeSelected = (arg) => {
@@ -259,11 +210,10 @@ const menuClick = (event, item) => {
       />
       <TreeViewComponent
         id="navigator-tree"
-        :fields="navigatorMenu.foldableNavigator"
-        cssClass="navigator-tree"
+        css-class="navigator-tree"
+        :fields="computedNavigator"
         @nodeSelected="nodeSelected"
-      >
-      </TreeViewComponent>
+      />
     </div>
   </aside>
 </template>

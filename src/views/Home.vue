@@ -7,6 +7,8 @@ import MainSection from '@/components/MainSection.vue'
 import * as TASK from '@/store/actions/tasks'
 import { MESSAGES_REQUEST, REFRESH_MESSAGES } from '@/store/actions/taskmessages'
 import { FILES_REQUEST, REFRESH_FILES } from '@/store/actions/taskfiles'
+import { NAVIGATOR_REQUEST } from '@/store/actions/navigator'
+import { USER_REQUEST } from '@/store/actions/user'
 
 const store = useStore()
 const loadedTasks = computed(() => store.state.tasks.loadedTasks)
@@ -46,6 +48,12 @@ const getTasks = () => {
   }
 }
 
+const getNavigator = () => {
+  if (store.state.auth.token) {
+    store.dispatch(NAVIGATOR_REQUEST)
+  }
+}
+
 const nodeSelected = (arg) => {
   store.commit(REFRESH_FILES)
   store.commit(REFRESH_MESSAGES)
@@ -64,6 +72,8 @@ const nodeSelected = (arg) => {
 
 onBeforeMount(() => {
   getTasks()
+  getNavigator()
+  store.dispatch(USER_REQUEST)
 })
 
 </script>

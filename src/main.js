@@ -31,7 +31,7 @@ store.dispatch('fetch', 'history')
 /* Dark mode */
 const localStorageDarkModeValue = localStorage.getItem(darkModeKey)
 
-if ((localStorageDarkModeValue === null && window.matchMedia('(prefers-color-scheme: dark)').matches) || localStorageDarkModeValue === '1') {
+if ((localStorageDarkModeValue === null && window.matchMedia('(prefers-color-scheme: dark)').matches) || localStorageDarkModeValue === '0') {
   store.dispatch('darkMode')
 }
 

@@ -30,7 +30,7 @@ const menuClick = event => {
 }
 
 const styleActive = 'font-bold text-dark'
-const styleInactive = 'text-dark-500'
+const styleInactive = 'text-dark-500 font-light'
 
 </script>
 
@@ -43,26 +43,31 @@ const styleInactive = 'text-dark-500'
       :href="itemHref"
       :target="itemTarget"
       class="flex cursor-pointer hover:bg-gray-200 hover:bg-opacity-50 dark:hover:bg-gray-700 dark:hover:bg-opacity-50"
-      :class="[isSubmenuList ? 'p-3 text-sm' : 'py-2']"
+      :class="[isSubmenuList ? 'p-3 text-sm' : 'py-1']"
       @click="menuClick"
     >
-      <icon
-        v-if="item.icon"
-        :path="item.icon"
-        class="flex-none"
-        :class="[vSlot && vSlot.isExactActive ? styleActive : styleInactive]"
-        w="w-12"
-      />
+      <div
+        class="rounded-md mr-2 ml-3 p-1 pb-0"
+        :class="item.iconBackgroundClass"
+      >
+        <icon
+          v-if="item.icon"
+          :path="item.icon"
+          class="flex-none text-white"
+          size="23"
+          :class="[vSlot && vSlot.isExactActive ? styleActive : styleInactive]"
+          w="w-6"
+        />
+      </div>
       <span
-        class="grow"
-        :class="[vSlot && vSlot.isExactActive ? styleActive : styleInactive]"
+        class="grow my-auto"
+        :class="[vSlot && vSlot.isExactActive ? styleActive : styleInactive, item.bold ? font-bold : font-light]"
       >{{ item.label }}</span>
       <icon
         v-if="hasDropdown"
         :path="dropdownIcon"
         class="flex-none"
         :class="[vSlot && vSlot.isExactActive ? styleActive : styleInactive]"
-        w="w-12"
       />
     </component>
     <aside-menu-list

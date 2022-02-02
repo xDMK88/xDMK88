@@ -3,6 +3,8 @@ import { onBeforeMount, computed } from 'vue'
 import { useStore } from 'vuex'
 import { TreeViewComponent } from '@syncfusion/ej2-vue-navigations'
 import MainSection from '@/components/MainSection.vue'
+import Icon from '@/components/Icon.vue'
+import { mdiPlus } from '@mdi/js'
 
 import * as TASK from '@/store/actions/tasks'
 import { MESSAGES_REQUEST, REFRESH_MESSAGES } from '@/store/actions/taskmessages'
@@ -11,8 +13,10 @@ import { NAVIGATOR_REQUEST } from '@/store/actions/navigator'
 import { USER_REQUEST } from '@/store/actions/user'
 
 const store = useStore()
+const mainSectionState = computed(() => store.state.mainSectionState)
+const greedPath = computed(() => store.state.greedPath)
+const navigator = computed(() => store.state.navigator.navigator)
 const loadedTasks = computed(() => store.state.tasks.loadedTasks)
-
 const storeTasks = computed(() => {
   return {
     dataSource: store.state.tasks.tasks.tasks,
@@ -21,10 +25,6 @@ const storeTasks = computed(() => {
     hasChildren: 'has_children'
   }
 })
-
-// const propertiesToggleMobile = () => {
-//   store.dispatch('asidePropertiesToggle', true)
-// }
 
 const nodeExpanding = (arg) => {
   if (arg.isInteracted) {
@@ -80,16 +80,44 @@ onBeforeMount(() => {
 
 <template>
   <main-section>
+    <!-- Tasks section -->
     <TreeViewComponent
-      id='treeview'
-      :fields='storeTasks'
-      :allowDragAndDrop='true'
-      :allowMultiSelection='true'
-      cssClass="custom"
+      v-if="mainSectionState === 'tasks'"
+      id="treeview"
+      :fields="storeTasks"
+      :allow-drag-and-drop="true"
+      :allow-multi-selection="true"
+      css-class="custom"
       @nodeExpanding="nodeExpanding"
       @nodeSelected="nodeSelected"
+    />
+    <!-- /Tasks section -->
+
+    <!-- Greed section -->
+    <div
+      v-if="mainSectionState === 'greed'"
+      class="grid grid-cols-4 gap-4 break-words"
     >
-    </TreeViewComponent>
+      <template v-for="(value, index) in navigator[greedPath].items" :key="index">
+        <div class="flex items-start grow-0 bg-white dark:bg-gray-700 rounded-xl p-3 shadow-sm hover:shadow-md cursor-pointer" :style="{ backgroundColor: value.back_color ? value.back_color : value.color, color: value.fore_color }">
+          <img v-if="value.fotolink" :src="value.fotolink" class="rounded-lg mx-2 my-auto" width="32" height="32">
+          <div>
+            <p class="font-light">{{ value.name }}</p>
+            <p class="font-light text-xs">{{ value.email }}</p>
+            <p v-if="value.children && value.children.length" class="font-light text-xs">Дочерних: {{ value.children.length }}</p>
+          </div>
+          <div v-if="value.members && value.members.length">
+          </div>
+        </div>
+      </template>
+      <div class="p-3 border rounded-xl text-center cursor-pointer text-gray-500 hover:bg-gray-100 hover:shadow-inner hover:text-gray-800 hover:dark:bg-gray-900 hover:dark:text-white">
+        <icon
+          :path="mdiPlus"
+          size="24"
+        />
+      </div>
+    </div>
+    <!-- /Greed section -->
   </main-section>
 </template>
 

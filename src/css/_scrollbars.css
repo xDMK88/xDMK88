@@ -51,11 +51,11 @@ html.dark::-webkit-scrollbar-thumb:hover {
 }
 
 #aside::-webkit-scrollbar-track {
-  @apply bg-gray-900;
+  @apply bg-white;
 }
 
 #aside::-webkit-scrollbar-thumb {
-  @apply bg-gray-600;
+  @apply bg-gray-200;
 }
 
 .dark #aside {
@@ -67,5 +67,5 @@ html.dark::-webkit-scrollbar-thumb:hover {
 }
 
 .dark #aside::-webkit-scrollbar-thumb {
-  @apply bg-gray-700;
+  @apply bg-gray-600;
 }

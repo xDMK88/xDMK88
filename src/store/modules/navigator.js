@@ -17,7 +17,18 @@ import {
   mdiCalendar,
   mdiAlertCircleCheckOutline,
   mdiFolderAccountOutline,
-  mdiTrayFull
+  mdiTrayFull,
+  mdiEyeOffOutline,
+  mdiPlay,
+  mdiBookmarkOutline,
+  mdiCheckBold,
+  mdiAccountArrowLeft,
+  mdiAccountArrowRight,
+  mdiFolder,
+  mdiFolderAccount,
+  mdiTagText,
+  mdiBrushVariant,
+  mdiAccountTie
 } from '@mdi/js'
 
 import axios from 'axios'
@@ -166,64 +177,140 @@ const mutations = {
     console.log('resp ', resp)
     const localization = computed(() => resp.rootState.localization.localization)
 
-    // Old code to compute data to TreeView component
-    // resp.data.tasks.items[0].selected = true
-    // const dataArray = []
-    // dataArray.push({
-    //   uid: resp.data.tasks.uid,
-    //   name: resp.data.tasks.name,
-    //   children: resp.data.tasks.items,
-    //   expanded: true
-    // })
-
-    // dataArray.push({
-    //   uid: resp.data.delegate_iam.uid,
-    //   name: localization.value.Delegate_i,
-    //   children: resp.data.delegate_iam.items,
-    //   expanded: true
-    // })
-    // dataArray.push({
-    //   uid: resp.data.delegate_to_me.uid,
-    //   name: localization.value.Delegate_tome,
-    //   children: resp.data.delegate_to_me.items,
-    //   expanded: true
-    // })
-    // dataArray.push({
-    //   uid: resp.data.private_projects.uid,
-    //   name: localization.value.Projects,
-    //   children: resp.data.private_projects.items,
-    //   expanded: true
-    // })
-    // dataArray.push({
-    //   uid: resp.data.common_projects.uid,
-    //   name: localization.value.SharedProjects,
-    //   children: resp.data.common_projects.items,
-    //   expanded: true
-    // })
-    // dataArray.push({
-    //   uid: resp.data.emps.uid,
-    //   name: localization.value.Emps,
-    //   children: resp.data.emps.items,
-    //   expanded: true
-    // })
-    // dataArray.push({
-    //   uid: resp.data.colors.uid,
-    //   name: localization.value.Colors,
-    //   children: resp.data.colors.items,
-    //   expanded: true
-    // })
-    // dataArray.push({
-    //   uid: resp.data.tags.uid,
-    //   name: localization.value.Labels,
-    //   children: resp.data.tags.items,
-    //   expanded: true
-    // })
-    // state.computedNavigator = { dataSource: dataArray, id: 'uid', text: 'name', child: 'children' }
-
-    state.menu.push([{ label: localization.value.Today, uid: resp.data.tasks.items[0].uid, bold: resp.data.tasks.items[0].bold, icon: mdiCalendar }])
-    state.menu.push([{ label: localization.value.overdue, uid: resp.data.tasks.items[1].uid, bold: resp.data.tasks.items[1].bold, icon: mdiAlertCircleCheckOutline }])
-    state.menu.push([{ label: localization.value.open_tasks_to_me, uid: resp.data.tasks.items[2].uid, bold: resp.data.tasks.items[2].bold, icon: mdiFolderAccountOutline }])
-    state.menu.push([{ label: localization.value.Inbox, uid: resp.data.tasks.items[2].uid, bold: resp.data.tasks.items[2].bold, icon: mdiTrayFull }])
+    // Push statickly tasks to menu array from state
+    state.memu = []
+    state.menu.push([{
+      label: localization.value.Today,
+      uid: resp.data.tasks.items[0].uid,
+      bold: resp.data.tasks.items[0].bold,
+      icon: mdiCalendar,
+      type: 'uid',
+      iconBackgroundClass: 'bg-blue-400'
+    }])
+    state.menu.push([{
+      label: localization.value.overdue,
+      uid: resp.data.tasks.items[1].uid,
+      bold: resp.data.tasks.items[1].bold,
+      icon: mdiAlertCircleCheckOutline,
+      type: 'uid',
+      iconBackgroundClass: 'bg-rose-400'
+    }])
+    state.menu.push([{
+      label: localization.value.open_tasks_to_me,
+      uid: resp.data.tasks.items[2].uid,
+      bold: resp.data.tasks.items[2].bold,
+      icon: mdiFolderAccountOutline,
+      type: 'uid',
+      iconBackgroundClass: 'bg-yellow-800'
+    }])
+    state.menu.push([{
+      label: localization.value.Inbox,
+      uid: resp.data.tasks.items[3].uid,
+      bold: resp.data.tasks.items[3].bold,
+      icon: mdiTrayFull,
+      type: 'uid',
+      iconBackgroundClass: 'bg-purple-700'
+    }])
+    state.menu.push([{
+      label: localization.value.Notreaded,
+      uid: resp.data.tasks.items[4].uid,
+      bold: resp.data.tasks.items[4].bold,
+      icon: mdiEyeOffOutline,
+      type: 'uid',
+      iconBackgroundClass: 'bg-sky-600'
+    }])
+    state.menu.push([{
+      label: localization.value.status_in_work,
+      uid: resp.data.tasks.items[5].uid,
+      bold: resp.data.tasks.items[5].bold,
+      icon: mdiPlay,
+      type: 'uid',
+      iconBackgroundClass: 'bg-green-300'
+    }])
+    state.menu.push([{
+      label: localization.value.in_focus,
+      uid: resp.data.tasks.items[6].uid,
+      bold: resp.data.tasks.items[6].bold,
+      icon: mdiBookmarkOutline,
+      type: 'uid',
+      iconBackgroundClass: 'bg-rose-600'
+    }])
+    state.menu.push([{
+      label: localization.value.CompletedTasks,
+      uid: resp.data.tasks.items[7].uid,
+      bold: resp.data.tasks.items[7].bold,
+      icon: mdiCheckBold,
+      type: 'uid',
+      iconBackgroundClass: 'bg-teal-300'
+    }])
+    // Push others menu items
+    state.menu.push('separator')
+    state.menu.push([{
+      label: localization.value.Delegate_tome,
+      uid: resp.data.delegate_iam.uid,
+      bold: false,
+      icon: mdiAccountArrowLeft,
+      type: 'greed',
+      path: 'delegate_iam',
+      iconBackgroundClass: 'bg-indigo-400'
+    }])
+    state.menu.push([{
+      label: localization.value.Delegate_i,
+      uid: resp.data.delegate_to_me.uid,
+      bold: false,
+      icon: mdiAccountArrowRight,
+      type: 'greed',
+      path: 'delegate_to_me',
+      iconBackgroundClass: 'bg-indigo-400'
+    }])
+    state.menu.push('separator')
+    state.menu.push([{
+      label: localization.value.Projects,
+      uid: resp.data.private_projects.uid,
+      bold: false,
+      icon: mdiFolder,
+      type: 'greed',
+      path: 'private_projects',
+      iconBackgroundClass: 'bg-amber-500'
+    }])
+    state.menu.push([{
+      label: localization.value.SharedProjects,
+      uid: resp.data.common_projects.uid,
+      bold: false,
+      icon: mdiFolderAccount,
+      type: 'greed',
+      path: 'common_projects',
+      iconBackgroundClass: 'bg-amber-500'
+    }])
+    state.menu.push('separator')
+    state.menu.push([{
+      label: localization.value.Labels,
+      uid: resp.data.tags.uid,
+      bold: false,
+      icon: mdiTagText,
+      type: 'greed',
+      path: 'tags',
+      iconBackgroundClass: 'bg-yellow-400'
+    }])
+    state.menu.push([{
+      label: localization.value.Colors,
+      uid: resp.data.colors.uid,
+      bold: false,
+      icon: mdiBrushVariant,
+      type: 'greed',
+      path: 'colors',
+      iconBackgroundClass: 'bg-yellow-400'
+    }])
+    state.menu.push('separator')
+    state.menu.push([{
+      label: localization.value.Emps,
+      uid: resp.data.emps.uid,
+      bold: false,
+      icon: mdiAccountTie,
+      type: 'greed',
+      path: 'emps',
+      iconBackgroundClass: 'bg-cyan-500'
+    }])
   },
   [NAVIGATOR_ERROR]: state => {
     state.status = 'error'

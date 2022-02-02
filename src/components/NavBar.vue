@@ -10,12 +10,7 @@ import {
   mdiClockOutline,
   mdiCloud,
   mdiCrop,
-  // mdiAccount,
-  // mdiCogOutline,
-  // mdiEmail,
-  // mdiLogout,
-  // mdiGithub,
-  mdiThemeLightDark
+  mdiBrightness6
 } from '@mdi/js'
 import NavBarItem from '@/components/NavBarItem.vue'
 import NavBarItemLabel from '@/components/NavBarItemLabel.vue'
@@ -111,7 +106,7 @@ const menuOpenLg = () => {
           @click.prevent="toggleLightDark"
         >
           <nav-bar-item-label
-            :icon="mdiThemeLightDark"
+            :icon="mdiBrightness6"
             label="Light/Dark"
             is-desktop-icon-only
           />

@@ -3,11 +3,9 @@ import { computed, reactive, ref } from 'vue'
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
 import ModalBox from '@/components/ModalBox.vue'
-import { TreeViewComponent } from '@syncfusion/ej2-vue-navigations'
 import { DatePicker } from 'v-calendar'
 import { mdiMenu } from '@mdi/js'
 import JbButton from '@/components/JbButton.vue'
-import AsideNavigatorList from '@/components/AsideNavigatorList.vue'
 import NavBarItem from '@/components/NavBarItem.vue'
 import Icon from '@/components/Icon.vue'
 
@@ -54,13 +52,13 @@ const isDark = computed(() => store.state.darkMode)
 const localization = computed(() => store.state.localization.localization)
 const attrs = computed(() => store.state.calendar.calendar)
 const user = computed(() => store.state.user.user)
-const computedNavigator = computed(() => store.state.navigator.computedNavigator)
 
 const getNavigatorLanguage = () => (navigator.languages && navigator.languages.length) ? navigator.languages[0] : navigator.userLanguage || navigator.language || navigator.browserLanguage || 'en'
 
 const currentDate = computed({
   get: () => new Date(),
   set: val => {
+    store.commit('basic', { key: 'mainSectionState', value: 'tasks' })
     store.dispatch(TASK.TASKS_REQUEST, val)
     store.commit('updateLabel', dateToLabelFormat(val))
     store.commit(TASK.CLEAN_UP_LOADED_TASKS)
@@ -87,40 +85,20 @@ function dateToLabelFormat (calendarDate) {
   return day + ' ' + month + ', ' + weekday
 }
 
-// Nice logic how to handle click on navigator link
-const nodeSelected = (arg) => {
-  const tree = document.getElementById('navigator-tree').ej2_instances[0]
-  const treeNodeData = tree.getTreeData(arg.nodeData.id)[0]
-
-  if (UID_TO_ACTION[arg.nodeData.id]) {
-    store.dispatch(UID_TO_ACTION[arg.nodeData.id])
-  } else if (UID_TO_ACTION[arg.nodeData.parentID]) {
-    if (treeNodeData.email) {
-      console.log('We found data with email ', treeNodeData, arg.nodeData)
-      if (UID_TO_ACTION[arg.nodeData.parentID] === TASK.EMPLOYEE_TASKS_REQUEST) {
-        store.dispatch(UID_TO_ACTION[arg.nodeData.parentID], treeNodeData.uid)
-        console.log('is employee request')
-      } else {
-        store.dispatch(UID_TO_ACTION[arg.nodeData.parentID], treeNodeData.email)
-        console.log('isnt employee request')
-      }
-    } else {
-      store.dispatch(UID_TO_ACTION[arg.nodeData.parentID], treeNodeData.uid)
-    }
-  } else if (UID_TO_ACTION[treeNodeData.global_property_uid]) {
-    store.dispatch(UID_TO_ACTION[treeNodeData.global_property_uid], treeNodeData.uid)
-  }
-
-  store.commit('updateLabel', arg.nodeData.text)
-  store.commit(TASK.CLEAN_UP_LOADED_TASKS)
-}
-
 const asideLgClose = () => {
   store.dispatch('asideLgToggle', false)
 }
 
 const menuClick = (event, item) => {
-  console.log(event, item)
+  store.commit('updateLabel', item.label)
+  if (UID_TO_ACTION[item.uid] && item.type === 'uid') {
+    store.dispatch(UID_TO_ACTION[item.uid])
+    store.commit('basic', { key: 'mainSectionState', value: 'tasks' })
+  } else {
+    store.commit('basic', { key: 'mainSectionState', value: 'greed' })
+    store.commit('basic', { key: 'greedPath', value: item.path })
+  }
+  store.commit(TASK.CLEAN_UP_LOADED_TASKS)
 }
 </script>
 
@@ -176,7 +154,7 @@ const menuClick = (event, item) => {
     class="w-80 fixed top-0 z-40 h-screen bg-white transition-position lg:left-0 dark:border-r dark:border-gray-800 dark:bg-gray-900"
     :class="[ isAsideMobileExpanded ? 'left-0' : '-left-80', isAsideLgActive ? 'block' : 'lg:hidden xl:block' ]"
   >
-    <div class="flex flex-row w-full text-dark flex-1 h-14 items-center">
+    <div class="flex flex-row w-full text-dark flex-1 h-14 items-center bg-orange-100 dark:bg-slate-700">
       <nav-bar-item
         type="hidden lg:flex xl:hidden"
         active-color="text-dark"
@@ -189,48 +167,48 @@ const menuClick = (event, item) => {
           size="24"
         />
       </nav-bar-item>
-      <div class="flex-1 px-3">
+      <div
+        class="flex px-3 cursor-pointer"
+        @click="modalOneActive = true"
+      >
+        <img
+          :src="user.foto_link"
+          width="32"
+          height="32"
+          class="rounded-lg mr-2"
+        >
         <span
-          class="cursor-pointer"
-          @click="modalOneActive = true"
+          class="font-light my-auto"
         >
           {{ user.current_user_name }}
         </span>
       </div>
     </div>
-    <nav-bar-item>
+    <nav-bar-item class="bg-orange-100 dark:bg-slate-700 rounded-b-3xl">
       <DatePicker
         v-model="navigatorMenu.currentDate"
         show-weeknumbers
         color="yellow"
         is-expanded
+        class="border-none bg-orange-100 dark:bg-slate-700"
         :locale="navigatorMenu.lang"
         :attributes="attrs"
         :is-dark="isDark"
       />
     </nav-bar-item>
-    <div>
-      <aside-navigator-list
-        :menu="navigatorMenu.tasks"
-        @menu-click="menuClick"
-      />
-      <TreeViewComponent
-        id="navigator-tree"
-        css-class="navigator-tree"
-        :fields="computedNavigator"
-        @nodeSelected="nodeSelected"
-      />
-    </div>
-    <div>
+    <div class="mt-3">
       <template v-for="(menuGroup, index) in menu">
-        <p
+        <div
           v-if="typeof menuGroup === 'string'"
           :key="`a-${index}`"
-          class="p-3 text-xs"
-          :class="[ asideMenuLabelStyle ]"
+          class="my-2"
         >
-          {{ menuGroup }}
-        </p>
+          <hr
+            :key="`a-${index}`"
+            class="text-xs mx-3"
+            :class="[ asideMenuLabelStyle ]"
+          >
+        </div>
         <aside-menu-list
           v-else
           :key="`b-${index}`"

@@ -16,19 +16,12 @@ const getDefaultState = () => {
     selectedTask: undefined,
     status: '',
     hasLoadedOnce: false,
+    // Distionary uid => true to remember which tasks loaded
     loadedTasks: {}
   }
 }
 
-const state = {
-  tasks: false,
-  tags: {},
-  subtasks: false,
-  selectedTask: undefined,
-  status: '',
-  hasLoadedOnce: false,
-  loadedTasks: {}
-}
+const state = getDefaultState()
 
 const getters = {
   getTasks: state => state.navigator,

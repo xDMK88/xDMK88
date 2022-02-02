@@ -17,6 +17,10 @@ import localization from './modules/localization'
 
 export default createStore({
   state: {
+    /* Main section state (tasks, greed) */
+    mainSectionState: 'tasks',
+    greedPath: null,
+
     /* User */
     userName: null,
     userEmail: null,

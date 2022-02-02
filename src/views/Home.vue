@@ -17,6 +17,7 @@ const mainSectionState = computed(() => store.state.mainSectionState)
 const greedPath = computed(() => store.state.greedPath)
 const navigator = computed(() => store.state.navigator.navigator)
 const loadedTasks = computed(() => store.state.tasks.loadedTasks)
+const employeesByEmail = computed(() => store.state.employees.employeesByEmail)
 const storeTasks = computed(() => {
   return {
     dataSource: store.state.tasks.tasks.tasks,
@@ -52,6 +53,10 @@ const getNavigator = () => {
   if (store.state.auth.token) {
     store.dispatch(NAVIGATOR_REQUEST)
   }
+}
+
+const clickOnGridCard = (value) => {
+  console.log(value)
 }
 
 const nodeSelected = (arg) => {
@@ -99,14 +104,30 @@ onBeforeMount(() => {
       class="grid grid-cols-4 gap-4 break-words"
     >
       <template v-for="(value, index) in navigator[greedPath].items" :key="index">
-        <div class="flex items-start grow-0 bg-white dark:bg-gray-700 rounded-xl p-3 shadow-sm hover:shadow-md cursor-pointer" :style="{ backgroundColor: value.back_color ? value.back_color : value.color, color: value.fore_color }">
+        <div
+          class="flex items-start grow-0 bg-white dark:bg-gray-700 rounded-xl p-3 shadow-sm hover:shadow-md cursor-pointer"
+          :style="{ backgroundColor: value.back_color, color: value.fore_color }"
+          @click="clickOnGridCard(value)"
+        >
           <img v-if="value.fotolink" :src="value.fotolink" class="rounded-lg mx-2 my-auto" width="32" height="32">
           <div>
             <p class="font-light">{{ value.name }}</p>
             <p class="font-light text-xs">{{ value.email }}</p>
             <p v-if="value.children && value.children.length" class="font-light text-xs">Дочерних: {{ value.children.length }}</p>
-          </div>
-          <div v-if="value.members && value.members.length">
+            <div v-if="value.members && value.members.length" class="grid grid-cols-6 gap-1 bg-gray-100 dark:bg-gray-900 rounded-xl p-3 mt-2">
+              <div v-for="(employee, index) in value.members" :key="index">
+                <div v-if="employeesByEmail[employee]">
+                  <img :src="employeesByEmail[employee].fotolink" class="rounded">
+                </div>
+              </div>
+              <div class="border rounded">
+                <icon
+                  :path="mdiPlus"
+                  size="10"
+                  class="text-black dark:text-white"
+                />
+              </div>
+            </div>
           </div>
         </div>
       </template>

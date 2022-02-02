@@ -8,7 +8,7 @@ import {
 } from '../actions/navigator'
 import { AUTH_LOGOUT } from '../actions/auth'
 import { ADD_TASK_TAGS } from '../actions/tasks'
-import { PUSH_EMPLOYEE } from '../actions/employees'
+import { PUSH_EMPLOYEE, PUSH_EMPLOYEE_BY_EMAIL } from '../actions/employees'
 import { PUSH_PROJECT } from '../actions/projects'
 import { PUSH_COLOR } from '../actions/colors'
 import { visitChildren } from '../helpers/functions'
@@ -66,7 +66,9 @@ const actions = {
           commit(NAVIGATOR_SUCCESS, resp)
           if (resp.data.emps.items) {
             for (const employee of resp.data.emps.items) {
+              console.log('process employees ', employee)
               commit(PUSH_EMPLOYEE, employee)
+              commit(PUSH_EMPLOYEE_BY_EMAIL, employee)
             }
           }
           // process colors in shared vuex storage

@@ -186,11 +186,11 @@ const menuClick = (event, item) => {
     </div>
     <nav-bar-item class="bg-orange-100 dark:bg-slate-700 rounded-b-3xl">
       <DatePicker
+        class="border-none bg-orange-100 dark:bg-slate-700"
         v-model="navigatorMenu.currentDate"
         show-weeknumbers
         color="yellow"
         is-expanded
-        class="border-none bg-orange-100 dark:bg-slate-700"
         :locale="navigatorMenu.lang"
         :attributes="attrs"
         :is-dark="isDark"

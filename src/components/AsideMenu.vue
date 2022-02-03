@@ -52,6 +52,7 @@ const isDark = computed(() => store.state.darkMode)
 const localization = computed(() => store.state.localization.localization)
 const attrs = computed(() => store.state.calendar.calendar)
 const user = computed(() => store.state.user.user)
+const storeNavigator = computed(() => store.state.navigator.navigator)
 
 const getNavigatorLanguage = () => (navigator.languages && navigator.languages.length) ? navigator.languages[0] : navigator.userLanguage || navigator.language || navigator.browserLanguage || 'en'
 
@@ -97,6 +98,8 @@ const menuClick = (event, item) => {
   } else {
     store.commit('basic', { key: 'mainSectionState', value: 'greed' })
     store.commit('basic', { key: 'greedPath', value: item.path })
+    store.commit('basic', { key: 'greedSource', value: storeNavigator.value[item.path].items })
+    console.log(storeNavigator.value[item.path])
   }
   store.commit(TASK.CLEAN_UP_LOADED_TASKS)
 }

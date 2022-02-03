@@ -163,7 +163,7 @@ onBeforeMount(() => {
             </div>
             <p class="font-light text-xs px-3">{{ value.email }}</p>
             <p v-if="value.children && value.children.length" class="font-light text-xs px-3" @click="goToChildren(value)">Дочерних: {{ value.children.length }}</p>
-            <div v-if="value.members && value.members.length" class="grid grid-cols-9 gap-1 rounded-xl mt-2 mb-3 mx-3">
+            <div v-if="value.members && value.members.length" class="grid grid-cols-6 gap-1 rounded-xl p-3 mt-2 mx-3">
               <div v-for="(employee, index) in value.members" :key="index">
                 <div v-if="employeesByEmail[employee]">
                   <img :src="employeesByEmail[employee].fotolink" class="rounded" width="28" height="28">

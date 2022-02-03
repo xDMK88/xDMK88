@@ -20,6 +20,7 @@ export default createStore({
     /* Main section state (tasks, greed) */
     mainSectionState: 'tasks',
     greedPath: null,
+    greedSource: null,
 
     /* User */
     userName: null,

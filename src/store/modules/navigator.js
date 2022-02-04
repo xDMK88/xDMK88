@@ -25,7 +25,6 @@ import {
   mdiAccountArrowLeft,
   mdiAccountArrowRight,
   mdiFolder,
-  mdiFolderAccount,
   mdiTagText,
   mdiBrushVariant,
   mdiAccountTie
@@ -40,6 +39,18 @@ const getDefaultState = () => {
     computedNavigator: false,
     hasLoadedOnce: false
   }
+}
+
+function getAllMembersByDepartmentUID (resp, departmentUID) {
+  const employeesStuck = []
+  for (const employee of resp.data.emps.items) {
+    if (employee.uid_dep === departmentUID) {
+      console.log('we found one employee with this uid_dep')
+      employeesStuck.push(employee)
+    }
+  }
+  console.log(employeesStuck)
+  return employeesStuck
 }
 
 const state = {
@@ -63,17 +74,32 @@ const actions = {
       axios({ url: url, method: 'GET' })
         .then(resp => {
           resp.rootState = rootState
+
           commit(NAVIGATOR_SUCCESS, resp)
           if (resp.data.emps.items) {
             for (const employee of resp.data.emps.items) {
+              employee.parentID = resp.data.emps.uid
               console.log('process employees ', employee)
               commit(PUSH_EMPLOYEE, employee)
               commit(PUSH_EMPLOYEE_BY_EMAIL, employee)
             }
           }
+          if (resp.data.delegate_iam) {
+            for (const dm of resp.data.delegate_iam.items) {
+              dm.parentID = resp.data.delegate_iam.uid
+            }
+          }
+          if (resp.data.delegate_to_me) {
+            for (const dt of resp.data.delegate_to_me.items) {
+              dt.parentID = resp.data.delegate_to_me.uid
+            }
+          }
           // process colors in shared vuex storage
           if (resp.data.colors.items) {
             commit(PUSH_COLOR, resp.data.colors.items)
+            visitChildren(resp.data.colors.items, value => {
+              value.parentID = resp.data.colors.uid
+            })
           }
           // process private projects then put them in shared vuex storage
           if (resp.data.private_projects.items) {
@@ -99,6 +125,7 @@ const actions = {
             visitChildren(resp.data.tags.items, (value) => {
               // TODO: how to remove children without hurt actual data?
               // if (value.children) value.children = []
+              value.global_property_uid = resp.data.tags.uid
               myTags.push(value)
             })
             commit(ADD_TASK_TAGS, myTags)
@@ -173,7 +200,6 @@ const mutations = {
   },
   [NAVIGATOR_SUCCESS]: (state, resp) => {
     state.status = 'success'
-    state.navigator = resp.data
     state.hasLoadedOnce = true
 
     console.log('resp ', resp)
@@ -272,16 +298,7 @@ const mutations = {
       bold: false,
       icon: mdiFolder,
       type: 'greed',
-      path: 'private_projects',
-      iconBackgroundClass: 'bg-amber-500'
-    }])
-    state.menu.push([{
-      label: localization.value.SharedProjects,
-      uid: resp.data.common_projects.uid,
-      bold: false,
-      icon: mdiFolderAccount,
-      type: 'greed',
-      path: 'common_projects',
+      path: 'new_private_projects',
       iconBackgroundClass: 'bg-amber-500'
     }])
     state.menu.push('separator')
@@ -310,9 +327,36 @@ const mutations = {
       bold: false,
       icon: mdiAccountTie,
       type: 'greed',
-      path: 'emps',
+      path: 'new_emps',
       iconBackgroundClass: 'bg-cyan-500'
     }])
+
+    // Merge emps to deps like new private projects
+    const newEmps = []
+    for (const department of resp.data.deps.items) {
+      console.log(department.uid)
+      const dep = {
+        dep: department.name,
+        items: getAllMembersByDepartmentUID(resp, department.uid)
+      }
+      newEmps.push(dep)
+    }
+    resp.data.new_emps = newEmps
+
+    // Merge common projects and private projects into my own data structure
+    // Array of objects where object is { dep: 'Dependency name', items: items }
+    const newCommonProjects = []
+    newCommonProjects.push({
+      dep: localization.value.Projects,
+      items: resp.data.private_projects.items
+    })
+    newCommonProjects.push({
+      dep: localization.value.SharedProjects,
+      items: resp.data.common_projects.items
+    })
+    resp.data.new_private_projects = newCommonProjects
+    state.navigator = resp.data
+    console.log('NAVIGATOR', resp.data)
   },
   [NAVIGATOR_ERROR]: state => {
     state.status = 'error'

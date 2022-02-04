@@ -49,6 +49,11 @@ const isFullScreen = computed(() => store.state.isFullScreen)
 const isAsideMobileExpanded = computed(() => store.state.isAsideMobileExpanded)
 const isAsideLgActive = computed(() => store.state.isAsideLgActive)
 const isDark = computed(() => store.state.darkMode)
+
+const datePickerBG = computed(() => {
+  return isDark.value ? 'rgb(51 65 85)' : 'rgb(255 237 213)'
+})
+
 const localization = computed(() => store.state.localization.localization)
 const attrs = computed(() => store.state.calendar.calendar)
 const user = computed(() => store.state.user.user)
@@ -98,7 +103,12 @@ const menuClick = (event, item) => {
   } else {
     store.commit('basic', { key: 'mainSectionState', value: 'greed' })
     store.commit('basic', { key: 'greedPath', value: item.path })
-    store.commit('basic', { key: 'greedSource', value: storeNavigator.value[item.path].items })
+    if (item.path === 'new_private_projects' || item.path === 'new_emps') {
+      store.commit('basic', { key: 'greedSource', value: storeNavigator.value[item.path] })
+      console.log(storeNavigator.value[item.path])
+    } else {
+      store.commit('basic', { key: 'greedSource', value: storeNavigator.value[item.path].items })
+    }
     console.log(storeNavigator.value[item.path])
   }
   store.commit(TASK.CLEAN_UP_LOADED_TASKS)
@@ -189,8 +199,10 @@ const menuClick = (event, item) => {
     </div>
     <nav-bar-item class="bg-orange-100 dark:bg-slate-700 rounded-b-3xl">
       <DatePicker
-        class="border-none bg-orange-100 dark:bg-slate-700"
         v-model="navigatorMenu.currentDate"
+        class="border-none bg-orange-100 dark:bg-slate-700"
+        style="border: none!important;"
+        :style="{ backgroundColor: datePickerBG }"
         show-weeknumbers
         color="yellow"
         is-expanded

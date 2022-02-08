@@ -51,7 +51,7 @@ const isAsideLgActive = computed(() => store.state.isAsideLgActive)
 const isDark = computed(() => store.state.darkMode)
 
 const datePickerBG = computed(() => {
-  return isDark.value ? 'rgb(51 65 85)' : 'rgb(255 237 213)'
+  return isDark.value ? 'rgb(51 65 85)' : '#fff7ed'
 })
 
 const localization = computed(() => store.state.localization.localization)
@@ -167,7 +167,7 @@ const menuClick = (event, item) => {
     class="w-80 fixed top-0 z-40 h-screen bg-white transition-position lg:left-0 dark:border-r dark:border-gray-800 dark:bg-gray-900"
     :class="[ isAsideMobileExpanded ? 'left-0' : '-left-80', isAsideLgActive ? 'block' : 'lg:hidden xl:block' ]"
   >
-    <div class="flex flex-row w-full text-dark flex-1 h-14 items-center bg-orange-100 dark:bg-slate-700">
+    <div class="flex flex-row w-full text-dark flex-1 h-12 items-center bg-orange-50 dark:bg-slate-700">
       <nav-bar-item
         type="hidden lg:flex xl:hidden"
         active-color="text-dark"
@@ -181,26 +181,33 @@ const menuClick = (event, item) => {
         />
       </nav-bar-item>
       <div
-        class="flex px-3 cursor-pointer"
+        class="flex justify-between items-center w-full px-3 cursor-pointer"
         @click="modalOneActive = true"
       >
-        <img
-          :src="user.foto_link"
-          width="32"
-          height="32"
-          class="rounded-lg mr-2"
-        >
-        <span
-          class="font-light my-auto"
-        >
-          {{ user.current_user_name }}
-        </span>
+        <icon
+          :path="mdiMenu"
+          class="cursor-pointer"
+          size="20"
+        />
+        <div class="flex">
+          <span
+            class="font-light text-sm my-auto mr-2"
+          >
+            {{ user.current_user_name }}
+          </span>
+          <img
+            :src="user.foto_link"
+            width="36"
+            height="36"
+            class="rounded-lg"
+          >
+        </div>
       </div>
     </div>
-    <nav-bar-item class="bg-orange-100 dark:bg-slate-700 rounded-b-3xl">
+    <nav-bar-item class="bg-orange-50 dark:bg-slate-700 rounded-b-3xl pt-0 mt-0">
       <DatePicker
         v-model="navigatorMenu.currentDate"
-        class="border-none bg-orange-100 dark:bg-slate-700"
+        class="border-none bg-orange-50 dark:bg-slate-700 pb-5"
         style="border: none!important;"
         :style="{ backgroundColor: datePickerBG }"
         show-weeknumbers
@@ -209,7 +216,7 @@ const menuClick = (event, item) => {
         :locale="navigatorMenu.lang"
         :attributes="attrs"
         :is-dark="isDark"
-      />
+       />
     </nav-bar-item>
     <div class="mt-3">
       <template v-for="(menuGroup, index) in menu">
@@ -252,5 +259,59 @@ const menuClick = (event, item) => {
   }
   .navigator-tree .e-level-2 > .e-text-content {
     padding-left: 0px;
+  }
+  .vc-weeks {
+    padding: 0;
+  }
+  .vc-arrow {
+    background-color: rgba(255, 145, 35, 0.15);
+    border-radius: 10px;
+    color: #2A2927;
+  }
+  .vc-weeknumber-content {
+    @apply bg-white dark:bg-gray-800 rounded-lg text-violet-600 dark:text-white;
+  }
+  .vc-focusable {
+    @apply rounded-lg;
+  }
+  .vc-day-layer {
+    @apply rounded-lg;
+  }
+  .vc-title {
+    color: #2A2927;
+  }
+  .vc-weekday {
+    color: #2A2927;
+  }
+  .vc-header {
+    margin-bottom: 10px;
+  }
+  .vc-arrows-container {
+    padding-left: 0;
+    padding-right: 0;
+  }
+  .vc-container .vc-day-content:hover:not(.is-disabled) {
+    @apply bg-gray-400 text-white;
+  }
+  .vc-container .vc-day-content.is-disabled {
+    @apply pointer-events-none;
+  }
+  .vc-container .vc-day-content.is-disabled:hover {
+    @apply bg-transparent;
+  }
+  .vc-day.is-not-in-month *:not(.is-disabled) {
+    @apply opacity-100 text-gray-500 pointer-events-auto;
+  }
+  .vc-day.is-not-in-month .is-disabled  {
+    @apply opacity-100 text-gray-400 pointer-events-none;
+  }
+  .vc-day.weekday-7 {
+    @apply text-red-500;
+  }
+  .vc-day.weekday-1 {
+    @apply text-red-500;
+  }
+  .vc-weekday:nth-last-of-type(-n+2) {
+    @apply text-red-500;
   }
 </style>

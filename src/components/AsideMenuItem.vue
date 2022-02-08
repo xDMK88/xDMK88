@@ -42,7 +42,7 @@ const styleInactive = 'text-dark-500 font-light'
       :to="itemTo"
       :href="itemHref"
       :target="itemTarget"
-      class="flex cursor-pointer hover:bg-gray-200 hover:bg-opacity-50 dark:hover:bg-gray-700 dark:hover:bg-opacity-50"
+      class="flex cursor-pointer px-1 hover:bg-gray-200 hover:bg-opacity-50 dark:hover:bg-gray-700 dark:hover:bg-opacity-50"
       :class="[isSubmenuList ? 'p-3 text-sm' : 'py-1']"
       @click="menuClick"
     >

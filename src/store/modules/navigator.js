@@ -14,7 +14,7 @@ import { PUSH_COLOR } from '../actions/colors'
 import { visitChildren } from '../helpers/functions'
 import { computed } from 'vue'
 import {
-  mdiCalendar,
+  mdiCalendarMonth,
   mdiAlertCircleCheckOutline,
   mdiFolderAccountOutline,
   mdiTrayFull,
@@ -211,7 +211,8 @@ const mutations = {
       label: localization.value.Today,
       uid: resp.data.tasks.items[0].uid,
       bold: resp.data.tasks.items[0].bold,
-      icon: mdiCalendar,
+      icon: mdiCalendarMonth,
+      iconType: 'component',
       type: 'uid',
       iconBackgroundClass: 'bg-blue-400'
     }])

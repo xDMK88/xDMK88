@@ -1,6 +1,6 @@
 <script setup>
 import { computed } from 'vue'
-
+import { DatePicker } from 'v-calendar'
 import { useStore } from 'vuex'
 import AsideMenuList from '@/components/AsideMenuList.vue'
 
@@ -46,8 +46,8 @@ const menuClick = (event, item) => {
 }
 const days = ['Воскресенье', 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота']
 const months = ['Января', 'Февраля', 'Марта', 'Апреля', 'Мая', 'Июня', 'Июля', 'Августа', 'Сентября', 'Октября', 'Ноября', 'Декабря']
-const monthsshort = ['Янв', 'Фев', 'Мар', 'Апр', 'Мая', 'Июн', 'Июля', 'Авг', 'Сен', 'Окт', 'Ноя', 'Дек']
-
+// const monthsshort = ['Янв', 'Фев', 'Мар', 'Апр', 'Мая', 'Июн', 'Июля', 'Авг', 'Сен', 'Окт', 'Ноя', 'Дек']
+const newArray = taskMessages.value.concat(taskFiles.value)
 </script>
 
 // isPropertiesMobileExpanded ? 'right-0' : '-right-96',
@@ -149,26 +149,34 @@ const monthsshort = ['Янв', 'Фев', 'Мар', 'Апр', 'Мая', 'Июн',
           </svg>
           <span class="rounded"> Доступ</span>
         </span>
-        <span class="mt-3 tags-custom">
-          <svg
-            style="width:24px;height:24px"
-            viewBox="0 0 24 24"
-          >
-            <path
-              fill="currentColor"
-              d="M7,12H9V14H7V12M21,6V20A2,2 0 0,1 19,22H5C3.89,22 3,21.1 3,20V6A2,2 0 0,1 5,4H6V2H8V4H16V2H18V4H19A2,2 0 0,1 21,6M5,8H19V6H5V8M19,20V10H5V20H19M15,14V12H17V14H15M11,14V12H13V14H11M7,16H9V18H7V16M15,18V16H17V18H15M11,18V16H13V18H11Z"
-            />
-          </svg>
 
-          <span
-            v-if="selectedTask.customer_date_begin!==''"
-            class="rounded"
-          >{{ new Date(selectedTask.customer_date_begin.split('T')[0]).getDate() }}<span v-if="new Date(selectedTask.customer_date_begin.split('T')[0]).getDate()!== new Date(selectedTask.customer_date_end.split('T')[0]).getDate() ">-{{ new Date(selectedTask.customer_date_end.split('T')[0]).getDate() }}</span> {{ monthsshort[new Date(selectedTask.customer_date_end.split('T')[0]).getMonth()] }}</span>
-          <span
-            v-else
-            class="rounded"
-          >  Дата</span>
-        </span>
+        <DatePicker
+          :show-week-numbers="showWeekNumbers"
+          is-range
+          class="inline-block"
+        >
+          <template #default="{ inputValue, togglePopover }">
+            <span class="mt-3 tags-custom">
+              <button @click="togglePopover()">
+                <svg
+                  style="width:24px;height:24px"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    fill="currentColor"
+                    d="M7,12H9V14H7V12M21,6V20A2,2 0 0,1 19,22H5C3.89,22 3,21.1 3,20V6A2,2 0 0,1 5,4H6V2H8V4H16V2H18V4H19A2,2 0 0,1 21,6M5,8H19V6H5V8M19,20V10H5V20H19M15,14V12H17V14H15M11,14V12H13V14H11M7,16H9V18H7V16M15,18V16H17V18H15M11,18V16H13V18H11Z"
+                  />
+                </svg>
+              </button>
+
+              <span
+                :value="inputValue"
+                class="rounded"
+                @click="togglePopover()"
+              >{{ new Date(selectedTask.customer_date_begin.split('T')[0]).getDate() }}<span v-if="selectedTask.customer_date_end.split('T')[0]!==selectedTask.customer_date_begin.split('T')[0]">-{{ new Date(selectedTask.customer_date_end.split('T')[0]).getDate() }}</span> {{ months[new Date(selectedTask.customer_date_end).getMonth()] }}  {{ inputValue }}</span>
+            </span>
+          </template>
+        </DatePicker>
         <span
           v-for="(key, value) in selectedTask.tags"
           :key="value"
@@ -202,11 +210,9 @@ const monthsshort = ['Янв', 'Фев', 'Мар', 'Апр', 'Мая', 'Июн',
         </p>
       </div>
       <div
-
         class="mt-3 list-files-custom"
+        style="display: none"
       >
-        <!--<p class="text-center">Файлы</p>-->
-
         <div
           v-for="(key, value) in taskFiles"
           :key="value"
@@ -217,7 +223,6 @@ const monthsshort = ['Янв', 'Фев', 'Мар', 'Апр', 'Мая', 'Июн',
               class="file-custom_attach-left"
               style="background-color:#EDF7ED;"
             >
-              <div class="text-left text-employee-name" />
               <svg
                 style="width:35px;height:35px"
                 viewBox="0 0 24 24"
@@ -256,7 +261,109 @@ const monthsshort = ['Янв', 'Фев', 'Мар', 'Апр', 'Мая', 'Июн',
           </div>
         </div>
       </div>
+
       <div
+
+        class="mt-3 chat-custom"
+      >
+        <div
+          v-for="(key,value) in newArray"
+          :key="value"
+          class="mt-3"
+        >
+          <div v-if="key.uid_creator===cusers.current_user_uid">
+            <div class="flex">
+              <p class="name-chat-custom">
+                {{ employees[key.uid_creator].name }}
+              </p>
+              <img
+                :src="employees[key.uid_creator].fotolink"
+                class="mr-1 border-fotolink border-solid border-2 border-sky-500"
+                width="30"
+                height="30"
+              >
+            </div>
+            <div
+
+              class="chat-main"
+            >
+              <div
+
+                class="mt-1 msg-custom-chat-left"
+                style="background-color:#EDF7ED;"
+              >
+                <div
+                  v-if="key.file_name"
+                  class="file-custom_attach-left"
+                >
+                  <svg
+                    style="width:35px;height:35px"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      fill="currentColor"
+                      d="M11,4H13V16L18.5,10.5L19.92,11.92L12,19.84L4.08,11.92L5.5,10.5L11,16V4Z"
+                    />
+                  </svg>
+                  <a :href="key.file_name">{{ key.file_name }}</a>
+                </div>
+                {{ key.msg }}
+
+                <div class="time-chat">
+                  {{ key.date_create.split('T')[1].split(":")[0] }}:{{ key.date_create.split('T')[1].split(":")[1] }}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div v-else>
+            <div class="table-cell float-right">
+              <div class="chat-author-custom-right">
+                <p class="name-chat-custom">
+                  {{ employees[key.uid_creator].name }}
+                </p>
+                <img
+                  :src="employees[key.uid_creator].fotolink"
+                  class="mr-1 border-fotolink border-solid border-2 border-sky-500"
+                  width="30"
+                  height="30"
+                >
+              </div>
+            </div>
+
+            <div
+              class="chat-main"
+            >
+              <div
+                class="mt-1 msg-custom-chat-right"
+                style="background-color:#FCEAEA;"
+              >
+                <div
+                  v-if="key.file_name"
+                  class="file-custom_attach-right"
+                >
+                  <svg
+                    style="width:35px;height:35px"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      fill="currentColor"
+                      d="M11,4H13V16L18.5,10.5L19.92,11.92L12,19.84L4.08,11.92L5.5,10.5L11,16V4Z"
+                    />
+                  </svg>
+                  <a :href="key.file_name">{{ key.file_name }}</a>
+                </div>
+                {{ key.msg }}
+
+                <div class="time-chat">
+                  {{ key.date_create.split('T')[1].split(":")[0] }}:{{ key.date_create.split('T')[1].split(":")[1] }}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!--    <div
         v-if="taskMessages.length"
         class="mt-3 chat-custom"
       >
@@ -326,7 +433,7 @@ const monthsshort = ['Янв', 'Фев', 'Мар', 'Апр', 'Мая', 'Июн',
             </div>
           </div>
         </div>
-      </div>
+      </div>-->
       <!-- <ul>
         <li v-for="(item, index) in selectedTask.checklist" :key="item">
           {{ index.name }}

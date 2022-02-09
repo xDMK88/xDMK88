@@ -146,11 +146,10 @@ body {
 .file-custom_attach-left
 {
 
-  padding: 10px;
-  min-height:40px ;
+
   font-size: 13px;
   border-radius:10px ;
-  display: flex;
+
 }
 .file-custom_attach-left svg
 {
@@ -159,19 +158,16 @@ body {
   border: 1px solid gray;
   border-radius: 50%;
   margin-top: 5px;
-  width: 80%;
+
   float: left;
 }
 .file-custom_attach-right
 {
 
-  padding: 10px;
-  min-height:40px ;
+
   font-size: 13px;
   border-radius:10px ;
-  display: flex;
-  width: 80%;
-  float: right;
+
 }
 .file-custom_attach-right svg
 {

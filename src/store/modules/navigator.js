@@ -13,20 +13,22 @@ import { PUSH_PROJECT } from '../actions/projects'
 import { PUSH_COLOR } from '../actions/colors'
 import { visitChildren } from '../helpers/functions'
 import { computed } from 'vue'
+
+import calendar from '@/icons/calendar.js'
+import overdue from '@/icons/overdue.js'
+import unsorted from '@/icons/unsorted.js'
+import unread from '@/icons/unread.js'
+import focus from '@/icons/focus.js'
+import ready from '@/icons/ready.js'
+import project from '@/icons/project.js'
+import tag from '@/icons/tag.js'
+import color from '@/icons/color.js'
+
 import {
-  mdiCalendarMonth,
-  mdiAlertCircleCheckOutline,
-  mdiFolderAccountOutline,
   mdiTrayFull,
-  mdiEyeOffOutline,
   mdiPlay,
-  mdiBookmarkOutline,
-  mdiCheckBold,
   mdiAccountArrowLeft,
   mdiAccountArrowRight,
-  mdiFolder,
-  mdiTagText,
-  mdiBrushVariant,
   mdiAccountTie
 } from '@mdi/js'
 
@@ -211,26 +213,35 @@ const mutations = {
       label: localization.value.Today,
       uid: resp.data.tasks.items[0].uid,
       bold: resp.data.tasks.items[0].bold,
-      icon: mdiCalendarMonth,
-      iconType: 'component',
+      icon: calendar.path,
+      width: calendar.width,
+      height: calendar.height,
+      iconBox: calendar.viewBox,
       type: 'uid',
       iconBackgroundClass: 'bg-blue-400'
     }])
+    console.log('CALENDAR ICON', calendar)
     state.menu.push([{
       label: localization.value.overdue,
       uid: resp.data.tasks.items[1].uid,
       bold: resp.data.tasks.items[1].bold,
-      icon: mdiAlertCircleCheckOutline,
+      icon: overdue.path,
+      width: overdue.width,
+      height: overdue.height,
+      iconBox: overdue.viewBox,
       type: 'uid',
-      iconBackgroundClass: 'bg-rose-400'
+      iconBackgroundClass: 'bg-red-500'
     }])
     state.menu.push([{
       label: localization.value.open_tasks_to_me,
       uid: resp.data.tasks.items[2].uid,
       bold: resp.data.tasks.items[2].bold,
-      icon: mdiFolderAccountOutline,
+      icon: unsorted.path,
+      width: unsorted.width,
+      height: unsorted.height,
+      iconBox: unsorted.viewBox,
       type: 'uid',
-      iconBackgroundClass: 'bg-yellow-800'
+      iconBackgroundClass: 'bg-stone-600'
     }])
     state.menu.push([{
       label: localization.value.Inbox,
@@ -244,7 +255,10 @@ const mutations = {
       label: localization.value.Notreaded,
       uid: resp.data.tasks.items[4].uid,
       bold: resp.data.tasks.items[4].bold,
-      icon: mdiEyeOffOutline,
+      icon: unread.path,
+      iconBox: unread.viewBox,
+      width: unread.width,
+      height: unread.heght,
       type: 'uid',
       iconBackgroundClass: 'bg-sky-600'
     }])
@@ -260,15 +274,21 @@ const mutations = {
       label: localization.value.in_focus,
       uid: resp.data.tasks.items[6].uid,
       bold: resp.data.tasks.items[6].bold,
-      icon: mdiBookmarkOutline,
+      icon: focus.path,
+      iconBox: focus.viewBox,
+      width: focus.width,
+      heigth: focus.height,
       type: 'uid',
-      iconBackgroundClass: 'bg-rose-600'
+      iconBackgroundClass: 'bg-red-500'
     }])
     state.menu.push([{
       label: localization.value.CompletedTasks,
       uid: resp.data.tasks.items[7].uid,
       bold: resp.data.tasks.items[7].bold,
-      icon: mdiCheckBold,
+      icon: ready.path,
+      iconBox: ready.viewBox,
+      width: ready.width,
+      height: ready.height,
       type: 'uid',
       iconBackgroundClass: 'bg-teal-300'
     }])
@@ -297,7 +317,10 @@ const mutations = {
       label: localization.value.Projects,
       uid: resp.data.private_projects.uid,
       bold: false,
-      icon: mdiFolder,
+      icon: project.path,
+      iconBox: project.viewBox,
+      width: project.width,
+      height: project.height,
       type: 'greed',
       path: 'new_private_projects',
       iconBackgroundClass: 'bg-amber-500'
@@ -307,7 +330,10 @@ const mutations = {
       label: localization.value.Labels,
       uid: resp.data.tags.uid,
       bold: false,
-      icon: mdiTagText,
+      icon: tag.path,
+      iconBox: tag.viewBox,
+      width: tag.width,
+      height: tag.height,
       type: 'greed',
       path: 'tags',
       iconBackgroundClass: 'bg-yellow-400'
@@ -316,7 +342,10 @@ const mutations = {
       label: localization.value.Colors,
       uid: resp.data.colors.uid,
       bold: false,
-      icon: mdiBrushVariant,
+      icon: color.path,
+      iconBox: color.viewBox,
+      width: color.width,
+      height: color.height,
       type: 'greed',
       path: 'colors',
       iconBackgroundClass: 'bg-yellow-400'

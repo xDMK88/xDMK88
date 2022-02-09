@@ -42,25 +42,24 @@ const styleInactive = 'text-dark-500 font-light'
       :to="itemTo"
       :href="itemHref"
       :target="itemTarget"
-      class="flex cursor-pointer px-1 hover:bg-gray-200 hover:bg-opacity-50 dark:hover:bg-gray-700 dark:hover:bg-opacity-50"
+      class="flex items-center cursor-pointer px-3 hover:bg-gray-200 hover:bg-opacity-50 dark:hover:bg-gray-700 dark:hover:bg-opacity-50"
       :class="[isSubmenuList ? 'p-3 text-sm' : 'py-1']"
       @click="menuClick"
     >
       <div
-        class="rounded-md mr-2 ml-3 p-1 pb-0"
+        class="rounded-md flex items-center justify-center mx-1.5 w-10 h-10"
         :class="item.iconBackgroundClass"
       >
         <icon
-          v-if="item.icon"
           :path="item.icon"
           class="flex-none text-white"
-          size="23"
+          :box="item.iconBox"
+          :width="item.width"
+          :height="item.height"
           :class="[vSlot && vSlot.isExactActive ? styleActive : styleInactive]"
-          w="w-6"
         />
       </div>
       <span
-        class="grow my-auto"
         :class="[vSlot && vSlot.isExactActive ? styleActive : styleInactive, item.bold ? font-bold : font-light]"
       >{{ item.label }}</span>
       <icon

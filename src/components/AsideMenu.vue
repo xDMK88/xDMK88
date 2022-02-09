@@ -10,6 +10,7 @@ import NavBarItem from '@/components/NavBarItem.vue'
 import Icon from '@/components/Icon.vue'
 
 import AsideMenuList from '@/components/AsideMenuList.vue'
+import iconmenu from '@/icons/menu.js'
 
 import * as TASK from '@/store/actions/tasks'
 import { AUTH_LOGOUT } from '@/store/actions/auth'
@@ -185,9 +186,11 @@ const menuClick = (event, item) => {
         @click="modalOneActive = true"
       >
         <icon
-          :path="mdiMenu"
+          :path="iconmenu.path"
           class="cursor-pointer"
-          size="20"
+          :box="iconmenu.viewBox"
+          :width="iconmenu.width"
+          :height="iconmenu.height"
         />
         <div class="flex">
           <span
@@ -197,8 +200,8 @@ const menuClick = (event, item) => {
           </span>
           <img
             :src="user.foto_link"
-            width="36"
-            height="36"
+            width="32"
+            height="32"
             class="rounded-lg"
           >
         </div>
@@ -207,7 +210,7 @@ const menuClick = (event, item) => {
     <nav-bar-item class="bg-orange-50 dark:bg-slate-700 rounded-b-3xl pt-0 mt-0">
       <DatePicker
         v-model="navigatorMenu.currentDate"
-        class="border-none bg-orange-50 dark:bg-slate-700 pb-5"
+        class="border-none bg-orange-50 dark:bg-slate-700 pb-5 text-xs"
         style="border: none!important;"
         :style="{ backgroundColor: datePickerBG }"
         show-weeknumbers
@@ -218,7 +221,7 @@ const menuClick = (event, item) => {
         :is-dark="isDark"
        />
     </nav-bar-item>
-    <div class="mt-3">
+    <div class="my-5">
       <template v-for="(menuGroup, index) in menu">
         <div
           v-if="typeof menuGroup === 'string'"

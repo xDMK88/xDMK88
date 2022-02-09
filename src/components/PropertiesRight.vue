@@ -48,8 +48,20 @@ const days = ['Воскресенье', 'Понедельник', 'Вторни�
 const months = ['Января', 'Февраля', 'Марта', 'Апреля', 'Мая', 'Июня', 'Июля', 'Августа', 'Сентября', 'Октября', 'Ноября', 'Декабря']
 // const monthsshort = ['Янв', 'Фев', 'Мар', 'Апр', 'Мая', 'Июн', 'Июля', 'Авг', 'Сен', 'Окт', 'Ноя', 'Дек']
 const newArray = taskMessages.value.concat(taskFiles.value)
+let s_date_start = selectedTask.customer_date_begin
 </script>
-
+<script>
+export default {
+  data() {
+    return {
+      range: {
+        start: new Date(2020, 9, 16),
+        end: new Date(2020, 9, 16),
+      },
+    };
+  },
+};
+</script>
 // isPropertiesMobileExpanded ? 'right-0' : '-right-96',
 
 <template>
@@ -60,23 +72,6 @@ const newArray = taskMessages.value.concat(taskFiles.value)
     class="-right-96 w-96 fixed top-0 z-40 h-screen bg-white transition-position lg:right-0 dark:border-r dark:border-gray-800 dark:bg-gray-900"
     :class="[ isPropertiesMobileExpanded ? 'right-0' : '-right-90', isAsideLgActive ? 'block' : 'lg:hidden xl:block' ]"
   >
-    <!-- <div class="flex flex-row w-full text-dark flex-1 h-14 items-center">
-      <nav-bar-item
-        type="hidden lg:flex xl:hidden"
-        active-color="text-white"
-        active
-        @click="asideLgClose"
-      >
-        <icon
-          :path="mdiMenu"
-          class="cursor-pointer"
-          size="24"
-        />
-      </nav-bar-item>
-      <div class="flex-1 px-5">
-      </div>
-    </div> -->
-
     <div class="p-3 break-words">
       <div
         v-if="selectedTask.customer_name!==''"
@@ -99,7 +94,9 @@ const newArray = taskMessages.value.concat(taskFiles.value)
       <p style="display: none">
         <strong>{{ localization.gc_status }}: </strong> {{ localization[statuses[selectedTask.status]] }}
       </p>
+
       <p v-if="selectedTask.uid_project !== '00000000-0000-0000-0000-000000000000'">
+
         <strong>{{ localization.props_prj }}: </strong> {{ projects[selectedTask.uid_project].name }}
       </p>
       <p v-if="selectedTask.uid_marker !== '00000000-0000-0000-0000-000000000000'">
@@ -151,11 +148,11 @@ const newArray = taskMessages.value.concat(taskFiles.value)
         </span>
 
         <DatePicker
-          :show-week-numbers="showWeekNumbers"
+          v-model="range"
           is-range
           class="inline-block"
         >
-          <template #default="{ inputValue, togglePopover }">
+          <template v-slot="{ inputValue, togglePopover }">
             <span class="mt-3 tags-custom">
               <button @click="togglePopover()">
                 <svg
@@ -168,19 +165,28 @@ const newArray = taskMessages.value.concat(taskFiles.value)
                   />
                 </svg>
               </button>
-
-              <span
-                :value="inputValue"
+              <input type="hidden" :value="[inputValue.start,inputValue.end]" v-on="togglePopover" >
+              <span v-if="selectedTask.customer_date_begin!==''"
+                :value="[inputValue.start,inputValue.end]"
                 class="rounded"
                 @click="togglePopover()"
-              >{{ new Date(selectedTask.customer_date_begin.split('T')[0]).getDate() }}<span v-if="selectedTask.customer_date_end.split('T')[0]!==selectedTask.customer_date_begin.split('T')[0]">-{{ new Date(selectedTask.customer_date_end.split('T')[0]).getDate() }}</span> {{ months[new Date(selectedTask.customer_date_end).getMonth()] }}  {{ inputValue }}</span>
+              > </span>
+                        <span else
+                              :value="[inputValue.start,inputValue.end]"
+                              class="rounded"
+                              @click="togglePopover()"
+                        >
+{{ inputValue.start }} {{ inputValue.end }}
             </span>
+            </span>
+
           </template>
         </DatePicker>
+
         <span
           v-for="(key, value) in selectedTask.tags"
           :key="value"
-          class="mt-3 tags-custom "
+          class="mt-3 tags-custom"
         >
           <svg
             style="width:24px;height:24px"
@@ -201,14 +207,7 @@ const newArray = taskMessages.value.concat(taskFiles.value)
           Напишите заметку...
         </div>
       </div>
-      <div class="date-section">
-        <p
-          v-if="selectedTask.date_create!==''"
-          class="text-center date-messages-chat divider "
-        >
-          {{ days[new Date(selectedTask.date_create.split('T')[0]).getDay()] }}, {{ new Date(selectedTask.date_create.split('T')[0]).getDate() }} {{ months[new Date(selectedTask.date_create).getMonth()] }}
-        </p>
-      </div>
+
       <div
         class="mt-3 list-files-custom"
         style="display: none"
@@ -232,8 +231,6 @@ const newArray = taskMessages.value.concat(taskFiles.value)
                   d="M11,4H13V16L18.5,10.5L19.92,11.92L12,19.84L4.08,11.92L5.5,10.5L11,16V4Z"
                 />
               </svg>
-
-              <a :href="key.file_name">{{ key.file_name.split('.')[0] }}.{{ key.file_name.split('.')[1] }}</a>
             </div>
           </div>
           <div
@@ -256,14 +253,12 @@ const newArray = taskMessages.value.concat(taskFiles.value)
                   d="M11,4H13V16L18.5,10.5L19.92,11.92L12,19.84L4.08,11.92L5.5,10.5L11,16V4Z"
                 />
               </svg>
-              <a :href="key.file_name">{{ key.file_name.split('.')[0] }}.{{ key.file_name.split('.')[1] }}</a>
             </div>
           </div>
         </div>
       </div>
 
       <div
-
         class="mt-3 chat-custom"
       >
         <div
@@ -271,12 +266,21 @@ const newArray = taskMessages.value.concat(taskFiles.value)
           :key="value"
           class="mt-3"
         >
+
+
+          <div class="date-section" v-if="value===0">
+            <p
+              class="text-center date-messages-chat divider "
+            >
+              {{ days[new Date(key.date_create.split('T')[0]).getDay()] }}, {{ new Date(key.date_create.split('T')[0]).getDate() }} {{ months[new Date(key.date_create).getMonth()] }}
+            </p>
+          </div>
           <div v-if="key.uid_creator===cusers.current_user_uid">
             <div class="flex">
-              <p class="name-chat-custom">
+              <p class="name-chat-custom" v-if="value===0">
                 {{ employees[key.uid_creator].name }}
               </p>
-              <img
+              <img v-if="value===0"
                 :src="employees[key.uid_creator].fotolink"
                 class="mr-1 border-fotolink border-solid border-2 border-sky-500"
                 width="30"
@@ -284,7 +288,6 @@ const newArray = taskMessages.value.concat(taskFiles.value)
               >
             </div>
             <div
-
               class="chat-main"
             >
               <div
@@ -305,6 +308,7 @@ const newArray = taskMessages.value.concat(taskFiles.value)
                       d="M11,4H13V16L18.5,10.5L19.92,11.92L12,19.84L4.08,11.92L5.5,10.5L11,16V4Z"
                     />
                   </svg>
+
                   <a :href="key.file_name">{{ key.file_name }}</a>
                 </div>
                 {{ key.msg }}
@@ -315,14 +319,13 @@ const newArray = taskMessages.value.concat(taskFiles.value)
               </div>
             </div>
           </div>
-
           <div v-else>
             <div class="table-cell float-right">
               <div class="chat-author-custom-right">
-                <p class="name-chat-custom">
+                <p class="name-chat-custom" v-if="value===0">
                   {{ employees[key.uid_creator].name }}
                 </p>
-                <img
+                <img v-if="value===0"
                   :src="employees[key.uid_creator].fotolink"
                   class="mr-1 border-fotolink border-solid border-2 border-sky-500"
                   width="30"

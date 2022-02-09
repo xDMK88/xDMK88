@@ -1,5 +1,5 @@
 <script setup>
-import { computed } from 'vue'
+import { computed, reactive } from 'vue'
 import { DatePicker } from 'v-calendar'
 import { useStore } from 'vuex'
 import AsideMenuList from '@/components/AsideMenuList.vue'
@@ -8,6 +8,13 @@ defineProps({
   menu: {
     type: Array,
     default: () => []
+  }
+})
+
+const calendar = reactive({
+  range: {
+    start: new Date(2020, 9, 16),
+    end: new Date(2020, 9, 16)
   }
 })
 
@@ -48,21 +55,9 @@ const days = ['Воскресенье', 'Понедельник', 'Вторни�
 const months = ['Января', 'Февраля', 'Марта', 'Апреля', 'Мая', 'Июня', 'Июля', 'Августа', 'Сентября', 'Октября', 'Ноября', 'Декабря']
 // const monthsshort = ['Янв', 'Фев', 'Мар', 'Апр', 'Мая', 'Июн', 'Июля', 'Авг', 'Сен', 'Окт', 'Ноя', 'Дек']
 const newArray = taskMessages.value.concat(taskFiles.value)
-let s_date_start = selectedTask.customer_date_begin
+// let s_date_start = selectedTask.customer_date_begin
+
 </script>
-<script>
-export default {
-  data() {
-    return {
-      range: {
-        start: new Date(2020, 9, 16),
-        end: new Date(2020, 9, 16),
-      },
-    };
-  },
-};
-</script>
-// isPropertiesMobileExpanded ? 'right-0' : '-right-96',
 
 <template>
   <aside
@@ -148,7 +143,7 @@ export default {
         </span>
 
         <DatePicker
-          v-model="range"
+          v-model="calendar.range"
           is-range
           class="inline-block"
         >
@@ -266,7 +261,6 @@ export default {
           :key="value"
           class="mt-3"
         >
-
 
           <div class="date-section" v-if="value===0">
             <p

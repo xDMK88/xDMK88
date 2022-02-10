@@ -6,6 +6,7 @@ import {
   PATCH_SETTINGS_SUCCESS,
   RESET_STATE_NAVIGATOR
 } from '../actions/navigator'
+
 import { AUTH_LOGOUT } from '../actions/auth'
 import { ADD_TASK_TAGS } from '../actions/tasks'
 import { PUSH_EMPLOYEE, PUSH_EMPLOYEE_BY_EMAIL } from '../actions/employees'
@@ -28,7 +29,6 @@ import {
   mdiTrayFull,
   mdiPlay,
   mdiAccountArrowLeft,
-  mdiAccountArrowRight,
   mdiAccountTie
 } from '@mdi/js'
 
@@ -39,7 +39,8 @@ const getDefaultState = () => {
     navigator: false,
     status: '',
     computedNavigator: false,
-    hasLoadedOnce: false
+    hasLoadedOnce: false,
+    menu: []
   }
 }
 
@@ -47,21 +48,13 @@ function getAllMembersByDepartmentUID (resp, departmentUID) {
   const employeesStuck = []
   for (const employee of resp.data.emps.items) {
     if (employee.uid_dep === departmentUID) {
-      console.log('we found one employee with this uid_dep')
       employeesStuck.push(employee)
     }
   }
-  console.log(employeesStuck)
   return employeesStuck
 }
 
-const state = {
-  navigator: false,
-  status: '',
-  computedNavigator: false,
-  hasLoadedOnce: false,
-  menu: []
-}
+const state = getDefaultState()
 
 const getters = {
   getNavigator: state => state.navigator,
@@ -81,7 +74,6 @@ const actions = {
           if (resp.data.emps.items) {
             for (const employee of resp.data.emps.items) {
               employee.parentID = resp.data.emps.uid
-              console.log('process employees ', employee)
               commit(PUSH_EMPLOYEE, employee)
               commit(PUSH_EMPLOYEE_BY_EMAIL, employee)
             }
@@ -204,7 +196,6 @@ const mutations = {
     state.status = 'success'
     state.hasLoadedOnce = true
 
-    console.log('resp ', resp)
     const localization = computed(() => resp.rootState.localization.localization)
 
     // Push statickly tasks to menu array from state
@@ -220,7 +211,6 @@ const mutations = {
       type: 'uid',
       iconBackgroundClass: 'bg-blue-400'
     }])
-    console.log('CALENDAR ICON', calendar)
     state.menu.push([{
       label: localization.value.overdue,
       uid: resp.data.tasks.items[1].uid,
@@ -300,16 +290,7 @@ const mutations = {
       bold: false,
       icon: mdiAccountArrowLeft,
       type: 'greed',
-      path: 'delegate_iam',
-      iconBackgroundClass: 'bg-indigo-400'
-    }])
-    state.menu.push([{
-      label: localization.value.Delegate_i,
-      uid: resp.data.delegate_to_me.uid,
-      bold: false,
-      icon: mdiAccountArrowRight,
-      type: 'greed',
-      path: 'delegate_to_me',
+      path: 'new_delegate',
       iconBackgroundClass: 'bg-indigo-400'
     }])
     state.menu.push('separator')
@@ -361,10 +342,20 @@ const mutations = {
       iconBackgroundClass: 'bg-cyan-500'
     }])
 
+    const newAssignments = []
+    newAssignments.push({
+      dep: localization.value.Delegate_i,
+      items: resp.data.delegate_iam.items
+    })
+    newAssignments.push({
+      dep: localization.value.Delegate_tome,
+      items: resp.data.delegate_to_me.items
+    })
+    resp.data.new_delegate = newAssignments
+
     // Merge emps to deps like new private projects
     const newEmps = []
     for (const department of resp.data.deps.items) {
-      console.log(department.uid)
       const dep = {
         dep: department.name,
         items: getAllMembersByDepartmentUID(resp, department.uid)
@@ -386,7 +377,6 @@ const mutations = {
     })
     resp.data.new_private_projects = newCommonProjects
     state.navigator = resp.data
-    console.log('NAVIGATOR', resp.data)
   },
   [NAVIGATOR_ERROR]: state => {
     state.status = 'error'

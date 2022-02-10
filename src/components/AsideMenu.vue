@@ -104,7 +104,7 @@ const menuClick = (event, item) => {
   } else {
     store.commit('basic', { key: 'mainSectionState', value: 'greed' })
     store.commit('basic', { key: 'greedPath', value: item.path })
-    if (item.path === 'new_private_projects' || item.path === 'new_emps') {
+    if (item.path === 'new_private_projects' || item.path === 'new_emps' || item.path === 'new_delegate') {
       store.commit('basic', { key: 'greedSource', value: storeNavigator.value[item.path] })
       console.log(storeNavigator.value[item.path])
     } else {
@@ -273,12 +273,6 @@ const menuClick = (event, item) => {
   }
   .vc-weeknumber-content {
     @apply bg-white dark:bg-gray-800 rounded-lg text-violet-600 dark:text-white;
-  }
-  .vc-focusable {
-    @apply rounded-lg;
-  }
-  .vc-day-layer {
-    @apply rounded-lg;
   }
   .vc-title {
     color: #2A2927;

@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@mdi/js": "^6.4.95",
+    "@popperjs/core": "^2.11.2",
     "@syncfusion/ej2-vue-navigations": "^19.4.38",
     "axios": "^0.24.0",
     "chart.js": "^3.6.0",

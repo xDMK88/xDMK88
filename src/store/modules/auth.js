@@ -5,7 +5,7 @@ import {
   AUTH_LOGOUT,
   AUTH_REGISTER
 } from '../actions/auth'
-import { NAVIGATOR_REQUEST, RESET_STATE_NAVIGATOR } from '../actions/navigator'
+import { RESET_STATE_NAVIGATOR } from '../actions/navigator'
 import { RESET_STATE_TASKS } from '../actions/tasks'
 import axios from 'axios'
 
@@ -30,7 +30,6 @@ const actions = {
           localStorage.setItem('user-refresh-token', resp.data.refresh_token)
           axios.defaults.headers.common.Authorization = resp.data.access_token
           commit(AUTH_SUCCESS, resp)
-          dispatch(NAVIGATOR_REQUEST)
           resolve(resp)
         }).catch(err => {
           commit(AUTH_ERROR, err)
@@ -63,10 +62,10 @@ const actions = {
     return new Promise((resolve, reject) => {
       commit(AUTH_LOGOUT)
       const url = 'https://web.leadertask.com/api/v1/account/exit'
+      commit(RESET_STATE_NAVIGATOR)
+      commit(RESET_STATE_TASKS)
       axios.get(url)
         .then(resp => {
-          commit(RESET_STATE_NAVIGATOR)
-          commit(RESET_STATE_TASKS)
           resolve(resp)
         }).catch(err => {
           commit(AUTH_ERROR, err)

@@ -1,6 +1,6 @@
 <script setup>
-import * as TASK from '@/store/actions/tasks'
 import { useStore } from 'vuex'
+import * as TASK from '@/store/actions/tasks'
 
 defineProps({
   assignments: {
@@ -18,7 +18,6 @@ const UID_TO_ACTION = {
 }
 
 const clickOnGridCard = (value) => {
-  console.log(value)
   if (UID_TO_ACTION[value.uid]) {
     store.dispatch(UID_TO_ACTION[value.uid])
   } else if (UID_TO_ACTION[value.parentID]) {
@@ -44,28 +43,27 @@ const clickOnGridCard = (value) => {
 </script>
 
 <template class="w-full">
-  <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 truncate">
-    <template v-for="(assignment, pindex) in assignments" :key="pindex">
-      <div
-        class="flex items-start bg-white dark:bg-gray-700 rounded-xl shadow-md hover:shadow-lg cursor-pointer h-30 p-3"
-      >
-        <img v-if="assignment.fotolink" :src="assignment.fotolink" class="rounded-lg mx-2 my-auto" width="32" height="32">
-        <div class="w-full">
-          <div class="flex items-start">
-            <p
-              class="font-light"
-              @click="clickOnGridCard(assignment)"
-            >
-              {{ assignment.name }}
-            </p>
-          </div>
-          <p
-            class="font-light text-xs"
-          >
-            {{ assignment.email }}
-          </p>
-         </div>
-      </div>
-    </template>
+  <div v-for="(value, index) in assignments" :key="index">
+    <p class="text-5xl text-gray-400 underline font-extralight my-10 dark:text-gray-100">{{ value.dep }}</p>
+    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 truncate">
+      <template v-for="(employee, pindex) in value.items" :key="pindex">
+        <div
+          class="flex items-start bg-white dark:bg-gray-700 rounded-xl shadow-md hover:shadow-lg cursor-pointer h-30 p-3"
+        >
+          <img v-if="employee.fotolink" :src="employee.fotolink" class="rounded-lg mx-2 my-auto" width="32" height="32">
+          <div class="w-full">
+            <div class="flex items-start justify-left">
+              <p
+                class="font-light cursor-pointer"
+                @click="clickOnGridCard(employee)"
+              >
+                {{ employee.name }}
+              </p>
+            </div>
+            <p class="font-light text-xs">{{ employee.email }}</p>
+           </div>
+        </div>
+      </template>
+    </div>
   </div>
 </template>

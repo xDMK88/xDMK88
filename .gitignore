@@ -3,7 +3,7 @@ public/hot
 public/storage
 package-lock.json
 storage/*.key
-dist
+dist/
 dist.zip
 vendor
 .env

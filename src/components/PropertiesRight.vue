@@ -1,164 +1,135 @@
-<script setup>
-import { computed, reactive } from 'vue'
+<script>
+import { createPopper } from '@popperjs/core'
+import { computed } from 'vue'
 import { DatePicker } from 'v-calendar'
 import { useStore } from 'vuex'
-import AsideMenuList from '@/components/AsideMenuList.vue'
-
-defineProps({
-  menu: {
-    type: Array,
-    default: () => []
-  }
-})
-
-const remi = reactive({
-  data: {
-      date: new Date(),
-      timezone: 'Europe/Moscow',
-
-  }
-})
-const replay = reactive({
-  data: {
-    date: new Date(),
-    timezone: 'Europe/Moscow',
-
-  }
-})
-
-const calendar = reactive({
-  range: {
-    start: new Date(2020, 9, 16),
-    end: new Date(2020, 9, 16)
-  }
-})
-
-const store = useStore()
-const isFullScreen = computed(() => store.state.isFullScreen)
-const isPropertiesMobileExpanded = computed(() => store.state.isAsideMobileExpanded)
-const isAsideLgActive = computed(() => store.state.isAsideLgActive)
-const selectedTask = computed(() => store.state.tasks.selectedTask)
-const taskMessages = computed(() => store.state.taskmessages.messages)
-const taskFiles = computed(() => store.state.taskfiles.files)
-const tags = computed(() => store.state.tasks.tags)
-const employees = computed(() => store.state.employees.employees)
-const projects = computed(() => store.state.projects.projects)
-const localization = computed(() => store.state.localization.localization)
-const colors = computed(() => store.state.colors.colors)
-const cusers = computed(() => store.state.user.user)
-const statuses = [
-  'status_not_begin',
-  'status_ready',
-  'task_by_link',
-  'status_note',
-  'status_in_work',
-  'status_task_ready',
-  'status_paused',
-  'status_cancelled',
-  'status_reject',
-  'status_refine'
-]
-
-// const asideLgClose = () => {
-//   store.dispatch('asideLgToggle', false)
-// }
-
-const menuClick = (event, item) => {
-  //
-}
-const days = ['Воскресенье', 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота']
-const months = ['Января', 'Февраля', 'Марта', 'Апреля', 'Мая', 'Июня', 'Июля', 'Августа', 'Сентября', 'Октября', 'Ноября', 'Декабря']
-// const monthsshort = ['Янв', 'Фев', 'Мар', 'Апр', 'Мая', 'Июн', 'Июля', 'Авг', 'Сен', 'Окт', 'Ноя', 'Дек']
-const newArray = taskMessages.value.concat(taskFiles.value)
-// let s_date_start = selectedTask.customer_date_begin
-
-</script>
-
-<script>
-import { createPopper } from "@popperjs/core";
 
 export default {
-  name: "bottom-pink-popover",
-  data() {
+  components: {
+    DatePicker
+  },
+  data () {
+    const store = useStore()
+    const taskMessages = computed(() => store.state.taskmessages.messages)
+    const taskFiles = computed(() => store.state.taskfiles.files)
     return {
+      isFullScreen: computed(() => store.state.isFullScreen),
+      isPropertiesMobileExpanded: computed(() => store.state.isAsideMobileExpanded),
+      isAsideLgActive: computed(() => store.state.isAsideLgActive),
+      selectedTask: computed(() => store.state.tasks.selectedTask),
+      taskMessages: taskMessages,
+      taskFiles: taskFiles,
+      tags: computed(() => store.state.tasks.tags),
+      employees: computed(() => store.state.employees.employees),
+      projects: computed(() => store.state.projects.projects),
+      localization: computed(() => store.state.localization.localization),
+      colors: computed(() => store.state.colors.colors),
+      cusers: computed(() => store.state.user.user),
+      newArray: taskMessages.value.concat(taskFiles.value),
+      months: ['Января', 'Февраля', 'Марта', 'Апреля', 'Мая', 'Июня', 'Июля', 'Августа', 'Сентября', 'Октября', 'Ноября', 'Декабря'],
+      days: ['Воскресенье', 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота'],
+      statuses: [
+        'status_not_begin',
+        'status_ready',
+        'task_by_link',
+        'status_note',
+        'status_in_work',
+        'status_task_ready',
+        'status_paused',
+        'status_cancelled',
+        'status_reject',
+        'status_refine'
+      ],
+      remi: {
+        date: new Date(),
+        timezone: 'Europe/Moscow'
+      },
+      replay: {
+        date: new Date(),
+        timezone: 'Europe/Moscow'
+      },
+      range: {
+        start: new Date(2020, 9, 16),
+        end: new Date(2020, 9, 16)
+      },
       popoverShow: false,
       popoverShowEmployee: false,
-      popoverShowRepeat:false,
-      popoverShowReminder:false,
-      popoverShowProject:false,
-      popoverShowColor:false,
-      popoverShowTags:false
+      popoverShowRepeat: false,
+      popoverShowReminder: false,
+      popoverShowProject: false,
+      popoverShowColor: false,
+      popoverShowTags: false
     }
   },
   methods: {
     togglePopover_access: function () {
       if (this.popoverShow) {
-        this.popoverShow = false;
+        this.popoverShow = false
       } else {
-        this.popoverShow = true;
+        this.popoverShow = true
         createPopper(this.$refs.btnRef, this.$refs.popoverRef, {
-          placement: "bottom"
-        });
+          placement: 'bottom'
+        })
       }
     },
     togglePopover_employee: function () {
       if (this.popoverShowEmployee) {
-        this.popoverShowEmployee = false;
+        this.popoverShowEmployee = false
       } else {
-        this.popoverShowEmployee = true;
+        this.popoverShowEmployee = true
         createPopper(this.$refs.btnRefEmployee, this.$refs.popoverRefEmployee, {
-          placement: "bottom"
-        });
+          placement: 'bottom'
+        })
       }
     },
     togglePopover_repeat: function () {
       if (this.popoverShowRepeat) {
-        this.popoverShowRepeat = false;
+        this.popoverShowRepeat = false
       } else {
-        this.popoverShowRepeat = true;
+        this.popoverShowRepeat = true
         createPopper(this.$refs.btnRefRepeat, this.$refs.popoverRefRepeat, {
-          placement: "bottom"
-        });
+          placement: 'bottom'
+        })
       }
     },
     togglePopover_reminder: function () {
       if (this.popoverShowReminder) {
-        this.popoverShowReminder = false;
+        this.popoverShowReminder = false
       } else {
-        this.popoverShowReminder = true;
+        this.popoverShowReminder = true
         createPopper(this.$refs.btnRefReminder, this.$refs.popoverRefReminder, {
-          placement: "bottom"
-        });
+          placement: 'bottom'
+        })
       }
     },
     togglePopover_project: function () {
       if (this.popoverShowProject) {
-        this.popoverShowProject = false;
+        this.popoverShowProject = false
       } else {
-        this.popoverShowProject = true;
+        this.popoverShowProject = true
         createPopper(this.$refs.btnRefProject, this.$refs.popoverRefProject, {
-          placement: "left"
-        });
+          placement: 'left'
+        })
       }
     },
     togglePopover_color: function () {
       if (this.popoverShowColor) {
-        this.popoverShowColor = false;
+        this.popoverShowColor = false
       } else {
-        this.popoverShowColor = true;
+        this.popoverShowColor = true
         createPopper(this.$refs.btnRefColor, this.$refs.popoverRefColor, {
-          placement: "left"
-        });
+          placement: 'left'
+        })
       }
     },
     togglePopover_tags: function () {
       if (this.popoverShowTags) {
-        this.popoverShowTags = false;
+        this.popoverShowTags = false
       } else {
-        this.popoverShowTags = true;
+        this.popoverShowTags = true
         createPopper(this.$refs.btnRefTags0, this.$refs.popoverRefTags0, {
-          placement: "left"
-        });
+          placement: 'left'
+        })
       }
     }
   }
@@ -230,7 +201,7 @@ export default {
 
         </span>
         <DatePicker
-          v-model="calendar.range"
+          v-model="range"
           is-range
         >
           <template v-slot="{ inputValue, togglePopover }">
@@ -571,21 +542,6 @@ export default {
 </span>
         </div>
       </div>
-      <template v-for="(menuGroup, index) in menu">
-        <p
-          v-if="typeof menuGroup === 'string'"
-          :key="`a-${index}`"
-          class="p-3 text-xs uppercase text-gray-400"
-        >
-          {{ menuGroup }}
-        </p>
-        <aside-menu-list
-          v-else
-          :key="`b-${index}`"
-          :menu="menuGroup"
-          @menu-click="menuClick"
-        />
-      </template>
     </div>
   </aside>
   <!--Всплывающее окно Метки-->
@@ -712,7 +668,7 @@ export default {
         </svg></div>
       </div>
       <div class="text-white p-3 body-popover-custom">
-        <DatePicker v-model="remi.data" mode="dateTime" locale="ru"/>
+        <DatePicker v-model="remi" mode="dateTime" locale="ru"/>
 
       </div>
       <div class="popover-container-button">
@@ -734,7 +690,7 @@ export default {
         </svg></div>
       </div>
       <div class="text-white p-3 body-popover-custom">
-        <DatePicker v-model="replay.data" mode="dateTime" locale="ru"/>
+        <DatePicker v-model="replay" mode="dateTime" locale="ru"/>
 
       </div>
       <div class="popover-container-button">

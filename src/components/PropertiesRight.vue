@@ -204,7 +204,6 @@ export default {
           <span class="rounded"> Доступ</span>
 
         </div>
-
         <DatePicker
           v-model="range"
           is-range

@@ -15,8 +15,8 @@ import '../node_modules/@syncfusion/ej2-vue-navigations/styles/material.css'
 
 const store = useStore()
 
-console.log('localization request', LOCALIZATION_REQUEST)
 store.dispatch(LOCALIZATION_REQUEST)
+console.log('localization request', LOCALIZATION_REQUEST)
 
 const menu = computed(() => store.state.navigator.menu)
 const isAsideLgActive = computed(() => store.state.isAsideLgActive)

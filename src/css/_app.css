@@ -447,7 +447,7 @@ body {
 }
 .title-z-popover
 {
-    margin-top: 7px;
+  margin-top: 7px;
 }
 .title-popover-custom svg
 {
@@ -543,6 +543,72 @@ body {
   margin-top: 10px;
 }
 
+
+
+
+.container-color-popover
+{
+  height: 300px;
+  overflow-y: auto;
+  margin-top: 10px;
+}
+
+
+.list-color-access
+{
+  display: flex;
+  margin-bottom:2px;
+  border: 1px solid #F1F1F3;
+  padding: 2px 5px 2px 5px;
+  margin-right: 5px;
+}
+.list-color-access.active,
+.list-color-access:hover
+{
+  border: 1px solid #FF9B00;
+}
+.list-color-access input[type="checkbox"]
+{
+  margin-right: 10px;
+  margin-top: 10px;
+}
+
+.container-tags-popover
+{
+  height: 300px;
+  overflow-y: auto;
+  margin-top: 10px;
+}
+
+
+
+
+
+.list-tags-access
+{
+  display: flex;
+  margin-bottom:2px;
+  border: 1px solid #F1F1F3;
+  padding: 2px 5px 2px 5px;
+  margin-right: 5px;
+}
+.list-tags-access.active,
+.list-tags-access:hover
+{
+  border: 1px solid #FF9B00;
+}
+.list-tags-access input[type="checkbox"]
+{
+  margin-right: 10px;
+  margin-top: 10px;
+}
+
+
+
+
+
+
+
 .btn {
   display: inline-block;
   padding: 6px 12px;
@@ -615,6 +681,16 @@ fieldset[disabled] .btn {
   color: black;
   font-size: 16px;
 }
+.btn-transperant
+{
+  background-color: transparent;
+  border:1px solid #AAAAAA;
+  width: 100px;
+  border-radius: 0;
+  color:black;
+  font-size: 14px;
+  margin-top: 10px;
+}
 .popover-container-button
 {
   height: 60px;
@@ -623,14 +699,45 @@ fieldset[disabled] .btn {
   padding: 10px;
   line-height: 50px;
 }
+.column-resize
+{
+  height: calc(100vh - 80px);
+  overflow-y: auto;
+  position: relative;
+}
 .form-send-message
 {
   position: absolute;
-  bottom:5px;
+
+
+  top:95%;
   border-top: 1px solid #DADADA;
   width: 95%;
 }
 input {
   outline: 0;
   outline-offset: 0;
+}
+.checklist-custom
+{
+  width: 100%;
+  display: inline-block;
+}
+.form-control-custom-date
+{
+  border-radius: 0;
+  border: none;
+  outline: none;
+  outline-color: white;
+  height: 24px;
+  background: transparent;
+  padding: 0;
+  font-size: 14px;
+  margin-right: -10px;
+  width: 147px;
+}
+
+.btn-calendar
+{
+
 }

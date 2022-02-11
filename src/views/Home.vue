@@ -1,7 +1,7 @@
 <script setup>
 import { onBeforeMount, computed } from 'vue'
 import { useStore } from 'vuex'
-import { TreeViewComponent } from '@syncfusion/ej2-vue-navigations'
+import TasksList from '@/components/TasksList.vue'
 import MainSection from '@/components/MainSection.vue'
 import Projects from '@/components/Projects.vue'
 import ProjectsChildren from '@/components/ProjectsChildren.vue'
@@ -10,17 +10,14 @@ import Tags from '@/components/Tags.vue'
 import Colors from '@/components/Colors.vue'
 import Assignments from '@/components/Assignments.vue'
 
-import * as TASK from '@/store/actions/tasks'
-import { MESSAGES_REQUEST, REFRESH_MESSAGES } from '@/store/actions/taskmessages'
-import { FILES_REQUEST, REFRESH_FILES } from '@/store/actions/taskfiles'
 import { NAVIGATOR_REQUEST } from '@/store/actions/navigator'
 import { USER_REQUEST } from '@/store/actions/user'
+import * as TASK from '@/store/actions/tasks'
 
 const store = useStore()
 const mainSectionState = computed(() => store.state.mainSectionState)
 const greedPath = computed(() => store.state.greedPath)
 const greedSource = computed(() => store.state.greedSource)
-const loadedTasks = computed(() => store.state.tasks.loadedTasks)
 
 const storeTasks = computed(() => {
   return {
@@ -30,18 +27,6 @@ const storeTasks = computed(() => {
     hasChildren: 'has_children'
   }
 })
-
-const nodeExpanding = (arg) => {
-  if (arg.isInteracted) {
-    if (loadedTasks.value[arg.nodeData.id]) return false
-    store.dispatch(TASK.SUBTASKS_REQUEST, arg.nodeData.id)
-      .then(() => {
-        store.commit(TASK.ADD_LOADED_TASK, arg.nodeData.id)
-        const tree = document.getElementById('treeview').ej2_instances[0]
-        tree.addNodes(store.state.tasks.subtasks.tasks, arg.nodeData.id)
-      })
-  }
-}
 
 const getTasks = () => {
   if (store.state.auth.token) {
@@ -59,21 +44,6 @@ const getNavigator = () => {
   }
 }
 
-const nodeSelected = (arg) => {
-  store.commit(REFRESH_FILES)
-  store.commit(REFRESH_MESSAGES)
-  const tree = document.getElementById('treeview').ej2_instances[0]
-  const treeNodeData = tree.getTreeData(arg.nodeData.id)[0]
-  console.log(treeNodeData)
-  store.commit(TASK.SELECT_TASK, treeNodeData)
-  if (treeNodeData.has_msgs) {
-    store.dispatch(MESSAGES_REQUEST, treeNodeData.uid)
-  }
-  if (treeNodeData.has_files) {
-    store.dispatch(FILES_REQUEST, treeNodeData.uid)
-  }
-}
-
 onBeforeMount(() => {
   getTasks()
   getNavigator()
@@ -84,19 +54,10 @@ onBeforeMount(() => {
 
 <template>
   <main-section>
-    <!-- Tasks section -->
-    <TreeViewComponent
+    <TasksList
       v-if="mainSectionState === 'tasks'"
-      id="treeview"
-      :fields="storeTasks"
-      :allow-drag-and-drop="true"
-      :allow-multi-selection="true"
-      css-class="custom"
-      @nodeExpanding="nodeExpanding"
-      @nodeSelected="nodeSelected"
+      :store-tasks="storeTasks"
     />
-    <!-- /Tasks section -->
-
     <!-- Greed section -->
     <div v-if="mainSectionState === 'greed'">
       <projects
@@ -126,27 +87,3 @@ onBeforeMount(() => {
     </div>
   </main-section>
 </template>
-
-<style>
-  .custom .e-list-text {
-    font-size: 16px!important;
-  }
-  .custom.e-fullrow-wrap .e-text-content {
-    border-radius: 10px;
-    border: 1px solid #ccc;
-    min-height: 40px;
-  }
-  .custom .e-list-item.e-active, .e-treeview .e-list-item.e-hover {
-    background: none!important;
-  }
-  .custom .e-list-item.e-active > .e-fullrow {
-    background-color: transparent;
-    border: none;
-  }
-  .custom .e-list-item.e-active > .e-fullrow:hover {
-    background-color: transparent;
-  }
-  .custom .e-list-item > .e-fullrow:hover {
-    background-color: transparent;
-  }
-</style>

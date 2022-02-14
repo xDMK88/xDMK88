@@ -559,8 +559,9 @@ body {
   display: flex;
   margin-bottom:2px;
   border: 1px solid #F1F1F3;
-  padding: 2px 5px 2px 5px;
+  padding: 2px 5px 5px 5px;
   margin-right: 5px;
+  line-height: 25px;
 }
 .list-color-access.active,
 .list-color-access:hover
@@ -570,7 +571,7 @@ body {
 .list-color-access input[type="checkbox"]
 {
   margin-right: 10px;
-  margin-top: 10px;
+  margin-top: 5px;
 }
 
 .container-tags-popover
@@ -735,4 +736,21 @@ input {
   font-size: 14px;
   margin-right: -10px;
   width: 147px;
+}
+.e-treeview .e-list-item
+{
+  border: 1px solid black;
+  color:black;
+}
+.custom-dropdown
+{
+  top: 25px;
+  color:black;
+  background: white;
+  z-index: 9999;
+  font-size:13px;
+}
+.custom-dropdown a:hover, .custom-dropdown a:focus, .custom-dropdown a.active
+{
+ background-color:#F5B049;
 }

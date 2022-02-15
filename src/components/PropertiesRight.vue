@@ -3,7 +3,6 @@ import { createPopper } from '@popperjs/core'
 import { computed } from 'vue'
 import { DatePicker } from 'v-calendar'
 import { useStore } from 'vuex'
-
 export default {
   components: {
     DatePicker
@@ -693,28 +692,32 @@ export default {
             v-for="(key, value) in selectedTask.tags"
             :key="value"
           >
-
-            <div class="list-tags-access active">
-              <input type="checkbox" name="check_employee" class="check-custom-project" checked="checked">
+          </div>
+          <div v-for="(value, key, index) in tags" :key="index">
+            <div
+              v-for="(value1, key1) in selectedTask.tags"
+              :key="key1"
+            >
               <div>
-                {{ tags[key].name }}
-
+              <div class="list-tags-access active" v-if="value1===value.uid" :style="{'background-color': value.back_color}">
+                <input type="checkbox" name="check_employee" class="check-custom-project" checked="checked">
+                <div>
+                  {{tags[value1].name}}
+                </div>
+              </div>
+              <div class="list-tags-access" :style="{'background-color': value.back_color}" v-else >
+                <input type="checkbox" name="check_employee" class="check-custom-project">
+                <div>
+                  {{value.name}}
+                </div>
               </div>
             </div>
-          </div>
-
-          <div v-for="(key,value) in tags" :key="value">
-
-            <div class="list-tags-access">
-              <input type="checkbox" name="check_employee" class="check-custom-project">
-              <div>
-                {{key.name}}
-              </div>
             </div>
-          </div>
+            </div>
         </div>
       </div>
       <div class="popover-container-button">
+        <input type="button" name="addproject" value="Добавить метку" class="btn btn-empty">
         <input type="button" name="ok" value="ОК" class="btn btn-orange">
       </div>
     </div>
@@ -744,7 +747,14 @@ export default {
         </div>
         <div class="container-color-popover">
           <div v-for="(key,value) in colors" :key="value">
-            <div class="list-color-access" :style="{'background-color': key.back_color}">
+            <div class="list-color-access" :style="{'background-color': key.back_color}" v-if="key.uid===selectedTask.uid_marker">
+              <input type="checkbox" name="check_employee" class="check-custom-project" checked="checked">
+              <div style="{'color': key.force_color}" >
+                <span  v-if="uppercase===1" style="text-transform:uppercase">{{key.name}}</span>
+                <span v-else>{{key.name}}</span>
+              </div>
+            </div>
+            <div class="list-color-access" :style="{'background-color': key.back_color}" v-else>
               <input type="checkbox" name="check_employee" class="check-custom-project">
               <div style="{'color': key.force_color}" >
                 <span  v-if="uppercase===1" style="text-transform:uppercase">{{key.name}}</span>
@@ -755,6 +765,7 @@ export default {
         </div>
       </div>
       <div class="popover-container-button">
+        <input type="button" name="addproject" value="Добавить цвет" class="btn btn-empty">
         <input type="button" name="ok" value="ОК" class="btn btn-orange">
       </div>
     </div>
@@ -783,14 +794,21 @@ export default {
         </div>
         <div class="container-project-popover">
           <div v-for="(key,value) in projects" :key="value">
-            <div class="list-project-access">
-              <input type="checkbox" name="check_employee" class="check-custom-project">
+            <div class="list-project-access active" v-if="selectedTask.uid_project === key.uid">
+              <input type="checkbox" name="check_employee" class="check-custom-project" checked>
+              <div>
 
+                {{key.name}}
+              </div>
+            </div>
+            <div class="list-project-access" v-else>
+              <input type="checkbox" name="check_employee" class="check-custom-project" >
               <div>
                 {{key.name}}
               </div>
             </div>
           </div>
+
         </div>
       </div>
       <div class="popover-container-button">

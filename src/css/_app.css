@@ -592,6 +592,7 @@ body {
   border: 1px solid #F1F1F3;
   padding: 2px 5px 2px 5px;
   margin-right: 5px;
+  line-height: 30px;
 }
 .list-tags-access.active,
 .list-tags-access:hover
@@ -601,7 +602,7 @@ body {
 .list-tags-access input[type="checkbox"]
 {
   margin-right: 10px;
-  margin-top: 10px;
+  margin-top: 7px;
 }
 
 
@@ -677,10 +678,10 @@ fieldset[disabled] .btn {
   background-color: transparent;
   border-color: #D7D7D9;
   float: left;
-  width: 100px;
+  width: 140px;
   border-radius: 0;
   color: black;
-  font-size: 16px;
+  font-size: 14px;
 }
 .btn-transperant
 {

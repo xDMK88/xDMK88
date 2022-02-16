@@ -531,6 +531,7 @@ body {
   border: 1px solid #F1F1F3;
   padding: 2px 5px 2px 5px;
   margin-right: 5px;
+  line-break: 30px;
 }
 .list-project-access.active,
 .list-project-access:hover
@@ -540,7 +541,7 @@ body {
 .list-project-access input[type="checkbox"]
 {
   margin-right: 10px;
-  margin-top: 10px;
+  margin-top: 7px;
 }
 
 

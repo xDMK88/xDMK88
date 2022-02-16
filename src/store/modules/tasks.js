@@ -8,20 +8,35 @@ function pad2 (n) {
   return (n < 10 ? '0' : '') + n
 }
 
-const getDefaultState = () => {
-  return {
-    tasks: false,
-    tags: {},
-    subtasks: false,
-    selectedTask: undefined,
-    status: '',
-    hasLoadedOnce: false,
-    // Distionary uid => true to remember which tasks loaded
-    loadedTasks: {}
+const state = {
+  tasks: false,
+  tags: {},
+  subtasks: false,
+  selectedTask: undefined,
+  status: '',
+  hasLoadedOnce: false,
+  loadedTasks: {},
+  newtasks: false,
+  newConfig: {
+    roots: [],
+    leaves: ['fakeid'],
+    openedIcon: {
+      type: 'shape',
+      stroke: 'gray',
+      strokeWidth: 4,
+      viewBox: '0 0 24 24',
+      draw: 'M 2 12 L 22 12'
+
+    },
+    closedIcon: {
+      type: 'shape',
+      stroke: 'gray',
+      strokeWidth: 4,
+      viewBox: '0 0 24 24',
+      draw: 'M 12 2 L 12 22 M 2 12 L 22 12'
+    }
   }
 }
-
-const state = getDefaultState()
 
 const getters = {
   getTasks: state => state.navigator,
@@ -376,6 +391,23 @@ const mutations = {
     state.status = 'success'
     state.tasks = resp.data
     state.hasLoadedOnce = true
+
+    Object.assign(state.newtasks, {})
+    Object.assign(state.newConfig, { roots: [], leaves: [] })
+
+    const nodes = {}
+    for (const node of resp.data.tasks) {
+      // write root uid to array
+      state.newConfig.roots.push(node.uid)
+      node.has_children ? console.log('hello') : state.newConfig.leaves.push(node.uid)
+      // write every node into 1d array with objects that has children array in that
+      nodes[node.uid] = {
+        // text: node.name,
+        info: node,
+        children: node.has_children ? ['hello'] : ''
+      }
+    }
+    state.newtasks = nodes
   },
   [TASK.SUBTASKS_SUCCESS]: (state, resp) => {
     state.status = 'success'
@@ -400,8 +432,15 @@ const mutations = {
       state.tags[tag.uid] = tag
     }
   },
-  [TASK.RESET_STATE_TASKS]: (state) => {
-    Object.assign(state, getDefaultState())
+  [TASK.UPDATE_NEW_TASK_LIST]: (state, tasks) => {
+    for (const task of tasks) {
+      task.has_children ? console.log('hello') : state.newConfig.leaves.push(task.uid)
+      state.newtasks[task.uid] = {
+        info: task,
+        children: task.has_children ? ['hello'] : '',
+        state: { checked: false, opened: false }
+      }
+    }
   }
 }
 

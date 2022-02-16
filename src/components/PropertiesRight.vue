@@ -142,7 +142,7 @@ export default {
     v-if="selectedTask"
     v-show="!isFullScreen"
     id="aside"
-    class="-right-96 w-96 fixed top-0 z-40 h-screen bg-white transition-position lg:right-0 dark:border-r dark:border-gray-800 dark:bg-gray-900"
+    class="-right-96 w-96 fixed top-0 z-40 h-screen transition-position lg:right-0 dark:border-r dark:border-gray-800"
     :class="[ isPropertiesMobileExpanded ? 'right-0' : '-right-90', isAsideLgActive ? 'block' : 'lg:hidden xl:block' ]"
   >
     <div class="p-3 break-words">

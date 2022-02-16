@@ -26,11 +26,11 @@ const props = defineProps({
 
 <template>
   <control
+    :value="status"
     ref="root"
     v-model="form.text"
     :placeholder="props.placeholder"
     @keyup.enter="sendSearchRequest"
     borderless
   />
-  <p class="pl-3"><strong>Status:</strong> {{ status }}</p>
 </template>

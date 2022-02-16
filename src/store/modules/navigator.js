@@ -200,6 +200,7 @@ const mutations = {
 
     // Push statickly tasks to menu array from state
     state.memu = []
+    state.menu.push('separator')
     state.menu.push([{
       label: localization.value.Today,
       uid: resp.data.tasks.items[0].uid,

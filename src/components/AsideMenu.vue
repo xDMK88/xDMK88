@@ -52,7 +52,7 @@ const isAsideLgActive = computed(() => store.state.isAsideLgActive)
 const isDark = computed(() => store.state.darkMode)
 
 const datePickerBG = computed(() => {
-  return isDark.value ? 'rgb(51 65 85)' : '#fff7ed'
+  return isDark.value ? 'rgb(51 65 85)' : 'rgb(243 244 246)'
 })
 
 const localization = computed(() => store.state.localization.localization)
@@ -165,10 +165,10 @@ const menuClick = (event, item) => {
   <aside
     v-show="!isFullScreen"
     id="aside"
-    class="w-80 fixed top-0 z-40 h-screen bg-white transition-position lg:left-0 dark:border-r dark:border-gray-800 dark:bg-gray-900"
+    class="w-80 fixed top-0 z-40 h-screen transition-position lg:left-0 dark:border-r "
     :class="[ isAsideMobileExpanded ? 'left-0' : '-left-80', isAsideLgActive ? 'block' : 'lg:hidden xl:block' ]"
   >
-    <div class="flex flex-row w-full text-dark flex-1 h-12 items-center bg-orange-50 dark:bg-slate-700">
+    <div class="flex flex-row w-full text-dark flex-1 h-12 items-center">
       <nav-bar-item
         type="hidden lg:flex xl:hidden"
         active-color="text-dark"
@@ -207,10 +207,10 @@ const menuClick = (event, item) => {
         </div>
       </div>
     </div>
-    <nav-bar-item class="bg-orange-50 dark:bg-slate-700 rounded-b-3xl pt-0 mt-0">
+    <nav-bar-item class="dark:bg-slate-700 rounded-b-3xl pt-0 mt-0">
       <DatePicker
         v-model="navigatorMenu.currentDate"
-        class="border-none bg-orange-50 dark:bg-slate-700 pb-5 text-xs"
+        class="border-none dark:bg-slate-700 text-xs"
         style="border: none!important;"
         :style="{ backgroundColor: datePickerBG }"
         show-weeknumbers
@@ -267,9 +267,7 @@ const menuClick = (event, item) => {
     padding: 0;
   }
   .vc-arrow {
-    background-color: rgba(255, 145, 35, 0.15);
-    border-radius: 10px;
-    color: #2A2927;
+    @apply bg-white text-gray-800 rounded-xl dark:bg-gray-800 dark:text-white
   }
   .vc-weeknumber-content {
     @apply bg-white dark:bg-gray-800 rounded-lg text-violet-600 dark:text-white;

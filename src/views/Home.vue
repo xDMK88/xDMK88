@@ -1,7 +1,7 @@
 <script setup>
 import { onBeforeMount, computed } from 'vue'
 import { useStore } from 'vuex'
-import TasksList from '@/components/TasksList.vue'
+import TasksListNew from '@/components/TasksListNew.vue'
 import MainSection from '@/components/MainSection.vue'
 import Projects from '@/components/Projects.vue'
 import ProjectsChildren from '@/components/ProjectsChildren.vue'
@@ -19,14 +19,17 @@ const mainSectionState = computed(() => store.state.mainSectionState)
 const greedPath = computed(() => store.state.greedPath)
 const greedSource = computed(() => store.state.greedSource)
 
-const storeTasks = computed(() => {
-  return {
-    dataSource: store.state.tasks.tasks.tasks,
-    id: 'uid',
-    text: 'name',
-    hasChildren: 'has_children'
-  }
-})
+// const storeTasks = computed(() => {
+//   return {
+//     dataSource: store.state.tasks.tasks.tasks,
+//     id: 'uid',
+//     text: 'name',
+//     hasChildren: 'has_children'
+//   }
+// })
+
+const storeTasks = computed(() => store.state.tasks.newtasks)
+const newConfig = computed(() => store.state.tasks.newConfig)
 
 const getTasks = () => {
   if (store.state.auth.token) {
@@ -54,9 +57,10 @@ onBeforeMount(() => {
 
 <template>
   <main-section>
-    <TasksList
+    <TasksListNew
       v-if="mainSectionState === 'tasks'"
       :store-tasks="storeTasks"
+      :new-config="newConfig"
     />
     <!-- Greed section -->
     <div v-if="mainSectionState === 'greed'">

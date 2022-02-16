@@ -4,7 +4,7 @@
     :fields="storeTasks"
     :allow-drag-and-drop="true"
     :allow-multi-selection="true"
-    :node-template="Template"
+    :nodeTemplate="Template"
     css-class="custom"
     @nodeExpanding="nodeExpanding"
     @nodeSelected="nodeSelected"
@@ -23,7 +23,7 @@ import { FILES_REQUEST, REFRESH_FILES } from '@/store/actions/taskfiles'
 const app = createApp({})
 
 var Template = app.component('Template', {
-  template: '<div class="hello">{{ data }}</div>',
+  template: '<div>{{ data.name }}</div>',
   data () {
     return {
       data: {}
@@ -58,7 +58,6 @@ export default {
       store.commit(REFRESH_MESSAGES)
       const tree = document.getElementById('treeview').ej2_instances[0]
       const treeNodeData = tree.getTreeData(arg.nodeData.id)[0]
-      console.log(treeNodeData)
       store.commit(TASK.SELECT_TASK, treeNodeData)
       if (treeNodeData.has_msgs) {
         store.dispatch(MESSAGES_REQUEST, treeNodeData.uid)

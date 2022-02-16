@@ -7,16 +7,10 @@ import {
   mdiClose,
   mdiDotsVertical,
   mdiMenu,
-  mdiClockOutline,
-  mdiCloud,
-  mdiCrop,
   mdiBrightness6
 } from '@mdi/js'
 import NavBarItem from '@/components/NavBarItem.vue'
 import NavBarItemLabel from '@/components/NavBarItemLabel.vue'
-import NavBarMenu from '@/components/NavBarMenu.vue'
-// import NavBarMenuDivider from '@/components/NavBarMenuDivider.vue'
-// import UserAvatar from '@/components/UserAvatar.vue'
 import Icon from '@/components/Icon.vue'
 import NavBarSearch from '@/components/NavBarSearch.vue'
 
@@ -56,7 +50,7 @@ const menuOpenLg = () => {
 <template>
   <nav
     v-show="isNavBarVisible"
-    class="top-0 left-0 right-0 fixed flex bg-white h-14 border-b border-gray-100 z-30 w-screen
+    class="top-0 left-0 right-0 fixed flex h-14 z-30 bg-gray-100 w-screen
     transition-position xl:pl-80 xl:pr-96 lg:w-auto lg:items-stretch dark:bg-gray-900 dark:border-gray-800"
     :class="{'ml-80 lg:ml-80':isAsideMobileExpanded}"
   >
@@ -82,9 +76,6 @@ const menuOpenLg = () => {
       <nav-bar-item>
         {{ navbarLabel }}
       </nav-bar-item>
-      <nav-bar-item>
-        <nav-bar-search :placeholder="localization.search" />
-      </nav-bar-item>
     </div>
     <div class="flex-none items-stretch flex h-14 lg:hidden">
       <nav-bar-item @click.prevent="menuNavBarToggle">
@@ -95,11 +86,14 @@ const menuOpenLg = () => {
       </nav-bar-item>
     </div>
     <div
-      class="absolute w-screen top-14 left-0 bg-white shadow
-        lg:w-auto lg:items-stretch lg:flex lg:grow lg:static lg:border-b-0 lg:overflow-visible lg:shadow-none dark:bg-gray-900"
+      class="absolute w-screen top-14 left-0
+        lg:w-auto lg:items-stretch lg:flex lg:grow lg:static dark:bg-gray-900"
       :class="[isMenuNavBarActive ? 'block' : 'hidden']"
     >
       <div class="max-h-screen-menu overflow-y-auto lg:overflow-visible lg:flex lg:items-stretch lg:justify-end lg:ml-auto">
+        <nav-bar-item>
+          <nav-bar-search :placeholder="localization.search" />
+        </nav-bar-item>
         <nav-bar-item
           has-divider
           is-desktop-icon-only
@@ -111,95 +105,6 @@ const menuOpenLg = () => {
             is-desktop-icon-only
           />
         </nav-bar-item>
-        <nav-bar-menu has-divider>
-          <nav-bar-item-label
-            label="Функции"
-          />
-          <template #dropdown>
-            <nav-bar-item>
-              <nav-bar-item-label
-                :icon="mdiClockOutline"
-                label="Show completed tasks"
-              />
-            </nav-bar-item>
-            <nav-bar-item>
-              <nav-bar-item-label
-                :icon="mdiCloud"
-                label="Sort by term"
-              />
-            </nav-bar-item>
-            <nav-bar-item>
-              <nav-bar-item-label
-                :icon="mdiCrop"
-                label="Sort by color"
-              />
-            </nav-bar-item>
-            <nav-bar-item>
-              <nav-bar-item-label
-                :icon="mdiCrop"
-                label="Sort by create date"
-              />
-            </nav-bar-item>
-            <nav-bar-item>
-              <nav-bar-item-label
-                :icon="mdiCrop"
-                label="Print task list"
-              />
-            </nav-bar-item>
-          </template>
-        </nav-bar-menu>
-        <!-- <nav-bar-menu has-divider>
-          <user-avatar class="w-6 h-6 mr-3 inline-flex" />
-          <div>
-            <span>{{ userName }}</span>
-          </div>
-
-          <template #dropdown>
-            <nav-bar-item to="/profile">
-              <nav-bar-item-label
-                :icon="mdiAccount"
-                label="My Profile"
-              />
-            </nav-bar-item>
-            <nav-bar-item>
-              <nav-bar-item-label
-                :icon="mdiCogOutline"
-                label="Settings"
-              />
-            </nav-bar-item>
-            <nav-bar-item>
-              <nav-bar-item-label
-                :icon="mdiEmail"
-                label="Messages"
-              />
-            </nav-bar-item>
-            <nav-bar-menu-divider />
-            <nav-bar-item>
-              <nav-bar-item-label
-                :icon="mdiLogout"
-                label="Log Out"
-              />
-            </nav-bar-item>
-          </template>
-        </nav-bar-menu> -->
-        <!-- <nav-bar-item
-          href="https://github.com/justboil/admin-one-vue-tailwind"
-          has-divider
-          is-desktop-icon-only
-        >
-          <nav-bar-item-label
-            :icon="mdiGithub"
-            label="GitHub"
-            is-desktop-icon-only
-          />
-        </nav-bar-item> -->
-        <!-- <nav-bar-item is-desktop-icon-only>
-          <nav-bar-item-label
-            :icon="mdiLogout"
-            label="Log out"
-            is-desktop-icon-only
-          />
-        </nav-bar-item> -->
       </div>
     </div>
   </nav>

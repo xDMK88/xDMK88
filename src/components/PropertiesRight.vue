@@ -60,9 +60,6 @@ export default {
         end: new Date(2022, 1, 22)
       }],
       selected: {},
-      masks: {
-        input: 'DD-MM-YYYY'
-      },
       popoverShow: false,
       popoverShowEmployee: false,
       popoverShowRepeat: false,

@@ -15,11 +15,6 @@ export default {
     const navigator = computed(() => store.state.navigator.navigator)
     const tasks = computed(() => store.state.tasks)
     const employeesByEmail = computed(() => store.state.employees.employeesByEmail)
-    //  const projects = computed(() => store.state.projects.projects)
-    //  const popcorn = document.querySelector('#datestart')
-    //  const tooltip = document.querySelector('#dateend')
-    //  const datestart = document.querySelector('#datestart')
-    //  const dateend = document.querySelector('#dateend').value
     return {
       show: false,
       isFullScreen: computed(() => store.state.isFullScreen),

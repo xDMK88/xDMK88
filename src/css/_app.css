@@ -742,7 +742,6 @@ input {
   top: 25px;
   color:black;
   background: white;
-  z-index: 9999;
   font-size:13px;
   right: 0;
 }

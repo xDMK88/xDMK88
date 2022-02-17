@@ -22,18 +22,18 @@ const state = {
     leaves: ['fakeid'],
     openedIcon: {
       type: 'shape',
-      stroke: 'gray',
-      strokeWidth: 4,
-      viewBox: '0 0 24 24',
-      draw: 'M 2 12 L 22 12'
+      fill: '#6b7280',
+      strokeWidth: 1,
+      viewBox: '0 0 30 18',
+      draw: 'M28.8855 1.11439C29.9269 2.15579 29.9269 3.84423 28.8855 4.88563L16.8855 16.8856C15.8441 17.927 14.1556 17.927 13.1142 16.8856L1.11422 4.88563C0.0728226 3.84423 0.0728226 2.15579 1.11422 1.11439C2.15562 0.0729939 3.84406 0.0729939 4.88546 1.11439L14.9998 11.2288L25.1142 1.11439C26.1556 0.0729939 27.8441 0.0729939 28.8855 1.11439Z'
 
     },
     closedIcon: {
       type: 'shape',
-      stroke: 'gray',
-      strokeWidth: 4,
-      viewBox: '0 0 24 24',
-      draw: 'M 12 2 L 12 22 M 2 12 L 22 12'
+      fill: '#6b7280',
+      strokeWidth: 1,
+      viewBox: '0 0 18 30',
+      draw: 'M1.11454 1.11439C2.15594 0.0729939 3.84438 0.0729939 4.88578 1.11439L16.8858 13.1144C17.9272 14.1558 17.9272 15.8442 16.8858 16.8856L4.88578 28.8856C3.84438 29.927 2.15594 29.927 1.11454 28.8856C0.0731465 27.8442 0.0731465 26.1558 1.11454 25.1144L11.2289 15L1.11454 4.88563C0.0731465 3.84423 0.0731465 2.15579 1.11454 1.11439Z'
     }
   }
 }
@@ -434,6 +434,7 @@ const mutations = {
   },
   [TASK.UPDATE_NEW_TASK_LIST]: (state, tasks) => {
     for (const task of tasks) {
+      console.log('updating new task list ', task)
       task.has_children ? console.log('hello') : state.newConfig.leaves.push(task.uid)
       state.newtasks[task.uid] = {
         info: task,

@@ -6,35 +6,84 @@
         loading...
       </div>
     </template>
-    <template #before-input="props">
-    <div class="flex-col items-center">
-      <div class="flex items-center">
-        <div class="border-2 border-gray-300 w-5 h-5 rounded-md mr-1">
+    <template #before-input="props" :style="{ backgroundColor: props.node.info.uid_marker != '00000000-0000-0000-0000-000000000000' ? colors[props.node.info.uid_marker].back_color : '' }">
+      <div class="flex-col items-center">
+        <!-- Name, Status -->
+        <div class="flex items-center">
+          <div class="border-2 border-gray-300 w-5 h-5 rounded-md mr-1 flex items-center justify-center">
+            <Icon
+              v-if="statuses[props.node.info.status]"
+              :path="statuses[props.node.info.status].path"
+              :class="statusColor[props.node.info.status] ? statusColor[props.node.info.status] : 'text-gray-500 dark:text-gray-100'"
+              :box="statuses[props.node.info.status].viewBox"
+              :width="statuses[props.node.info.status].width"
+              :height="statuses[props.node.info.status].height"
+              class="cursor-pointer"
+            />
+          </div>
+          <p :class="(props.node.info.status == 1 || props.node.info.status == 7) ? 'text-gray-500 line-through' : ''">{{ props.node.info.name }}</p>
         </div>
-        <p :class="props.node.info.status == 1 ? 'text-gray-500 line-through' : ''">{{ props.node.info.name }}</p>
-      </div>
-      <div
-        v-if="props.node.info.tags.length || props.node.info.is_overdue"
-        class="flex items-center mt-1.5"
-      >
+        <!-- Tags, Overdue -->
         <div
-          v-if="props.node.info.is_overdue"
-          class="p-1 px-2 text-xs text-red-600 bg-red-300 rounded-lg mr-1 opacity-70"
+          v-if="props.node.info.tags.length || props.node.info.is_overdue"
+          class="flex items-center mt-1.5"
         >
-          Просрочено
+          <div
+            v-if="props.node.info.is_overdue"
+            class="p-1 px-2 text-xs text-red-600 bg-red-300 rounded-lg mr-1 opacity-70"
+          >
+            Просрочено
+          </div>
+          <div
+            v-for="(tag, index) in props.node.info.tags" :key="index"
+          >
+            <div class="p-1 px-2 text-xs text-white rounded-lg mr-1" :style="{ backgroundColor: tags[tag].back_color }">
+              {{ tags[tag].name }}
+            </div>
+          </div>
         </div>
+        <!-- Icons, Messages, Files, Data, Checklist -->
         <div
-          v-for="(tag, index) in props.node.info.tags" :key="index"
+          class="flex"
         >
-          <div class="p-1 px-2 text-xs text-white rounded-lg mr-1" :style="{ backgroundColor: tags[tag].back_color }">
-            {{ tags[tag].name }}
+          <div v-if="props.node.info.checklist" class="bg-gray-200 rounded px-1.5 mr-1 mt-1.5">
+            <Icon
+              :path="checklist.path"
+              class="cursor-pointer text-gray-600"
+              :box="checklist.viewBox"
+              :width="13"
+              :height="12"
+            />
+          </div>
+          <div v-if="props.node.info.has_files" class="bg-gray-200 rounded px-1.5 mr-1 mt-1.5">
+            <Icon
+              :path="file.path"
+              class="cursor-pointer text-gray-600"
+              :box="file.viewBox"
+              :width="13"
+              :height="12"
+            />
+          </div>
+          <div v-if="props.node.info.has_msgs" class="bg-gray-200 rounded px-1.5 mr-1 mt-1.5">
+            <Icon
+              :path="msgs.path"
+              class="cursor-pointer text-gray-600"
+              :box="msgs.viewBox"
+              :width="13"
+              :height="12"
+            />
+          </div>
+          <div v-if="props.node.info.comment" class="bg-gray-200 rounded px-1.5 mr-1 mt-1.5">
+            <Icon
+              :path="taskcomment.path"
+              class="cursor-pointer text-gray-600"
+              :box="taskcomment.viewBox"
+              :width="13"
+              :height="12"
+            />
           </div>
         </div>
       </div>
-    </div>
-    </template>
-    <template>
-      <span class="after"></span>
     </template>
   </tree>
 </template>
@@ -43,18 +92,46 @@
 import { computed } from 'vue'
 import treeview from 'vue3-treeview'
 import { useStore } from 'vuex'
+import Icon from '@/components/Icon.vue'
 
 import * as TASK from '@/store/actions/tasks'
 import { MESSAGES_REQUEST, REFRESH_MESSAGES } from '@/store/actions/taskmessages'
 import { FILES_REQUEST, REFRESH_FILES } from '@/store/actions/taskfiles'
 
+import file from '@/icons/file.js'
+import msgs from '@/icons/msgs.js'
+import taskcomment from '@/icons/taskcomment.js'
+import checklist from '@/icons/checklist.js'
+import readyStatus from '@/icons/ready-status.js'
+import inwork from '@/icons/inwork.js'
+import canceled from '@/icons/canceled.js'
+import pause from '@/icons/pause.js'
+import note from '@/icons/note.js'
+
 export default {
   components: {
-    tree: treeview
+    tree: treeview,
+    Icon
   },
   props: {
     storeTasks: Object,
     newConfig: Object
+  },
+  data () {
+    const statuses = [
+      undefined,
+      readyStatus,
+      readyStatus,
+      note,
+      inwork,
+      readyStatus,
+      pause,
+      canceled,
+      canceled
+    ]
+    return {
+      statuses
+    }
   },
   setup () {
     const store = useStore()
@@ -90,7 +167,17 @@ export default {
     return {
       tags: computed(() => store.state.tasks.tags),
       nodeExpanding,
-      nodeSelected
+      nodeSelected,
+      file,
+      msgs,
+      taskcomment,
+      checklist,
+      colors: computed(() => store.state.colors.colors),
+      statusColor: {
+        4: 'text-green-600',
+        5: 'text-red-600',
+        8: 'text-red-600'
+      }
     }
   },
   methods: {
@@ -114,7 +201,7 @@ export default {
   display: flex;
   align-items: start;
   justify-content: center;
-  width: 24px;
+  width: 35px;
 }
 
 .node-wrapper {
@@ -126,9 +213,8 @@ export default {
 }
 
 .icon-wrapper svg {
-  height: 12px;
-  width: 12px;
-  color: #CCC
+  height: 15px;
+  width: 15px;
 }
 
 .node-wrapper {
@@ -353,13 +439,13 @@ export default {
 
 .level-enter-active,
 .level-leave-active {
-  transition: opacity 0.3s ease;
+  transition: opacity 0.2s ease;
 }
 
 .level-enter-from,
 .level-leave-to {
   opacity: 0;
-  transition: opacity 0.3s ease;
+  transition: opacity 0.2s ease;
   transform: 0
 }
 

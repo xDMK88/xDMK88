@@ -3,7 +3,6 @@ import { createPopper } from '@popperjs/core'
 import { computed } from 'vue'
 import { DatePicker } from 'v-calendar'
 import { useStore } from 'vuex'
-
 export default {
   components: {
     DatePicker
@@ -12,18 +11,21 @@ export default {
     const store = useStore()
     const taskMessages = computed(() => store.state.taskmessages.messages)
     const taskFiles = computed(() => store.state.taskfiles.files)
-    const selectedTaskbegin = computed(() => store.state.tasks.selectedTask)
+    const selectedTask = computed(() => store.state.tasks.selectedTask)
     const navigator = computed(() => store.state.navigator.navigator)
     const tasks = computed(() => store.state.tasks)
     const employeesByEmail = computed(() => store.state.employees.employeesByEmail)
-    const projects = computed(() => store.state.projects.projects)
+    //  const projects = computed(() => store.state.projects.projects)
+    //  const popcorn = document.querySelector('#datestart')
+    //  const tooltip = document.querySelector('#dateend')
+    //  const datestart = document.querySelector('#datestart')
+    //  const dateend = document.querySelector('#dateend').value
     return {
       show: false,
       isFullScreen: computed(() => store.state.isFullScreen),
       isPropertiesMobileExpanded: computed(() => store.state.isAsideMobileExpanded),
       isAsideLgActive: computed(() => store.state.isAsideLgActive),
-      selectedTask: computed(() => store.state.tasks.selectedTask),
-      selectedTaskbegin: selectedTaskbegin,
+      selectedTask: selectedTask,
       taskMessages: taskMessages,
       taskFiles: taskFiles,
       tasks: tasks,
@@ -31,7 +33,7 @@ export default {
       employeesByEmail: employeesByEmail,
       tags: computed(() => store.state.tasks.tags),
       employees: computed(() => store.state.employees.employees),
-      projects: projects,
+      projects: computed(() => store.state.projects.projects),
       localization: computed(() => store.state.localization.localization),
       colors: computed(() => store.state.colors.colors),
       cusers: computed(() => store.state.user.user),
@@ -58,9 +60,13 @@ export default {
         date: new Date(),
         timezone: 'Europe/Moscow'
       },
-      range: {
-        start: new Date(),
-        end: new Date(2022, 3, 1)
+      range: [{
+        start: new Date(2022, 1, 20),
+        end: new Date(2022, 1, 22)
+      }],
+      selected: {},
+      masks: {
+        input: 'DD-MM-YYYY'
       },
       popoverShow: false,
       popoverShowEmployee: false,
@@ -141,7 +147,19 @@ export default {
           placement: 'left'
         })
       }
+    },
+    selectdata (date) {
+      this.$refs.datePicker.value = date
+      this.selected = date
+      this.range.push({
+        start: date,
+        end: date
+      })
+      return date
     }
+  },
+  mounted () {
+    this.selectdata()
   }
 }
 </script>
@@ -150,10 +168,11 @@ export default {
     v-if="selectedTask"
     v-show="!isFullScreen"
     id="aside"
-    class="-right-96 w-96 fixed top-0 z-40 h-screen bg-white transition-position lg:right-0 dark:border-r dark:border-gray-800 dark:bg-gray-900"
+    class="-right-96 w-96 fixed top-0 z-40 h-screen transition-position lg:right-0 dark:border-r dark:border-gray-800"
     :class="[ isPropertiesMobileExpanded ? 'right-0' : '-right-90', isAsideLgActive ? 'block' : 'lg:hidden xl:block' ]"
   >
-    <div class="p-3 break-words">
+    <div class="break-words">
+      <div class="column-resize">
       <div
         v-if="selectedTask.uid_parent!=='00000000-0000-0000-0000-000000000000' && selectedTask.has_children===false"
         class="user_customer_custom"
@@ -168,10 +187,9 @@ export default {
       <p style="display: none">
         <strong>{{ localization.gc_status }}: </strong> {{ localization[statuses[selectedTask.status]] }}
       </p>
-      <p v-if="selectedTask.uid_project !== '00000000-0000-0000-0000-000000000000'">
-
+     <!-- <p v-if="selectedTask.uid_project !== '00000000-0000-0000-0000-000000000000'">
         <strong>{{ localization.props_prj }}: </strong> {{ projects[selectedTask.uid_project].name }}
-      </p>
+      </p>-->
       <!--   <p v-if="selectedTask.plan"><strong>План:</strong> {{ selectedTask.plan }}</p>
       <p v-if="selectedTask.email"><strong>Задача открыта для:</strong> {{ selectedTask.email }}</p>
       <p v-if="selectedTask.checklist"><strong>Чек-лист:</strong> {{ selectedTask.checklist }}</p>
@@ -213,15 +231,10 @@ export default {
 
         </div>
         <DatePicker
-          v-model="range"
-          :start="new Date(2018,10,1)"
-          :end="new Date(2022,10,2)"
-          :min-date='new Date(2018,10,1)'
-          :max-date='new Date(2022,10,2)'
-          :available-dates='{start: new Date(18,10,1), end: new Date(selectedTask.customer_date_end.split("T")[0]).toLocaleDateString()}'
           is-range
+          v-model="range"
         >
-          <template v-slot="{ inputValue, togglePopover }" >
+          <template v-slot="{ inputValue, togglePopover}" >
             <span class="mt-3 tags-custom">
 
                 <span class="flex" v-if="selectedTask.customer_date_begin!=='' && selectedTask.customer_date_end!==''"
@@ -232,7 +245,7 @@ export default {
 <path fill-rule="evenodd" clip-rule="evenodd" d="M17.5998 4.80001C17.5998 2.48041 19.4802 0.600006 21.7998 0.600006C24.1194 0.600006 25.9998 2.48041 25.9998 4.80001V7.8H61.9998V4.80001C61.9998 2.48041 63.8802 0.600006 66.1998 0.600006C68.5194 0.600006 70.3998 2.48041 70.3998 4.8V7.8H77.5998C82.9017 7.8 87.1998 12.0981 87.1998 17.4V79.8C87.1998 85.1019 82.9017 89.4 77.5998 89.4H10.3998C5.09787 89.4 0.799805 85.1019 0.799805 79.8V17.4C0.799805 12.0981 5.09787 7.8 10.3998 7.8H17.5998V4.80001ZM61.9998 14.4V19.2C61.9998 21.5196 63.8802 23.4 66.1998 23.4C68.5194 23.4 70.3998 21.5196 70.3998 19.2V14.4H77.5998C79.2567 14.4 80.5998 15.7431 80.5998 17.4V79.8C80.5998 81.4568 79.2567 82.8 77.5998 82.8H10.3998C8.74295 82.8 7.3998 81.4568 7.3998 79.8V17.4C7.3998 15.7431 8.74295 14.4 10.3998 14.4H17.5998V19.2C17.5998 21.5196 19.4802 23.4 21.7998 23.4C24.1194 23.4 25.9998 21.5196 25.9998 19.2V14.4H61.9998ZM19.9998 42.2348C19.9998 40.5779 21.343 39.2348 22.9998 39.2348H26.3911C28.048 39.2348 29.3911 40.5779 29.3911 42.2348V45.6261C29.3911 47.2829 28.048 48.6261 26.3911 48.6261H22.9998C21.343 48.6261 19.9998 47.2829 19.9998 45.6261V42.2348ZM39.8259 42.2348C39.8259 40.5779 41.1691 39.2348 42.8259 39.2348H46.2172C47.8741 39.2348 49.2172 40.5779 49.2172 42.2348V45.6261C49.2172 47.2829 47.8741 48.6261 46.2172 48.6261H42.8259C41.1691 48.6261 39.8259 47.2829 39.8259 45.6261V42.2348ZM61.6085 39.2348C59.9517 39.2348 58.6085 40.5779 58.6085 42.2348V45.6261C58.6085 47.2829 59.9517 48.6261 61.6085 48.6261H64.9998C66.6567 48.6261 67.9998 47.2829 67.9998 45.6261V42.2348C67.9998 40.5779 66.6567 39.2348 64.9998 39.2348H61.6085ZM22.9998 58.4348C21.343 58.4348 19.9998 59.7779 19.9998 61.4348V64.8261C19.9998 66.4829 21.343 67.8261 22.9998 67.8261H26.3911C28.048 67.8261 29.3911 66.4829 29.3911 64.8261V61.4348C29.3911 59.7779 28.048 58.4348 26.3911 58.4348H22.9998ZM42.8259 58.4348C41.1691 58.4348 39.8259 59.7779 39.8259 61.4348V64.8261C39.8259 66.4829 41.1691 67.8261 42.8259 67.8261H46.2172C47.8741 67.8261 49.2172 66.4829 49.2172 64.8261V61.4348C49.2172 59.7779 47.8741 58.4348 46.2172 58.4348H42.8259ZM58.6085 61.4348C58.6085 59.7779 59.9517 58.4348 61.6085 58.4348H64.9998C66.6567 58.4348 67.9998 59.7779 67.9998 61.4348V64.8261C67.9998 66.4829 66.6567 67.8261 64.9998 67.8261H61.6085C59.9517 67.8261 58.6085 66.4829 58.6085 64.8261V61.4348Z" fill="#3FBF64" fill-opacity="1"/>
 </svg>
               </button>
-            <input type="text" :value="[inputValue.start, inputValue.end]" v-on="togglePopover" @click="togglePopover()" class="form-control-custom-date rounded">
+            <input type="text" :value="[inputValue.start,inputValue.end]" ref="datePicker" @click="togglePopover()" @focus="selectdata([new Date(selectedTask.customer_date_begin).toLocaleDateString(),new Date(selectedTask.customer_date_end).toLocaleDateString()])" class="form-control-custom-date rounded">
              </span>
                         <span v-else
                               class="rounded"
@@ -261,7 +274,13 @@ export default {
           </svg>
           <span class="rounded"> Напоминание</span>
         </div>
-        <div class="mt-3 tags-custom" ref="btnRefProject" v-on:click="togglePopover_project()">
+        <div class="mt-3 tags-custom" ref="btnRefProject" v-on:click="togglePopover_project()" v-if="selectedTask.uid_project !== '00000000-0000-0000-0000-000000000000' && projects[selectedTask.uid_project].name!==''">
+          <svg width="24" height="24" viewBox="0 0 90 81" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M81.8999 17.1334V12.1427C81.8999 7.51337 78.1159 3.74215 73.4708 3.74215H38.7349L37.6926 2.02591C37.0581 1.03229 35.9478 0.399994 34.7696 0.399994H9.02918C4.38412 0.399994 0.600098 4.17121 0.600098 8.80056V72.1661C0.600098 76.7954 4.38412 80.5667 9.02918 80.5667H80.9709C85.616 80.5667 89.4 76.7954 89.4 72.1661V25.4888C89.4226 21.153 86.1144 17.585 81.8999 17.1334ZM7.44306 8.80056C7.44306 7.91985 8.16814 7.19722 9.05183 7.19722H32.8662L42.111 22.2369C42.7228 23.2306 43.8331 23.8629 45.034 23.8629H81.0162C81.8999 23.8629 82.625 24.5855 82.625 25.4662V72.1661C82.625 73.0468 81.8999 73.7694 81.0162 73.7694H9.02918C8.14548 73.7694 7.4204 73.0468 7.4204 72.1661V8.80056H7.44306ZM75.0569 17.0656H46.9147L42.9041 10.5394H73.4482C74.3319 10.5394 75.0569 11.262 75.0569 12.1427V17.0656Z" fill="black" fill-opacity="0.5"/>
+          </svg>
+          {{projects[selectedTask.uid_project].name}}
+        </div>
+        <div class="mt-3 tags-custom" ref="btnRefProject" v-on:click="togglePopover_project()" v-else>
           <svg width="24" height="24" viewBox="0 0 90 81" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M81.8999 17.1334V12.1427C81.8999 7.51337 78.1159 3.74215 73.4708 3.74215H38.7349L37.6926 2.02591C37.0581 1.03229 35.9478 0.399994 34.7696 0.399994H9.02918C4.38412 0.399994 0.600098 4.17121 0.600098 8.80056V72.1661C0.600098 76.7954 4.38412 80.5667 9.02918 80.5667H80.9709C85.616 80.5667 89.4 76.7954 89.4 72.1661V25.4888C89.4226 21.153 86.1144 17.585 81.8999 17.1334ZM7.44306 8.80056C7.44306 7.91985 8.16814 7.19722 9.05183 7.19722H32.8662L42.111 22.2369C42.7228 23.2306 43.8331 23.8629 45.034 23.8629H81.0162C81.8999 23.8629 82.625 24.5855 82.625 25.4662V72.1661C82.625 73.0468 81.8999 73.7694 81.0162 73.7694H9.02918C8.14548 73.7694 7.4204 73.0468 7.4204 72.1661V8.80056H7.44306ZM75.0569 17.0656H46.9147L42.9041 10.5394H73.4482C74.3319 10.5394 75.0569 11.262 75.0569 12.1427V17.0656Z" fill="black" fill-opacity="0.5"/>
           </svg>
@@ -639,6 +658,7 @@ export default {
           {{ index.name }}
         </li>
       </ul> -->
+      </div>
       <div class="form-send-message">
         <div class="input-group">
            <span class="input-group-addon">
@@ -659,7 +679,7 @@ export default {
     </div>
   </aside>
   <!--Всплывающее окно Метки-->
-  <div ref="popoverRefTags0" v-bind:class="{'hidden': !popoverShowTags, 'block': popoverShowTags}" class="bg-pink-600 border-0 mt-3 block z-50 font-normal leading-normal text-sm max-w-xs text-left no-underline break-words rounded-lg popover-custom-access">
+  <div ref="popoverRefTags0"  v-bind:class="{'hidden': !popoverShowTags, 'block': popoverShowTags}" class="bg-pink-600 border-0 mt-3 block z-50 font-normal leading-normal text-sm max-w-xs text-left no-underline break-words rounded-lg popover-custom-access">
     <div class="popover-padding-custom">
       <div class="bg-pink-600 text-white opacity-75 font-semibold p-3 mb-0 border-b border-solid border-blueGray-100 uppercase rounded-t-lg title-popover-main">
         <div class="title-project-custom">
@@ -963,8 +983,8 @@ export default {
 
         </div>
         <div class="container-employee-popover">
-          <div v-for="(key,value) in employees" :key="value">
-            <div class="list-employee-access active" v-if="selectedTask.emails===key.email">
+          <div v-for="(key,value,index) in employees" :key="value">
+            <div class="list-employee-access active" v-if="selectedTask.emails.split('..')[index+1]===key.email">
               <input type="checkbox" name="check_employee" class="check-custom-empployee" checked="checked">
               <img
                 :src="key.fotolink"

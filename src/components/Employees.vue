@@ -42,7 +42,7 @@ const clickOnGridCard = (value) => {
 
 <template class="w-full">
   <div v-for="(value, index) in employees" :key="index">
-    <p class="text-3xl text-gray-800 font-extrabold dark:text-gray-100" :class="index !=0 ? 'mt-5' : ''">{{ value.dep }}</p>
+    <p class="text-2xl text-gray-800 font-bold dark:text-gray-100" :class="index !=0 ? 'mt-5' : ''">{{ value.dep }}</p>
     <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 truncate mt-5">
       <template v-for="(employee, pindex) in value.items" :key="pindex">
         <div

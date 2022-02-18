@@ -95,7 +95,7 @@ const actions = {
   },
   [TASK.SUBTASKS_REQUEST]: ({ commit, dispatch }, taskUid) => {
     return new Promise((resolve, reject) => {
-      commit(TASK.TASKS_REQUEST)
+      // commit(TASK.TASKS_REQUEST)
       const url = 'https://web.leadertask.com/api/v1/tasks/withparent?value=' + taskUid
       axios({ url: url, method: 'GET' })
         .then(resp => {

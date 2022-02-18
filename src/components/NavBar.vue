@@ -51,7 +51,7 @@ const menuOpenLg = () => {
   <nav
     v-show="isNavBarVisible"
     class="top-0 left-0 right-0 fixed flex h-14 z-30 bg-gray-100 w-screen
-    transition-position xl:pl-80 xl:pr-96 lg:w-auto lg:items-stretch dark:bg-gray-900 dark:border-gray-800"
+    transition-position xl:pl-80 xl:pr-96 lg:w-auto lg:items-stretch dark:bg-gray-800 dark:border-gray-800"
     :class="{'ml-80 lg:ml-80':isAsideMobileExpanded}"
   >
     <div class="flex-1 items-stretch flex h-14">
@@ -87,7 +87,7 @@ const menuOpenLg = () => {
     </div>
     <div
       class="absolute w-screen top-14 left-0
-        lg:w-auto lg:items-stretch lg:flex lg:grow lg:static dark:bg-gray-900"
+        lg:w-auto lg:items-stretch lg:flex lg:grow lg:static dark:bg-gray-800"
       :class="[isMenuNavBarActive ? 'block' : 'hidden']"
     >
       <div class="max-h-screen-menu overflow-y-auto lg:overflow-visible lg:flex lg:items-stretch lg:justify-end lg:ml-auto">

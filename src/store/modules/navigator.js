@@ -24,13 +24,10 @@ import ready from '@/icons/ready.js'
 import project from '@/icons/project.js'
 import tag from '@/icons/tag.js'
 import color from '@/icons/color.js'
-
-import {
-  mdiTrayFull,
-  mdiPlay,
-  mdiAccountArrowLeft,
-  mdiAccountTie
-} from '@mdi/js'
+import employee from '@/icons/employee.js'
+import assignment from '@/icons/assignment.js'
+import inprogress from '@/icons/inprogress.js'
+import inaccess from '@/icons/inaccess.js'
 
 import axios from 'axios'
 
@@ -227,10 +224,10 @@ const mutations = {
       label: localization.value.open_tasks_to_me,
       uid: resp.data.tasks.items[2].uid,
       bold: resp.data.tasks.items[2].bold,
-      icon: unsorted.path,
-      width: unsorted.width,
-      height: unsorted.height,
-      iconBox: unsorted.viewBox,
+      icon: inaccess.path,
+      iconBox: inaccess.viewBox,
+      width: inaccess.width,
+      height: inaccess.height,
       type: 'uid',
       iconBackgroundClass: 'bg-stone-600'
     }])
@@ -238,7 +235,10 @@ const mutations = {
       label: localization.value.Inbox,
       uid: resp.data.tasks.items[3].uid,
       bold: resp.data.tasks.items[3].bold,
-      icon: mdiTrayFull,
+      icon: unsorted.path,
+      width: unsorted.width,
+      height: unsorted.height,
+      iconBox: unsorted.viewBox,
       type: 'uid',
       iconBackgroundClass: 'bg-purple-700'
     }])
@@ -257,7 +257,10 @@ const mutations = {
       label: localization.value.status_in_work,
       uid: resp.data.tasks.items[5].uid,
       bold: resp.data.tasks.items[5].bold,
-      icon: mdiPlay,
+      icon: inprogress.path,
+      iconBox: inprogress.viewBox,
+      width: inprogress.width,
+      height: inprogress.height,
       type: 'uid',
       iconBackgroundClass: 'bg-green-300'
     }])
@@ -289,7 +292,10 @@ const mutations = {
       label: localization.value.Delegate_tome,
       uid: resp.data.delegate_iam.uid,
       bold: false,
-      icon: mdiAccountArrowLeft,
+      icon: assignment.path,
+      iconBox: assignment.viewBox,
+      width: assignment.width,
+      height: assignment.height,
       type: 'greed',
       path: 'new_delegate',
       iconBackgroundClass: 'bg-indigo-400'
@@ -337,9 +343,12 @@ const mutations = {
       label: localization.value.Emps,
       uid: resp.data.emps.uid,
       bold: false,
-      icon: mdiAccountTie,
+      icon: employee.path,
       type: 'greed',
       path: 'new_emps',
+      width: employee.width,
+      iconBox: employee.viewBox,
+      height: employee.height,
       iconBackgroundClass: 'bg-cyan-500'
     }])
 

@@ -48,11 +48,10 @@ const styleInactive = 'text-dark-500 font-light'
     >
       <div
         class="rounded-md flex items-center justify-center mx-1.5 w-10 h-10"
-        :class="item.iconBackgroundClass"
       >
         <icon
           :path="item.icon"
-          class="flex-none text-white"
+          class="flex-none text-gray-500 dark:text-white"
           :box="item.iconBox"
           :width="item.width"
           :height="item.height"
@@ -60,7 +59,7 @@ const styleInactive = 'text-dark-500 font-light'
         />
       </div>
       <span
-        :class="[vSlot && vSlot.isExactActive ? styleActive : styleInactive, item.bold ? font-bold : font-light]"
+        :class="[vSlot && vSlot.isExactActive ? styleActive : styleInactive, item.bold ? font-bold : font-normal]"
       >{{ item.label }}</span>
       <icon
         v-if="hasDropdown"

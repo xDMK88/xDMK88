@@ -10,10 +10,11 @@ import NavBarItem from '@/components/NavBarItem.vue'
 import Icon from '@/components/Icon.vue'
 
 import AsideMenuList from '@/components/AsideMenuList.vue'
-import iconmenu from '@/icons/menu.js'
 
 import * as TASK from '@/store/actions/tasks'
 import { AUTH_LOGOUT } from '@/store/actions/auth'
+
+import ArrowDown from '@/icons/arrow-down.js'
 
 const router = useRouter()
 
@@ -52,7 +53,7 @@ const isAsideLgActive = computed(() => store.state.isAsideLgActive)
 const isDark = computed(() => store.state.darkMode)
 
 const datePickerBG = computed(() => {
-  return isDark.value ? 'rgb(51 65 85)' : 'rgb(243 244 246)'
+  return isDark.value ? 'rgb(31 41 55)' : 'rgb(243 244 246)'
 })
 
 const localization = computed(() => store.state.localization.localization)
@@ -165,7 +166,7 @@ const menuClick = (event, item) => {
   <aside
     v-show="!isFullScreen"
     id="aside"
-    class="w-80 fixed top-0 z-40 h-screen transition-position lg:left-0 dark:border-r "
+    class="w-80 fixed top-0 z-40 h-screen transition-position lg:left-0"
     :class="[ isAsideMobileExpanded ? 'left-0' : '-left-80', isAsideLgActive ? 'block' : 'lg:hidden xl:block' ]"
   >
     <div class="flex flex-row w-full text-dark flex-1 h-12 items-center">
@@ -182,35 +183,35 @@ const menuClick = (event, item) => {
         />
       </nav-bar-item>
       <div
-        class="flex justify-between items-center w-full px-3 cursor-pointer"
+        class="w-full px-3 cursor-pointer"
         @click="modalOneActive = true"
       >
-        <icon
-          :path="iconmenu.path"
-          class="cursor-pointer"
-          :box="iconmenu.viewBox"
-          :width="iconmenu.width"
-          :height="iconmenu.height"
-        />
         <div class="flex">
+          <img
+            :src="user.foto_link"
+            width="40"
+            height="40"
+            class="rounded-lg border-2 border-white dark:border-gray-200 mr-1"
+          >
+          <icon
+            :path="ArrowDown.path"
+            class="cursor-pointer mr-2"
+            :box="ArrowDown.viewBox"
+            :width="ArrowDown.width"
+            :height="ArrowDown.height"
+          />
           <span
-            class="font-light text-sm my-auto mr-2"
+            class="text-sm my-auto"
           >
             {{ user.current_user_name }}
           </span>
-          <img
-            :src="user.foto_link"
-            width="32"
-            height="32"
-            class="rounded-lg"
-          >
         </div>
       </div>
     </div>
-    <nav-bar-item class="dark:bg-slate-700 rounded-b-3xl pt-0 mt-0">
+    <nav-bar-item class="rounded-b-3xl pt-0 mt-0">
       <DatePicker
         v-model="navigatorMenu.currentDate"
-        class="border-none dark:bg-slate-700 text-xs"
+        class="border-none text-xs"
         style="border: none!important;"
         :style="{ backgroundColor: datePickerBG }"
         show-weeknumbers

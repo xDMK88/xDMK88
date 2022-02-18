@@ -1,13 +1,11 @@
 <script setup>
 import Icon from '@/components/Icon.vue'
-import { computed } from 'vue'
 import { useStore } from 'vuex'
 import { mdiCog, mdiArrowDownRight } from '@mdi/js'
 
 import * as TASK from '@/store/actions/tasks'
 
 const store = useStore()
-const employeesByEmail = computed(() => store.state.employees.employeesByEmail)
 
 defineProps({
   projects: {
@@ -42,7 +40,7 @@ const goToChildren = (value) => {
 
 <template class="w-full">
   <div v-for="(value, index) in projects" :key="index">
-    <p class="text-3xl text-gray-800 font-extrabold second dark:text-gray-100" :class="index != 0 ? 'mt-5' : ''">{{ value.dep }}</p>
+    <p class="text-2xl text-gray-800 font-bold second dark:text-gray-100" :class="index != 0 ? 'mt-5' : ''">{{ value.dep }}</p>
     <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 truncate mt-5">
       <template v-for="(project, pindex) in value.items" :key="pindex">
         <div>
@@ -77,13 +75,6 @@ const goToChildren = (value) => {
                   @click="goToChildren(project)"
                 />
               </div>
-                <div v-if="project.members && project.members.length" class="grid grid-cols-9 gap-1 rounded-xl mt-2">
-                  <div v-for="(employee, index) in project.members.slice(0, 9)" :key="index">
-                    <div v-if="employeesByEmail[employee]">
-                      <img :src="employeesByEmail[employee].fotolink" class="rounded" width="28" height="28">
-                    </div>
-                  </div>
-                </div>
               </div>
           </div>
         </div>

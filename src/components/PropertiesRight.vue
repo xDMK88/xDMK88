@@ -3,14 +3,19 @@ import { createPopper } from '@popperjs/core'
 import { computed } from 'vue'
 import { DatePicker } from 'v-calendar'
 import { useStore } from 'vuex'
+import Tree from '@/components/Tree.vue'
 export default {
   components: {
-    DatePicker
+    DatePicker,
+    Tree
+  },
+  props: {
+    treeData: Object
   },
   mounted () {
     this.selectdata()
   },
-  data () {
+  data: () => {
     const store = useStore()
     const taskMessages = computed(() => store.state.taskmessages.messages)
     const taskFiles = computed(() => store.state.taskfiles.files)
@@ -34,6 +39,7 @@ export default {
       projects: computed(() => store.state.projects.projects),
       localization: computed(() => store.state.localization.localization),
       colors: computed(() => store.state.colors.colors),
+      mycolors: computed(() => store.state.colors.mycolors),
       cusers: computed(() => store.state.user.user),
       newArray: taskMessages.value.concat(taskFiles.value),
       months: ['Января', 'Февраля', 'Марта', 'Апреля', 'Мая', 'Июня', 'Июля', 'Августа', 'Сентября', 'Октября', 'Ноября', 'Декабря'],
@@ -60,7 +66,11 @@ export default {
         date: new Date(),
         timezone: 'Europe/Moscow'
       },
-      range: [],
+      dates: [
+        {
+          start: new Date(), end: new Date()
+        }
+      ],
       selected: {},
       popoverShow: false,
       popoverShowEmployee: false,
@@ -68,10 +78,27 @@ export default {
       popoverShowReminder: false,
       popoverShowProject: false,
       popoverShowColor: false,
-      popoverShowTags: false
+      popoverShowTags: false,
+      isOpen: false,
+      tree: {
+        label: 'A cool folder',
+        children: [
+          {
+            label: 'A cool sub-folder 1',
+            children: [
+              { label: 'A cool sub-sub-folder 1' },
+              { label: 'A cool sub-sub-folder 2' }
+            ]
+          },
+          { label: 'This one is not that cool' }
+        ]
+      }
     }
   },
   methods: {
+    toggle: function () {
+      this.isOpen = !this.isOpen
+    },
     togglePopover_access: function () {
       if (this.popoverShow) {
         this.popoverShow = false
@@ -146,8 +173,9 @@ export default {
       const date = this.$refs.datePicker.value
       const datemass = [date]
       console.log(datemass)
-      this.$refs.enddatepicker.value = date
-      return datemass
+      this.$refs.enddatepicker.value = datemass
+      this.dates.push({ start: datemass, end: datemass })
+      this.selected = datemass
     }
   }
 }
@@ -162,6 +190,11 @@ export default {
   >
     <div class="break-words">
       <div class="column-resize">
+        <div>
+          <tree :tree-data="projects"></tree>
+        </div>
+        <div>
+        </div>
       <div
         v-if="selectedTask.uid_parent!=='00000000-0000-0000-0000-000000000000' && selectedTask.has_children===false"
         class="user_customer_custom"
@@ -221,9 +254,9 @@ export default {
         </div>
         <DatePicker
           is-range
-          v-model="range"
+          v-model="selected.date"
         >
-          <template v-slot="{ inputValue, togglePopover}" >
+          <template #default="{ inputValue, togglePopover}" >
             <span class="mt-3 tags-custom">
 
                 <span class="flex" v-if="selectedTask.customer_date_begin!=='' && selectedTask.customer_date_end!==''"
@@ -235,7 +268,7 @@ export default {
 </svg>
               </button>
                   <input type="hidden" :value="[new Date(selectedTask.customer_date_begin).toLocaleDateString(),new Date(selectedTask.customer_date_end).toLocaleDateString()]" ref="datePicker">
-            <input type="text" :value="[inputValue.start,inputValue.end]" ref="enddatepicker" @click="togglePopover()" @click.stop="selectdata([new Date(selectedTask.customer_date_begin).toLocaleDateString(),new Date(selectedTask.customer_date_end).toLocaleDateString()])" class="form-control-custom-date rounded">
+            <input type="text" v-on="[togglePopover.start,togglePopover.end]" :value="[inputValue.start,inputValue.end]" @click="togglePopover()" v-on:onload="selectdata()" class="form-control-custom-date rounded" ref="enddatepicker">
              </span>
                         <span v-else
                               class="rounded"
@@ -287,7 +320,7 @@ export default {
             <path d="M6.28002 37.04C6.28002 26.72 10.24 17.12 17.56 9.8C18.16 9.32 18.4 8.6 18.4 7.76C18.4 6.92 18.04 6.2 17.56 5.72C17.08 5.24 16.24 4.88 15.52 4.88C14.8 4.88 13.96 5.24 13.48 5.72C4.96002 14 0.400024 25.16 0.400024 37.04C0.400024 38.72 1.72002 40.04 3.40002 40.04C5.08002 40.04 6.28002 38.72 6.28002 37.04Z" fill="#3FBF64" fill-opacity="1"/>
             <path d="M74.2 65.36C68.8 60.8 65.68 54.2 65.68 47.12V37.04C65.68 24.08 56.08 13.28 43.24 11.72V3.8C43.24 2.12 41.92 0.800003 40.24 0.800003C38.56 0.800003 37.24 2.12 37.24 3.8V11.84C24.4 13.28 14.8 24.08 14.8 37.04V47.12C14.8 54.2 11.68 60.8 6.28002 65.36C4.84002 66.56 4.00002 68.48 4.00002 70.4C4.00002 74 6.88002 77 10.6 77H26.8C28.12 83.24 33.76 87.8 40.24 87.8C46.72 87.8 52.24 83.24 53.68 77H70C73.6 77 76.48 74.12 76.48 70.4C76.48 68.48 75.64 66.56 74.2 65.36ZM40.24 81.8C37 81.8 34.12 79.88 32.92 76.88H47.44C46.36 79.88 43.48 81.8 40.24 81.8ZM70 71H10.6C10.24 71 10 70.64 10 70.4C10 70.16 10.12 70.04 10.24 69.92C16.96 64.28 20.8 56 20.8 47.12V37.04C20.8 26.24 29.56 17.48 40.36 17.48C51.16 17.48 59.92 26.24 59.92 37.04V47.12C59.92 55.88 63.76 64.16 70.48 69.92C70.6 70.04 70.72 70.16 70.72 70.4C70.6 70.64 70.24 71 70 71Z" fill="#3FBF64" fill-opacity="1"/>
           </svg>
-          <span class="rounded">{{selectedTask.ReminderTime}}{{new Date(selectedTask.date_reminder).getDate()}}, {{new Date(selectedTask.date_reminder).getMonth()}}, {{new Date(selectedTask.date_reminder).getHours()}}</span>
+          <span class="rounded">{{new Date(selectedTask.date_reminder).getDate()}}, {{new Date(selectedTask.date_reminder).getMonth()}}, {{new Date(selectedTask.date_reminder).getHours()}}</span>
         </div>
         <div class="mt-3 tags-custom" ref="btnRefReminder" v-on:click="togglePopover_reminder()" v-else>
           <svg width="24" height="24" viewBox="0 0 81 88" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -337,7 +370,7 @@ export default {
 <path d="M77.9021 0.800003H45.1156C44.4406 0.800003 43.7994 1.07006 43.3269 1.54265L3.52077 41.3417C-0.107182 44.9705 -0.107182 50.8779 3.52077 54.4899L33.5062 84.4826C35.2611 86.2379 37.5897 87.2 40.0871 87.2C42.5845 87.2 44.9131 86.2379 46.668 84.4826L86.4573 44.6836C86.9298 44.211 87.1998 43.5696 87.1998 42.8945V10.0999C87.1998 4.96894 83.0319 0.800003 77.9021 0.800003ZM79.7414 41.983L43.1413 78.5921C42.3989 79.3347 41.4033 79.7567 40.3402 79.7567C39.2771 79.7567 38.2816 79.3516 37.5391 78.6089L9.42673 50.4897C7.8743 48.9369 7.8743 46.422 9.42673 44.8692L46.0268 8.26021H75.776C77.9696 8.26021 79.7414 10.0493 79.7414 12.2266V41.983Z" :fill="tags[key].back_color" fill-opacity="1"/>
 <path d="M61.788 19.8588C60.0885 19.8588 58.4969 20.5197 57.2965 21.7202C56.096 22.9206 55.4351 24.5123 55.4351 26.2118C55.4351 27.9113 56.096 29.5029 57.2965 30.7033C58.4969 31.9038 60.0885 32.5647 61.788 32.5647C63.4875 32.5647 65.0792 31.9038 66.2796 30.7033C67.4801 29.5029 68.141 27.9113 68.141 26.2118C68.141 24.5123 67.4801 22.9206 66.2796 21.7202C65.0792 20.5197 63.4875 19.8588 61.788 19.8588Z" :fill="tags[key].back_color" fill-opacity="1"/>
 </svg>
-          <span class="rounded custom-method">{{ tags[key].name }}</span>
+            <span class="rounded custom-method">{{ tags[key].name }}</span>
         </div>
           </span>
         <div v-else class="mt-3 tags-custom" ref="btnRefTags_value" v-on:click="togglePopover_tags()">
@@ -725,8 +758,8 @@ export default {
         </div>
         <div class="container-tags-popover">
           <div
-            v-for="(key, value) in selectedTask.tags"
-            :key="value"
+            v-for="(value, index) in selectedTask.tags"
+            :key="index"
           >
           </div>
           <div v-for="(value, key, index) in tags" :key="index">
@@ -756,10 +789,10 @@ export default {
             </div>
         </div>
       </div>
-      <div class="popover-container-button">
+     <!--<div class="popover-container-button">
         <input type="button" name="addproject" value="Добавить метку" class="btn btn-empty">
         <input type="button" name="ok" value="ОК" class="btn btn-orange">
-      </div>
+      </div>-->
     </div>
   </div>
   <!--Всплывающее окно Цвета-->
@@ -803,10 +836,6 @@ export default {
           </div>
         </div>
       </div>
-      <div class="popover-container-button">
-        <input type="button" name="addproject" value="Добавить цвет" class="btn btn-empty">
-        <input type="button" name="ok" value="ОК" class="btn btn-orange">
-      </div>
     </div>
   </div>
   <!--Всплывающее окно Проекты-->
@@ -834,7 +863,7 @@ export default {
         </div>
         <div class="container-project-popover">
           <ul>
-            <li v-for="(value, index) in projects" :key="index">
+            <li v-for="(value, index) in projects" :key="index" @click="toggle">
               <div class="list-project-access active" v-if="selectedTask.uid_project === value.uid">
                 <svg width="24" height="22" viewBox="0 0 30 28" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M27.2999 6.3778V4.71425C27.2999 3.17114 26.0386 1.91406 24.4902 1.91406H12.9116L12.5642 1.34198C12.3527 1.01078 11.9826 0.800011 11.5898 0.800011H3.00969C1.46134 0.800011 0.199997 2.05708 0.199997 3.6002V24.722C0.199997 26.2652 1.46134 27.5222 3.00969 27.5222H26.9903C28.5386 27.5222 29.8 26.2652 29.8 24.722V9.16294C29.8075 7.71768 28.7048 6.52835 27.2999 6.3778ZM2.48098 3.6002C2.48098 3.30663 2.72268 3.06575 3.01724 3.06575H10.9554L14.037 8.07899C14.2409 8.4102 14.611 8.62097 15.0113 8.62097H27.0054C27.2999 8.62097 27.5416 8.86184 27.5416 9.15541V24.722C27.5416 25.0156 27.2999 25.2565 27.0054 25.2565H3.00969C2.71512 25.2565 2.47343 25.0156 2.47343 24.722V3.6002H2.48098ZM25.0189 6.35522H15.6382L14.3013 4.17981H24.4827C24.7773 4.17981 25.0189 4.42068 25.0189 4.71425V6.35522Z" fill="black" fill-opacity="0.5"/>
@@ -847,9 +876,9 @@ export default {
                 </svg>  {{value.name}}
                 <input type="checkbox" name="check_employee" class="check-custom-project">
               </div>
-              <ul style="margin-left: 15px" v-if="value.children">
+              <ul style="margin-left: 15px" v-if="value.children" v-show="isOpen">
 
-                <li v-for="(project, pindex) in value.children" :key="pindex">
+                <li v-for="(project, pindex) in value.children" :key="pindex" @click="toggle">
                   <div class="list-project-access active" v-if="selectedTask.uid_project === project.uid">
                     <svg width="24" height="22" viewBox="0 0 30 28" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <path d="M27.2999 6.3778V4.71425C27.2999 3.17114 26.0386 1.91406 24.4902 1.91406H12.9116L12.5642 1.34198C12.3527 1.01078 11.9826 0.800011 11.5898 0.800011H3.00969C1.46134 0.800011 0.199997 2.05708 0.199997 3.6002V24.722C0.199997 26.2652 1.46134 27.5222 3.00969 27.5222H26.9903C28.5386 27.5222 29.8 26.2652 29.8 24.722V9.16294C29.8075 7.71768 28.7048 6.52835 27.2999 6.3778ZM2.48098 3.6002C2.48098 3.30663 2.72268 3.06575 3.01724 3.06575H10.9554L14.037 8.07899C14.2409 8.4102 14.611 8.62097 15.0113 8.62097H27.0054C27.2999 8.62097 27.5416 8.86184 27.5416 9.15541V24.722C27.5416 25.0156 27.2999 25.2565 27.0054 25.2565H3.00969C2.71512 25.2565 2.47343 25.0156 2.47343 24.722V3.6002H2.48098ZM25.0189 6.35522H15.6382L14.3013 4.17981H24.4827C24.7773 4.17981 25.0189 4.42068 25.0189 4.71425V6.35522Z" fill="black" fill-opacity="0.5"/>
@@ -861,8 +890,8 @@ export default {
                     </svg>  {{ project.name }}
                     <input type="checkbox" name="check_employee" class="check-custom-project" >
                   </div>
-                  <ul style="margin-left: 30px" v-if="project.children">
-                    <li v-for="(subproject,value2) in project.children" :key="value2">
+                  <ul style="margin-left: 30px" v-if="project.children" v-show="isOpen">
+                    <li v-for="(subproject,value2) in project.children" :key="value2" @click="toggle">
                       <div class="list-project-access active" v-if="selectedTask.uid_project === subproject.uid">
                         <svg width="24" height="22" viewBox="0 0 30 28" fill="none" xmlns="http://www.w3.org/2000/svg">
                           <path d="M27.2999 6.3778V4.71425C27.2999 3.17114 26.0386 1.91406 24.4902 1.91406H12.9116L12.5642 1.34198C12.3527 1.01078 11.9826 0.800011 11.5898 0.800011H3.00969C1.46134 0.800011 0.199997 2.05708 0.199997 3.6002V24.722C0.199997 26.2652 1.46134 27.5222 3.00969 27.5222H26.9903C28.5386 27.5222 29.8 26.2652 29.8 24.722V9.16294C29.8075 7.71768 28.7048 6.52835 27.2999 6.3778ZM2.48098 3.6002C2.48098 3.30663 2.72268 3.06575 3.01724 3.06575H10.9554L14.037 8.07899C14.2409 8.4102 14.611 8.62097 15.0113 8.62097H27.0054C27.2999 8.62097 27.5416 8.86184 27.5416 9.15541V24.722C27.5416 25.0156 27.2999 25.2565 27.0054 25.2565H3.00969C2.71512 25.2565 2.47343 25.0156 2.47343 24.722V3.6002H2.48098ZM25.0189 6.35522H15.6382L14.3013 4.17981H24.4827C24.7773 4.17981 25.0189 4.42068 25.0189 4.71425V6.35522Z" fill="black" fill-opacity="0.5"/>
@@ -875,8 +904,8 @@ export default {
                         </svg>    {{ subproject.name }}
                         <input type="checkbox" name="check_employee" class="check-custom-project" >
                       </div>
-                      <ul style="margin-left: 30px" v-if="subproject.children">
-                        <li v-for="(subsubproject,value2) in subproject.children" :key="value2">
+                      <ul style="margin-left: 30px" v-if="subproject.children" v-show="isOpen">
+                        <li v-for="(subsubproject,value2) in subproject.children" :key="value2" @click="toggle">
                           <div class="list-project-access active" v-if="selectedTask.uid_project === subsubproject.uid">
                             <svg width="24" height="22" viewBox="0 0 30 28" fill="none" xmlns="http://www.w3.org/2000/svg">
                               <path d="M27.2999 6.3778V4.71425C27.2999 3.17114 26.0386 1.91406 24.4902 1.91406H12.9116L12.5642 1.34198C12.3527 1.01078 11.9826 0.800011 11.5898 0.800011H3.00969C1.46134 0.800011 0.199997 2.05708 0.199997 3.6002V24.722C0.199997 26.2652 1.46134 27.5222 3.00969 27.5222H26.9903C28.5386 27.5222 29.8 26.2652 29.8 24.722V9.16294C29.8075 7.71768 28.7048 6.52835 27.2999 6.3778ZM2.48098 3.6002C2.48098 3.30663 2.72268 3.06575 3.01724 3.06575H10.9554L14.037 8.07899C14.2409 8.4102 14.611 8.62097 15.0113 8.62097H27.0054C27.2999 8.62097 27.5416 8.86184 27.5416 9.15541V24.722C27.5416 25.0156 27.2999 25.2565 27.0054 25.2565H3.00969C2.71512 25.2565 2.47343 25.0156 2.47343 24.722V3.6002H2.48098ZM25.0189 6.35522H15.6382L14.3013 4.17981H24.4827C24.7773 4.17981 25.0189 4.42068 25.0189 4.71425V6.35522Z" fill="black" fill-opacity="0.5"/>
@@ -898,10 +927,6 @@ export default {
             </li>
           </ul>
         </div>
-      </div>
-      <div class="popover-container-button">
-        <input type="button" name="addproject" value="Добавить проект" class="btn btn-empty">
-        <input type="button" name="ok" value="ОК" class="btn btn-orange">
       </div>
     </div>
   </div>
@@ -1021,9 +1046,6 @@ export default {
           </div>
         </div>
 
-      </div>
-      <div class="popover-container-button">
-        <input type="button" name="ok" value="ОК" class="btn btn-orange">
       </div>
     </div>
   </div>

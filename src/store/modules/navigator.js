@@ -11,7 +11,7 @@ import { AUTH_LOGOUT } from '../actions/auth'
 import { ADD_TASK_TAGS } from '../actions/tasks'
 import { PUSH_EMPLOYEE, PUSH_EMPLOYEE_BY_EMAIL } from '../actions/employees'
 import { PUSH_PROJECT } from '../actions/projects'
-import { PUSH_COLOR } from '../actions/colors'
+import { PUSH_COLOR, PUSH_MYCOLOR } from '../actions/colors'
 import { visitChildren } from '../helpers/functions'
 import { computed } from 'vue'
 
@@ -88,6 +88,7 @@ const actions = {
           // process colors in shared vuex storage
           if (resp.data.colors.items) {
             commit(PUSH_COLOR, resp.data.colors.items)
+            commit(PUSH_MYCOLOR, resp.data.colors.items)
             visitChildren(resp.data.colors.items, value => {
               value.parentID = resp.data.colors.uid
             })

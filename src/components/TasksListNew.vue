@@ -2,16 +2,16 @@
   <!-- Skeleton -->
   <div class="animate-pulse flex px-8" v-if="status == 'loading'">
     <div class="flex-col w-full">
-      <div class="h-20 dark:bg-slate-900 bg-white my-1 border border-gray-300 dark:border-gray-700 rounded-xl"></div>
-      <div class="h-20 dark:bg-slate-900 bg-white my-1 border border-gray-300 dark:border-gray-700 rounded-xl"></div>
-      <div class="h-10 dark:bg-slate-900 bg-white my-1 border border-gray-300 dark:border-gray-700 rounded-xl"></div>
-      <div class="h-20 dark:bg-slate-900 bg-white my-1 border border-gray-300 dark:border-gray-700 rounded-xl"></div>
-      <div class="h-40 dark:bg-slate-900 bg-white my-1 border border-gray-300 dark:border-gray-700 rounded-xl"></div>
-      <div class="h-20 dark:bg-slate-900 bg-white my-1 border border-gray-300 dark:border-gray-700 rounded-xl"></div>
-      <div class="h-20 dark:bg-slate-900 bg-white my-1 border border-gray-300 dark:border-gray-700 rounded-xl"></div>
-      <div class="h-20 dark:bg-slate-900 bg-white my-1 border border-gray-300 dark:border-gray-700 rounded-xl"></div>
-      <div class="h-10 dark:bg-slate-900 bg-white my-1 border border-gray-300 dark:border-gray-700 rounded-xl"></div>
-      <div class="h-10 dark:bg-slate-900 bg-white my-1 border border-gray-300 dark:border-gray-700 rounded-xl"></div>
+      <div class="animate-pulse h-20 dark:bg-slate-900 bg-white my-1 border border-gray-300 dark:border-gray-700 rounded-xl"></div>
+      <div class="animate-pulse h-20 dark:bg-slate-900 bg-white my-1 border border-gray-300 dark:border-gray-700 rounded-xl"></div>
+      <div class="animate-pulse h-10 dark:bg-slate-900 bg-white my-1 border border-gray-300 dark:border-gray-700 rounded-xl"></div>
+      <div class="animate-pulse h-20 dark:bg-slate-900 bg-white my-1 border border-gray-300 dark:border-gray-700 rounded-xl"></div>
+      <div class="animate-pulse h-40 dark:bg-slate-900 bg-white my-1 border border-gray-300 dark:border-gray-700 rounded-xl"></div>
+      <div class="animate-pulse h-20 dark:bg-slate-900 bg-white my-1 border border-gray-300 dark:border-gray-700 rounded-xl"></div>
+      <div class="animate-pulse h-20 dark:bg-slate-900 bg-white my-1 border border-gray-300 dark:border-gray-700 rounded-xl"></div>
+      <div class="animate-pulse h-20 dark:bg-slate-900 bg-white my-1 border border-gray-300 dark:border-gray-700 rounded-xl"></div>
+      <div class="animate-pulse h-10 dark:bg-slate-900 bg-white my-1 border border-gray-300 dark:border-gray-700 rounded-xl"></div>
+      <div class="animate-pulse h-10 dark:bg-slate-900 bg-white my-1 border border-gray-300 dark:border-gray-700 rounded-xl"></div>
     </div>
   </div>
   <!-- vue3-treeview -->
@@ -119,37 +119,53 @@
         <div
           class="flex"
         >
-          <div v-if="props.node.info.checklist" class="bg-gray-200 rounded px-1.5 mr-1 mt-1.5">
+          <div
+            v-if="props.node.info.checklist"
+            class="bg-gray-200 dark:bg-gray-700 rounded px-1.5 mr-1 mt-1.5"
+            :style="{ backgroundColor: colors[props.node.info.uid_marker] ? colors[props.node.info.uid_marker].back_color : '' }"
+          >
             <Icon
               :path="checklist.path"
-              class="cursor-pointer text-gray-600"
+              class="cursor-pointer text-gray-600 dark:text-white"
               :box="checklist.viewBox"
               :width="13"
               :height="12"
             />
           </div>
-          <div v-if="props.node.info.has_files" class="bg-gray-200 rounded px-1.5 mr-1 mt-1.5">
+          <div
+            v-if="props.node.info.has_files"
+            class="bg-gray-200 dark:bg-gray-700 rounded px-1.5 mr-1 mt-1.5"
+            :style="{ backgroundColor: colors[props.node.info.uid_marker] ? colors[props.node.info.uid_marker].back_color : '' }"
+          >
             <Icon
               :path="file.path"
-              class="cursor-pointer text-gray-600"
+              class="cursor-pointer text-gray-600 dark:text-white"
               :box="file.viewBox"
               :width="13"
               :height="12"
             />
           </div>
-          <div v-if="props.node.info.has_msgs" class="bg-gray-200 rounded px-1.5 mr-1 mt-1.5">
+          <div
+            v-if="props.node.info.has_msgs"
+            class="bg-gray-200 dark:bg-gray-700 rounded px-1.5 mr-1 mt-1.5"
+            :style="{ backgroundColor: colors[props.node.info.uid_marker] ? colors[props.node.info.uid_marker].back_color : '' }"
+          >
             <Icon
               :path="msgs.path"
-              class="cursor-pointer text-gray-600"
+              class="cursor-pointer text-gray-600 dark:text-white"
               :box="msgs.viewBox"
               :width="13"
               :height="12"
             />
           </div>
-          <div v-if="props.node.info.comment" class="bg-gray-200 rounded px-1.5 mr-1 mt-1.5">
+          <div
+            v-if="props.node.info.comment"
+            class="bg-gray-200 dark:bg-gray-700 rounded px-1.5 mr-1 mt-1.5"
+            :style="{backgroundColor: colors[props.node.info.uid_marker] ? colors[props.node.info.uid_marker].back_color : '' }"
+          >
             <Icon
               :path="taskcomment.path"
-              class="cursor-pointer text-gray-600"
+              class="cursor-pointer text-gray-600 dark:text-white"
               :box="taskcomment.viewBox"
               :width="13"
               :height="12"

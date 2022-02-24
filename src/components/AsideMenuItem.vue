@@ -35,14 +35,14 @@ const styleInactive = 'text-dark-500 font-light'
 </script>
 
 <template>
-  <li>
+  <li class="px-5">
     <component
       :is="componentIs"
       v-slot="vSlot"
       :to="itemTo"
       :href="itemHref"
       :target="itemTarget"
-      class="flex items-center cursor-pointer px-3 hover:bg-gray-200 hover:bg-opacity-50 dark:hover:bg-gray-700 dark:hover:bg-opacity-50"
+      class="flex items-center cursor-pointer hover:bg-white hover:rounded-xl dark:hover:bg-gray-700"
       :class="[isSubmenuList ? 'p-3 text-sm' : 'py-1']"
       @click="menuClick"
     >
@@ -71,7 +71,7 @@ const styleInactive = 'text-dark-500 font-light'
     <aside-menu-list
       v-if="hasDropdown"
       :menu="item.menu"
-      :class="{ 'hidden': !isDropdownActive, 'block bg-gray-700 bg-opacity-50 dark:bg-gray-800 dark:bg-opacity-50': isDropdownActive }"
+      :class="{ 'hidden': !isDropdownActive, 'block bg-gray-700 dark:bg-gray-800': isDropdownActive }"
       is-submenu-list
     />
   </li>

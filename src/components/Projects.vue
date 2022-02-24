@@ -1,7 +1,10 @@
 <script setup>
 import Icon from '@/components/Icon.vue'
 import { useStore } from 'vuex'
-import { mdiCog, mdiArrowDownRight } from '@mdi/js'
+import properties from '@/icons/properties.js'
+import projectIcon from '@/icons/project.js'
+import sharedProject from '@/icons/shared_project.js'
+import subArrow from '@/icons/arrow-sub.js'
 
 import * as TASK from '@/store/actions/tasks'
 
@@ -40,43 +43,62 @@ const goToChildren = (value) => {
 
 <template class="w-full">
   <div v-for="(value, index) in projects" :key="index">
-    <p class="text-2xl text-gray-800 font-bold second dark:text-gray-100" :class="index != 0 ? 'mt-5' : ''">{{ value.dep }}</p>
-    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 truncate mt-5">
+    <p class="text-2xl text-gray-800 font-bold second dark:text-gray-100">{{ value.dep }}</p>
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 truncate mt-3">
       <template v-for="(project, pindex) in value.items" :key="pindex">
-        <div>
-          <div class="h-2 rounded-t-xl" :style="{ backgroundColor: project.color }"></div>
-          <div
-            class="flex items-start bg-white dark:bg-gray-700 rounded-b-xl shadow-md hover:shadow-lg p-3"
-          >
-            <div>
-              <div class="flex items-start justify-between">
-                <p
-                  class="font-light cursor-pointer"
-                  @click="clickOnGridCard(project)"
-                >
-                  {{ project.name }}
-                </p>
-                <icon
-                  :path="mdiCog"
-                  size="18"
-                  class="text-gray-400 cursor-pointer hover:text-gray-800"
-                />
-              </div>
-              <div class="flex items-center" v-if="project.children && project.children.length">
-                <p
-                  class="font-light text-xs"
-                >
-                  Дочерних: {{ project.children.length }}
-                </p>
-                <icon
-                  :path="mdiArrowDownRight"
-                  size="18"
-                  class="text-gray-800 cursor-pointer"
-                  @click="goToChildren(project)"
-                />
-              </div>
-              </div>
-          </div>
+        <div
+          class="flex items-center bg-white dark:bg-gray-700 rounded-xl shadow px-5 py-7"
+        >
+          <div>
+            <div class="flex items-center w-96">
+              <icon
+                :path="properties.path"
+                :width="properties.width"
+                :height="properties.height"
+                :box="properties.viewBox"
+                size="18"
+                class="text-gray-400 cursor-pointer hover:text-gray-800 mr-2"
+              />
+              <icon
+                v-if="project.members && project.members.length == 1"
+                :path="projectIcon.path"
+                :width="18"
+                :height="18"
+                :box="projectIcon.viewBox"
+                class="text-gray-500 mr-2"
+              />
+              <icon
+                v-if="project.members && project.members.length > 1"
+                :path="sharedProject.path"
+                :width="18"
+                :height="18"
+                :box="sharedProject.viewBox"
+                class="text-gray-500 mr-2"
+              />
+              <p
+                class="font-light cursor-pointer break-words overflow-hidden"
+                @click="clickOnGridCard(project)"
+              >
+                {{ project.name }}
+              </p>
+            </div>
+            <div class="flex items-center" v-if="project.children && project.children.length">
+              <icon
+                :path="subArrow.path"
+                :box="subArrow.viewBox"
+                :width="subArrow.width"
+                :height="subArrow.height"
+                class="text-gray-500 cursor-pointer mr-1"
+                @click="goToChildren(project)"
+              />
+              <p
+                class="font-light text-xs text-violet-500 cursor-pointer"
+                @click="goToChildren(project)"
+              >
+                Подпроектов: {{ project.children.length }}
+              </p>
+            </div>
+            </div>
         </div>
       </template>
     </div>

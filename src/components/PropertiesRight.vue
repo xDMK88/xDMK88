@@ -4,10 +4,13 @@ import { computed } from 'vue'
 import { DatePicker } from 'v-calendar'
 import { useStore } from 'vuex'
 import Tree from '@/components/Tree.vue'
+import VTab from 'v-tab'
+import 'v-tab/dist/v-tab.css'
 export default {
   components: {
     DatePicker,
-    Tree
+    Tree,
+    VTab: VTab
   },
   props: {
     treeData: Object
@@ -19,6 +22,7 @@ export default {
     const store = useStore()
     const taskMessages = computed(() => store.state.taskmessages.messages)
     const taskFiles = computed(() => store.state.taskfiles.files)
+    const myFiles = computed(() => store.state.taskfiles.myFiles)
     const selectedTask = computed(() => store.state.tasks.selectedTask)
     const navigator = computed(() => store.state.navigator.navigator)
     const tasks = computed(() => store.state.tasks)
@@ -31,6 +35,7 @@ export default {
       selectedTask: selectedTask,
       taskMessages: taskMessages,
       taskFiles: taskFiles,
+      myFiles: myFiles,
       tasks: tasks,
       navigator: navigator,
       employeesByEmail: employeesByEmail,
@@ -66,11 +71,10 @@ export default {
         date: new Date(),
         timezone: 'Europe/Moscow'
       },
-      dates: [
+      dates:
         {
           start: new Date(), end: new Date()
-        }
-      ],
+        },
       selected: {},
       popoverShow: false,
       popoverShowEmployee: false,
@@ -80,6 +84,8 @@ export default {
       popoverShowColor: false,
       popoverShowTags: false,
       isOpen: false,
+      activeTab: '',
+      tabs: [],
       tree: {
         label: 'A cool folder',
         children: [
@@ -98,6 +104,10 @@ export default {
   methods: {
     toggle: function () {
       this.isOpen = !this.isOpen
+    },
+    activate (tab) {
+      this.activeTab = tab.name
+      this.$emit('activateTab', tab.name)
     },
     togglePopover_access: function () {
       if (this.popoverShow) {
@@ -174,7 +184,6 @@ export default {
       const datemass = [date]
       console.log(datemass)
       this.$refs.enddatepicker.value = datemass
-      this.dates.push({ start: datemass, end: datemass })
       this.selected = datemass
     }
   }
@@ -209,12 +218,8 @@ export default {
       <p style="display: none">
         <strong>{{ localization.gc_status }}: </strong> {{ localization[statuses[selectedTask.status]] }}
       </p>
-     <!-- <p v-if="selectedTask.uid_project !== '00000000-0000-0000-0000-000000000000'">
-        <strong>{{ localization.props_prj }}: </strong> {{ projects[selectedTask.uid_project].name }}
-      </p>-->
       <!--   <p v-if="selectedTask.plan"><strong>План:</strong> {{ selectedTask.plan }}</p>
       <p v-if="selectedTask.email"><strong>Задача открыта для:</strong> {{ selectedTask.email }}</p>
-      <p v-if="selectedTask.checklist"><strong>Чек-лист:</strong> {{ selectedTask.checklist }}</p>
       <p><strong>Задачу создал:</strong> {{ selectedTask.customer_name }}</p>-->
       <div
         class="mt-3 custom-list-tags"
@@ -254,7 +259,7 @@ export default {
         </div>
         <DatePicker
           is-range
-          v-model="selected.date"
+          v-model="dates"
         >
           <template #default="{ inputValue, togglePopover}" >
             <span class="mt-3 tags-custom">
@@ -332,7 +337,8 @@ export default {
         </div>
         <div class="mt-3 tags-custom" ref="btnRefProject" v-on:click="togglePopover_project()" v-if="selectedTask.uid_project !== '00000000-0000-0000-0000-000000000000' && projects[selectedTask.uid_project].name!==''">
           <svg width="24" height="24" viewBox="0 0 90 81" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M81.8999 17.1334V12.1427C81.8999 7.51337 78.1159 3.74215 73.4708 3.74215H38.7349L37.6926 2.02591C37.0581 1.03229 35.9478 0.399994 34.7696 0.399994H9.02918C4.38412 0.399994 0.600098 4.17121 0.600098 8.80056V72.1661C0.600098 76.7954 4.38412 80.5667 9.02918 80.5667H80.9709C85.616 80.5667 89.4 76.7954 89.4 72.1661V25.4888C89.4226 21.153 86.1144 17.585 81.8999 17.1334ZM7.44306 8.80056C7.44306 7.91985 8.16814 7.19722 9.05183 7.19722H32.8662L42.111 22.2369C42.7228 23.2306 43.8331 23.8629 45.034 23.8629H81.0162C81.8999 23.8629 82.625 24.5855 82.625 25.4662V72.1661C82.625 73.0468 81.8999 73.7694 81.0162 73.7694H9.02918C8.14548 73.7694 7.4204 73.0468 7.4204 72.1661V8.80056H7.44306ZM75.0569 17.0656H46.9147L42.9041 10.5394H73.4482C74.3319 10.5394 75.0569 11.262 75.0569 12.1427V17.0656Z" fill="black" fill-opacity="0.5"/>
+            <path d="M81.8999 17.1334V12.1427C81.8999 7.51337 78.1159 3.74215 73.4708 3.74215H38.7349L37.6926 2.02591C37.0581 1.03229 35.9478 0.399994 34.7696 0.399994H9.02918C4.38412 0.399994 0.600098 4.17121 0.600098 8.80056V72.1661C0.600098 76.7954 4.38412 80.5667 9.02918 80.5667H80.9709C85.616 80.5667 89.4 76.7954 89.4 72.1661V25.4888C89.4226 21.153 86.1144 17.585 81.8999 17.1334ZM7.44306 8.80056C7.44306 7.91985 8.16814 7.19722 9.05183 7.19722H32.8662L42.111 22.2369C42.7228 23.2306 43.8331 23.8629 45.034 23.8629H81.0162C81.8999 23.8629 82.625 24.5855 82.625 25.4662V72.1661C82.625 73.0468 81.8999 73.7694 81.0162 73.7694H9.02918C8.14548 73.7694 7.4204 73.0468 7.4204 72.1661V8.80056H7.44306ZM75.0569 17.0656H46.9147L42.9041 10.5394H73.4482C74.3319 10.5394 75.0569 11.262 75.0569 12.1427V17.0656Z" v-if="projects[selectedTask.uid_project].color!==''" :fill="projects[selectedTask.uid_project].color" fill-opacity="1"/>
+            <path d="M81.8999 17.1334V12.1427C81.8999 7.51337 78.1159 3.74215 73.4708 3.74215H38.7349L37.6926 2.02591C37.0581 1.03229 35.9478 0.399994 34.7696 0.399994H9.02918C4.38412 0.399994 0.600098 4.17121 0.600098 8.80056V72.1661C0.600098 76.7954 4.38412 80.5667 9.02918 80.5667H80.9709C85.616 80.5667 89.4 76.7954 89.4 72.1661V25.4888C89.4226 21.153 86.1144 17.585 81.8999 17.1334ZM7.44306 8.80056C7.44306 7.91985 8.16814 7.19722 9.05183 7.19722H32.8662L42.111 22.2369C42.7228 23.2306 43.8331 23.8629 45.034 23.8629H81.0162C81.8999 23.8629 82.625 24.5855 82.625 25.4662V72.1661C82.625 73.0468 81.8999 73.7694 81.0162 73.7694H9.02918C8.14548 73.7694 7.4204 73.0468 7.4204 72.1661V8.80056H7.44306ZM75.0569 17.0656H46.9147L42.9041 10.5394H73.4482C74.3319 10.5394 75.0569 11.262 75.0569 12.1427V17.0656Z" v-else fill="black" fill-opacity="0.5"/>
           </svg>
           {{projects[selectedTask.uid_project].name}}
         </div>
@@ -360,11 +366,11 @@ export default {
 
         </div>
 
-        <span v-if="selectedTask.tags.length">
+        <span  ref="btnRefTags0" v-on:click="togglePopover_tags()" v-if="selectedTask.tags.length">
         <div
           v-for="(key, value) in selectedTask.tags"
           :key="value"
-          class="mt-3 tags-custom" ref="btnRefTags0" v-on:click="togglePopover_tags()"
+          class="mt-3 tags-custom"
         >
                 <svg width="24" height="24" viewBox="0 0 88 88" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M77.9021 0.800003H45.1156C44.4406 0.800003 43.7994 1.07006 43.3269 1.54265L3.52077 41.3417C-0.107182 44.9705 -0.107182 50.8779 3.52077 54.4899L33.5062 84.4826C35.2611 86.2379 37.5897 87.2 40.0871 87.2C42.5845 87.2 44.9131 86.2379 46.668 84.4826L86.4573 44.6836C86.9298 44.211 87.1998 43.5696 87.1998 42.8945V10.0999C87.1998 4.96894 83.0319 0.800003 77.9021 0.800003ZM79.7414 41.983L43.1413 78.5921C42.3989 79.3347 41.4033 79.7567 40.3402 79.7567C39.2771 79.7567 38.2816 79.3516 37.5391 78.6089L9.42673 50.4897C7.8743 48.9369 7.8743 46.422 9.42673 44.8692L46.0268 8.26021H75.776C77.9696 8.26021 79.7414 10.0493 79.7414 12.2266V41.983Z" :fill="tags[key].back_color" fill-opacity="1"/>
@@ -373,7 +379,7 @@ export default {
             <span class="rounded custom-method">{{ tags[key].name }}</span>
         </div>
           </span>
-        <div v-else class="mt-3 tags-custom" ref="btnRefTags_value" v-on:click="togglePopover_tags()">
+        <div v-else class="mt-3 tags-custom" ref="btnRefTags0" v-on:click="togglePopover_tags()">
           <svg width="24" height="24" viewBox="0 0 88 88" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M77.9021 0.800003H45.1156C44.4406 0.800003 43.7994 1.07006 43.3269 1.54265L3.52077 41.3417C-0.107182 44.9705 -0.107182 50.8779 3.52077 54.4899L33.5062 84.4826C35.2611 86.2379 37.5897 87.2 40.0871 87.2C42.5845 87.2 44.9131 86.2379 46.668 84.4826L86.4573 44.6836C86.9298 44.211 87.1998 43.5696 87.1998 42.8945V10.0999C87.1998 4.96894 83.0319 0.800003 77.9021 0.800003ZM79.7414 41.983L43.1413 78.5921C42.3989 79.3347 41.4033 79.7567 40.3402 79.7567C39.2771 79.7567 38.2816 79.3516 37.5391 78.6089L9.42673 50.4897C7.8743 48.9369 7.8743 46.422 9.42673 44.8692L46.0268 8.26021H75.776C77.9696 8.26021 79.7414 10.0493 79.7414 12.2266V41.983Z" fill="black" fill-opacity="0.5"/>
             <path d="M61.788 19.8588C60.0885 19.8588 58.4969 20.5197 57.2965 21.7202C56.096 22.9206 55.4351 24.5123 55.4351 26.2118C55.4351 27.9113 56.096 29.5029 57.2965 30.7033C58.4969 31.9038 60.0885 32.5647 61.788 32.5647C63.4875 32.5647 65.0792 31.9038 66.2796 30.7033C67.4801 29.5029 68.141 27.9113 68.141 26.2118C68.141 24.5123 67.4801 22.9206 66.2796 21.7202C65.0792 20.5197 63.4875 19.8588 61.788 19.8588Z" fill="black" fill-opacity="0.5"/>
@@ -490,18 +496,36 @@ export default {
       </div>
       <div
         class="mt-3 list-files-custom"
-        style="display: none"
       >
         <div
           v-for="(key, value) in taskFiles"
           :key="value"
           class="mt-3 list-files-custom-item"
         >
+          <div class="date-section" v-if="value===0">
+            <p
+              class="text-center date-messages-chat divider "
+            >
+              {{ days[new Date(key.date_create.split('T')[0]).getDay()] }}, {{ new Date(key.date_create.split('T')[0]).getDate() }} {{ months[new Date(key.date_create).getMonth()] }}
+            </p>
+          </div>
           <div v-if="key.uid_creator===cusers.current_user_uid">
+            <div class="flex">
+              <p class="name-chat-custom" v-if="value===0">
+                {{ employees[key.uid_creator].name }}
+              </p>
+              <img v-if="value===0"
+                   :src="employees[key.uid_creator].fotolink"
+                   class="mr-1 border-fotolink border-solid border-2 border-sky-500"
+                   width="30"
+                   height="30"
+              >
+            </div>
             <div
               class="file-custom_attach-left"
               style="background-color:#EDF7ED;"
             >
+
               <svg
                 style="width:35px;height:35px"
                 viewBox="0 0 24 24"
@@ -511,12 +535,24 @@ export default {
                   d="M11,4H13V16L18.5,10.5L19.92,11.92L12,19.84L4.08,11.92L5.5,10.5L11,16V4Z"
                 />
               </svg>
+              <a :href="'/User/Files/GetFile?uid='">{{ key.file_name }}</a>
             </div>
           </div>
           <div
             v-else
             class=""
           >
+            <div class="flex">
+              <p class="name-chat-custom" v-if="value===0">
+                {{ employees[key.uid_creator].name }}
+              </p>
+              <img v-if="value===0"
+                   :src="employees[key.uid_creator].fotolink"
+                   class="mr-1 border-fotolink border-solid border-2 border-sky-500"
+                   width="30"
+                   height="30"
+              >
+            </div>
             <div
               class="file-custom_attach-right"
               style="background-color:#FCEAEA;"
@@ -532,6 +568,7 @@ export default {
                   d="M11,4H13V16L18.5,10.5L19.92,11.92L12,19.84L4.08,11.92L5.5,10.5L11,16V4Z"
                 />
               </svg>
+              <a :href="'/User/Files/GetFile?uid='">{{ key.file_name }}</a>
             </div>
           </div>
         </div>
@@ -540,7 +577,7 @@ export default {
         class="mt-3 chat-custom"
       >
         <div
-          v-for="(key,value) in newArray"
+          v-for="(key,value) in taskMessages"
           :key="value"
           class="mt-3"
         >
@@ -570,10 +607,12 @@ export default {
                 class="mt-1 msg-custom-chat-left"
                 style="background-color:#EDF7ED;"
               >
-                <div
-                  class="file-custom_attach-left"
-                  v-if="key.file_name"
-                >
+
+              <!--    <div v-for="(key1,value1) in taskFiles[key.uid]" :key="value1">
+                    <div
+                      class="file-custom_attach-left"
+                      v-if="key1.file_name"
+                    >
                   <svg
                     style="width:35px;height:35px"
                     viewBox="0 0 24 24"
@@ -583,8 +622,9 @@ export default {
                       d="M11,4H13V16L18.5,10.5L19.92,11.92L12,19.84L4.08,11.92L5.5,10.5L11,16V4Z"
                     />
                   </svg>
-                  <a :href="key.file_name">{{ key.file_name }}</a>
-                </div>
+                  <a :href="key1.file_name">{{ key1.file_name }}</a>
+                  </div>
+                </div>-->
                 {{ key.msg }}
 
                 <div class="time-chat">
@@ -614,8 +654,9 @@ export default {
                 class="mt-1 msg-custom-chat-right"
                 style="background-color:#FCEAEA;"
               >
+              <!--  <div v-for="(key1,value1) in taskFiles[key.uid]" :key="value1">
                 <div
-                  v-if="key.file_name"
+                  v-if="key1.file_name"
                   class="file-custom_attach-right"
                 >
                   <svg
@@ -627,8 +668,9 @@ export default {
                       d="M11,4H13V16L18.5,10.5L19.92,11.92L12,19.84L4.08,11.92L5.5,10.5L11,16V4Z"
                     />
                   </svg>
-                  <a :href="key.file_name">{{ key.file_name }}</a>
+                  <a :href="key1.file_name">{{ key1.file_name }}</a>
                 </div>
+                </div>-->
                 {{ key.msg }}
 
                 <div class="time-chat">
@@ -763,17 +805,14 @@ export default {
           >
           </div>
           <div v-for="(value, key, index) in tags" :key="index">
-            <div
-              v-for="(value1, key1) in selectedTask.tags"
-              :key="key1"
-            >
+
               <div>
-              <div class="list-tags-access active" v-if="value1===value.uid" >
+              <div class="list-tags-access active" v-if="selectedTask.tags[value.uid]===value.uid && selectedTask.tags.length>0" >
                 <svg width="24" height="24" viewBox="0 0 88 88" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M77.9021 0.800003H45.1156C44.4406 0.800003 43.7994 1.07006 43.3269 1.54265L3.52077 41.3417C-0.107182 44.9705 -0.107182 50.8779 3.52077 54.4899L33.5062 84.4826C35.2611 86.2379 37.5897 87.2 40.0871 87.2C42.5845 87.2 44.9131 86.2379 46.668 84.4826L86.4573 44.6836C86.9298 44.211 87.1998 43.5696 87.1998 42.8945V10.0999C87.1998 4.96894 83.0319 0.800003 77.9021 0.800003ZM79.7414 41.983L43.1413 78.5921C42.3989 79.3347 41.4033 79.7567 40.3402 79.7567C39.2771 79.7567 38.2816 79.3516 37.5391 78.6089L9.42673 50.4897C7.8743 48.9369 7.8743 46.422 9.42673 44.8692L46.0268 8.26021H75.776C77.9696 8.26021 79.7414 10.0493 79.7414 12.2266V41.983Z" :fill="value.back_color" fill-opacity="1"></path>
                   <path d="M61.788 19.8588C60.0885 19.8588 58.4969 20.5197 57.2965 21.7202C56.096 22.9206 55.4351 24.5123 55.4351 26.2118C55.4351 27.9113 56.096 29.5029 57.2965 30.7033C58.4969 31.9038 60.0885 32.5647 61.788 32.5647C63.4875 32.5647 65.0792 31.9038 66.2796 30.7033C67.4801 29.5029 68.141 27.9113 68.141 26.2118C68.141 24.5123 67.4801 22.9206 66.2796 21.7202C65.0792 20.5197 63.4875 19.8588 61.788 19.8588Z" :fill="value.back_color" fill-opacity="1"></path>
                 </svg>
-                  {{tags[value1].name}}
+                <label>{{value.name}}</label>
                 <input type="checkbox" name="check_employee" class="check-custom-project" checked="checked">
               </div>
               <div class="list-tags-access" v-else >
@@ -781,10 +820,9 @@ export default {
                   <path d="M77.9021 0.800003H45.1156C44.4406 0.800003 43.7994 1.07006 43.3269 1.54265L3.52077 41.3417C-0.107182 44.9705 -0.107182 50.8779 3.52077 54.4899L33.5062 84.4826C35.2611 86.2379 37.5897 87.2 40.0871 87.2C42.5845 87.2 44.9131 86.2379 46.668 84.4826L86.4573 44.6836C86.9298 44.211 87.1998 43.5696 87.1998 42.8945V10.0999C87.1998 4.96894 83.0319 0.800003 77.9021 0.800003ZM79.7414 41.983L43.1413 78.5921C42.3989 79.3347 41.4033 79.7567 40.3402 79.7567C39.2771 79.7567 38.2816 79.3516 37.5391 78.6089L9.42673 50.4897C7.8743 48.9369 7.8743 46.422 9.42673 44.8692L46.0268 8.26021H75.776C77.9696 8.26021 79.7414 10.0493 79.7414 12.2266V41.983Z" :fill="value.back_color" fill-opacity="1"></path>
                   <path d="M61.788 19.8588C60.0885 19.8588 58.4969 20.5197 57.2965 21.7202C56.096 22.9206 55.4351 24.5123 55.4351 26.2118C55.4351 27.9113 56.096 29.5029 57.2965 30.7033C58.4969 31.9038 60.0885 32.5647 61.788 32.5647C63.4875 32.5647 65.0792 31.9038 66.2796 30.7033C67.4801 29.5029 68.141 27.9113 68.141 26.2118C68.141 24.5123 67.4801 22.9206 66.2796 21.7202C65.0792 20.5197 63.4875 19.8588 61.788 19.8588Z" :fill="value.back_color" fill-opacity="1"></path>
                 </svg>
-                  {{value.name}}
+                <label>{{value.name}}</label>
                 <input type="checkbox" name="check_employee" class="check-custom-project">
               </div>
-            </div>
             </div>
             </div>
         </div>
@@ -819,19 +857,19 @@ export default {
         </div>
         <div class="container-color-popover">
           <div v-for="(key,value) in colors" :key="value">
-            <div class="list-color-access" :style="{'background-color': key.back_color}" v-if="key.uid===selectedTask.uid_marker">
+            <div class="color_container" v-if="key.uid===selectedTask.uid_marker">
+              <label class="list-color-access" :style="{'background-color': key.back_color, 'border:1px solid ': key.back_color}" >
+                <span  style="text-transform:uppercase" :style="{'color': key.force_color}" v-if="uppercase===1">{{key.name}}</span>
+                <span :style="{'color': key.force_color}" v-else>{{key.name}}</span>
+              </label>
               <input type="checkbox" name="check_employee" class="check-custom-project" checked="checked">
-              <div style="{'color': key.force_color}" >
-                <span  style="text-transform:uppercase" v-if="uppercase===1">{{key.name}}</span>
-                <span v-else>{{key.name}}</span>
-              </div>
             </div>
-            <div class="list-color-access" :style="{'background-color': key.back_color}" v-else>
+            <div class="color_container" :style="{'color': key.force_color, 'background-color': key.back_color, 'border:1px solid ':key.back_color}" v-else>
+              <label class="list-color-access" >
+                <span  style="text-transform:uppercase" :style="{'color': key.force_color}" v-if="uppercase===1">{{key.name}}</span>
+                <span :style="{'color': key.force_color}" v-else>{{key.name}}</span>
+              </label>
               <input type="checkbox" name="check_employee" class="check-custom-project">
-              <div style="{'color': key.force_color}" >
-                <span  style="text-transform:uppercase" v-if="uppercase===1">{{key.name}}</span>
-                <span v-else>{{key.name}}</span>
-              </div>
             </div>
           </div>
         </div>
@@ -866,56 +904,56 @@ export default {
             <li v-for="(value, index) in projects" :key="index" @click="toggle">
               <div class="list-project-access active" v-if="selectedTask.uid_project === value.uid">
                 <svg width="24" height="22" viewBox="0 0 30 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M27.2999 6.3778V4.71425C27.2999 3.17114 26.0386 1.91406 24.4902 1.91406H12.9116L12.5642 1.34198C12.3527 1.01078 11.9826 0.800011 11.5898 0.800011H3.00969C1.46134 0.800011 0.199997 2.05708 0.199997 3.6002V24.722C0.199997 26.2652 1.46134 27.5222 3.00969 27.5222H26.9903C28.5386 27.5222 29.8 26.2652 29.8 24.722V9.16294C29.8075 7.71768 28.7048 6.52835 27.2999 6.3778ZM2.48098 3.6002C2.48098 3.30663 2.72268 3.06575 3.01724 3.06575H10.9554L14.037 8.07899C14.2409 8.4102 14.611 8.62097 15.0113 8.62097H27.0054C27.2999 8.62097 27.5416 8.86184 27.5416 9.15541V24.722C27.5416 25.0156 27.2999 25.2565 27.0054 25.2565H3.00969C2.71512 25.2565 2.47343 25.0156 2.47343 24.722V3.6002H2.48098ZM25.0189 6.35522H15.6382L14.3013 4.17981H24.4827C24.7773 4.17981 25.0189 4.42068 25.0189 4.71425V6.35522Z" fill="black" fill-opacity="0.5"/>
+                  <path d="M27.2999 6.3778V4.71425C27.2999 3.17114 26.0386 1.91406 24.4902 1.91406H12.9116L12.5642 1.34198C12.3527 1.01078 11.9826 0.800011 11.5898 0.800011H3.00969C1.46134 0.800011 0.199997 2.05708 0.199997 3.6002V24.722C0.199997 26.2652 1.46134 27.5222 3.00969 27.5222H26.9903C28.5386 27.5222 29.8 26.2652 29.8 24.722V9.16294C29.8075 7.71768 28.7048 6.52835 27.2999 6.3778ZM2.48098 3.6002C2.48098 3.30663 2.72268 3.06575 3.01724 3.06575H10.9554L14.037 8.07899C14.2409 8.4102 14.611 8.62097 15.0113 8.62097H27.0054C27.2999 8.62097 27.5416 8.86184 27.5416 9.15541V24.722C27.5416 25.0156 27.2999 25.2565 27.0054 25.2565H3.00969C2.71512 25.2565 2.47343 25.0156 2.47343 24.722V3.6002H2.48098ZM25.0189 6.35522H15.6382L14.3013 4.17981H24.4827C24.7773 4.17981 25.0189 4.42068 25.0189 4.71425V6.35522Z" :fill="value.color" fill-opacity="1"/>
                 </svg>
-                {{value.name}}        <input type="checkbox" name="check_employee" class="check-custom-project" checked>
+                <label class="break-words">{{value.name}}</label>        <input type="checkbox" name="check_employee" class="check-custom-project" checked>
               </div>
               <div class="list-project-access" v-else>
                 <svg width="24" height="22" viewBox="0 0 30 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M27.2999 6.3778V4.71425C27.2999 3.17114 26.0386 1.91406 24.4902 1.91406H12.9116L12.5642 1.34198C12.3527 1.01078 11.9826 0.800011 11.5898 0.800011H3.00969C1.46134 0.800011 0.199997 2.05708 0.199997 3.6002V24.722C0.199997 26.2652 1.46134 27.5222 3.00969 27.5222H26.9903C28.5386 27.5222 29.8 26.2652 29.8 24.722V9.16294C29.8075 7.71768 28.7048 6.52835 27.2999 6.3778ZM2.48098 3.6002C2.48098 3.30663 2.72268 3.06575 3.01724 3.06575H10.9554L14.037 8.07899C14.2409 8.4102 14.611 8.62097 15.0113 8.62097H27.0054C27.2999 8.62097 27.5416 8.86184 27.5416 9.15541V24.722C27.5416 25.0156 27.2999 25.2565 27.0054 25.2565H3.00969C2.71512 25.2565 2.47343 25.0156 2.47343 24.722V3.6002H2.48098ZM25.0189 6.35522H15.6382L14.3013 4.17981H24.4827C24.7773 4.17981 25.0189 4.42068 25.0189 4.71425V6.35522Z" fill="black" fill-opacity="0.5"/>
-                </svg>  {{value.name}}
+                  <path d="M27.2999 6.3778V4.71425C27.2999 3.17114 26.0386 1.91406 24.4902 1.91406H12.9116L12.5642 1.34198C12.3527 1.01078 11.9826 0.800011 11.5898 0.800011H3.00969C1.46134 0.800011 0.199997 2.05708 0.199997 3.6002V24.722C0.199997 26.2652 1.46134 27.5222 3.00969 27.5222H26.9903C28.5386 27.5222 29.8 26.2652 29.8 24.722V9.16294C29.8075 7.71768 28.7048 6.52835 27.2999 6.3778ZM2.48098 3.6002C2.48098 3.30663 2.72268 3.06575 3.01724 3.06575H10.9554L14.037 8.07899C14.2409 8.4102 14.611 8.62097 15.0113 8.62097H27.0054C27.2999 8.62097 27.5416 8.86184 27.5416 9.15541V24.722C27.5416 25.0156 27.2999 25.2565 27.0054 25.2565H3.00969C2.71512 25.2565 2.47343 25.0156 2.47343 24.722V3.6002H2.48098ZM25.0189 6.35522H15.6382L14.3013 4.17981H24.4827C24.7773 4.17981 25.0189 4.42068 25.0189 4.71425V6.35522Z" :fill="value.color" fill-opacity="1"/>
+                </svg>  <label class="break-words">{{value.name}}</label>
                 <input type="checkbox" name="check_employee" class="check-custom-project">
               </div>
-              <ul style="margin-left: 15px" v-if="value.children" v-show="isOpen">
+              <ul style="margin-left: 15px; display: none;" v-if="value.children" v-show="isOpen">
 
                 <li v-for="(project, pindex) in value.children" :key="pindex" @click="toggle">
                   <div class="list-project-access active" v-if="selectedTask.uid_project === project.uid">
                     <svg width="24" height="22" viewBox="0 0 30 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M27.2999 6.3778V4.71425C27.2999 3.17114 26.0386 1.91406 24.4902 1.91406H12.9116L12.5642 1.34198C12.3527 1.01078 11.9826 0.800011 11.5898 0.800011H3.00969C1.46134 0.800011 0.199997 2.05708 0.199997 3.6002V24.722C0.199997 26.2652 1.46134 27.5222 3.00969 27.5222H26.9903C28.5386 27.5222 29.8 26.2652 29.8 24.722V9.16294C29.8075 7.71768 28.7048 6.52835 27.2999 6.3778ZM2.48098 3.6002C2.48098 3.30663 2.72268 3.06575 3.01724 3.06575H10.9554L14.037 8.07899C14.2409 8.4102 14.611 8.62097 15.0113 8.62097H27.0054C27.2999 8.62097 27.5416 8.86184 27.5416 9.15541V24.722C27.5416 25.0156 27.2999 25.2565 27.0054 25.2565H3.00969C2.71512 25.2565 2.47343 25.0156 2.47343 24.722V3.6002H2.48098ZM25.0189 6.35522H15.6382L14.3013 4.17981H24.4827C24.7773 4.17981 25.0189 4.42068 25.0189 4.71425V6.35522Z" fill="black" fill-opacity="0.5"/>
-                    </svg>  {{ project.name }}    <input type="checkbox" name="check_employee" class="check-custom-project" checked>
+                      <path d="M27.2999 6.3778V4.71425C27.2999 3.17114 26.0386 1.91406 24.4902 1.91406H12.9116L12.5642 1.34198C12.3527 1.01078 11.9826 0.800011 11.5898 0.800011H3.00969C1.46134 0.800011 0.199997 2.05708 0.199997 3.6002V24.722C0.199997 26.2652 1.46134 27.5222 3.00969 27.5222H26.9903C28.5386 27.5222 29.8 26.2652 29.8 24.722V9.16294C29.8075 7.71768 28.7048 6.52835 27.2999 6.3778ZM2.48098 3.6002C2.48098 3.30663 2.72268 3.06575 3.01724 3.06575H10.9554L14.037 8.07899C14.2409 8.4102 14.611 8.62097 15.0113 8.62097H27.0054C27.2999 8.62097 27.5416 8.86184 27.5416 9.15541V24.722C27.5416 25.0156 27.2999 25.2565 27.0054 25.2565H3.00969C2.71512 25.2565 2.47343 25.0156 2.47343 24.722V3.6002H2.48098ZM25.0189 6.35522H15.6382L14.3013 4.17981H24.4827C24.7773 4.17981 25.0189 4.42068 25.0189 4.71425V6.35522Z" :fill="value.color" fill-opacity="1"/>
+                    </svg>  <label class="break-words">{{ project.name }}</label>    <input type="checkbox" name="check_employee" class="check-custom-project" checked>
                   </div>
                   <div class="list-project-access" v-else>
                     <svg width="24" height="22" viewBox="0 0 30 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M27.2999 6.3778V4.71425C27.2999 3.17114 26.0386 1.91406 24.4902 1.91406H12.9116L12.5642 1.34198C12.3527 1.01078 11.9826 0.800011 11.5898 0.800011H3.00969C1.46134 0.800011 0.199997 2.05708 0.199997 3.6002V24.722C0.199997 26.2652 1.46134 27.5222 3.00969 27.5222H26.9903C28.5386 27.5222 29.8 26.2652 29.8 24.722V9.16294C29.8075 7.71768 28.7048 6.52835 27.2999 6.3778ZM2.48098 3.6002C2.48098 3.30663 2.72268 3.06575 3.01724 3.06575H10.9554L14.037 8.07899C14.2409 8.4102 14.611 8.62097 15.0113 8.62097H27.0054C27.2999 8.62097 27.5416 8.86184 27.5416 9.15541V24.722C27.5416 25.0156 27.2999 25.2565 27.0054 25.2565H3.00969C2.71512 25.2565 2.47343 25.0156 2.47343 24.722V3.6002H2.48098ZM25.0189 6.35522H15.6382L14.3013 4.17981H24.4827C24.7773 4.17981 25.0189 4.42068 25.0189 4.71425V6.35522Z" fill="black" fill-opacity="0.5"/>
-                    </svg>  {{ project.name }}
+                      <path d="M27.2999 6.3778V4.71425C27.2999 3.17114 26.0386 1.91406 24.4902 1.91406H12.9116L12.5642 1.34198C12.3527 1.01078 11.9826 0.800011 11.5898 0.800011H3.00969C1.46134 0.800011 0.199997 2.05708 0.199997 3.6002V24.722C0.199997 26.2652 1.46134 27.5222 3.00969 27.5222H26.9903C28.5386 27.5222 29.8 26.2652 29.8 24.722V9.16294C29.8075 7.71768 28.7048 6.52835 27.2999 6.3778ZM2.48098 3.6002C2.48098 3.30663 2.72268 3.06575 3.01724 3.06575H10.9554L14.037 8.07899C14.2409 8.4102 14.611 8.62097 15.0113 8.62097H27.0054C27.2999 8.62097 27.5416 8.86184 27.5416 9.15541V24.722C27.5416 25.0156 27.2999 25.2565 27.0054 25.2565H3.00969C2.71512 25.2565 2.47343 25.0156 2.47343 24.722V3.6002H2.48098ZM25.0189 6.35522H15.6382L14.3013 4.17981H24.4827C24.7773 4.17981 25.0189 4.42068 25.0189 4.71425V6.35522Z" :fill="value.color" fill-opacity="1"/>
+                    </svg>  <label class="break-words">{{ project.name }}</label>
                     <input type="checkbox" name="check_employee" class="check-custom-project" >
                   </div>
-                  <ul style="margin-left: 30px" v-if="project.children" v-show="isOpen">
+                  <ul style="margin-left: 30px;display: none;" v-if="project.children" v-show="isOpen">
                     <li v-for="(subproject,value2) in project.children" :key="value2" @click="toggle">
                       <div class="list-project-access active" v-if="selectedTask.uid_project === subproject.uid">
                         <svg width="24" height="22" viewBox="0 0 30 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-                          <path d="M27.2999 6.3778V4.71425C27.2999 3.17114 26.0386 1.91406 24.4902 1.91406H12.9116L12.5642 1.34198C12.3527 1.01078 11.9826 0.800011 11.5898 0.800011H3.00969C1.46134 0.800011 0.199997 2.05708 0.199997 3.6002V24.722C0.199997 26.2652 1.46134 27.5222 3.00969 27.5222H26.9903C28.5386 27.5222 29.8 26.2652 29.8 24.722V9.16294C29.8075 7.71768 28.7048 6.52835 27.2999 6.3778ZM2.48098 3.6002C2.48098 3.30663 2.72268 3.06575 3.01724 3.06575H10.9554L14.037 8.07899C14.2409 8.4102 14.611 8.62097 15.0113 8.62097H27.0054C27.2999 8.62097 27.5416 8.86184 27.5416 9.15541V24.722C27.5416 25.0156 27.2999 25.2565 27.0054 25.2565H3.00969C2.71512 25.2565 2.47343 25.0156 2.47343 24.722V3.6002H2.48098ZM25.0189 6.35522H15.6382L14.3013 4.17981H24.4827C24.7773 4.17981 25.0189 4.42068 25.0189 4.71425V6.35522Z" fill="black" fill-opacity="0.5"/>
-                        </svg>  {{subproject.name}}
+                          <path d="M27.2999 6.3778V4.71425C27.2999 3.17114 26.0386 1.91406 24.4902 1.91406H12.9116L12.5642 1.34198C12.3527 1.01078 11.9826 0.800011 11.5898 0.800011H3.00969C1.46134 0.800011 0.199997 2.05708 0.199997 3.6002V24.722C0.199997 26.2652 1.46134 27.5222 3.00969 27.5222H26.9903C28.5386 27.5222 29.8 26.2652 29.8 24.722V9.16294C29.8075 7.71768 28.7048 6.52835 27.2999 6.3778ZM2.48098 3.6002C2.48098 3.30663 2.72268 3.06575 3.01724 3.06575H10.9554L14.037 8.07899C14.2409 8.4102 14.611 8.62097 15.0113 8.62097H27.0054C27.2999 8.62097 27.5416 8.86184 27.5416 9.15541V24.722C27.5416 25.0156 27.2999 25.2565 27.0054 25.2565H3.00969C2.71512 25.2565 2.47343 25.0156 2.47343 24.722V3.6002H2.48098ZM25.0189 6.35522H15.6382L14.3013 4.17981H24.4827C24.7773 4.17981 25.0189 4.42068 25.0189 4.71425V6.35522Z" :fill="value.color" fill-opacity="1"/>
+                        </svg>  <label class="break-words">{{subproject.name}}</label>
                         <input type="checkbox" name="check_employee" class="check-custom-project" checked>
                       </div>
                       <div class="list-project-access" v-else>
                         <svg width="24" height="22" viewBox="0 0 30 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-                          <path d="M27.2999 6.3778V4.71425C27.2999 3.17114 26.0386 1.91406 24.4902 1.91406H12.9116L12.5642 1.34198C12.3527 1.01078 11.9826 0.800011 11.5898 0.800011H3.00969C1.46134 0.800011 0.199997 2.05708 0.199997 3.6002V24.722C0.199997 26.2652 1.46134 27.5222 3.00969 27.5222H26.9903C28.5386 27.5222 29.8 26.2652 29.8 24.722V9.16294C29.8075 7.71768 28.7048 6.52835 27.2999 6.3778ZM2.48098 3.6002C2.48098 3.30663 2.72268 3.06575 3.01724 3.06575H10.9554L14.037 8.07899C14.2409 8.4102 14.611 8.62097 15.0113 8.62097H27.0054C27.2999 8.62097 27.5416 8.86184 27.5416 9.15541V24.722C27.5416 25.0156 27.2999 25.2565 27.0054 25.2565H3.00969C2.71512 25.2565 2.47343 25.0156 2.47343 24.722V3.6002H2.48098ZM25.0189 6.35522H15.6382L14.3013 4.17981H24.4827C24.7773 4.17981 25.0189 4.42068 25.0189 4.71425V6.35522Z" fill="black" fill-opacity="0.5"/>
-                        </svg>    {{ subproject.name }}
+                          <path d="M27.2999 6.3778V4.71425C27.2999 3.17114 26.0386 1.91406 24.4902 1.91406H12.9116L12.5642 1.34198C12.3527 1.01078 11.9826 0.800011 11.5898 0.800011H3.00969C1.46134 0.800011 0.199997 2.05708 0.199997 3.6002V24.722C0.199997 26.2652 1.46134 27.5222 3.00969 27.5222H26.9903C28.5386 27.5222 29.8 26.2652 29.8 24.722V9.16294C29.8075 7.71768 28.7048 6.52835 27.2999 6.3778ZM2.48098 3.6002C2.48098 3.30663 2.72268 3.06575 3.01724 3.06575H10.9554L14.037 8.07899C14.2409 8.4102 14.611 8.62097 15.0113 8.62097H27.0054C27.2999 8.62097 27.5416 8.86184 27.5416 9.15541V24.722C27.5416 25.0156 27.2999 25.2565 27.0054 25.2565H3.00969C2.71512 25.2565 2.47343 25.0156 2.47343 24.722V3.6002H2.48098ZM25.0189 6.35522H15.6382L14.3013 4.17981H24.4827C24.7773 4.17981 25.0189 4.42068 25.0189 4.71425V6.35522Z" :fill="value.color" fill-opacity="1"/>
+                        </svg>    <label class="break-words">{{ subproject.name }}</label>
                         <input type="checkbox" name="check_employee" class="check-custom-project" >
                       </div>
-                      <ul style="margin-left: 30px" v-if="subproject.children" v-show="isOpen">
+                      <ul style="margin-left: 30px; display: none;" v-if="subproject.children" v-show="isOpen">
                         <li v-for="(subsubproject,value2) in subproject.children" :key="value2" @click="toggle">
                           <div class="list-project-access active" v-if="selectedTask.uid_project === subsubproject.uid">
                             <svg width="24" height="22" viewBox="0 0 30 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-                              <path d="M27.2999 6.3778V4.71425C27.2999 3.17114 26.0386 1.91406 24.4902 1.91406H12.9116L12.5642 1.34198C12.3527 1.01078 11.9826 0.800011 11.5898 0.800011H3.00969C1.46134 0.800011 0.199997 2.05708 0.199997 3.6002V24.722C0.199997 26.2652 1.46134 27.5222 3.00969 27.5222H26.9903C28.5386 27.5222 29.8 26.2652 29.8 24.722V9.16294C29.8075 7.71768 28.7048 6.52835 27.2999 6.3778ZM2.48098 3.6002C2.48098 3.30663 2.72268 3.06575 3.01724 3.06575H10.9554L14.037 8.07899C14.2409 8.4102 14.611 8.62097 15.0113 8.62097H27.0054C27.2999 8.62097 27.5416 8.86184 27.5416 9.15541V24.722C27.5416 25.0156 27.2999 25.2565 27.0054 25.2565H3.00969C2.71512 25.2565 2.47343 25.0156 2.47343 24.722V3.6002H2.48098ZM25.0189 6.35522H15.6382L14.3013 4.17981H24.4827C24.7773 4.17981 25.0189 4.42068 25.0189 4.71425V6.35522Z" fill="black" fill-opacity="0.5"/>
-                            </svg>   {{subsubproject.name}}
+                              <path d="M27.2999 6.3778V4.71425C27.2999 3.17114 26.0386 1.91406 24.4902 1.91406H12.9116L12.5642 1.34198C12.3527 1.01078 11.9826 0.800011 11.5898 0.800011H3.00969C1.46134 0.800011 0.199997 2.05708 0.199997 3.6002V24.722C0.199997 26.2652 1.46134 27.5222 3.00969 27.5222H26.9903C28.5386 27.5222 29.8 26.2652 29.8 24.722V9.16294C29.8075 7.71768 28.7048 6.52835 27.2999 6.3778ZM2.48098 3.6002C2.48098 3.30663 2.72268 3.06575 3.01724 3.06575H10.9554L14.037 8.07899C14.2409 8.4102 14.611 8.62097 15.0113 8.62097H27.0054C27.2999 8.62097 27.5416 8.86184 27.5416 9.15541V24.722C27.5416 25.0156 27.2999 25.2565 27.0054 25.2565H3.00969C2.71512 25.2565 2.47343 25.0156 2.47343 24.722V3.6002H2.48098ZM25.0189 6.35522H15.6382L14.3013 4.17981H24.4827C24.7773 4.17981 25.0189 4.42068 25.0189 4.71425V6.35522Z" :fill="value.color" fill-opacity="1"/>
+                            </svg>   <label class="break-words">{{subsubproject.name}}</label>
                             <input type="checkbox" name="check_employee" class="check-custom-project" checked>
                           </div>
                           <div class="list-project-access" v-else>
                             <svg width="24" height="22" viewBox="0 0 30 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-                              <path d="M27.2999 6.3778V4.71425C27.2999 3.17114 26.0386 1.91406 24.4902 1.91406H12.9116L12.5642 1.34198C12.3527 1.01078 11.9826 0.800011 11.5898 0.800011H3.00969C1.46134 0.800011 0.199997 2.05708 0.199997 3.6002V24.722C0.199997 26.2652 1.46134 27.5222 3.00969 27.5222H26.9903C28.5386 27.5222 29.8 26.2652 29.8 24.722V9.16294C29.8075 7.71768 28.7048 6.52835 27.2999 6.3778ZM2.48098 3.6002C2.48098 3.30663 2.72268 3.06575 3.01724 3.06575H10.9554L14.037 8.07899C14.2409 8.4102 14.611 8.62097 15.0113 8.62097H27.0054C27.2999 8.62097 27.5416 8.86184 27.5416 9.15541V24.722C27.5416 25.0156 27.2999 25.2565 27.0054 25.2565H3.00969C2.71512 25.2565 2.47343 25.0156 2.47343 24.722V3.6002H2.48098ZM25.0189 6.35522H15.6382L14.3013 4.17981H24.4827C24.7773 4.17981 25.0189 4.42068 25.0189 4.71425V6.35522Z" fill="black" fill-opacity="0.5"/>
-                            </svg>    {{ subsubproject.name }}
+                              <path d="M27.2999 6.3778V4.71425C27.2999 3.17114 26.0386 1.91406 24.4902 1.91406H12.9116L12.5642 1.34198C12.3527 1.01078 11.9826 0.800011 11.5898 0.800011H3.00969C1.46134 0.800011 0.199997 2.05708 0.199997 3.6002V24.722C0.199997 26.2652 1.46134 27.5222 3.00969 27.5222H26.9903C28.5386 27.5222 29.8 26.2652 29.8 24.722V9.16294C29.8075 7.71768 28.7048 6.52835 27.2999 6.3778ZM2.48098 3.6002C2.48098 3.30663 2.72268 3.06575 3.01724 3.06575H10.9554L14.037 8.07899C14.2409 8.4102 14.611 8.62097 15.0113 8.62097H27.0054C27.2999 8.62097 27.5416 8.86184 27.5416 9.15541V24.722C27.5416 25.0156 27.2999 25.2565 27.0054 25.2565H3.00969C2.71512 25.2565 2.47343 25.0156 2.47343 24.722V3.6002H2.48098ZM25.0189 6.35522H15.6382L14.3013 4.17981H24.4827C24.7773 4.17981 25.0189 4.42068 25.0189 4.71425V6.35522Z" :fill="value.color" fill-opacity="1"/>
+                            </svg>    <label class="break-words">{{ subsubproject.name }}</label>
                             <input type="checkbox" name="check_employee" class="check-custom-project" >
                           </div>
                         </li>
@@ -957,37 +995,36 @@ export default {
           <div v-for="(key,value) in employees" :key="value">
 
             <div class="list-employee-access active" v-if="selectedTask.email_performer===key.email">
-              <input type="checkbox" name="check_employee" class="check-custom-empployee" checked>
+
               <img
                 :src="key.fotolink"
                 class="mr-1 border-fotolink border-solid border-2 border-sky-500"
                 width="30"
                 height="30"
               >
-              <div>
+              <label class="employee-name-custom">
                 {{key.name}}
                 <div class="popover-employee-email">{{key.email}}</div>
-              </div>
+              </label>
+              <input type="checkbox" name="check_employee" class="check-custom-empployee" checked>
             </div>
             <div class="list-employee-access" v-else>
-              <input type="checkbox" name="check_employee" class="check-custom-empployee">
+
               <img
                 :src="key.fotolink"
                 class="mr-1 border-fotolink border-solid border-2 border-sky-500"
                 width="30"
                 height="30"
               >
-              <div>
+              <label class="employee-name-custom">
                 {{key.name}}
                 <div class="popover-employee-email">{{key.email}}</div>
-              </div>
+              </label>
+              <input type="checkbox" name="check_employee" class="check-custom-empployee">
             </div>
           </div>
         </div>
 
-      </div>
-      <div class="popover-container-button">
-        <input type="button" name="ok" value="ОК" class="btn btn-orange">
       </div>
     </div>
   </div>
@@ -1007,7 +1044,7 @@ export default {
       </div>
       <div class="text-white p-3 body-popover-custom">
         <div class="input-group">
-          <label class="title-label-search">Сотрудники</label>
+          <label class="title-label-search">Доступ</label>
         <span class="input-group-addon input-group-custom"><svg width="16" height="16" viewBox="0 0 82 83" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M81.0655 76.0627L64.1173 59.1145C69.4264 52.6824 72.3872 44.5146 72.3872 36.1426C72.3872 16.2335 56.1537 0 36.1425 0C16.2335 0 0 16.2335 0 36.1426C0 56.1537 16.2335 72.3872 36.1425 72.3872C44.5145 72.3872 52.6824 69.4264 59.1145 64.1173L76.0627 81.0655C76.7774 81.7802 77.5942 82.0865 78.513 82.0865C79.4319 82.0865 80.3508 81.6781 80.9634 81.0655C81.6781 80.3508 81.9844 79.534 81.9844 78.6152C82.0865 77.5942 81.6781 76.7774 81.0655 76.0627ZM36.1425 65.3425C20.1132 65.3425 7.04473 52.274 7.04473 36.1426C7.04473 20.0111 20.1132 7.04473 36.1425 7.04473C52.1719 7.04473 65.3425 20.1132 65.3425 36.1426C65.3425 52.1719 52.274 65.3425 36.1425 65.3425Z" fill="#757575"/>
 </svg>
@@ -1017,31 +1054,34 @@ export default {
         </div>
         <div class="container-employee-popover">
           <div v-for="(key,value,index) in employees" :key="value">
-            <div class="list-employee-access active" v-if="selectedTask.emails.split('..')[index+1]===key.email">
-              <input type="checkbox" name="check_employee" class="check-custom-empployee" checked="checked">
+            <div class="list-employee-access active" v-if="selectedTask.emails.split('..')[index]===key.email">
+
               <img
                 :src="key.fotolink"
                 class="mr-1 border-fotolink border-solid border-2 border-sky-500"
                 width="30"
                 height="30"
               >
-              <div>
-                {{key.name}}
-                <div class="popover-employee-email">{{key.email}}</div>
-              </div>
+              <input type="checkbox" name="check_employee" class="custom-checkbox check-custom-empployee" checked="checked">
+              <label class="employee-name-custom">
+
+                <div class="popover-employee-email"><div style="color: black;">{{key.name}}</div>{{key.email}}</div>
+              </label>
             </div>
             <div class="list-employee-access" v-else>
-              <input type="checkbox" name="check_employee" class="check-custom-empployee">
+
               <img
                 :src="key.fotolink"
                 class="mr-1 border-fotolink border-solid border-2 border-sky-500"
                 width="30"
                 height="30"
               >
-              <div>
-                {{key.name}}
-                <div class="popover-employee-email">{{key.email}}</div>
-              </div>
+
+              <input type="checkbox" name="check_employee" class="custom-checkbox check-custom-empployee">
+              <label class="employee-name-custom">
+
+                <div class="popover-employee-email"><div style="color: black;">{{key.name}}</div> {{key.email}}</div>
+              </label>
             </div>
           </div>
         </div>
@@ -1065,8 +1105,20 @@ export default {
         <button class="btn-width-custom" type="button">Еженедельно</button>
         <button class="btn-width-custom" type="button">Ежемесячно</button>
         <button class="btn-width-custom" type="button">Ежегодно</button>
+        <div class="list">
+        </div>
+        <VTab class="v-tab-vertical">
+          <v-tab label='First'>
+            First tab content
+          </v-tab>
+          <v-tab label='Second'>
+            Second tab content
+          </v-tab>
+          <v-tab label='Third'>
+            Third tab content
+          </v-tab>
+        </VTab>
       </div>
-      <div class="list"></div>
     </div>
   </div>
   <!--Всплывающее окно Напоминание-->

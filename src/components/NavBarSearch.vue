@@ -30,5 +30,6 @@ const props = defineProps({
     :placeholder="props.placeholder"
     @keyup.enter="sendSearchRequest"
     borderless
+    transparent
   />
 </template>

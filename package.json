@@ -21,6 +21,8 @@
     "he-tree-vue": "^3.0.3",
     "numeral": "^2.0.6",
     "v-calendar": "^3.0.0-alpha.6",
+    "v-switch-case": "^1.0.3",
+    "v-tab": "^3.0.3",
     "vue": "^3.0.0",
     "vue-class-component": "^8.0.0-rc.1",
     "vue-router": "^4.0.0-0",

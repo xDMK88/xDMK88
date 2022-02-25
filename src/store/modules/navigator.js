@@ -380,11 +380,7 @@ const mutations = {
     const newCommonProjects = []
     newCommonProjects.push({
       dep: localization.value.Projects,
-      items: resp.data.private_projects.items
-    })
-    newCommonProjects.push({
-      dep: localization.value.SharedProjects,
-      items: resp.data.common_projects.items
+      items: [...resp.data.private_projects.items, ...resp.data.common_projects.items]
     })
     resp.data.new_private_projects = newCommonProjects
     state.navigator = resp.data

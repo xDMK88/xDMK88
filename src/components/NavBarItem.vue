@@ -43,6 +43,8 @@ const componentClass = computed(() => {
     'grow-0',
     'shrink-0',
     'relative',
+    'font-light',
+    'text-gray-700',
     'cursor-pointer',
     'hover:text-blue-500',
     props.active ? props.activeColor : 'text-black dark:text-white dark:hover:text-gray-400'

@@ -46,7 +46,7 @@ const clickOnGridCard = (value) => {
               >
               </div>
               <p
-                class="font-light cursor-pointer"
+                class="font-normal cursor-pointer"
                 @click="clickOnGridCard(color)"
               >
                 {{ color.name }}

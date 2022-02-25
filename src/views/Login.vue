@@ -190,7 +190,7 @@ const checkEmailExistense = () => {
         size="24"
         @click="getBack"
       />
-      <p class="pb-4 pt-5 text-center text-2xl font-bold dark:text-black">
+      <p class="pb-4 pt-5 text-center text-2xl font-bold dark:text-white">
         {{ localization.EnterLeaderTask }}
       </p>
       <field>

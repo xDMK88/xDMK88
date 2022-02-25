@@ -21,6 +21,7 @@ const state = {
     roots: [],
     leaves: ['fakeid'],
     dragAndDrop: true,
+    keyboardNavigation: true,
     openedIcon: {
       type: 'shape',
       fill: '#6b7280',

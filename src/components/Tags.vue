@@ -1,7 +1,8 @@
 <script setup>
 import Icon from '@/components/Icon.vue'
-import { mdiCog, mdiArrowDownRight } from '@mdi/js'
 import { useStore } from 'vuex'
+import properties from '@/icons/properties.js'
+import subArrow from '@/icons/arrow-sub.js'
 import * as TASK from '@/store/actions/tasks'
 
 const store = useStore()
@@ -13,20 +14,6 @@ const goToChildren = (value) => {
 }
 
 const UID_TO_ACTION = {
-  '901841d9-0016-491d-ad66-8ee42d2b496b': TASK.TASKS_REQUEST, // get today's day
-  '46418722-a720-4c9e-b255-16db4e590c34': TASK.OVERDUE_TASKS_REQUEST,
-  '017a3e8c-79ac-452c-abb7-6652deecbd1c': TASK.OPENED_TASKS_REQUEST,
-  '5183b619-3968-4c3a-8d87-3190cfaab014': TASK.UNSORTED_TASKS_REQUEST,
-  'fa042915-a3d2-469c-bd5a-708cf0339b89': TASK.UNREAD_TASKS_REQUEST,
-  '2a5cae4b-e877-4339-8ca1-bd61426864ec': TASK.IN_WORK_TASKS_REQUEST,
-  '6fc44cc6-9d45-4052-917e-25b1189ab141': TASK.IN_FOCUS_TASKS_REQUEST,
-  'd35fe0bc-1747-4eb1-a1b2-3411e07a92a0': TASK.READY_FOR_COMPLITION_TASKS_REQUEST,
-  '169d728b-b88b-462d-bd8e-3ac76806605b': TASK.DELEGATED_TASKS_REQUEST,
-  '511d871c-c5e9-43f0-8b4c-e8c447e1a823': TASK.DELEGATED_TO_USER_TASKS_REQUEST,
-  '7af232ff-0e29-4c27-a33b-866b5fd6eade': TASK.PROJECT_TASKS_REQUEST, // private
-  '431a3531-a77a-45c1-8035-f0bf75c32641': TASK.PROJECT_TASKS_REQUEST, // shared
-  'd28e3872-9a23-4158-aea0-246e2874da73': TASK.EMPLOYEE_TASKS_REQUEST,
-  'ed8039ae-f3de-4369-8f32-829d401056e9': TASK.COLOR_TASKS_REQUEST,
   '00a5b3de-9474-404d-b3ba-83f488ac6d30': TASK.TAG_TASKS_REQUEST
 }
 
@@ -52,37 +39,53 @@ defineProps({
   <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 truncate">
     <template v-for="(tag, pindex) in tags" :key="pindex">
       <div
-        class="flex items-start bg-white dark:bg-gray-700 rounded-xl shadow-md hover:shadow-lg cursor-pointer h-30 p-3"
-        :style="{ backgroundColor: tag.back_color }"
+        class="flex items-start bg-white dark:bg-gray-700 rounded-xl shadow-md hover:shadow-lg cursor-pointer h-30 px-3 py-5"
       >
         <div class="w-full">
-          <div class="flex items-start justify-between">
-            <p
-              class="font-light cursor-pointer"
-              @click="clickOnGridCard(tag)"
+          <div class="flex items-center justify-between">
+            <div
+              class="flex items-center"
             >
-              {{ tag.name }}
-            </p>
+              <div
+                class="rounded-xl mr-2"
+                style="width: 38px; height: 38px;"
+                :style="{ backgroundColor: tag.back_color }"
+              >
+              </div>
+              <div class="flex flex-col">
+                <p
+                  class="font-normal cursor-pointer"
+                  @click="clickOnGridCard(tag)"
+                >
+                  {{ tag.name }}
+                </p>
+                <div class="flex items-center" v-if="tag.children && tag.children.length">
+                  <icon
+                    :path="subArrow.path"
+                    :box="subArrow.viewBox"
+                    :width="subArrow.width"
+                    :height="subArrow.height"
+                    class="text-gray-500 cursor-pointer mr-1"
+                    @click="goToChildren(tag)"
+                  />
+                  <p
+                    class="font-light text-xs text-violet-500 cursor-pointer"
+                    @click="goToChildren(tag)"
+                  >
+                    Подметок: {{ tag.children.length }}
+                  </p>
+                </div>
+              </div>
+            </div>
             <icon
-              :path="mdiCog"
-              size="18"
+              :path="properties.path"
+              :width="properties.width"
+              :height="properties.height"
+              :box="properties.viewBox"
               class="text-gray-400 cursor-pointer hover:text-gray-800"
             />
           </div>
-          <div class="flex items-center" v-if="tag.children && tag.children.length">
-            <p
-              class="font-light text-xs"
-            >
-              Дочерних: {{ tag.children.length }}
-            </p>
-            <icon
-              :path="mdiArrowDownRight"
-              size="18"
-              class="text-gray-800 cursor-pointer"
-              @click="goToChildren(tag)"
-            />
-          </div>
-         </div>
+        </div>
       </div>
     </template>
   </div>

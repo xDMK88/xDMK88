@@ -46,8 +46,15 @@ const goToChildren = (value) => {
     <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 grid-rows-2 gird-flow-col gap-4 truncate mt-3">
       <template v-for="(project, pindex) in projects" :key="pindex">
         <div
-          class="flex items-center bg-white dark:bg-gray-700 rounded-xl shadow px-5 py-7"
+          class="flex items-center bg-white dark:bg-gray-700 rounded-xl shadow px-5 py-7 relative"
         >
+          <div
+            v-if="project.color != '#A998B6'"
+            :style="{ backgroundColor: project.color }"
+            style="border-radius: 100% 0 0.75rem 0;"
+            class="w-6 h-6 absolute bottom-0 right-0 rounded-tl-full rounded-br-xl"
+          >
+          </div>
           <div>
             <div class="flex items-center w-96">
               <icon
@@ -75,7 +82,7 @@ const goToChildren = (value) => {
                 class="text-gray-500 mr-2"
               />
               <p
-                class="font-light cursor-pointer break-words overflow-hidden"
+                class="font-normal cursor-pointer break-words overflow-hidden"
                 @click="clickOnGridCard(project)"
               >
                 {{ project.name }}

@@ -48,9 +48,9 @@ const clickOnGridCard = (value) => {
     <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 truncate mt-5">
       <template v-for="(employee, pindex) in value.items" :key="pindex">
         <div
-          class="flex items-center bg-white dark:bg-gray-700 rounded-xl shadow-md hover:shadow-lg cursor-pointer h-30 p-3"
+          class="flex items-start bg-white dark:bg-gray-700 rounded-xl shadow-md hover:shadow-lg cursor-pointer h-30 p-3"
         >
-          <img v-if="employee.fotolink" :src="employee.fotolink" class="rounded-lg mx-2 my-auto" width="38" height="38">
+          <img v-if="employee.fotolink" :src="employee.fotolink" class="rounded-lg mx-2 my-auto" width="32" height="32">
           <div class="w-full">
             <div class="flex items-start justify-left">
               <p

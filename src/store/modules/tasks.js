@@ -20,7 +20,6 @@ const state = {
   newConfig: {
     roots: [],
     leaves: ['fakeid'],
-    dragAndDrop: true,
     openedIcon: {
       type: 'shape',
       fill: '#6b7280',

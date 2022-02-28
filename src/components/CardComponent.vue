@@ -57,7 +57,7 @@ const submit = e => {
   <component
     :is="is"
     :class="componentClass"
-    class="bg-white"
+    class="bg-white dark:bg-zinc-900"
     @submit="submit"
   >
     <header

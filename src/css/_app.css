@@ -17,30 +17,36 @@ body {
 .full-screen body {
   @apply p-0;
 }
+.bg-white-right-column
+{
+  background: white;
+  padding: 15px 0 15px 15px;
+}
 .tags-custom
 {
-  border:1px solid #9E9E9E;
   padding: 4px 15px 4px 4px;
   border-radius: 5px;
   margin: 2px 2px 2px 2px;
   font-size: 13px;
   float: left;
   display: flex;
+  background: #F4F5F7;
 }
 .tags-custom.active, .tags-custom.active svg, .tags-custom:hover, .tags-custom:hover svg
 {
-  background-color:#67ADF1 ;
+  background-color:#977DE3;
   color:white;
   cursor:pointer;
-  border:1px solid #67ADF1;
 }
 .tags-custom svg
 {
   position:relative;
-  top:1px;
+  top:3px;
   float: left;
   display: flex;
   font-size:18px;
+  width: 18px;
+  height: 18px;
   margin-right: 5px;
   color:#9E9E9E;
 }
@@ -54,7 +60,10 @@ body {
 {
   border-radius:25%;
   color:#A6A6A6;
-  left: 4px;
+  left: 3px;
+  width: 20px;
+  height: 23px;
+  top: 0;
 
 }
 .text-tags
@@ -83,6 +92,19 @@ body {
   font-size: 16px;
   display: flex;
   width: 100%;
+  position: relative;
+}
+.user_child_customer_custom
+{
+  color:black;
+  font-size: 16px;
+  width: 100%;
+  position: relative;
+}
+.infocus-task
+{
+  position: absolute;
+  right: 10px;
 }
 .user_customer_custom svg
 {
@@ -159,9 +181,11 @@ body {
 .file-custom_attach-left
 {
 
-
+  min-width: 150px;
   font-size: 13px;
-  border-radius: 10px;
+  border-top-right-radius:10px ;
+  border-bottom-right-radius:10px ;
+  border-bottom-left-radius:10px ;
   padding: 10px;
   line-height: 35px;
   height: 70px;
@@ -174,17 +198,22 @@ body {
   border: 1px solid gray;
   border-radius: 50%;
   margin-top: 5px;
-
+  width: 34px;
+  height: 34px;
   float: left;
 }
 .file-custom_attach-right
 {
 
   font-size: 13px;
-  border-radius: 10px;
+  border-top-left-radius:10px ;
+  border-bottom-right-radius:10px ;
+  border-bottom-left-radius:10px ;
   padding: 10px;
   line-height: 35px;
   height: 70px;
+  min-width: 150px;
+  display: flex;
 
 }
 .file-custom_attach-right svg
@@ -194,6 +223,8 @@ body {
   border: 1px solid gray;
   border-radius: 50%;
   margin-top: 5px;
+  width: 34px;
+  height: 34px;
 }
 .name-chat-custom
 {
@@ -201,6 +232,10 @@ body {
   color:#A6A6A6;
   margin-right: 10px;
 
+}
+.name-chat-custom-margin
+{
+  margin-bottom: 5px;
 }
 .float-left
 {
@@ -408,7 +443,6 @@ body {
   border-radius:10px;
 
   color:black;
-  background-color: #666666;
   padding: 2px;
   position: absolute;
   top: 0;
@@ -418,7 +452,7 @@ body {
 .popover-padding-custom
 {
   display: inline-table;
-  min-width: 300px;
+  min-width: 325px;
 }
 .title-popover-main
 {
@@ -751,15 +785,16 @@ fieldset[disabled] .btn {
 }
 .column-resize
 {
-  height: calc(100vh - 40px);
+  height: calc(100vh - 90px);
   overflow-y: auto;
   position: relative;
 }
 .form-send-message
 {
 
-  border-top: 1px solid #DADADA;
   width: 95%;
+  display: table;
+  margin: 10px auto 10px auto;
   position: relative;
 }
 input {
@@ -770,6 +805,10 @@ input {
 {
   width: 100%;
   display: inline-block;
+}
+.check-padding
+{
+  margin-left: 5px;
 }
 .form-control-custom-date
 {
@@ -790,7 +829,6 @@ input {
   color:black;
   background: white;
   font-size:13px;
-  right: 0;
 }
 .custom-dropdown a:hover, .custom-dropdown a:focus, .custom-dropdown a.active
 {
@@ -938,4 +976,39 @@ label
   word-break: normal;  /* не поддерживает Opera12.14, значение keep-all не поддерживается IE, Chrome */
   line-break: auto;  /* нет поддержки для русского языка */
   hyphens: manual;  /* значение auto не поддерживается Chrome */
+}
+.input-group-attach
+{
+  padding: 0 12px;
+  height: 36px;
+  background: #F4F5F7;
+  border-top-left-radius: 10px;
+  border-bottom-left-radius: 10px;
+  border-left: 1px solid #F4F5F7;
+  border-top: 1px solid #F4F5F7;
+  border-bottom: 1px solid #F4F5F7;
+
+}
+.form-send-message .input-group
+{
+}
+.text-group-design
+{
+  background: #F4F5F7;
+  height: 43px;
+  border:none;
+}
+.input-group-btn-send
+{
+  background: #F4F5F7;
+  height: 36px;
+  border-top-right-radius: 10px;
+  border-bottom-right-radius: 10px;
+  border-left: 1px solid #F4F5F7;
+  border-top: 1px solid #F4F5F7;
+  border-bottom: 1px solid #F4F5F7;
+}
+.parent-name
+{
+  color:#2E9CE5;
 }

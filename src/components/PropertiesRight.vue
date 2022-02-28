@@ -16,7 +16,6 @@ export default {
     treeData: Object
   },
   mounted () {
-    this.selectdata()
   },
   data: () => {
     const store = useStore()
@@ -114,6 +113,12 @@ export default {
         this.popoverShow = false
       } else {
         this.popoverShow = true
+        this.popoverShowEmployee = false
+        this.popoverShowRepeat = false
+        this.popoverShowReminder = false
+        this.popoverShowProject = false
+        this.popoverShowColor = false
+        this.popoverShowTags = false
         createPopper(this.$refs.btnRef, this.$refs.popoverRef, {
           placement: 'bottom'
         })
@@ -124,6 +129,12 @@ export default {
         this.popoverShowEmployee = false
       } else {
         this.popoverShowEmployee = true
+        this.popoverShow = false
+        this.popoverShowRepeat = false
+        this.popoverShowReminder = false
+        this.popoverShowProject = false
+        this.popoverShowColor = false
+        this.popoverShowTags = false
         createPopper(this.$refs.btnRefEmployee, this.$refs.popoverRefEmployee, {
           placement: 'bottom'
         })
@@ -134,6 +145,12 @@ export default {
         this.popoverShowRepeat = false
       } else {
         this.popoverShowRepeat = true
+        this.popoverShow = false
+        this.popoverShowEmployee = false
+        this.popoverShowReminder = false
+        this.popoverShowProject = false
+        this.popoverShowColor = false
+        this.popoverShowTags = false
         createPopper(this.$refs.btnRefRepeat, this.$refs.popoverRefRepeat, {
           placement: 'bottom'
         })
@@ -144,6 +161,12 @@ export default {
         this.popoverShowReminder = false
       } else {
         this.popoverShowReminder = true
+        this.popoverShow = false
+        this.popoverShowEmployee = false
+        this.popoverShowRepeat = false
+        this.popoverShowProject = false
+        this.popoverShowColor = false
+        this.popoverShowTags = false
         createPopper(this.$refs.btnRefReminder, this.$refs.popoverRefReminder, {
           placement: 'bottom'
         })
@@ -154,8 +177,14 @@ export default {
         this.popoverShowProject = false
       } else {
         this.popoverShowProject = true
+        this.popoverShow = false
+        this.popoverShowEmployee = false
+        this.popoverShowRepeat = false
+        this.popoverShowReminder = false
+        this.popoverShowColor = false
+        this.popoverShowTags = false
         createPopper(this.$refs.btnRefProject, this.$refs.popoverRefProject, {
-          placement: 'left'
+          placement: 'bottom'
         })
       }
     },
@@ -164,8 +193,14 @@ export default {
         this.popoverShowColor = false
       } else {
         this.popoverShowColor = true
+        this.popoverShow = false
+        this.popoverShowEmployee = false
+        this.popoverShowRepeat = false
+        this.popoverShowReminder = false
+        this.popoverShowProject = false
+        this.popoverShowTags = false
         createPopper(this.$refs.btnRefColor, this.$refs.popoverRefColor, {
-          placement: 'left'
+          placement: 'bottom'
         })
       }
     },
@@ -174,17 +209,16 @@ export default {
         this.popoverShowTags = false
       } else {
         this.popoverShowTags = true
+        this.popoverShow = false
+        this.popoverShowEmployee = false
+        this.popoverShowRepeat = false
+        this.popoverShowReminder = false
+        this.popoverShowProject = false
+        this.popoverShowColor = false
         createPopper(this.$refs.btnRefTags0, this.$refs.popoverRefTags0, {
-          placement: 'left'
+          placement: 'bottom'
         })
       }
-    },
-    selectdata: function () {
-      const date = this.$refs.datePicker.value
-      const datemass = [date]
-      console.log(datemass)
-      this.$refs.enddatepicker.value = datemass
-      this.selected = datemass
     }
   }
 }
@@ -194,7 +228,7 @@ export default {
     v-if="selectedTask"
     v-show="!isFullScreen"
     id="aside"
-    class="-right-96 w-96 fixed top-0 z-40 h-screen transition-position lg:right-0 dark:border-r dark:border-gray-800"
+    class="-right-96 bg-white-right-column w-96 fixed top-0 z-40 h-screen transition-position lg:right-0 dark:border-r dark:border-gray-800"
     :class="[ isPropertiesMobileExpanded ? 'right-0' : '-right-90', isAsideLgActive ? 'block' : 'lg:hidden xl:block' ]"
   >
     <div class="break-words">
@@ -208,11 +242,24 @@ export default {
         v-if="selectedTask.uid_parent!=='00000000-0000-0000-0000-000000000000' && selectedTask.has_children===false"
         class="user_customer_custom"
       >
-        <svg width="49" height="74" viewBox="0 0 49 74" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M45.2345 65.8769H27.6932V25.3655C27.6932 23.4726 26.0526 21.832 24.0335 21.832H12.9281L24.0335 8.45518L41.701 25.3655C42.4582 25.9965 43.3415 26.3751 44.3511 26.3751C45.3607 26.3751 46.2441 25.9965 47.0012 25.3655C47.6322 24.7345 48.0108 23.8512 48.0108 22.9678C48.0108 22.0844 47.6322 21.201 47.0012 20.4439L26.8098 1.13577C25.9264 0.37859 24.9168 0 23.9073 0C22.8977 0 22.0143 0.37859 21.2571 1.00957L1.06566 22.8416C0.0560874 23.8512 -0.322503 25.3655 0.308481 26.6275C0.813267 27.8895 2.20143 28.7728 3.71579 28.7728H20.2476V69.9152C20.2476 71.682 21.6357 73.0701 23.4025 73.0701H45.2345C47.2536 73.0701 48.768 71.4296 48.768 69.5366C48.768 67.6437 47.2536 65.8769 45.2345 65.8769Z" fill="black" fill-opacity="0.5"/>
-        </svg>{{ selectedTask.children.name }}
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 14.3125C12 13.9328 11.6922 13.625 11.3125 13.625H7.5L7.5 5.5H9.99877C10.1795 5.5 10.2675 5.27934 10.1365 5.15494L6.8125 2L3.8194 5.16252C3.69873 5.29002 3.78912 5.5 3.96466 5.5H6.125L6.125 15H11.3125C11.6922 15 12 14.6922 12 14.3125Z" fill="#7F7F80"/>
+        </svg>
+        <a href="#" class="parent-name">{{ selectedTask.uid_parent }}</a>
+        <div v-if="selectedTask.focus===1" class="infocus-task">
+          <svg width="24" height="24" viewBox="0 0 44 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M2.47887 0H41.5211C42.8845 0 44 1.1195 44 2.48777V57.0416C44 58.0782 43.339 59.0318 42.3681 59.3843C42.0995 59.4879 41.8103 59.5294 41.5211 59.5294C40.7775 59.5294 40.0958 59.1977 39.6207 58.638L22 41.1088L4.37934 58.638C3.90423 59.1977 3.20188 59.5294 2.47887 59.5294C2.18967 59.5294 1.90047 59.4879 1.63192 59.3843C0.661033 59.0111 0 58.0782 0 57.0416V2.48777C0 1.1195 1.11549 0 2.47887 0ZM21.5922 11.4076C19.5672 11.4076 17.9255 13.0492 17.9255 15.0743C17.9255 17.0993 19.5672 18.7409 21.5922 18.7409C23.6173 18.7409 25.2589 17.0993 25.2589 15.0743C25.2589 13.0492 23.6173 11.4076 21.5922 11.4076Z" fill="#F2543F"/>
+          </svg>
+        </div>
       </div>
-      <p><strong>{{ selectedTask.name }}</strong></p>
+      <div class="user_child_customer_custom">
+        <strong>{{ selectedTask.name }}</strong>
+        <div v-if="selectedTask.focus===1" class="infocus-task">
+          <svg width="18" height="18" viewBox="0 0 44 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M2.47887 0H41.5211C42.8845 0 44 1.1195 44 2.48777V57.0416C44 58.0782 43.339 59.0318 42.3681 59.3843C42.0995 59.4879 41.8103 59.5294 41.5211 59.5294C40.7775 59.5294 40.0958 59.1977 39.6207 58.638L22 41.1088L4.37934 58.638C3.90423 59.1977 3.20188 59.5294 2.47887 59.5294C2.18967 59.5294 1.90047 59.4879 1.63192 59.3843C0.661033 59.0111 0 58.0782 0 57.0416V2.48777C0 1.1195 1.11549 0 2.47887 0ZM21.5922 11.4076C19.5672 11.4076 17.9255 13.0492 17.9255 15.0743C17.9255 17.0993 19.5672 18.7409 21.5922 18.7409C23.6173 18.7409 25.2589 17.0993 25.2589 15.0743C25.2589 13.0492 23.6173 11.4076 21.5922 11.4076Z" fill="#F2543F"/>
+          </svg>
+        </div>
+      </div>
       <!--   <p class="mt-3"><strong>{{ localization.task_created }}:</strong> {{ selectedTask.date_create }}</p>
       <p><strong>Исполнитель:</strong> {{ selectedTask.email_performer }}</p>-->
       <p style="display: none">
@@ -225,12 +272,21 @@ export default {
         class="mt-3 custom-list-tags"
       >
         <!-- <p class="text-center">{{ localization.Labels }}</p>-->
-        <div class="mt-3 tags-custom" ref="btnRefEmployee" v-on:click="togglePopover_employee()"  v-if="selectedTask.email_performer!=='' && selectedTask.email!==selectedTask.email_performer.toLowerCase()">
+        <div class="mt-3 tags-custom" ref="btnRefEmployee" v-on:click="togglePopover_employee()"  v-if="selectedTask.type===2">
 
           <svg width="24" height="24" viewBox="0 0 96 96" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M83.7121 54.9882C80.8778 52.5882 77.4767 50.3294 73.5087 48.6353C71.8081 47.9294 69.8241 48.6353 69.1156 50.3294C68.407 52.0235 69.1156 54 70.8161 54.7059C74.0756 56.1177 76.9098 57.9529 79.319 59.9294C82.1533 62.4706 83.8538 66 83.8538 69.8118V84.9177C83.8538 86.7529 82.295 88.1647 80.5944 88.1647H15.4058C13.5636 88.1647 12.1464 86.6118 12.1464 84.9177V69.8118C12.1464 66 13.847 62.3294 16.6813 59.9294C20.0824 56.9647 29.8607 50.1882 48.0001 50.1882C61.6047 50.1882 72.5167 39.1765 72.5167 25.7647C72.5167 12.2118 61.6047 1.2 48.0001 1.2C34.3956 1.2 23.4836 12.2118 23.4836 25.6235C23.4836 33.5294 27.3098 40.5882 33.1201 44.9647C22.4916 47.3647 15.831 51.7412 12.2881 54.8471C7.89498 58.6588 5.48584 64.1647 5.48584 69.8118V84.9177C5.48584 90.4235 10.0207 94.8 15.4058 94.8H80.5944C86.1213 94.8 90.5144 90.2824 90.5144 84.9177V69.8118C90.5144 64.1647 88.1053 58.6588 83.7121 54.9882ZM30.0024 25.6235C30.0024 15.7412 38.0801 7.69412 48.0001 7.69412C57.9201 7.69412 65.9978 15.7412 65.9978 25.6235C65.9978 35.5059 57.9201 43.5529 48.0001 43.5529C38.0801 43.5529 30.0024 35.5059 30.0024 25.6235Z" fill="#86D69D" fill-opacity="1"/>
           </svg>
           <span>{{ selectedTask.email_performer }}</span>
+        </div>
+        <div class="mt-3 tags-custom active" ref="btnRefEmployee" v-on:click="togglePopover_employee()" v-else-if="selectedTask.type===3">
+
+          <svg width="24" height="24" viewBox="0 0 96 96" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M83.7121 54.9882C80.8778 52.5882 77.4767 50.3294 73.5087 48.6353C71.8081 47.9294 69.8241 48.6353 69.1156 50.3294C68.407 52.0235 69.1156 54 70.8161 54.7059C74.0756 56.1177 76.9098 57.9529 79.319 59.9294C82.1533 62.4706 83.8538 66 83.8538 69.8118V84.9177C83.8538 86.7529 82.295 88.1647 80.5944 88.1647H15.4058C13.5636 88.1647 12.1464 86.6118 12.1464 84.9177V69.8118C12.1464 66 13.847 62.3294 16.6813 59.9294C20.0824 56.9647 29.8607 50.1882 48.0001 50.1882C61.6047 50.1882 72.5167 39.1765 72.5167 25.7647C72.5167 12.2118 61.6047 1.2 48.0001 1.2C34.3956 1.2 23.4836 12.2118 23.4836 25.6235C23.4836 33.5294 27.3098 40.5882 33.1201 44.9647C22.4916 47.3647 15.831 51.7412 12.2881 54.8471C7.89498 58.6588 5.48584 64.1647 5.48584 69.8118V84.9177C5.48584 90.4235 10.0207 94.8 15.4058 94.8H80.5944C86.1213 94.8 90.5144 90.2824 90.5144 84.9177V69.8118C90.5144 64.1647 88.1053 58.6588 83.7121 54.9882ZM30.0024 25.6235C30.0024 15.7412 38.0801 7.69412 48.0001 7.69412C57.9201 7.69412 65.9978 15.7412 65.9978 25.6235C65.9978 35.5059 57.9201 43.5529 48.0001 43.5529C38.0801 43.5529 30.0024 35.5059 30.0024 25.6235Z" fill="white" fill-opacity="1"/>
+          </svg>
+          <span
+            class="rounded"
+          >Перепоручено</span>
         </div>
         <div class="mt-3 tags-custom active" ref="btnRefEmployee" v-on:click="togglePopover_employee()"  v-else>
 
@@ -260,6 +316,7 @@ export default {
         <DatePicker
           is-range
           v-model="dates"
+          ref="calendar"
         >
           <template #default="{ inputValue, togglePopover}" >
             <span class="mt-3 tags-custom">
@@ -478,11 +535,14 @@ export default {
         </div>
       </div>
       <div class="mt-3 checklist-custom" v-if="selectedTask.checklist">
-        <ul>
-          <li v-for="(key,value) in selectedTask.checklist.split('0')" :key="value">
-            <span v-if="key!==''">
-            <input type="checkbox" value="value">{{ key }}
+        <ul class="check-padding">
+          <li v-for="(key,value) in selectedTask.checklist.split('\r\n\r\n')" :key="value">
+            <div v-if="selectedTask.checklist.split('\r\n\r\n')[value]!==''">
+            <span v-if="selectedTask.checklist.split('\r\n\r\n')[value][0]==='1'">
+              <del> <input type="checkbox" value="value" checked="checked">&nbsp;{{selectedTask.checklist.split('\r\n\r\n')[value].replace('1','')}}</del>
               </span>
+            <span v-else><input type="checkbox" value="value">&nbsp;{{selectedTask.checklist.split('\r\n\r\n')[value].replace('0','')}}</span>
+            </div>
           </li>
         </ul>
         <div><button class="btn btn-transperant">Добавить</button></div>
@@ -495,7 +555,7 @@ export default {
       </div>
       </div>
       <div
-        class="mt-3 list-files-custom"
+        class="mt-3 list-files-custom" v-if="taskFiles.length>0"
       >
         <div
           v-for="(key, value) in taskFiles"
@@ -510,7 +570,7 @@ export default {
             </p>
           </div>
           <div v-if="key.uid_creator===cusers.current_user_uid">
-            <div class="flex">
+            <div class="name-chat-custom-margin flex">
               <p class="name-chat-custom" v-if="value===0">
                 {{ employees[key.uid_creator].name }}
               </p>
@@ -526,23 +586,20 @@ export default {
               style="background-color:#EDF7ED;"
             >
 
-              <svg
-                style="width:35px;height:35px"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  fill="currentColor"
-                  d="M11,4H13V16L18.5,10.5L19.92,11.92L12,19.84L4.08,11.92L5.5,10.5L11,16V4Z"
-                />
-              </svg>
-              <a :href="'/User/Files/GetFile?uid='">{{ key.file_name }}</a>
+              <a v-bind:href="'https://web.leadertask.com/User/Files/GetFile?uid='+key.uid">
+                <svg width="22" height="27" viewBox="0 0 22 27" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path fill-rule="evenodd" clip-rule="evenodd" d="M21.6459 8.28333C21.675 8.3125 21.7042 8.37083 21.7334 8.42917C21.7625 8.51667 21.7917 8.63333 21.7917 8.75V24.7917C21.7917 25.9292 20.8875 26.8333 19.75 26.8333H2.25004C1.11254 26.8333 0.208374 25.9292 0.208374 24.7917V2.91667C0.208374 1.77917 1.11254 0.875 2.25004 0.875H13.9167C14.0334 0.875 14.15 0.904167 14.2084 0.933333H14.2375C14.2667 0.947917 14.2886 0.9625 14.3105 0.977083C14.3323 0.991667 14.3542 1.00625 14.3834 1.02083C14.4417 1.05 14.5 1.10833 14.5292 1.1375L21.5292 8.1375L21.5292 8.13751C21.5875 8.19584 21.6167 8.225 21.6459 8.28333ZM2.25004 2.625C2.07504 2.625 1.95837 2.74167 1.95837 2.91667V24.7917C1.95837 24.9667 2.07504 25.0833 2.25004 25.0833H19.75C19.925 25.0833 20.0417 24.9667 20.0417 24.7917V9.625H15.0834C13.9459 9.625 13.0417 8.72083 13.0417 7.58333V2.625H2.25004ZM14.7917 7.58333C14.7917 7.75833 14.9084 7.875 15.0834 7.875H18.8167L14.7917 3.85V7.58333ZM5.22504 11.375C4.70957 11.375 4.29171 11.7929 4.29171 12.3083C4.29171 12.8238 4.70957 13.2417 5.22504 13.2417H16.4834C16.9988 13.2417 17.4167 12.8238 17.4167 12.3083C17.4167 11.7929 16.9988 11.375 16.4834 11.375H5.22504ZM4.29171 9.1C4.29171 8.58453 4.70957 8.16667 5.22504 8.16667H10.65C11.1655 8.16667 11.5834 8.58453 11.5834 9.1C11.5834 9.61547 11.1655 10.0333 10.65 10.0333H5.22504C4.70957 10.0333 4.29171 9.61547 4.29171 9.1ZM5.22504 14.5833C4.70957 14.5833 4.29171 15.0012 4.29171 15.5167C4.29171 16.0321 4.70957 16.45 5.22504 16.45H16.4834C16.9988 16.45 17.4167 16.0321 17.4167 15.5167C17.4167 15.0012 16.9988 14.5833 16.4834 14.5833H5.22504ZM4.29171 18.725C4.29171 18.2095 4.70957 17.7917 5.22504 17.7917H16.4834C16.9988 17.7917 17.4167 18.2095 17.4167 18.725C17.4167 19.2405 16.9988 19.6583 16.4834 19.6583H5.22504C4.70957 19.6583 4.29171 19.2405 4.29171 18.725ZM5.22504 21C4.70957 21 4.29171 21.4179 4.29171 21.9333C4.29171 22.4488 4.70957 22.8667 5.22504 22.8667H16.4834C16.9988 22.8667 17.4167 22.4488 17.4167 21.9333C17.4167 21.4179 16.9988 21 16.4834 21H5.22504Z" fill="#757575"/>
+                </svg>
+                <div style="color:black">{{ key.date_create }}</div>
+                <div style="color:#3E3D3B;">{{key.file_size}}</div>
+              </a>
             </div>
           </div>
           <div
             v-else
             class=""
           >
-            <div class="flex">
+            <div class="name-chat-custom-margin flex">
               <p class="name-chat-custom" v-if="value===0">
                 {{ employees[key.uid_creator].name }}
               </p>
@@ -559,22 +616,20 @@ export default {
             >
               <div class="text-right text-employee-name">
               </div>
-              <svg
-                style="width:35px;height:35px"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  fill="currentColor"
-                  d="M11,4H13V16L18.5,10.5L19.92,11.92L12,19.84L4.08,11.92L5.5,10.5L11,16V4Z"
-                />
+              <a v-bind:href="'https://web.leadertask.com/User/Files/GetFile?uid='+key.uid">
+              <svg width="22" height="27" viewBox="0 0 22 27" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M21.6459 8.28333C21.675 8.3125 21.7042 8.37083 21.7334 8.42917C21.7625 8.51667 21.7917 8.63333 21.7917 8.75V24.7917C21.7917 25.9292 20.8875 26.8333 19.75 26.8333H2.25004C1.11254 26.8333 0.208374 25.9292 0.208374 24.7917V2.91667C0.208374 1.77917 1.11254 0.875 2.25004 0.875H13.9167C14.0334 0.875 14.15 0.904167 14.2084 0.933333H14.2375C14.2667 0.947917 14.2886 0.9625 14.3105 0.977083C14.3323 0.991667 14.3542 1.00625 14.3834 1.02083C14.4417 1.05 14.5 1.10833 14.5292 1.1375L21.5292 8.1375L21.5292 8.13751C21.5875 8.19584 21.6167 8.225 21.6459 8.28333ZM2.25004 2.625C2.07504 2.625 1.95837 2.74167 1.95837 2.91667V24.7917C1.95837 24.9667 2.07504 25.0833 2.25004 25.0833H19.75C19.925 25.0833 20.0417 24.9667 20.0417 24.7917V9.625H15.0834C13.9459 9.625 13.0417 8.72083 13.0417 7.58333V2.625H2.25004ZM14.7917 7.58333C14.7917 7.75833 14.9084 7.875 15.0834 7.875H18.8167L14.7917 3.85V7.58333ZM5.22504 11.375C4.70957 11.375 4.29171 11.7929 4.29171 12.3083C4.29171 12.8238 4.70957 13.2417 5.22504 13.2417H16.4834C16.9988 13.2417 17.4167 12.8238 17.4167 12.3083C17.4167 11.7929 16.9988 11.375 16.4834 11.375H5.22504ZM4.29171 9.1C4.29171 8.58453 4.70957 8.16667 5.22504 8.16667H10.65C11.1655 8.16667 11.5834 8.58453 11.5834 9.1C11.5834 9.61547 11.1655 10.0333 10.65 10.0333H5.22504C4.70957 10.0333 4.29171 9.61547 4.29171 9.1ZM5.22504 14.5833C4.70957 14.5833 4.29171 15.0012 4.29171 15.5167C4.29171 16.0321 4.70957 16.45 5.22504 16.45H16.4834C16.9988 16.45 17.4167 16.0321 17.4167 15.5167C17.4167 15.0012 16.9988 14.5833 16.4834 14.5833H5.22504ZM4.29171 18.725C4.29171 18.2095 4.70957 17.7917 5.22504 17.7917H16.4834C16.9988 17.7917 17.4167 18.2095 17.4167 18.725C17.4167 19.2405 16.9988 19.6583 16.4834 19.6583H5.22504C4.70957 19.6583 4.29171 19.2405 4.29171 18.725ZM5.22504 21C4.70957 21 4.29171 21.4179 4.29171 21.9333C4.29171 22.4488 4.70957 22.8667 5.22504 22.8667H16.4834C16.9988 22.8667 17.4167 22.4488 17.4167 21.9333C17.4167 21.4179 16.9988 21 16.4834 21H5.22504Z" fill="#757575"/>
               </svg>
-              <a :href="'/User/Files/GetFile?uid='">{{ key.file_name }}</a>
+             <div style="color:black">{{ key.date_create }}</div>
+              <div style="color:#3E3D3B;">{{key.file_size}}</div>
+             </a>
+
             </div>
           </div>
         </div>
       </div>
       <div
-        class="mt-3 chat-custom"
+        class="mt-3 chat-custom" v-if="taskMessages.length>0"
       >
         <div
           v-for="(key,value) in taskMessages"
@@ -607,7 +662,6 @@ export default {
                 class="mt-1 msg-custom-chat-left"
                 style="background-color:#EDF7ED;"
               >
-
               <!--    <div v-for="(key1,value1) in taskFiles[key.uid]" :key="value1">
                     <div
                       class="file-custom_attach-left"
@@ -626,7 +680,6 @@ export default {
                   </div>
                 </div>-->
                 {{ key.msg }}
-
                 <div class="time-chat">
                   {{ key.date_create.split('T')[1].split(":")[0] }}:{{ key.date_create.split('T')[1].split(":")[1] }}
                 </div>
@@ -672,7 +725,6 @@ export default {
                 </div>
                 </div>-->
                 {{ key.msg }}
-
                 <div class="time-chat">
                   {{ key.date_create.split('T')[1].split(":")[0] }}:{{ key.date_create.split('T')[1].split(":")[1] }}
                 </div>
@@ -751,35 +803,36 @@ export default {
           </div>
         </div>
       </div>-->
-      <!-- <ul>
-        <li v-for="(item, index) in selectedTask.checklist" :key="item">
-          {{ index.name }}
-        </li>
-      </ul> -->
       </div>
       <div class="form-send-message">
         <div class="input-group">
-           <span class="input-group-addon">
+           <span class="input-group-addon input-group-attach">
             <button type="file" name="btn-attach">
-             <svg width="28" height="26" viewBox="0 0 28 26" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M3.25983 22.9238C4.89952 24.5479 7.04911 25.35 9.1987 25.35C11.3483 25.35 13.4979 24.538 15.1376 22.9139L25.4456 12.7039C27.7852 10.3866 27.7852 6.61359 25.4456 4.29629C24.3158 3.17725 22.8061 2.55337 21.2064 2.55337C19.6067 2.55337 18.097 3.16735 16.9672 4.29629L7.49902 13.6744C6.09929 15.0608 6.09929 17.3286 7.49902 18.715C8.89876 20.1014 11.1883 20.1014 12.5881 18.715L18.8169 12.5455C19.2868 12.08 19.2868 11.3274 18.8169 10.862C18.347 10.3965 17.5871 10.3965 17.1172 10.862L10.8984 17.0414C10.4285 17.5069 9.66861 17.5069 9.1987 17.0414C8.72879 16.576 8.72879 15.8233 9.1987 15.3579L18.6569 5.9897C19.3368 5.3163 20.2366 4.94989 21.2064 4.94989C22.1662 4.94989 23.0761 5.3163 23.7559 5.9897C25.1557 7.37611 25.1557 9.6439 23.7559 11.0303L13.4379 21.2403C11.0983 23.5576 7.28906 23.5576 4.94951 21.2403C3.81972 20.1212 3.19984 18.6259 3.19984 17.0414C3.19984 15.4569 3.81972 13.9616 4.95951 12.8426L15.2576 2.63259C15.7275 2.16715 15.7275 1.41453 15.2576 0.949086C14.7876 0.483646 14.0278 0.483646 13.5579 0.949086L3.25983 11.159C1.67013 12.7237 0.800293 14.8132 0.800293 17.0414C0.800293 19.2597 1.67013 21.3492 3.25983 22.9238Z" fill="black" fill-opacity="0.5"/>
+     <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M1.94475 17.443C3.17452 18.6611 4.78671 19.2627 6.3989 19.2627C8.0111 19.2627 9.62329 18.6537 10.8531 17.4356L18.5841 9.77812C20.3388 8.04015 20.3388 5.21038 18.5841 3.47241C17.7368 2.63313 16.6045 2.16522 15.4047 2.16522C14.2049 2.16522 13.0726 2.6257 12.2253 3.47241L5.12415 10.506C4.07435 11.5458 4.07435 13.2466 5.12415 14.2865C6.17395 15.3263 7.89112 15.3263 8.94092 14.2865L13.6125 9.65929C13.965 9.31021 13.965 8.74574 13.6125 8.39666C13.2601 8.04758 12.6902 8.04758 12.3378 8.39666L7.67366 13.0313C7.32123 13.3803 6.75134 13.3803 6.3989 13.0313C6.04647 12.6822 6.04647 12.1177 6.3989 11.7686L13.4926 4.74246C14.0025 4.23741 14.6773 3.96261 15.4047 3.96261C16.1246 3.96261 16.8069 4.23741 17.3168 4.74246C18.3666 5.78228 18.3666 7.48311 17.3168 8.52292L9.5783 16.1804C7.82364 17.9184 4.96668 17.9184 3.21201 16.1804C2.36467 15.3411 1.89976 14.2196 1.89976 13.0313C1.89976 11.8429 2.36467 10.7214 3.21951 9.88211L10.943 2.22463C11.2955 1.87555 11.2955 1.31108 10.943 0.962005C10.5906 0.612925 10.0207 0.612925 9.66829 0.962005L1.94475 8.61948C0.752474 9.79298 0.100098 11.3601 0.100098 13.0313C0.100098 14.695 0.752474 16.2621 1.94475 17.443Z" fill="black" fill-opacity="0.5"/>
 </svg>
 </button>
 </span>
           <input type="text" class="form-control text-group-design" placeholder="Введите сообщение">
-          <span class="input-group-addon">
-          <button type="button" name="btn-send"> <svg width="28" height="28" viewBox="0 0 86 84" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M85.0075 37.7723C84.0749 35.907 82.5593 34.2749 80.5774 33.3423L13.6598 0.932651C12.2608 0.349744 10.9784 0 9.46283 0C5.84881 0 2.58453 2.09846 0.952393 5.36274C-0.21342 7.81095 -0.330001 10.4923 0.71923 13.0571L12.2608 41.9693L0.71923 70.7649C-1.26265 75.6613 1.18556 81.1406 6.08197 83.1225C7.1312 83.5888 8.29701 83.822 9.57941 83.822C10.9784 83.822 12.3774 83.4722 13.6598 82.8893L80.694 50.4797C83.0256 49.4305 84.6578 47.4486 85.4738 45.117C86.2899 42.6688 86.1733 39.9874 85.0075 37.7723ZM7.24778 73.4462L18.4396 45.4667H74.6318L10.5121 76.4773C10.1623 76.5939 9.81257 76.7105 9.46283 76.7105C8.53018 76.7105 7.71411 76.1276 7.36436 75.3115C7.01462 74.7286 7.01462 74.0291 7.24778 73.4462ZM18.4396 38.3553L7.24778 10.3757C6.89804 9.44309 7.1312 8.39385 7.83069 7.69437C8.29701 7.22804 8.87992 6.99488 9.46283 6.99488C9.81257 6.99488 10.1623 7.11146 10.5121 7.22804L74.6318 38.2387H18.4396V38.3553Z" fill="black" fill-opacity="0.5"/>
-            </svg></button>
+          <span class="input-group-addon input-group-btn-send">
+          <button type="button" name="btn-send" class="btn-send-custom"> <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect width="32" height="32" rx="16" fill="white"/>
+<rect width="32" height="32" rx="16" fill="#575758"/>
+<path d="M15.665 20.141C13.6069 20.141 11.9288 18.4263 11.9288 16.3234V8.8176C11.9288 6.71468 13.6069 5 15.665 5C17.7231 5 19.4012 6.71468 19.4012 8.8176V16.3396C19.4012 18.4425 17.7231 20.141 15.665 20.141ZM15.665 6.58527C14.4618 6.58527 13.4803 7.5882 13.4803 8.8176V16.3234C13.4803 17.5528 14.4618 18.5557 15.665 18.5557C16.8682 18.5557 17.8497 17.569 17.8497 16.3557V8.8176C17.8497 7.5882 16.8682 6.58527 15.665 6.58527Z" fill="#FCFDFF"/>
+<path d="M16.4407 22.4218H14.8893V25.9968H16.4407V22.4218Z" fill="#FCFDFF"/>
+<path d="M17.7231 26.7894H13.6228C13.1953 26.7894 12.847 26.4336 12.847 25.9968C12.847 25.56 13.1953 25.2042 13.6228 25.2042H17.7231C18.1505 25.2042 18.4988 25.56 18.4988 25.9968C18.4988 26.4336 18.1505 26.7894 17.7231 26.7894Z" fill="#FCFDFF"/>
+<path d="M15.665 23.2307C11.9921 23.2307 9 20.1895 9 16.4204V15.7896C9 15.3528 9.34829 14.9969 9.77574 14.9969C10.2032 14.9969 10.5515 15.3528 10.5515 15.7896V16.4204C10.5515 19.2998 12.847 21.6454 15.665 21.6454C18.483 21.6454 20.7785 19.2998 20.7785 16.4204V15.7896C20.7785 15.3528 21.1268 14.9969 21.5543 14.9969C21.9817 14.9969 22.33 15.3528 22.33 15.7896V16.4204C22.33 20.1895 19.3379 23.2307 15.665 23.2307Z" fill="#FCFDFF"/>
+</svg>
+</button>
 </span>
         </div>
       </div>
     </div>
   </aside>
   <!--Всплывающее окно Метки-->
-  <div ref="popoverRefTags0"  v-bind:class="{'hidden': !popoverShowTags, 'block': popoverShowTags}" class="bg-pink-600 border-0 mt-3 block z-50 font-normal leading-normal text-sm max-w-xs text-left no-underline break-words rounded-lg popover-custom-access">
+  <div ref="popoverRefTags0"  v-bind:class="{'hidden': !popoverShowTags, 'block': popoverShowTags}" class="border-1 mt-3 block z-50 font-normal leading-normal text-sm max-w-xs text-left no-underline break-words rounded-lg popover-custom-access">
     <div class="popover-padding-custom">
-      <div class="bg-pink-600 text-white opacity-75 font-semibold p-3 mb-0 border-b border-solid border-blueGray-100 uppercase rounded-t-lg title-popover-main">
+      <div class="text-white opacity-1 font-semibold p-3 mb-0 border-b border-solid border-blueGray-100 uppercase rounded-t-lg title-popover-main">
         <div class="dissmiss_popover" v-on:click="togglePopover_tags()">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path fill-rule="evenodd" clip-rule="evenodd" d="M7.34299 4.0429C7.73351 3.65238 8.36668 3.65238 8.7572 4.0429C9.14773 4.43343 9.14773 5.06659 8.7572 5.45711L3.46412 10.7502H21.25C21.8023 10.7502 22.25 11.1979 22.25 11.7502C22.25 12.3025 21.8023 12.7502 21.25 12.7502H3.46449L8.7572 18.0429C9.14773 18.4334 9.14773 19.0666 8.7572 19.4571C8.36668 19.8476 7.73351 19.8476 7.34299 19.4571L0.357063 12.4712C0.167788 12.2892 0.0499954 12.0335 0.0499954 11.7502C0.0499954 11.5167 0.130016 11.3019 0.26413 11.1317C0.288507 11.1007 0.314819 11.0711 0.342983 11.0429L7.34299 4.0429Z" fill="black" fill-opacity="0.5"/>
@@ -834,9 +887,9 @@ export default {
     </div>
   </div>
   <!--Всплывающее окно Цвета-->
-  <div ref="popoverRefColor" v-bind:class="{'hidden': !popoverShowColor, 'block': popoverShowColor}" class="bg-pink-600 border-0 mt-3 block z-50 font-normal leading-normal text-sm max-w-xs text-left no-underline break-words rounded-lg popover-custom-access">
+  <div ref="popoverRefColor" v-bind:class="{'hidden': !popoverShowColor, 'block': popoverShowColor}" class="border-1 mt-3 block z-50 font-normal leading-normal text-sm max-w-xs text-left no-underline break-words rounded-lg popover-custom-access">
     <div class="popover-padding-custom">
-      <div class="bg-pink-600 text-white opacity-75 font-semibold p-3 mb-0 border-b border-solid border-blueGray-100 uppercase rounded-t-lg title-popover-main">
+      <div class="text-white opacity-1 font-semibold p-3 mb-0 border-b border-solid border-blueGray-100 uppercase rounded-t-lg title-popover-main">
         <div class="dissmiss_popover" v-on:click="togglePopover_color()">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path fill-rule="evenodd" clip-rule="evenodd" d="M7.34299 4.0429C7.73351 3.65238 8.36668 3.65238 8.7572 4.0429C9.14773 4.43343 9.14773 5.06659 8.7572 5.45711L3.46412 10.7502H21.25C21.8023 10.7502 22.25 11.1979 22.25 11.7502C22.25 12.3025 21.8023 12.7502 21.25 12.7502H3.46449L8.7572 18.0429C9.14773 18.4334 9.14773 19.0666 8.7572 19.4571C8.36668 19.8476 7.73351 19.8476 7.34299 19.4571L0.357063 12.4712C0.167788 12.2892 0.0499954 12.0335 0.0499954 11.7502C0.0499954 11.5167 0.130016 11.3019 0.26413 11.1317C0.288507 11.1007 0.314819 11.0711 0.342983 11.0429L7.34299 4.0429Z" fill="black" fill-opacity="0.5"/>
@@ -877,9 +930,9 @@ export default {
     </div>
   </div>
   <!--Всплывающее окно Проекты-->
-  <div ref="popoverRefProject" v-bind:class="{'hidden': !popoverShowProject, 'block': popoverShowProject}" class="bg-pink-600 border-0 mt-3 block z-50 font-normal leading-normal text-sm max-w-xs text-left no-underline break-words rounded-lg popover-custom-access">
+  <div ref="popoverRefProject" v-bind:class="{'hidden': !popoverShowProject, 'block': popoverShowProject}" class="border-1 mt-3 block z-50 font-normal leading-normal text-sm max-w-xs text-left no-underline break-words rounded-lg popover-custom-access">
     <div class="popover-padding-custom">
-      <div class="bg-pink-600 text-white opacity-75 font-semibold p-3 mb-0 border-b border-solid border-blueGray-100 uppercase rounded-t-lg title-popover-main">
+      <div class="text-white opacity-1 font-semibold p-3 mb-0 border-b border-solid border-blueGray-100 uppercase rounded-t-lg title-popover-main">
 
         <div class="dissmiss_popover" v-on:click="togglePopover_project()">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -969,9 +1022,9 @@ export default {
     </div>
   </div>
   <!-- Всплывающее окно сотрудник -->
-  <div ref="popoverRefEmployee" v-bind:class="{'hidden': !popoverShowEmployee, 'block': popoverShowEmployee}" class="bg-pink-600 border-0 mt-3 block z-50 font-normal leading-normal text-sm max-w-xs text-left no-underline break-words rounded-lg popover-custom-access">
+  <div ref="popoverRefEmployee" v-bind:class="{'hidden': !popoverShowEmployee, 'block': popoverShowEmployee}" class="border-1 mt-3 block z-50 font-normal leading-normal text-sm max-w-xs text-left no-underline break-words rounded-lg popover-custom-access">
     <div class="popover-padding-custom">
-      <div class="bg-pink-600 text-white opacity-75 font-semibold p-3 mb-0 border-b border-solid border-blueGray-100 uppercase rounded-t-lg title-popover-main">
+      <div class="text-white opacity-1 font-semibold p-3 mb-0 border-b border-solid border-blueGray-100 uppercase rounded-t-lg title-popover-main">
         <div class="dissmiss_popover" v-on:click="togglePopover_employee()">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path fill-rule="evenodd" clip-rule="evenodd" d="M7.34299 4.0429C7.73351 3.65238 8.36668 3.65238 8.7572 4.0429C9.14773 4.43343 9.14773 5.06659 8.7572 5.45711L3.46412 10.7502H21.25C21.8023 10.7502 22.25 11.1979 22.25 11.7502C22.25 12.3025 21.8023 12.7502 21.25 12.7502H3.46449L8.7572 18.0429C9.14773 18.4334 9.14773 19.0666 8.7572 19.4571C8.36668 19.8476 7.73351 19.8476 7.34299 19.4571L0.357063 12.4712C0.167788 12.2892 0.0499954 12.0335 0.0499954 11.7502C0.0499954 11.5167 0.130016 11.3019 0.26413 11.1317C0.288507 11.1007 0.314819 11.0711 0.342983 11.0429L7.34299 4.0429Z" fill="black" fill-opacity="0.5"/>
@@ -994,7 +1047,7 @@ export default {
         <div class="container-employee-popover">
           <div v-for="(key,value) in employees" :key="value">
 
-            <div class="list-employee-access active" v-if="selectedTask.email_performer===key.email">
+            <div class="list-employee-access active" v-if="selectedTask.email_performer!=='' && selectedTask.email_performer===key.email">
 
               <img
                 :src="key.fotolink"
@@ -1029,9 +1082,9 @@ export default {
     </div>
   </div>
   <!-- Всплывающее окно доступ -->
-  <div ref="popoverRef" v-bind:class="{'hidden': !popoverShow, 'block': popoverShow}" class="bg-pink-600 border-0 mt-3 block z-50 font-normal leading-normal text-sm max-w-xs text-left no-underline break-words rounded-lg popover-custom-access">
+  <div ref="popoverRef" v-bind:class="{'hidden': !popoverShow, 'block': popoverShow}" v-if="isOpen" class="border-1 mt-3 block z-50 font-normal leading-normal text-sm max-w-xs text-left no-underline break-words rounded-lg popover-custom-access">
     <div class="popover-padding-custom">
-      <div class="bg-pink-600 text-white opacity-75 font-semibold p-3 mb-0 border-b border-solid border-blueGray-100 uppercase rounded-t-lg title-popover-main">
+      <div class="text-white opacity-75 font-semibold p-3 mb-0 border-b border-solid border-blueGray-100 uppercase rounded-t-lg title-popover-main">
         <div class="dissmiss_popover" v-on:click="togglePopover_access()">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path fill-rule="evenodd" clip-rule="evenodd" d="M7.34299 4.0429C7.73351 3.65238 8.36668 3.65238 8.7572 4.0429C9.14773 4.43343 9.14773 5.06659 8.7572 5.45711L3.46412 10.7502H21.25C21.8023 10.7502 22.25 11.1979 22.25 11.7502C22.25 12.3025 21.8023 12.7502 21.25 12.7502H3.46449L8.7572 18.0429C9.14773 18.4334 9.14773 19.0666 8.7572 19.4571C8.36668 19.8476 7.73351 19.8476 7.34299 19.4571L0.357063 12.4712C0.167788 12.2892 0.0499954 12.0335 0.0499954 11.7502C0.0499954 11.5167 0.130016 11.3019 0.26413 11.1317C0.288507 11.1007 0.314819 11.0711 0.342983 11.0429L7.34299 4.0429Z" fill="black" fill-opacity="0.5"/>
@@ -1090,9 +1143,9 @@ export default {
     </div>
   </div>
   <!--Всплывающее окно Повтор-->
-  <div ref="popoverRefRepeat" v-bind:class="{'hidden': !popoverShowRepeat, 'block': popoverShowRepeat}" class="bg-pink-600 border-0 mt-3 block z-50 font-normal leading-normal text-sm max-w-xs text-left no-underline break-words rounded-lg popover-custom-access">
+  <div ref="popoverRefRepeat" v-bind:class="{'hidden': !popoverShowRepeat, 'block': popoverShowRepeat}" class="border-1 mt-3 block z-50 font-normal leading-normal text-sm max-w-xs text-left no-underline break-words rounded-lg popover-custom-access">
     <div class="popover-padding-custom">
-      <div class="bg-pink-600 text-white opacity-75 font-semibold p-3 mb-0 border-b border-solid border-blueGray-100 rounded-t-lg title-popover-main">
+      <div class="text-white opacity-1 font-semibold p-3 mb-0 border-b border-solid border-blueGray-100 rounded-t-lg title-popover-main">
         <div class="dissmiss_popover title-active-head" v-on:click="togglePopover_repeat()">Отменить</div>
         <div class="title-repeat-custom">
           <span class="title-repeat-head-center title-active-head text-center">Срок</span>
@@ -1122,9 +1175,9 @@ export default {
     </div>
   </div>
   <!--Всплывающее окно Напоминание-->
-  <div ref="popoverRefReminder" v-bind:class="{'hidden': !popoverShowReminder, 'block': popoverShowReminder}" class="bg-pink-600 border-0 mt-3 block z-50 font-normal leading-normal text-sm max-w-xs text-left no-underline break-words rounded-lg popover-custom-access">
+  <div ref="popoverRefReminder" v-bind:class="{'hidden': !popoverShowReminder, 'block': popoverShowReminder}" class="border-1 mt-3 block z-50 font-normal leading-normal text-sm max-w-xs text-left no-underline break-words rounded-lg popover-custom-access">
     <div class="popover-padding-custom">
-      <div class="bg-pink-600 text-white opacity-75 font-semibold p-3 mb-0 border-b border-solid border-blueGray-100 uppercase rounded-t-lg title-popover-main">
+      <div class="text-white opacity-1 font-semibold p-3 mb-0 border-b border-solid border-blueGray-100 uppercase rounded-t-lg title-popover-main">
         <div class="title-popover-custom">
 
           <span class="title-z-popover text-center">Напоминание</span>

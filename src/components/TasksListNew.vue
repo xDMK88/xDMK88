@@ -1,6 +1,33 @@
 <template>
+  <div
+    class="pr-4"
+    :class="newConfig.leaves && newConfig.leaves.length ? 'pl-8' : 'pl-0'"
+  >
+    <div
+      class="flex items-center bg-gray-50 dark:bg-gray-700 rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-500 p-2"
+    >
+      <div class="flex items-center justify-center w-10 h-10 bg-gray-200 dark:bg-gray-600 rounded-xl">
+       <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" class="dark:text-gray-100">
+         <path d="M8.00011 2.3457V8.4034M8.00011 8.4034V14.4611M8.00011 8.4034H14.4617M8.00011 8.4034H1.53857" stroke="#3E3D3B" stroke-width="3" stroke-linecap="round"/>
+       </svg>
+      </div>
+      <control
+        ref="root"
+        v-model="createTaskText"
+        @keyup.enter="createTask"
+        class="w-full"
+        :placeholder="'Enter task name'"
+        borderless
+        transparent
+      />
+    </div>
+  </div>
   <!-- Skeleton -->
-  <div class="animate-pulse flex px-8" v-if="status == 'loading'">
+  <div
+    v-if="status == 'loading'"
+    class="animate-pulse flex pr-4 mt-0.5"
+    :class="newConfig.leaves && newConfig.leaves.length ? 'pl-8' : 'pl-0'"
+  >
     <div class="flex-col w-full">
       <div class="animate-pulse h-20 dark:bg-slate-900 bg-white my-1 border border-gray-300 dark:border-gray-700 rounded-xl"></div>
       <div class="animate-pulse h-20 dark:bg-slate-900 bg-white my-1 border border-gray-300 dark:border-gray-700 rounded-xl"></div>
@@ -15,11 +42,12 @@
     </div>
   </div>
   <!-- vue3-treeview -->
-  <tree :nodes="storeTasks" :config="newConfig" @nodeOpened="nodeExpanding" @nodeFocus="nodeSelected" v-if="status == 'success'">
+  <tree :nodes="storeTasks" :config="newConfig" @nodeOpened="nodeExpanding" @nodeFocus="nodeSelected" v-if="status == 'success'" class="mt-0.5">
     <template #before-input="props">
       <div
         class="task-node flex-col items-center w-full bg-white p-2 rounded-xl dark:bg-gray-900 dark:border-gray-700 border border-gray-300 my-0.5 focus:border-orange-300 focus:border-2"
         :style="{ backgroundColor: colors[props.node.info.uid_marker] ? colors[props.node.info.uid_marker].back_color : '' }"
+        :class="{ 'bg-gray-200 dark:bg-gray-900': (props.node.info.status == 1 || props.node.info.status == 7) && props.node.info.uid_marker == '00000000-0000-0000-0000-000000000000' }"
       >
         <!-- Name, Status -->
         <div
@@ -27,9 +55,12 @@
           :class="props.node.info.focus ? 'justify-between' : ''"
         >
           <div
-            class="flex items-center"
+            class="flex items-start"
           >
-            <div class="border-2 border-gray-300 rounded-md mr-1 flex items-center justify-center" style="min-width:20px; min-height: 20px;">
+            <div
+              class="border-2 border-gray-300 rounded-md mr-1 flex items-center justify-center mt-0.5"
+              style="min-width:20px; min-height: 20px;"
+            >
               <Icon
                 v-if="statuses[props.node.info.status]"
                 :path="statuses[props.node.info.status].path"
@@ -38,11 +69,10 @@
                 :box="statuses[props.node.info.status].viewBox"
                 :width="statuses[props.node.info.status].width"
                 :height="statuses[props.node.info.status].height"
-                class="cursor-pointer"
               />
             </div>
             <p
-              :class="(props.node.info.status == 1 || props.node.info.status == 7) ? 'text-gray-500 line-through' : ''"
+              :class="{ 'text-gray-500': props.node.info.status == 1 || props.node.info.status == 7, 'line-through': props.node.info.status == 1 || props.node.info.status == 7, 'font-extrabold': props.node.info.readed == 0 }"
               :style="{ color: colors[props.node.info.uid_marker] ? colors[props.node.info.uid_marker].fore_color : '' }"
             >
               {{ props.node.info.name }}
@@ -57,22 +87,14 @@
             :height="taskfocus.height"
           />
         </div>
-        <!-- Tags, Overdue -->
+        <!-- Tags, Overdue, Customer, Performer -->
         <div
-          v-if="props.node.info.tags.length || props.node.info.is_overdue"
           class="flex items-center mt-1.5"
         >
           <div
             v-if="props.node.info.uid_customer != '00000000-0000-0000-0000-000000000000' && employees[props.node.info.uid_customer]"
             class="p-1 px-2 text-xs text-white bg-red-500 rounded-lg mr-1 flex items-center"
           >
-            <Icon
-              :path="performerNotRead.path"
-              class="cursor-pointer text-white mr-1"
-              :box="performerNotRead.viewBox"
-              :width="performerNotRead.width"
-              :height="performerNotRead.height"
-            />
             {{ employees[props.node.info.uid_customer].name }}
           </div>
           <div
@@ -80,6 +102,15 @@
             class="p-1 px-2 text-xs text-white bg-green-500 rounded-lg mr-1 flex items-center"
           >
             <Icon
+              v-if="!props.node.info.performerreaded"
+              :path="performerNotRead.path"
+              class="cursor-pointer text-white mr-1"
+              :box="performerNotRead.viewBox"
+              :width="performerNotRead.width"
+              :height="performerNotRead.height"
+            />
+            <Icon
+              v-if="props.node.info.performerreaded"
               :path="performerRead.path"
               class="cursor-pointer text-white mr-1"
               :box="performerRead.viewBox"
@@ -119,6 +150,20 @@
         <div
           class="flex"
         >
+          <div
+            v-if="props.node.info.term_customer"
+            class="bg-gray-200 dark:bg-gray-700 rounded px-1.5 mr-1 mt-1.5"
+            :style="{ backgroundColor: colors[props.node.info.uid_marker] ? colors[props.node.info.uid_marker].back_color : '' }"
+          >
+            <Icon
+              :path="clock.path"
+              class="cursor-pointer text-gray-600 dark:text-white"
+              :box="clock.viewBox"
+              :width="13"
+              :height="12"
+            />
+          </div>
+          <span class="mr-1 mt-1.5 text-sm text-gray-600 dark:text-white self-center">{{ props.node.info.term_customer }}</span>
           <div
             v-if="props.node.info.checklist"
             class="bg-gray-200 dark:bg-gray-700 rounded px-1.5 mr-1 mt-1.5"
@@ -182,6 +227,7 @@ import { computed } from 'vue'
 import treeview from 'vue3-treeview'
 import { useStore } from 'vuex'
 import Icon from '@/components/Icon.vue'
+import Control from '@/components/Control.vue'
 
 import * as TASK from '@/store/actions/tasks'
 import { MESSAGES_REQUEST, REFRESH_MESSAGES } from '@/store/actions/taskmessages'
@@ -201,11 +247,13 @@ import performerRead from '@/icons/performer-read.js'
 import performerNotRead from '@/icons/performer-not-read.js'
 import taskfocus from '@/icons/taskfocus.js'
 import improve from '@/icons/improve.js'
+import clock from '@/icons/clock.js'
 
 export default {
   components: {
     tree: treeview,
-    Icon
+    Icon,
+    Control
   },
   props: {
     storeTasks: Object,
@@ -229,7 +277,9 @@ export default {
       project,
       performerNotRead,
       performerRead,
-      taskfocus
+      taskfocus,
+      clock,
+      createTaskText: ''
     }
   },
   setup () {
@@ -239,6 +289,7 @@ export default {
     const employeesByEmail = computed(() => store.state.employees.employeesByEmail)
     const projects = computed(() => store.state.projects.projects)
     const status = computed(() => store.state.tasks.status)
+    const user = computed(() => store.state.user.user)
 
     const nodeExpanding = (arg) => {
       if (loadedTasks.value[arg.id]) return
@@ -253,6 +304,27 @@ export default {
           }
         })
       arg.state.isLoading = false
+    }
+
+    function uuidv4 () {
+      return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
+        (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+      )
+    }
+
+    const createTask = () => {
+      store.dispatch(
+        TASK.CREATE_TASK,
+        {
+          uid: uuidv4(),
+          uid_parent: '00000000-0000-0000-0000-000000000000',
+          uid_customer: user.value.current_user_uid,
+          uid_project: '00000000-0000-0000-0000-000000000000',
+          email_performer: '',
+          name: 'hello_world',
+          comment: ''
+        }
+      )
     }
 
     const nodeSelected = (arg) => {
@@ -275,8 +347,10 @@ export default {
       projects,
       nodeExpanding,
       nodeSelected,
+      createTask,
       file,
       msgs,
+      user,
       taskcomment,
       checklist,
       colors: computed(() => store.state.colors.colors),
@@ -289,6 +363,7 @@ export default {
     }
   },
   methods: {
+
   }
 }
 </script>

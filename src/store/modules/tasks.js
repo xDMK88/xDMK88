@@ -19,7 +19,7 @@ const state = {
   newtasks: false,
   newConfig: {
     roots: [],
-    leaves: ['fakeid'],
+    leaves: [],
     openedIcon: {
       type: 'shape',
       fill: '#6b7280',
@@ -377,6 +377,23 @@ const actions = {
         }).catch(err => {
           commit(TASK.TASKS_ERROR, err)
           dispatch(AUTH_LOGOUT)
+          reject(err)
+        })
+    })
+  },
+  [TASK.CREATE_TASK]: ({ commit, dispatch }, data) => {
+    return new Promise((resolve, reject) => {
+      const url = 'https://web.leadertask.com/api/v1/task'
+      axios({
+        url: url,
+        method: 'POST',
+        data: data
+      })
+        .then(resp => {
+          console.log('CREATE TASK', resp)
+          resolve(resp)
+        }).catch(err => {
+          console.log('CREATE TASK', err)
           reject(err)
         })
     })

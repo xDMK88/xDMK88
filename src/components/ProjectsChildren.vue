@@ -1,27 +1,24 @@
 <script setup>
 import Icon from '@/components/Icon.vue'
-import { computed } from 'vue'
 import { useStore } from 'vuex'
-import { mdiCog, mdiArrowDownRight } from '@mdi/js'
-
+import properties from '@/icons/properties.js'
+import projectIcon from '@/icons/project.js'
+import sharedProject from '@/icons/shared_project.js'
+import subArrow from '@/icons/arrow-sub.js'
 import * as TASK from '@/store/actions/tasks'
-
 const store = useStore()
-const employeesByEmail = computed(() => store.state.employees.employeesByEmail)
-
+// const employeesByEmail = computed(() => store.state.employees.employeesByEmail)
 defineProps({
   projects: {
     type: Array,
     default: () => []
   }
 })
-
 // Serves as linkage between requests from storage and tree view navigator
 const UID_TO_ACTION = {
   '7af232ff-0e29-4c27-a33b-866b5fd6eade': TASK.PROJECT_TASKS_REQUEST, // private
   '431a3531-a77a-45c1-8035-f0bf75c32641': TASK.PROJECT_TASKS_REQUEST // shared
 }
-
 const clickOnGridCard = (value) => {
   if (UID_TO_ACTION[value.global_property_uid]) {
     store.dispatch(UID_TO_ACTION[value.global_property_uid], value.uid)
@@ -30,59 +27,76 @@ const clickOnGridCard = (value) => {
   store.commit('updateLabel', value.name)
   store.commit(TASK.CLEAN_UP_LOADED_TASKS)
 }
-
 const goToChildren = (value) => {
   if (value.children && value.children.length) {
     store.commit('basic', { key: 'greedSource', value: value.children })
   }
 }
-
 </script>
 
 <template class="w-full">
-    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 truncate">
+    <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-3">
       <template v-for="(project, pindex) in projects" :key="pindex">
-        <div>
-          <div class="h-5 rounded-t-xl bg-gray-200"></div>
+        <div
+          class="flex items-center bg-white dark:bg-gray-700 rounded-xl shadow px-5 py-7 relative"
+        >
           <div
-            class="flex items-start bg-white dark:bg-gray-700 rounded-b-xl shadow-md hover:shadow-lg p-3"
+            v-if="project.color != '#A998B6'"
+            :style="{ backgroundColor: project.color }"
+            style="border-radius: 100% 0 0.75rem 0;"
+            class="w-6 h-6 absolute bottom-0 right-0 rounded-tl-full rounded-br-xl"
           >
-            <div>
-              <div class="flex items-start justify-between">
-                <p
-                  class="font-light cursor-pointer"
-                  @click="clickOnGridCard(project)"
-                >
-                  {{ project.name }}
-                </p>
-                <icon
-                  :path="mdiCog"
-                  size="18"
-                  class="text-gray-400 cursor-pointer hover:text-gray-800"
-                />
-              </div>
-              <div class="flex items-center" v-if="project.children && project.children.length">
-                <p
-                  class="font-light text-xs"
-                >
-                  Дочерних: {{ project.children.length }}
-                </p>
-                <icon
-                  :path="mdiArrowDownRight"
-                  size="18"
-                  class="text-gray-800 cursor-pointer"
-                  @click="goToChildren(project)"
-                />
-              </div>
-                <div v-if="project.members && project.members.length" class="grid grid-cols-9 gap-1 rounded-xl mt-2">
-                  <div v-for="(employee, index) in project.members.slice(0, 9)" :key="index">
-                    <div v-if="employeesByEmail[employee]">
-                      <img :src="employeesByEmail[employee].fotolink" class="rounded" width="28" height="28">
-                    </div>
-                  </div>
-                </div>
-              </div>
           </div>
+          <div>
+            <div class="flex items-center w-96">
+              <icon
+                :path="properties.path"
+                :width="properties.width"
+                :height="properties.height"
+                :box="properties.viewBox"
+                size="18"
+                class="text-gray-400 cursor-pointer hover:text-gray-800 mr-2"
+              />
+              <icon
+                v-if="project.members && project.members.length == 1"
+                :path="projectIcon.path"
+                :width="18"
+                :height="18"
+                :box="projectIcon.viewBox"
+                class="text-gray-500 mr-2"
+              />
+              <icon
+                v-if="project.members && project.members.length > 1"
+                :path="sharedProject.path"
+                :width="18"
+                :height="18"
+                :box="sharedProject.viewBox"
+                class="text-gray-500 mr-2"
+              />
+              <p
+                class="font-normal cursor-pointer"
+                @click="clickOnGridCard(project)"
+              >
+                {{ project.name }}
+              </p>
+            </div>
+            <div class="flex items-center" v-if="project.children && project.children.length">
+              <icon
+                :path="subArrow.path"
+                :box="subArrow.viewBox"
+                :width="subArrow.width"
+                :height="subArrow.height"
+                class="text-gray-500 cursor-pointer mr-1"
+                @click="goToChildren(project)"
+              />
+              <p
+                class="font-light text-xs text-violet-500 cursor-pointer"
+                @click="goToChildren(project)"
+              >
+                Подпроектов: {{ project.children.length }}
+              </p>
+            </div>
+            </div>
         </div>
       </template>
     </div>

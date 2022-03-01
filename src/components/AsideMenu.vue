@@ -183,7 +183,7 @@ const menuClick = (event, item) => {
         />
       </nav-bar-item>
       <div
-        class="w-full px-3 cursor-pointer"
+        class="w-full px-6 cursor-pointer"
         @click="modalOneActive = true"
       >
         <div class="flex">
@@ -211,7 +211,7 @@ const menuClick = (event, item) => {
     <nav-bar-item class="rounded-b-3xl pt-0 mt-0">
       <DatePicker
         v-model="navigatorMenu.currentDate"
-        class="border-none text-xs"
+        class="border-none text-xs px-3"
         style="border: none!important;"
         :style="{ backgroundColor: datePickerBG }"
         show-weeknumbers

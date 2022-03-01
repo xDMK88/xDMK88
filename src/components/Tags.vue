@@ -36,19 +36,19 @@ defineProps({
 </script>
 
 <template class="w-full">
-  <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 truncate">
+  <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
     <template v-for="(tag, pindex) in tags" :key="pindex">
       <div
-        class="flex items-start bg-white dark:bg-gray-700 rounded-xl shadow-md hover:shadow-lg cursor-pointer h-30 px-3 py-5"
+        class="flex items-center bg-white dark:bg-gray-700 rounded-xl shadow hover:shadow-md cursor-pointer h-30 px-3 py-5"
       >
         <div class="w-full">
           <div class="flex items-center justify-between">
             <div
-              class="flex items-center"
+              class="flex items-start"
             >
               <div
-                class="rounded-xl mr-2"
-                style="width: 38px; height: 38px;"
+                class="rounded-xl mr-2 mt-0.5"
+                style="min-width: 38px; min-height: 38px;"
                 :style="{ backgroundColor: tag.back_color }"
               >
               </div>
@@ -59,7 +59,8 @@ defineProps({
                 >
                   {{ tag.name }}
                 </p>
-                <div class="flex items-center" v-if="tag.children && tag.children.length">
+                <div class="flex items-center"
+                  v-if="tag.children && tag.children.length">
                   <icon
                     :path="subArrow.path"
                     :box="subArrow.viewBox"
@@ -88,5 +89,14 @@ defineProps({
         </div>
       </div>
     </template>
+    <div
+      class="flex items-center justify-center bg-gray-50 dark:bg-gray-700 rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-500 cursor-pointer px-5 py-7"
+    >
+      <div class="flex items-center justify-center w-10 h-10 bg-gray-200 dark:bg-gray-600 rounded-xl">
+       <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" class="dark:text-gray-100">
+         <path d="M8.00011 2.3457V8.4034M8.00011 8.4034V14.4611M8.00011 8.4034H14.4617M8.00011 8.4034H1.53857" stroke="#3E3D3B" stroke-width="3" stroke-linecap="round"/>
+       </svg>
+      </div>
+    </div>
   </div>
 </template>

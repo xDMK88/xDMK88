@@ -47,7 +47,7 @@ const styleInactive = 'text-dark-500 font-light'
       @click="menuClick"
     >
       <div
-        class="rounded-md flex items-center justify-center mx-1.5 w-10 h-10"
+        class="rounded-md flex items-center justify-center w-10 h-10"
       >
         <icon
           :path="item.icon"

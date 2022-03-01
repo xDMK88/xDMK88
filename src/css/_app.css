@@ -105,6 +105,7 @@ body {
 {
   position: absolute;
   right: 10px;
+  top: 0;
 }
 .user_customer_custom svg
 {
@@ -151,7 +152,7 @@ body {
 .date-messages-chat
 {
   font-size:13px;
-  color:#828282;
+  color:black;
 }
 .description-content
 {
@@ -181,23 +182,21 @@ body {
 .file-custom_attach-left
 {
 
-  min-width: 150px;
+  max-width: 200px;
   font-size: 13px;
-  border-top-right-radius:10px ;
-  border-bottom-right-radius:10px ;
-  border-bottom-left-radius:10px ;
-  padding: 10px;
-  line-height: 35px;
-  height: 70px;
+  border-top-right-radius: 10px;
+  border-bottom-right-radius: 10px;
+  border-bottom-left-radius: 10px;
+  padding: 5px;
+  line-height: 18px;
+  height: 50px;
 
 }
 .file-custom_attach-left svg
 {
   margin-right: 10px;
   padding: 5px;
-  border: 1px solid gray;
-  border-radius: 50%;
-  margin-top: 5px;
+  margin-top: 0px;
   width: 34px;
   height: 34px;
   float: left;
@@ -209,10 +208,10 @@ body {
   border-top-left-radius:10px ;
   border-bottom-right-radius:10px ;
   border-bottom-left-radius:10px ;
-  padding: 10px;
-  line-height: 35px;
-  height: 70px;
-  min-width: 150px;
+  padding: 5px;
+  line-height: 18px;
+  height: 50px;
+  max-width: 200px;
   display: flex;
 
 }
@@ -222,7 +221,7 @@ body {
   padding: 5px;
   border: 1px solid gray;
   border-radius: 50%;
-  margin-top: 5px;
+  margin-top:0px;
   width: 34px;
   height: 34px;
 }
@@ -1011,4 +1010,11 @@ label
 .parent-name
 {
   color:#2E9CE5;
+}
+.item {
+  cursor: pointer;
+  line-height: 1.5;
+}
+.bold {
+  font-weight: bold;
 }

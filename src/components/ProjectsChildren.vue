@@ -22,6 +22,7 @@ const UID_TO_ACTION = {
 const clickOnGridCard = (value) => {
   if (UID_TO_ACTION[value.global_property_uid]) {
     store.dispatch(UID_TO_ACTION[value.global_property_uid], value.uid)
+    store.commit('basic', { key: 'taskListSource', value: { uid: value.global_property_uid, param: value.uid } })
   }
   store.commit('basic', { key: 'mainSectionState', value: 'tasks' })
   store.commit('updateLabel', value.name)
@@ -44,7 +45,7 @@ const goToChildren = (value) => {
             v-if="project.color != '#A998B6'"
             :style="{ backgroundColor: project.color }"
             style="border-radius: 100% 0 0.75rem 0;"
-            class="w-6 h-6 absolute bottom-0 right-0 rounded-tl-full rounded-br-xl"
+            class="w-7 h-7 absolute bottom-0 right-0 rounded-tl-full rounded-br-xl"
           >
           </div>
           <div>

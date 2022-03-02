@@ -21,6 +21,7 @@ export default createStore({
     mainSectionState: 'tasks',
     greedPath: null,
     greedSource: null,
+    taskListSource: null,
 
     /* User */
     userName: null,

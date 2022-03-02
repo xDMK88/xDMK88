@@ -17,6 +17,7 @@ const UID_TO_ACTION = {
 const clickOnGridCard = (value) => {
   if (UID_TO_ACTION[value.parentID]) {
     store.dispatch(UID_TO_ACTION[value.parentID], value.uid)
+    store.commit('basic', { key: 'taskListSource', value: { uid: value.parentID, param: value.uid } })
   }
   store.commit('basic', { key: 'mainSectionState', value: 'tasks' })
   store.commit('updateLabel', value.name)

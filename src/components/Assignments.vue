@@ -16,20 +16,23 @@ const UID_TO_ACTION = {
 const clickOnGridCard = (value) => {
   if (UID_TO_ACTION[value.uid]) {
     store.dispatch(UID_TO_ACTION[value.uid])
+    store.commit('basic', { key: 'taskListSource', value: { uid: value.uid, param: null } })
   } else if (UID_TO_ACTION[value.parentID]) {
     if (value.email) {
       if (UID_TO_ACTION[value.parentID] === TASK.EMPLOYEE_TASKS_REQUEST) {
         store.dispatch(UID_TO_ACTION[value.parentID], value.uid)
-        console.log('is employee request')
+        store.commit('basic', { key: 'taskListSource', value: { uid: value.parentID, param: value.uid } })
       } else {
         store.dispatch(UID_TO_ACTION[value.parentID], value.email)
-        console.log('isnt employee request')
+        store.commit('basic', { key: 'taskListSource', value: { uid: value.parentID, param: value.email } })
       }
     } else {
       store.dispatch(UID_TO_ACTION[value.parentID], value.uid)
+      store.commit('basic', { key: 'taskListSource', value: { uid: value.parentID, param: value.uid } })
     }
   } else if (UID_TO_ACTION[value.global_property_uid]) {
     store.dispatch(UID_TO_ACTION[value.global_property_uid], value.uid)
+    store.commit('basic', { key: 'taskListSource', value: { uid: value.global_property_uid, param: value.uid } })
   }
   store.commit('basic', { key: 'mainSectionState', value: 'tasks' })
   store.commit('updateLabel', value.name)

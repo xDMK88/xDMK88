@@ -33,6 +33,7 @@ const newConfig = computed(() => store.state.tasks.newConfig)
 
 const getTasks = () => {
   if (store.state.auth.token) {
+    store.commit('basic', { key: 'taskListSource', value: { uid: '901841d9-0016-491d-ad66-8ee42d2b496b', param: null } })
     store.dispatch(TASK.TASKS_REQUEST, new Date())
       .then(() => {
         store.commit(TASK.CLEAN_UP_LOADED_TASKS)

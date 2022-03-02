@@ -20,6 +20,7 @@ const UID_TO_ACTION = {
 const clickOnGridCard = (value) => {
   if (UID_TO_ACTION[value.global_property_uid]) {
     store.dispatch(UID_TO_ACTION[value.global_property_uid], value.uid)
+    store.commit('basic', { key: 'taskListSource', value: { uid: value.global_property_uid, param: value.uid } })
   }
   store.commit('basic', { key: 'mainSectionState', value: 'tasks' })
   store.commit('updateLabel', value.name)

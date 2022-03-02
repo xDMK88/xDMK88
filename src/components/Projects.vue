@@ -27,6 +27,7 @@ const isGridView = ref(true)
 const clickOnGridCard = (value) => {
   if (UID_TO_ACTION[value.global_property_uid]) {
     store.dispatch(UID_TO_ACTION[value.global_property_uid], value.uid)
+    store.commit('basic', { key: 'taskListSource', value: { uid: value.global_property_uid, param: value.uid } })
   }
   store.commit('basic', { key: 'mainSectionState', value: 'tasks' })
   store.commit('updateLabel', value.name)
@@ -76,8 +77,8 @@ const goToChildren = (value) => {
           <div
             v-if="project.color != '#A998B6'"
             :style="{ backgroundColor: project.color }"
-            style="border-radius: 100% 100% 100% 100%;"
-            class="w-6 h-6 absolute bottom-0 right-0"
+            style="border-radius: 100% 0 0.75rem 0;"
+            class="w-7 h-7 absolute bottom-0 right-0"
           >
           </div>
           <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" class="absolute top-3 right-3 cursor-pointer">
@@ -116,7 +117,7 @@ const goToChildren = (value) => {
                 class="font-normal cursor-pointer"
                 @click="clickOnGridCard(project)"
               >
-                {{ project.name }}
+                {{ project.name.length > 60 ? project.name.substring(0, 60) + '...' : project.name }}
               </p>
             </div>
             <div class="flex items-center" v-if="project.children && project.children.length">

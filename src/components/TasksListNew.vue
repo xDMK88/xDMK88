@@ -1,7 +1,8 @@
 <template>
   <div
+    v-if="!DONT_SHOW_CREATE_TASK_INPUT_UIDS[taskListSource.uid]"
     class="pr-4"
-    :class="newConfig.leaves && newConfig.leaves.length ? 'pl-8' : 'pl-0'"
+    :class="newConfig.leaves.length == newConfig.roots.length ? 'pl-0' : 'pl-8'"
   >
     <div
       class="flex items-center bg-gray-50 dark:bg-gray-700 rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-500 p-2"
@@ -45,10 +46,30 @@
   <tree :nodes="storeTasks" :config="newConfig" @nodeOpened="nodeExpanding" @nodeFocus="nodeSelected" v-if="status == 'success'" class="mt-0.5">
     <template #before-input="props">
       <div
-        class="task-node flex-col items-center w-full bg-white p-2 rounded-xl dark:bg-gray-900 dark:border-gray-700 border border-gray-300 my-0.5 focus:border-orange-300 focus:border-2"
+        class="task-node flex-col items-center w-full bg-white p-2 rounded-xl dark:bg-gray-900 dark:border-gray-700 border border-gray-300 my-0.5 focus:border-orange-300 focus:border-2 relative"
         :style="{ backgroundColor: colors[props.node.info.uid_marker] ? colors[props.node.info.uid_marker].back_color : '' }"
         :class="{ 'bg-gray-200 dark:bg-gray-900': (props.node.info.status == 1 || props.node.info.status == 7) && props.node.info.uid_marker == '00000000-0000-0000-0000-000000000000' }"
       >
+        <!-- Hover task options -->
+        <div
+          class="absolute right-2 top-2 bg-gray-200 dark:bg-gray-700 rounded-lg flex items-cetner justify-center py-2 px-3"
+          :style="{ backgroundColor: colors[props.node.info.uid_marker] ? colors[props.node.info.uid_marker].back_color : '' }"
+        >
+          <Icon
+            :path="subtask.path"
+            class="text-gray-600 dark:text-white mr-3"
+            :box="subtask.viewBox"
+            :width="subtask.width"
+            :height="subtask.height"
+          />
+          <Icon
+            :path="taskoptions.path"
+            class="text-gray-600 dark:text-white"
+            :box="taskoptions.viewBox"
+            :width="taskoptions.width"
+            :height="taskoptions.height"
+          />
+        </div>
         <!-- Name, Status -->
         <div
           class="flex"
@@ -59,6 +80,7 @@
           >
             <div
               class="border-2 border-gray-300 rounded-md mr-1 flex items-center justify-center mt-0.5"
+              :class="{ 'cursor-pointer': [1, 2, 3].includes(props.node.info.type), 'cursor-not-allowed': props.node.info.type == 4 }"
               style="min-width:20px; min-height: 20px;"
             >
               <Icon
@@ -223,7 +245,7 @@
 </template>
 
 <script>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import treeview from 'vue3-treeview'
 import { useStore } from 'vuex'
 import Icon from '@/components/Icon.vue'
@@ -248,6 +270,8 @@ import performerNotRead from '@/icons/performer-not-read.js'
 import taskfocus from '@/icons/taskfocus.js'
 import improve from '@/icons/improve.js'
 import clock from '@/icons/clock.js'
+import subtask from '@/icons/subtask.js'
+import taskoptions from '@/icons/taskoptions.js'
 
 export default {
   components: {
@@ -260,6 +284,15 @@ export default {
     newConfig: Object
   },
   data () {
+    const DONT_SHOW_CREATE_TASK_INPUT_UIDS = {
+      '46418722-a720-4c9e-b255-16db4e590c34': TASK.OVERDUE_TASKS_REQUEST,
+      '017a3e8c-79ac-452c-abb7-6652deecbd1c': TASK.OPENED_TASKS_REQUEST,
+      'fa042915-a3d2-469c-bd5a-708cf0339b89': TASK.UNREAD_TASKS_REQUEST,
+      '2a5cae4b-e877-4339-8ca1-bd61426864ec': TASK.IN_WORK_TASKS_REQUEST,
+      '6fc44cc6-9d45-4052-917e-25b1189ab141': TASK.IN_FOCUS_TASKS_REQUEST,
+      'd35fe0bc-1747-4eb1-a1b2-3411e07a92a0': TASK.READY_FOR_COMPLITION_TASKS_REQUEST,
+      '511d871c-c5e9-43f0-8b4c-e8c447e1a823': TASK.DELEGATED_TO_USER_TASKS_REQUEST
+    }
     const statuses = [
       undefined,
       readyStatus,
@@ -273,13 +306,15 @@ export default {
       improve
     ]
     return {
+      DONT_SHOW_CREATE_TASK_INPUT_UIDS,
       statuses,
       project,
       performerNotRead,
       performerRead,
       taskfocus,
       clock,
-      createTaskText: ''
+      subtask,
+      taskoptions
     }
   },
   setup () {
@@ -287,7 +322,9 @@ export default {
     const loadedTasks = computed(() => store.state.tasks.loadedTasks)
     const employees = computed(() => store.state.employees.employees)
     const employeesByEmail = computed(() => store.state.employees.employeesByEmail)
+    const taskListSource = computed(() => store.state.taskListSource)
     const projects = computed(() => store.state.projects.projects)
+    const createTaskText = ref('')
     const status = computed(() => store.state.tasks.status)
     const user = computed(() => store.state.user.user)
 
@@ -321,13 +358,17 @@ export default {
           uid_customer: user.value.current_user_uid,
           uid_project: '00000000-0000-0000-0000-000000000000',
           email_performer: '',
-          name: 'hello_world',
+          name: createTaskText.value,
           comment: ''
         }
       )
+      createTaskText.value = ''
     }
 
     const nodeSelected = (arg) => {
+      if (arg.info.readed === 0) {
+        store.dispatch(TASK.CHANGE_TASK_READ, arg.info.uid)
+      }
       store.commit(REFRESH_FILES)
       store.commit(REFRESH_MESSAGES)
       store.commit(TASK.SELECT_TASK, arg.info)
@@ -348,6 +389,8 @@ export default {
       nodeExpanding,
       nodeSelected,
       createTask,
+      createTaskText,
+      taskListSource,
       file,
       msgs,
       user,

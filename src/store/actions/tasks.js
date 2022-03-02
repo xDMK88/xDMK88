@@ -49,3 +49,6 @@ export const ADD_TASK_TAGS = 'ADD_TASK_TAGS'
 export const UPDATE_NEW_TASK_LIST = 'UPDATE_NEW_TASK_LIST'
 
 export const RESET_STATE_TASKS = 'RESET_STATE_TASKS'
+
+export const MARK_TASK_AS_READ = 'MARK_TASK_AS_READ'
+export const ADD_TASK = 'ADD_TASK'

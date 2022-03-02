@@ -24,13 +24,14 @@ const clickOnGridCard = (value) => {
     if (value.email) {
       if (UID_TO_ACTION[value.parentID] === TASK.EMPLOYEE_TASKS_REQUEST) {
         store.dispatch(UID_TO_ACTION[value.parentID], value.uid)
-        console.log('is employee request')
+        store.commit('basic', { key: 'taskListSource', value: { uid: value.parentID, param: value.uid } })
       } else {
         store.dispatch(UID_TO_ACTION[value.parentID], value.email)
-        console.log('isnt employee request')
+        store.commit('basic', { key: 'taskListSource', value: { uid: value.parentID, param: value.email } })
       }
     } else {
       store.dispatch(UID_TO_ACTION[value.parentID], value.uid)
+      store.commit('basic', { key: 'taskListSource', value: { uid: value.parentID, param: value.uid } })
     }
   }
   store.commit('basic', { key: 'mainSectionState', value: 'tasks' })

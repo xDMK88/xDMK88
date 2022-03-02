@@ -390,10 +390,24 @@ const actions = {
         data: data
       })
         .then(resp => {
-          console.log('CREATE TASK', resp)
+          commit(TASK.ADD_TASK, resp.data)
           resolve(resp)
         }).catch(err => {
-          console.log('CREATE TASK', err)
+          reject(err)
+        })
+    })
+  },
+  [TASK.CHANGE_TASK_READ]: ({ commit, dispatch }, uid) => {
+    return new Promise((resolve, reject) => {
+      const url = 'https://web.leadertask.com/api/v1/task/readed?uid=' + uid + '&value=1'
+      axios({
+        url: url,
+        method: 'PATCH'
+      })
+        .then(resp => {
+          commit(TASK.MARK_TASK_AS_READ, uid)
+          resolve(resp)
+        }).catch(err => {
           reject(err)
         })
     })
@@ -416,7 +430,9 @@ const mutations = {
     for (const node of resp.data.tasks) {
       // write root uid to array
       state.newConfig.roots.push(node.uid)
-      node.has_children ? console.log('hello') : state.newConfig.leaves.push(node.uid)
+      if (!node.has_children) {
+        state.newConfig.leaves.push(node.uid)
+      }
       // write every node into 1d array with objects that has children array in that
       nodes[node.uid] = {
         // text: node.name,
@@ -451,13 +467,25 @@ const mutations = {
   },
   [TASK.UPDATE_NEW_TASK_LIST]: (state, tasks) => {
     for (const task of tasks) {
-      console.log('updating new task list ', task)
-      task.has_children ? console.log('hello') : state.newConfig.leaves.push(task.uid)
+      if (!task.has_children) {
+        state.newConfig.leaves.push(task.uid)
+      }
       state.newtasks[task.uid] = {
         info: task,
         children: task.has_children ? ['hello'] : '',
         state: { checked: false, opened: false }
       }
+    }
+  },
+  [TASK.MARK_TASK_AS_READ]: (state, uid) => {
+    state.newtasks[uid].info.readed = 1
+  },
+  [TASK.ADD_TASK]: (state, task) => {
+    state.newConfig.roots.push(task.uid)
+    state.newConfig.leaves.push(task.uid)
+    state.newtasks[task.uid] = {
+      info: task,
+      children: task.has_children ? ['hello'] : ''
     }
   }
 }

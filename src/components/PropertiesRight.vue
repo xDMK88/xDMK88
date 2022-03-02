@@ -3,16 +3,19 @@ import { createPopper } from '@popperjs/core'
 import { computed } from 'vue'
 import { DatePicker } from 'v-calendar'
 import { useStore } from 'vuex'
-import Tree from '@/components/Tree.vue'
 import VTab from 'v-tab'
+import TreeItem from '@/components/TreeItem.vue'
+import TreeTagsItem from '@/components/TreeTagsItem.vue'
 import 'v-tab/dist/v-tab.css'
 export default {
   components: {
     DatePicker,
-    Tree,
-    VTab: VTab
+    VTab: VTab,
+    TreeItem,
+    TreeTagsItem
   },
-  mounted () {
+  async mounted () {
+    this.handleInput()
   },
   data: () => {
     const store = useStore()
@@ -47,6 +50,7 @@ export default {
       days: ['Воскресенье', 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота', 'Воскресенье'],
       day: ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'],
       firstcount: ['последний', 'первый', 'второй', 'третий', 'четвертый', 'последний'],
+      myday: ['вчера', 'cегодня', 'завтра'],
       statuses: [
         'status_not_begin',
         'status_ready',
@@ -67,10 +71,12 @@ export default {
         date: new Date(),
         timezone: 'Europe/Moscow'
       },
-      dates:
-        {
-          start: new Date(), end: new Date()
-        },
+      range: {
+        start: new Date(),
+        end: new Date().setDate(new Date().getDate() + 1)
+      },
+      firstDayOfWeek: 2,
+      mode: 'single',
       selected: {},
       popoverShowAccess: false,
       popoverShowEmployee: false,
@@ -81,26 +87,10 @@ export default {
       popoverShowTags: false,
       isOpen: false,
       activeTab: '',
-      tabs: [],
-      tree: {
-        name: 'A cool folder',
-        children: [
-          {
-            name: 'A cool sub-folder 1',
-            children: [
-              { name: 'A cool sub-sub-folder 1' },
-              { name: 'A cool sub-sub-folder 2' }
-            ]
-          },
-          { name: 'This one is not that cool' }
-        ]
-      }
+      tabs: []
     }
   },
   methods: {
-    toggle: function () {
-      this.isOpen = !this.isOpen
-    },
     activate (tab) {
       this.activeTab = tab.name
       this.$emit('activateTab', tab.name)
@@ -110,8 +100,14 @@ export default {
         this.popoverShowAccess = false
       } else {
         this.popoverShowAccess = true
+        this.popoverShowEmployee = false
+        this.popoverShowRepeat = false
+        this.popoverShowReminder = false
+        this.popoverShowProject = false
+        this.popoverShowColor = false
+        this.popoverShowTags = false
         createPopper(this.$refs.btnRef, this.$refs.popoverRef, {
-          placement: 'bottom'
+          placement: 'auto'
         })
       }
     },
@@ -120,7 +116,7 @@ export default {
         this.popoverShowEmployee = false
       } else {
         this.popoverShowEmployee = true
-        this.popoverShow = false
+        this.popoverShowAccess = false
         this.popoverShowRepeat = false
         this.popoverShowReminder = false
         this.popoverShowProject = false
@@ -136,7 +132,7 @@ export default {
         this.popoverShowRepeat = false
       } else {
         this.popoverShowRepeat = true
-        this.popoverShow = false
+        this.popoverShowAccess = false
         this.popoverShowEmployee = false
         this.popoverShowReminder = false
         this.popoverShowProject = false
@@ -152,7 +148,7 @@ export default {
         this.popoverShowReminder = false
       } else {
         this.popoverShowReminder = true
-        this.popoverShow = false
+        this.popoverShowAccess = false
         this.popoverShowEmployee = false
         this.popoverShowRepeat = false
         this.popoverShowProject = false
@@ -168,7 +164,7 @@ export default {
         this.popoverShowProject = false
       } else {
         this.popoverShowProject = true
-        this.popoverShow = false
+        this.popoverShowAccess = false
         this.popoverShowEmployee = false
         this.popoverShowRepeat = false
         this.popoverShowReminder = false
@@ -184,7 +180,7 @@ export default {
         this.popoverShowColor = false
       } else {
         this.popoverShowColor = true
-        this.popoverShow = false
+        this.popoverShowAccess = false
         this.popoverShowEmployee = false
         this.popoverShowRepeat = false
         this.popoverShowReminder = false
@@ -200,7 +196,7 @@ export default {
         this.popoverShowTags = false
       } else {
         this.popoverShowTags = true
-        this.popoverShow = false
+        this.popoverShowAccess = false
         this.popoverShowEmployee = false
         this.popoverShowRepeat = false
         this.popoverShowReminder = false
@@ -218,6 +214,16 @@ export default {
       const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']
       const i = Math.floor(Math.log(bytes) / Math.log(k))
       return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i]
+    },
+    handleInput: function () {
+      const datebegin = this.$refs.datePickerbegin.value
+      const dateend = this.$refs.datePickerend.value
+      this.$nextTick(() => {
+        this.range = {
+          start: new Date(datebegin),
+          end: new Date(dateend)
+        }
+      })
     }
   }
 }
@@ -227,15 +233,11 @@ export default {
     v-if="selectedTask"
     v-show="!isFullScreen"
     id="aside"
-    class="-right-96 bg-white-right-column w-96 fixed top-0 z-40 h-screen transition-position lg:right-0 dark:border-r dark:border-gray-800"
+    class="-right-96 bg-white-right-column w-96 fixed top-0 z-40 h-screen transition-position lg:right-0 dark:border-r dark:border-gray-800 custom-column"
     :class="[ isPropertiesMobileExpanded ? 'right-0' : '-right-90', isAsideLgActive ? 'block' : 'lg:hidden xl:block' ]"
   >
     <div class="break-words">
       <div class="column-resize">
-        <div>
-          <tree :tree-data="projects"></tree>
-        </div>
-
         <div>
         </div>
       <div
@@ -297,7 +299,7 @@ export default {
           class="rounded"
         >Поручить</span>
         </div>
-        <span ref="btnRef" @click="togglePopover_access()" v-if="selectedTask.emails!==''" >
+        <div style="position: relative" ref="btnRef" @click="togglePopover_access()" v-if="selectedTask.emails!==''" >
         <div class="mt-3 tags-custom" v-for="(key,value) in selectedTask.emails.split('..')" :key="value">
           <svg width="24" height="24" viewBox="0 0 91 92" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path fill-rule="evenodd" clip-rule="evenodd" d="M73.9839 48.8864C73.9839 50.6954 72.5056 52.1754 70.6989 52.1754C68.8921 52.1754 67.4139 50.6954 67.4139 48.8864V44.4723C67.4139 40.8379 64.4738 37.8943 60.8439 37.8943H13.5399C9.90998 37.8943 6.9699 40.8379 6.9699 44.4723V78.7765C6.9699 82.4109 9.90998 85.3545 13.5399 85.3545H46.2096C48.026 85.3545 49.4986 86.827 49.4986 88.6435C49.4986 90.4599 48.026 91.9324 46.2096 91.9324H13.5399C6.29648 91.9324 0.399902 86.0287 0.399902 78.7765V44.4723C0.399902 37.2201 6.29648 31.3164 13.5399 31.3164H17.4819V19.7227C17.4819 9.06645 26.335 0.400002 37.1919 0.400002C48.0488 0.400002 56.9019 9.06645 56.9019 19.7227V31.3164H60.8439C68.0873 31.3164 73.9839 37.2201 73.9839 44.4723V48.8864ZM50.3319 31.3164H24.0519V19.7227C24.0519 12.7008 29.9485 6.97795 37.1919 6.97795C44.4353 6.97795 50.3319 12.7008 50.3319 19.7227V31.3164ZM39.6617 74.5013C39.2039 72.1608 37.9572 70.1461 36.2429 68.7334C35.9442 68.4873 35.8725 68.0521 36.0635 67.7155C38.5384 63.3546 35.4507 57.5131 30.3371 57.5369C25.2466 57.5131 22.1379 63.3545 24.6108 67.7154C24.8018 68.0521 24.7301 68.4873 24.4312 68.7331C22.713 70.1458 21.4486 72.1606 21.0126 74.5013L20.0665 79.3638C19.9824 79.796 20.3133 80.1975 20.7536 80.1975H39.9207C40.3609 80.1975 40.6919 79.796 40.6078 79.3638L39.6617 74.5013ZM28.1445 64.3525C28.1445 63.1087 29.1324 62.0889 30.3371 62.0889C33.2526 62.2133 33.2526 66.4917 30.3371 66.616C29.1324 66.616 28.1445 65.5962 28.1445 64.3525ZM26.0807 75.6703C25.6477 75.6703 25.3161 75.2764 25.4414 74.8619C26.9349 69.9202 33.7153 69.9202 35.2088 74.8619C35.334 75.2764 35.0024 75.6703 34.5695 75.6703H26.0807ZM64.4788 74.5013C64.021 72.1608 62.7743 70.1461 61.06 68.7334C60.7613 68.4873 60.6896 68.0521 60.8806 67.7155C63.3555 63.3546 60.2678 57.5131 55.1542 57.5369C50.0637 57.5131 46.955 63.3545 49.4279 67.7154C49.6189 68.0521 49.5472 68.4873 49.2483 68.7331C47.5301 70.1458 46.2657 72.1606 45.8297 74.5013L44.8836 79.3638C44.7995 79.796 45.1304 80.1975 45.5707 80.1975H64.7378C65.178 80.1975 65.509 79.796 65.4249 79.3638L64.4788 74.5013ZM52.9616 64.3525C52.9616 63.1087 53.9495 62.0889 55.1542 62.0889C58.0697 62.2133 58.0697 66.4917 55.1542 66.616C53.9495 66.616 52.9616 65.5962 52.9616 64.3525ZM50.8978 75.6703C50.4648 75.6703 50.1332 75.2764 50.2585 74.8619C51.752 69.9202 58.5324 69.9202 60.0259 74.8619C60.1511 75.2764 59.8195 75.6703 59.3866 75.6703H50.8978ZM85.8771 68.7334C87.5914 70.1461 88.8381 72.1608 89.2959 74.5013L90.242 79.3638C90.3261 79.796 89.9951 80.1975 89.5549 80.1975H70.3878C69.9475 80.1975 69.6166 79.796 69.7006 79.3638L70.6468 74.5013C71.0828 72.1606 72.3472 70.1458 74.0654 68.7331C74.3643 68.4873 74.4359 68.0521 74.245 67.7154C71.7721 63.3545 74.8808 57.5131 79.9713 57.5369C85.0849 57.5131 88.1726 63.3546 85.6977 67.7155C85.5067 68.0521 85.5784 68.4873 85.8771 68.7334ZM79.9713 62.0889C78.7666 62.0889 77.7787 63.1087 77.7787 64.3525C77.7787 65.5962 78.7666 66.616 79.9713 66.616C82.8868 66.4917 82.8868 62.2133 79.9713 62.0889ZM75.0756 74.8619C74.9503 75.2764 75.2819 75.6703 75.7149 75.6703H84.2037C84.6366 75.6703 84.9682 75.2764 84.843 74.8619C83.3495 69.9202 76.5691 69.9202 75.0756 74.8619Z" fill="black" fill-opacity="0.5"/>
@@ -305,7 +307,7 @@ export default {
           <span class="rounded">{{employeesByEmail[key].name}}</span>
 
         </div>
-        </span>
+        </div>
         <div class="mt-3 tags-custom" ref="btnRef" @click="togglePopover_access()" v-else>
           <svg width="24" height="24" viewBox="0 0 91 92" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path fill-rule="evenodd" clip-rule="evenodd" d="M73.9839 48.8864C73.9839 50.6954 72.5056 52.1754 70.6989 52.1754C68.8921 52.1754 67.4139 50.6954 67.4139 48.8864V44.4723C67.4139 40.8379 64.4738 37.8943 60.8439 37.8943H13.5399C9.90998 37.8943 6.9699 40.8379 6.9699 44.4723V78.7765C6.9699 82.4109 9.90998 85.3545 13.5399 85.3545H46.2096C48.026 85.3545 49.4986 86.827 49.4986 88.6435C49.4986 90.4599 48.026 91.9324 46.2096 91.9324H13.5399C6.29648 91.9324 0.399902 86.0287 0.399902 78.7765V44.4723C0.399902 37.2201 6.29648 31.3164 13.5399 31.3164H17.4819V19.7227C17.4819 9.06645 26.335 0.400002 37.1919 0.400002C48.0488 0.400002 56.9019 9.06645 56.9019 19.7227V31.3164H60.8439C68.0873 31.3164 73.9839 37.2201 73.9839 44.4723V48.8864ZM50.3319 31.3164H24.0519V19.7227C24.0519 12.7008 29.9485 6.97795 37.1919 6.97795C44.4353 6.97795 50.3319 12.7008 50.3319 19.7227V31.3164ZM39.6617 74.5013C39.2039 72.1608 37.9572 70.1461 36.2429 68.7334C35.9442 68.4873 35.8725 68.0521 36.0635 67.7155C38.5384 63.3546 35.4507 57.5131 30.3371 57.5369C25.2466 57.5131 22.1379 63.3545 24.6108 67.7154C24.8018 68.0521 24.7301 68.4873 24.4312 68.7331C22.713 70.1458 21.4486 72.1606 21.0126 74.5013L20.0665 79.3638C19.9824 79.796 20.3133 80.1975 20.7536 80.1975H39.9207C40.3609 80.1975 40.6919 79.796 40.6078 79.3638L39.6617 74.5013ZM28.1445 64.3525C28.1445 63.1087 29.1324 62.0889 30.3371 62.0889C33.2526 62.2133 33.2526 66.4917 30.3371 66.616C29.1324 66.616 28.1445 65.5962 28.1445 64.3525ZM26.0807 75.6703C25.6477 75.6703 25.3161 75.2764 25.4414 74.8619C26.9349 69.9202 33.7153 69.9202 35.2088 74.8619C35.334 75.2764 35.0024 75.6703 34.5695 75.6703H26.0807ZM64.4788 74.5013C64.021 72.1608 62.7743 70.1461 61.06 68.7334C60.7613 68.4873 60.6896 68.0521 60.8806 67.7155C63.3555 63.3546 60.2678 57.5131 55.1542 57.5369C50.0637 57.5131 46.955 63.3545 49.4279 67.7154C49.6189 68.0521 49.5472 68.4873 49.2483 68.7331C47.5301 70.1458 46.2657 72.1606 45.8297 74.5013L44.8836 79.3638C44.7995 79.796 45.1304 80.1975 45.5707 80.1975H64.7378C65.178 80.1975 65.509 79.796 65.4249 79.3638L64.4788 74.5013ZM52.9616 64.3525C52.9616 63.1087 53.9495 62.0889 55.1542 62.0889C58.0697 62.2133 58.0697 66.4917 55.1542 66.616C53.9495 66.616 52.9616 65.5962 52.9616 64.3525ZM50.8978 75.6703C50.4648 75.6703 50.1332 75.2764 50.2585 74.8619C51.752 69.9202 58.5324 69.9202 60.0259 74.8619C60.1511 75.2764 59.8195 75.6703 59.3866 75.6703H50.8978ZM85.8771 68.7334C87.5914 70.1461 88.8381 72.1608 89.2959 74.5013L90.242 79.3638C90.3261 79.796 89.9951 80.1975 89.5549 80.1975H70.3878C69.9475 80.1975 69.6166 79.796 69.7006 79.3638L70.6468 74.5013C71.0828 72.1606 72.3472 70.1458 74.0654 68.7331C74.3643 68.4873 74.4359 68.0521 74.245 67.7154C71.7721 63.3545 74.8808 57.5131 79.9713 57.5369C85.0849 57.5131 88.1726 63.3546 85.6977 67.7155C85.5067 68.0521 85.5784 68.4873 85.8771 68.7334ZM79.9713 62.0889C78.7666 62.0889 77.7787 63.1087 77.7787 64.3525C77.7787 65.5962 78.7666 66.616 79.9713 66.616C82.8868 66.4917 82.8868 62.2133 79.9713 62.0889ZM75.0756 74.8619C74.9503 75.2764 75.2819 75.6703 75.7149 75.6703H84.2037C84.6366 75.6703 84.9682 75.2764 84.843 74.8619C83.3495 69.9202 76.5691 69.9202 75.0756 74.8619Z" fill="black" fill-opacity="0.5"/>
@@ -315,22 +317,21 @@ export default {
         </div>
         <DatePicker
           is-range
-          v-model="dates"
+          v-model="range"
+          @input="handleInput()"
           ref="calendar"
         >
-          <template #default="{ inputValue, togglePopover}" >
+          <template v-slot="{ inputValue, togglePopover}" >
             <span class="mt-3 tags-custom">
-
-                <span class="flex" v-if="selectedTask.customer_date_begin!=='' && selectedTask.customer_date_end!==''"
-
-                >
-                                <button @click="togglePopover()" class="btn-calendar">
+                <span class="flex" v-if="selectedTask.customer_date_begin!=='' && selectedTask.customer_date_end!==''">
+                 <button @click="togglePopover()" class="btn-calendar">
                 <svg width="24" height="24" viewBox="0 0 88 90" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path fill-rule="evenodd" clip-rule="evenodd" d="M17.5998 4.80001C17.5998 2.48041 19.4802 0.600006 21.7998 0.600006C24.1194 0.600006 25.9998 2.48041 25.9998 4.80001V7.8H61.9998V4.80001C61.9998 2.48041 63.8802 0.600006 66.1998 0.600006C68.5194 0.600006 70.3998 2.48041 70.3998 4.8V7.8H77.5998C82.9017 7.8 87.1998 12.0981 87.1998 17.4V79.8C87.1998 85.1019 82.9017 89.4 77.5998 89.4H10.3998C5.09787 89.4 0.799805 85.1019 0.799805 79.8V17.4C0.799805 12.0981 5.09787 7.8 10.3998 7.8H17.5998V4.80001ZM61.9998 14.4V19.2C61.9998 21.5196 63.8802 23.4 66.1998 23.4C68.5194 23.4 70.3998 21.5196 70.3998 19.2V14.4H77.5998C79.2567 14.4 80.5998 15.7431 80.5998 17.4V79.8C80.5998 81.4568 79.2567 82.8 77.5998 82.8H10.3998C8.74295 82.8 7.3998 81.4568 7.3998 79.8V17.4C7.3998 15.7431 8.74295 14.4 10.3998 14.4H17.5998V19.2C17.5998 21.5196 19.4802 23.4 21.7998 23.4C24.1194 23.4 25.9998 21.5196 25.9998 19.2V14.4H61.9998ZM19.9998 42.2348C19.9998 40.5779 21.343 39.2348 22.9998 39.2348H26.3911C28.048 39.2348 29.3911 40.5779 29.3911 42.2348V45.6261C29.3911 47.2829 28.048 48.6261 26.3911 48.6261H22.9998C21.343 48.6261 19.9998 47.2829 19.9998 45.6261V42.2348ZM39.8259 42.2348C39.8259 40.5779 41.1691 39.2348 42.8259 39.2348H46.2172C47.8741 39.2348 49.2172 40.5779 49.2172 42.2348V45.6261C49.2172 47.2829 47.8741 48.6261 46.2172 48.6261H42.8259C41.1691 48.6261 39.8259 47.2829 39.8259 45.6261V42.2348ZM61.6085 39.2348C59.9517 39.2348 58.6085 40.5779 58.6085 42.2348V45.6261C58.6085 47.2829 59.9517 48.6261 61.6085 48.6261H64.9998C66.6567 48.6261 67.9998 47.2829 67.9998 45.6261V42.2348C67.9998 40.5779 66.6567 39.2348 64.9998 39.2348H61.6085ZM22.9998 58.4348C21.343 58.4348 19.9998 59.7779 19.9998 61.4348V64.8261C19.9998 66.4829 21.343 67.8261 22.9998 67.8261H26.3911C28.048 67.8261 29.3911 66.4829 29.3911 64.8261V61.4348C29.3911 59.7779 28.048 58.4348 26.3911 58.4348H22.9998ZM42.8259 58.4348C41.1691 58.4348 39.8259 59.7779 39.8259 61.4348V64.8261C39.8259 66.4829 41.1691 67.8261 42.8259 67.8261H46.2172C47.8741 67.8261 49.2172 66.4829 49.2172 64.8261V61.4348C49.2172 59.7779 47.8741 58.4348 46.2172 58.4348H42.8259ZM58.6085 61.4348C58.6085 59.7779 59.9517 58.4348 61.6085 58.4348H64.9998C66.6567 58.4348 67.9998 59.7779 67.9998 61.4348V64.8261C67.9998 66.4829 66.6567 67.8261 64.9998 67.8261H61.6085C59.9517 67.8261 58.6085 66.4829 58.6085 64.8261V61.4348Z" fill="#3FBF64" fill-opacity="1"/>
 </svg>
               </button>
-                  <input type="hidden" :value="[new Date(selectedTask.customer_date_begin).toLocaleDateString(),new Date(selectedTask.customer_date_end).toLocaleDateString()]" ref="datePicker">
-            <input type="text" v-on="[togglePopover.start,togglePopover.end]" :value="[inputValue.start,inputValue.end]" @click="togglePopover()" v-on:onload="selectdata()" class="form-control-custom-date rounded" ref="enddatepicker">
+                  <input type="hidden" :value="selectedTask.customer_date_begin" ref="datePickerbegin">
+                  <input type="hidden" :value="selectedTask.customer_date_end" ref="datePickerend">
+            <input type="text" v-on:input="[new Date(selectedTask.customer_date_begin).toLocaleDateString(),new Date(selectedTask.customer_date_end).toLocaleDateString()]" v-on="[togglePopover.start,togglePopover.end]"  :value="[inputValue.start,inputValue.end]" @click="togglePopover()" v-on:onload="selectdata()" class="form-control-custom-date rounded">
              </span>
                         <span v-else
                               class="rounded"
@@ -423,15 +424,19 @@ export default {
 
         </div>
 
-        <span  ref="btnRefTags0" v-on:click="togglePopover_tags()" v-if="selectedTask.tags.length">
+        <span ref="btnRefTags0" v-on:click="togglePopover_tags()" v-if="selectedTask.tags.length">
         <div
           v-for="(key, value) in selectedTask.tags"
           :key="value"
           class="mt-3 tags-custom"
         >
-                <svg width="24" height="24" viewBox="0 0 88 88" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <svg width="24" height="24" viewBox="0 0 88 88" fill="none" xmlns="http://www.w3.org/2000/svg" v-if="tags[key].back_color!==-129876 && tags[key].back_color!==-6268231 && tags[key].back_color!==-12169111 && tags[key].back_color!==-2160377 && tags[key].back_color!==-16741998 && tags[key].back_color!==-11075513 && tags[key].back_color!==-12366748">
 <path d="M77.9021 0.800003H45.1156C44.4406 0.800003 43.7994 1.07006 43.3269 1.54265L3.52077 41.3417C-0.107182 44.9705 -0.107182 50.8779 3.52077 54.4899L33.5062 84.4826C35.2611 86.2379 37.5897 87.2 40.0871 87.2C42.5845 87.2 44.9131 86.2379 46.668 84.4826L86.4573 44.6836C86.9298 44.211 87.1998 43.5696 87.1998 42.8945V10.0999C87.1998 4.96894 83.0319 0.800003 77.9021 0.800003ZM79.7414 41.983L43.1413 78.5921C42.3989 79.3347 41.4033 79.7567 40.3402 79.7567C39.2771 79.7567 38.2816 79.3516 37.5391 78.6089L9.42673 50.4897C7.8743 48.9369 7.8743 46.422 9.42673 44.8692L46.0268 8.26021H75.776C77.9696 8.26021 79.7414 10.0493 79.7414 12.2266V41.983Z" :fill="tags[key].back_color" fill-opacity="1"/>
 <path d="M61.788 19.8588C60.0885 19.8588 58.4969 20.5197 57.2965 21.7202C56.096 22.9206 55.4351 24.5123 55.4351 26.2118C55.4351 27.9113 56.096 29.5029 57.2965 30.7033C58.4969 31.9038 60.0885 32.5647 61.788 32.5647C63.4875 32.5647 65.0792 31.9038 66.2796 30.7033C67.4801 29.5029 68.141 27.9113 68.141 26.2118C68.141 24.5123 67.4801 22.9206 66.2796 21.7202C65.0792 20.5197 63.4875 19.8588 61.788 19.8588Z" :fill="tags[key].back_color" fill-opacity="1"/>
+</svg>
+                          <svg width="24" height="24" viewBox="0 0 88 88" fill="none" xmlns="http://www.w3.org/2000/svg" v-else>
+<path d="M77.9021 0.800003H45.1156C44.4406 0.800003 43.7994 1.07006 43.3269 1.54265L3.52077 41.3417C-0.107182 44.9705 -0.107182 50.8779 3.52077 54.4899L33.5062 84.4826C35.2611 86.2379 37.5897 87.2 40.0871 87.2C42.5845 87.2 44.9131 86.2379 46.668 84.4826L86.4573 44.6836C86.9298 44.211 87.1998 43.5696 87.1998 42.8945V10.0999C87.1998 4.96894 83.0319 0.800003 77.9021 0.800003ZM79.7414 41.983L43.1413 78.5921C42.3989 79.3347 41.4033 79.7567 40.3402 79.7567C39.2771 79.7567 38.2816 79.3516 37.5391 78.6089L9.42673 50.4897C7.8743 48.9369 7.8743 46.422 9.42673 44.8692L46.0268 8.26021H75.776C77.9696 8.26021 79.7414 10.0493 79.7414 12.2266V41.983Z" fill="#6C6C6C" fill-opacity="1"/>
+<path d="M61.788 19.8588C60.0885 19.8588 58.4969 20.5197 57.2965 21.7202C56.096 22.9206 55.4351 24.5123 55.4351 26.2118C55.4351 27.9113 56.096 29.5029 57.2965 30.7033C58.4969 31.9038 60.0885 32.5647 61.788 32.5647C63.4875 32.5647 65.0792 31.9038 66.2796 30.7033C67.4801 29.5029 68.141 27.9113 68.141 26.2118C68.141 24.5123 67.4801 22.9206 66.2796 21.7202C65.0792 20.5197 63.4875 19.8588 61.788 19.8588Z" fill="#6C6C6C" fill-opacity="1"/>
 </svg>
             <span class="rounded custom-method">{{ tags[key].name }}</span>
         </div>
@@ -484,7 +489,7 @@ export default {
           w-44
         "
           >
-            <router-link v-if="selectedTask.checklist"
+         <!--   <router-link v-if="selectedTask.checklist"
               to="/"
               class="
             block
@@ -494,7 +499,7 @@ export default {
                     "
             >
               Добавить чек-лист
-            </router-link>
+            </router-link>-->
             <router-link
               to="/"
               class="
@@ -507,7 +512,7 @@ export default {
             >
               Копировать как ссылку
             </router-link>
-            <router-link
+           <!-- <router-link
               to="/"
               class="
             block
@@ -518,7 +523,7 @@ export default {
           "
             >
              Показать только файлы
-            </router-link>
+            </router-link>-->
             <router-link
               to="/"
               class="
@@ -857,7 +862,7 @@ export default {
             :key="index"
           >
           </div>
-          <div v-for="(value, key, index) in tags" :key="index">
+          <!--<div v-for="(value, key, index) in tags" :key="index">
               <div>
               <div class="list-tags-access active" v-if="selectedTask.tags.filter(tag=>tag===value.uid)[0]===value.uid" >
                 <svg width="24" height="24" viewBox="0 0 88 88" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -876,7 +881,10 @@ export default {
                 <input type="checkbox" name="check_employee" class="check-custom-project">
               </div>
             </div>
-            </div>
+            </div>-->
+          <ul v-for="(value,index, ind) in tags" :key="ind">
+            <TreeTagsItem class="item" v-if="value.uid_parent==='00000000-0000-0000-0000-000000000000'" :model="value"></TreeTagsItem>
+          </ul>
         </div>
       </div>
      <!--<div class="popover-container-button">
@@ -916,8 +924,8 @@ export default {
               </label>
               <input type="checkbox" name="check_employee" class="check-custom-project" checked="checked">
             </div>
-            <div class="color_container" :style="{'color': key.force_color, 'background-color': key.back_color, 'border:1px solid ':key.back_color}" v-else>
-              <label class="list-color-access" >
+            <div class="color_container" v-else>
+              <label class="list-color-access" :style="{'background-color': key.back_color, 'border:1px solid ':key.back_color}">
                 <span  style="text-transform:uppercase" :style="{'color': key.force_color}" v-if="uppercase===1">{{key.name}}</span>
                 <span :style="{'color': key.force_color}" v-else>{{key.name}}</span>
               </label>
@@ -952,69 +960,8 @@ export default {
           <input type="search" value="" placeholder="Найти проект..." class="form-control form-control-custom">
         </div>
         <div class="container-project-popover">
-          <ul>
-            <li v-for="(value, index) in projects" :key="index" @click="toggle">
-              <div class="list-project-access active" v-if="selectedTask.uid_project === value.uid">
-                <svg width="24" height="22" viewBox="0 0 30 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M27.2999 6.3778V4.71425C27.2999 3.17114 26.0386 1.91406 24.4902 1.91406H12.9116L12.5642 1.34198C12.3527 1.01078 11.9826 0.800011 11.5898 0.800011H3.00969C1.46134 0.800011 0.199997 2.05708 0.199997 3.6002V24.722C0.199997 26.2652 1.46134 27.5222 3.00969 27.5222H26.9903C28.5386 27.5222 29.8 26.2652 29.8 24.722V9.16294C29.8075 7.71768 28.7048 6.52835 27.2999 6.3778ZM2.48098 3.6002C2.48098 3.30663 2.72268 3.06575 3.01724 3.06575H10.9554L14.037 8.07899C14.2409 8.4102 14.611 8.62097 15.0113 8.62097H27.0054C27.2999 8.62097 27.5416 8.86184 27.5416 9.15541V24.722C27.5416 25.0156 27.2999 25.2565 27.0054 25.2565H3.00969C2.71512 25.2565 2.47343 25.0156 2.47343 24.722V3.6002H2.48098ZM25.0189 6.35522H15.6382L14.3013 4.17981H24.4827C24.7773 4.17981 25.0189 4.42068 25.0189 4.71425V6.35522Z" :fill="value.color" fill-opacity="1"/>
-                </svg>
-                <label class="break-words">{{value.name}}</label>        <input type="checkbox" name="check_employee" class="check-custom-project" checked>
-              </div>
-              <div class="list-project-access" v-else>
-                <svg width="24" height="22" viewBox="0 0 30 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M27.2999 6.3778V4.71425C27.2999 3.17114 26.0386 1.91406 24.4902 1.91406H12.9116L12.5642 1.34198C12.3527 1.01078 11.9826 0.800011 11.5898 0.800011H3.00969C1.46134 0.800011 0.199997 2.05708 0.199997 3.6002V24.722C0.199997 26.2652 1.46134 27.5222 3.00969 27.5222H26.9903C28.5386 27.5222 29.8 26.2652 29.8 24.722V9.16294C29.8075 7.71768 28.7048 6.52835 27.2999 6.3778ZM2.48098 3.6002C2.48098 3.30663 2.72268 3.06575 3.01724 3.06575H10.9554L14.037 8.07899C14.2409 8.4102 14.611 8.62097 15.0113 8.62097H27.0054C27.2999 8.62097 27.5416 8.86184 27.5416 9.15541V24.722C27.5416 25.0156 27.2999 25.2565 27.0054 25.2565H3.00969C2.71512 25.2565 2.47343 25.0156 2.47343 24.722V3.6002H2.48098ZM25.0189 6.35522H15.6382L14.3013 4.17981H24.4827C24.7773 4.17981 25.0189 4.42068 25.0189 4.71425V6.35522Z" :fill="value.color" fill-opacity="1"/>
-                </svg>  <label class="break-words">{{value.name}}</label>
-                <input type="checkbox" name="check_employee" class="check-custom-project">
-              </div>
-              <ul style="margin-left: 15px; display: none;" v-if="value.children" v-show="isOpen">
-
-                <li v-for="(project, pindex) in value.children" :key="pindex" @click="toggle">
-                  <div class="list-project-access active" v-if="selectedTask.uid_project === project.uid">
-                    <svg width="24" height="22" viewBox="0 0 30 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M27.2999 6.3778V4.71425C27.2999 3.17114 26.0386 1.91406 24.4902 1.91406H12.9116L12.5642 1.34198C12.3527 1.01078 11.9826 0.800011 11.5898 0.800011H3.00969C1.46134 0.800011 0.199997 2.05708 0.199997 3.6002V24.722C0.199997 26.2652 1.46134 27.5222 3.00969 27.5222H26.9903C28.5386 27.5222 29.8 26.2652 29.8 24.722V9.16294C29.8075 7.71768 28.7048 6.52835 27.2999 6.3778ZM2.48098 3.6002C2.48098 3.30663 2.72268 3.06575 3.01724 3.06575H10.9554L14.037 8.07899C14.2409 8.4102 14.611 8.62097 15.0113 8.62097H27.0054C27.2999 8.62097 27.5416 8.86184 27.5416 9.15541V24.722C27.5416 25.0156 27.2999 25.2565 27.0054 25.2565H3.00969C2.71512 25.2565 2.47343 25.0156 2.47343 24.722V3.6002H2.48098ZM25.0189 6.35522H15.6382L14.3013 4.17981H24.4827C24.7773 4.17981 25.0189 4.42068 25.0189 4.71425V6.35522Z" :fill="value.color" fill-opacity="1"/>
-                    </svg>  <label class="break-words">{{ project.name }}</label>    <input type="checkbox" name="check_employee" class="check-custom-project" checked>
-                  </div>
-                  <div class="list-project-access" v-else>
-                    <svg width="24" height="22" viewBox="0 0 30 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M27.2999 6.3778V4.71425C27.2999 3.17114 26.0386 1.91406 24.4902 1.91406H12.9116L12.5642 1.34198C12.3527 1.01078 11.9826 0.800011 11.5898 0.800011H3.00969C1.46134 0.800011 0.199997 2.05708 0.199997 3.6002V24.722C0.199997 26.2652 1.46134 27.5222 3.00969 27.5222H26.9903C28.5386 27.5222 29.8 26.2652 29.8 24.722V9.16294C29.8075 7.71768 28.7048 6.52835 27.2999 6.3778ZM2.48098 3.6002C2.48098 3.30663 2.72268 3.06575 3.01724 3.06575H10.9554L14.037 8.07899C14.2409 8.4102 14.611 8.62097 15.0113 8.62097H27.0054C27.2999 8.62097 27.5416 8.86184 27.5416 9.15541V24.722C27.5416 25.0156 27.2999 25.2565 27.0054 25.2565H3.00969C2.71512 25.2565 2.47343 25.0156 2.47343 24.722V3.6002H2.48098ZM25.0189 6.35522H15.6382L14.3013 4.17981H24.4827C24.7773 4.17981 25.0189 4.42068 25.0189 4.71425V6.35522Z" :fill="value.color" fill-opacity="1"/>
-                    </svg>  <label class="break-words">{{ project.name }}</label>
-                    <input type="checkbox" name="check_employee" class="check-custom-project" >
-                  </div>
-                  <ul style="margin-left: 30px;display: none;" v-if="project.children" v-show="isOpen">
-                    <li v-for="(subproject,value2) in project.children" :key="value2" @click="toggle">
-                      <div class="list-project-access active" v-if="selectedTask.uid_project === subproject.uid">
-                        <svg width="24" height="22" viewBox="0 0 30 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-                          <path d="M27.2999 6.3778V4.71425C27.2999 3.17114 26.0386 1.91406 24.4902 1.91406H12.9116L12.5642 1.34198C12.3527 1.01078 11.9826 0.800011 11.5898 0.800011H3.00969C1.46134 0.800011 0.199997 2.05708 0.199997 3.6002V24.722C0.199997 26.2652 1.46134 27.5222 3.00969 27.5222H26.9903C28.5386 27.5222 29.8 26.2652 29.8 24.722V9.16294C29.8075 7.71768 28.7048 6.52835 27.2999 6.3778ZM2.48098 3.6002C2.48098 3.30663 2.72268 3.06575 3.01724 3.06575H10.9554L14.037 8.07899C14.2409 8.4102 14.611 8.62097 15.0113 8.62097H27.0054C27.2999 8.62097 27.5416 8.86184 27.5416 9.15541V24.722C27.5416 25.0156 27.2999 25.2565 27.0054 25.2565H3.00969C2.71512 25.2565 2.47343 25.0156 2.47343 24.722V3.6002H2.48098ZM25.0189 6.35522H15.6382L14.3013 4.17981H24.4827C24.7773 4.17981 25.0189 4.42068 25.0189 4.71425V6.35522Z" :fill="value.color" fill-opacity="1"/>
-                        </svg>  <label class="break-words">{{subproject.name}}</label>
-                        <input type="checkbox" name="check_employee" class="check-custom-project" checked>
-                      </div>
-                      <div class="list-project-access" v-else>
-                        <svg width="24" height="22" viewBox="0 0 30 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-                          <path d="M27.2999 6.3778V4.71425C27.2999 3.17114 26.0386 1.91406 24.4902 1.91406H12.9116L12.5642 1.34198C12.3527 1.01078 11.9826 0.800011 11.5898 0.800011H3.00969C1.46134 0.800011 0.199997 2.05708 0.199997 3.6002V24.722C0.199997 26.2652 1.46134 27.5222 3.00969 27.5222H26.9903C28.5386 27.5222 29.8 26.2652 29.8 24.722V9.16294C29.8075 7.71768 28.7048 6.52835 27.2999 6.3778ZM2.48098 3.6002C2.48098 3.30663 2.72268 3.06575 3.01724 3.06575H10.9554L14.037 8.07899C14.2409 8.4102 14.611 8.62097 15.0113 8.62097H27.0054C27.2999 8.62097 27.5416 8.86184 27.5416 9.15541V24.722C27.5416 25.0156 27.2999 25.2565 27.0054 25.2565H3.00969C2.71512 25.2565 2.47343 25.0156 2.47343 24.722V3.6002H2.48098ZM25.0189 6.35522H15.6382L14.3013 4.17981H24.4827C24.7773 4.17981 25.0189 4.42068 25.0189 4.71425V6.35522Z" :fill="value.color" fill-opacity="1"/>
-                        </svg>    <label class="break-words">{{ subproject.name }}</label>
-                        <input type="checkbox" name="check_employee" class="check-custom-project" >
-                      </div>
-                      <ul style="margin-left: 30px; display: none;" v-if="subproject.children" v-show="isOpen">
-                        <li v-for="(subsubproject,value2) in subproject.children" :key="value2" @click="toggle">
-                          <div class="list-project-access active" v-if="selectedTask.uid_project === subsubproject.uid">
-                            <svg width="24" height="22" viewBox="0 0 30 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-                              <path d="M27.2999 6.3778V4.71425C27.2999 3.17114 26.0386 1.91406 24.4902 1.91406H12.9116L12.5642 1.34198C12.3527 1.01078 11.9826 0.800011 11.5898 0.800011H3.00969C1.46134 0.800011 0.199997 2.05708 0.199997 3.6002V24.722C0.199997 26.2652 1.46134 27.5222 3.00969 27.5222H26.9903C28.5386 27.5222 29.8 26.2652 29.8 24.722V9.16294C29.8075 7.71768 28.7048 6.52835 27.2999 6.3778ZM2.48098 3.6002C2.48098 3.30663 2.72268 3.06575 3.01724 3.06575H10.9554L14.037 8.07899C14.2409 8.4102 14.611 8.62097 15.0113 8.62097H27.0054C27.2999 8.62097 27.5416 8.86184 27.5416 9.15541V24.722C27.5416 25.0156 27.2999 25.2565 27.0054 25.2565H3.00969C2.71512 25.2565 2.47343 25.0156 2.47343 24.722V3.6002H2.48098ZM25.0189 6.35522H15.6382L14.3013 4.17981H24.4827C24.7773 4.17981 25.0189 4.42068 25.0189 4.71425V6.35522Z" :fill="value.color" fill-opacity="1"/>
-                            </svg>   <label class="break-words">{{subsubproject.name}}</label>
-                            <input type="checkbox" name="check_employee" class="check-custom-project" checked>
-                          </div>
-                          <div class="list-project-access" v-else>
-                            <svg width="24" height="22" viewBox="0 0 30 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-                              <path d="M27.2999 6.3778V4.71425C27.2999 3.17114 26.0386 1.91406 24.4902 1.91406H12.9116L12.5642 1.34198C12.3527 1.01078 11.9826 0.800011 11.5898 0.800011H3.00969C1.46134 0.800011 0.199997 2.05708 0.199997 3.6002V24.722C0.199997 26.2652 1.46134 27.5222 3.00969 27.5222H26.9903C28.5386 27.5222 29.8 26.2652 29.8 24.722V9.16294C29.8075 7.71768 28.7048 6.52835 27.2999 6.3778ZM2.48098 3.6002C2.48098 3.30663 2.72268 3.06575 3.01724 3.06575H10.9554L14.037 8.07899C14.2409 8.4102 14.611 8.62097 15.0113 8.62097H27.0054C27.2999 8.62097 27.5416 8.86184 27.5416 9.15541V24.722C27.5416 25.0156 27.2999 25.2565 27.0054 25.2565H3.00969C2.71512 25.2565 2.47343 25.0156 2.47343 24.722V3.6002H2.48098ZM25.0189 6.35522H15.6382L14.3013 4.17981H24.4827C24.7773 4.17981 25.0189 4.42068 25.0189 4.71425V6.35522Z" :fill="value.color" fill-opacity="1"/>
-                            </svg>    <label class="break-words">{{ subsubproject.name }}</label>
-                            <input type="checkbox" name="check_employee" class="check-custom-project" >
-                          </div>
-                        </li>
-                      </ul>
-                    </li>
-                  </ul>
-                </li>
-              </ul>
-            </li>
+          <ul v-for="(value,index, ind) in projects" :key="ind">
+            <TreeItem class="item" v-if="value.uid_parent==='00000000-0000-0000-0000-000000000000'" :model="value"></TreeItem>
           </ul>
         </div>
       </div>

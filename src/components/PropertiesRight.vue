@@ -14,8 +14,12 @@ export default {
     TreeItem,
     TreeTagsItem
   },
-  async mounted () {
+  mounted () {
     this.handleInput()
+  },
+  updated () {
+    this.handleInput()
+    console.log('updated()')
   },
   data: () => {
     const store = useStore()
@@ -73,7 +77,14 @@ export default {
       },
       range: {
         start: new Date(),
-        end: new Date().setDate(new Date().getDate() + 1)
+        end: new Date()
+      },
+      masks: {
+        input: 'D MMM'
+      },
+      modelConfig: {
+        type: 'string',
+        mask: 'D MMM' // Uses 'iso' if missing
       },
       firstDayOfWeek: 2,
       mode: 'single',
@@ -216,14 +227,12 @@ export default {
       return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i]
     },
     handleInput: function () {
-      const datebegin = this.$refs.datePickerbegin.value
-      const dateend = this.$refs.datePickerend.value
-      this.$nextTick(() => {
-        this.range = {
-          start: new Date(datebegin),
-          end: new Date(dateend)
-        }
-      })
+      const datebegin = this.$refs.datePickerbegin.value !== '0001-01-01T00:00:00' ? new Date(this.$refs.datePickerbegin.value) : ''
+      const dateend = this.$refs.datePickerend.value !== '0001-01-01T00:00:00' ? new Date(this.$refs.datePickerend.value) : null
+      this.range = {
+        start: datebegin,
+        end: dateend
+      }
     }
   }
 }
@@ -274,8 +283,16 @@ export default {
         class="mt-3 custom-list-tags"
       >
         <!-- <p class="text-center">{{ localization.Labels }}</p>-->
-        <div class="mt-3 tags-custom" ref="btnRefEmployee" v-on:click="togglePopover_employee()"  v-if="selectedTask.type===2">
+        <div class="mt-3 tags-custom active" ref="btnRefEmployee" v-on:click="togglePopover_employee()"  v-if="selectedTask.type===1">
 
+          <svg width="24" height="24" viewBox="0 0 96 96" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M83.7121 54.9882C80.8778 52.5882 77.4767 50.3294 73.5087 48.6353C71.8081 47.9294 69.8241 48.6353 69.1156 50.3294C68.407 52.0235 69.1156 54 70.8161 54.7059C74.0756 56.1177 76.9098 57.9529 79.319 59.9294C82.1533 62.4706 83.8538 66 83.8538 69.8118V84.9177C83.8538 86.7529 82.295 88.1647 80.5944 88.1647H15.4058C13.5636 88.1647 12.1464 86.6118 12.1464 84.9177V69.8118C12.1464 66 13.847 62.3294 16.6813 59.9294C20.0824 56.9647 29.8607 50.1882 48.0001 50.1882C61.6047 50.1882 72.5167 39.1765 72.5167 25.7647C72.5167 12.2118 61.6047 1.2 48.0001 1.2C34.3956 1.2 23.4836 12.2118 23.4836 25.6235C23.4836 33.5294 27.3098 40.5882 33.1201 44.9647C22.4916 47.3647 15.831 51.7412 12.2881 54.8471C7.89498 58.6588 5.48584 64.1647 5.48584 69.8118V84.9177C5.48584 90.4235 10.0207 94.8 15.4058 94.8H80.5944C86.1213 94.8 90.5144 90.2824 90.5144 84.9177V69.8118C90.5144 64.1647 88.1053 58.6588 83.7121 54.9882ZM30.0024 25.6235C30.0024 15.7412 38.0801 7.69412 48.0001 7.69412C57.9201 7.69412 65.9978 15.7412 65.9978 25.6235C65.9978 35.5059 57.9201 43.5529 48.0001 43.5529C38.0801 43.5529 30.0024 35.5059 30.0024 25.6235Z" fill="white" fill-opacity="1"/>
+          </svg>
+          <span
+            class="rounded"
+          >Взять на исполнение</span>
+        </div>
+        <div class="mt-3 tags-custom" ref="btnRefEmployee" v-on:click="togglePopover_employee()"  v-else-if="selectedTask.type===2">
           <svg width="24" height="24" viewBox="0 0 96 96" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M83.7121 54.9882C80.8778 52.5882 77.4767 50.3294 73.5087 48.6353C71.8081 47.9294 69.8241 48.6353 69.1156 50.3294C68.407 52.0235 69.1156 54 70.8161 54.7059C74.0756 56.1177 76.9098 57.9529 79.319 59.9294C82.1533 62.4706 83.8538 66 83.8538 69.8118V84.9177C83.8538 86.7529 82.295 88.1647 80.5944 88.1647H15.4058C13.5636 88.1647 12.1464 86.6118 12.1464 84.9177V69.8118C12.1464 66 13.847 62.3294 16.6813 59.9294C20.0824 56.9647 29.8607 50.1882 48.0001 50.1882C61.6047 50.1882 72.5167 39.1765 72.5167 25.7647C72.5167 12.2118 61.6047 1.2 48.0001 1.2C34.3956 1.2 23.4836 12.2118 23.4836 25.6235C23.4836 33.5294 27.3098 40.5882 33.1201 44.9647C22.4916 47.3647 15.831 51.7412 12.2881 54.8471C7.89498 58.6588 5.48584 64.1647 5.48584 69.8118V84.9177C5.48584 90.4235 10.0207 94.8 15.4058 94.8H80.5944C86.1213 94.8 90.5144 90.2824 90.5144 84.9177V69.8118C90.5144 64.1647 88.1053 58.6588 83.7121 54.9882ZM30.0024 25.6235C30.0024 15.7412 38.0801 7.69412 48.0001 7.69412C57.9201 7.69412 65.9978 15.7412 65.9978 25.6235C65.9978 35.5059 57.9201 43.5529 48.0001 43.5529C38.0801 43.5529 30.0024 35.5059 30.0024 25.6235Z" fill="#86D69D" fill-opacity="1"/>
           </svg>
@@ -288,17 +305,18 @@ export default {
           </svg>
           <span
             class="rounded"
-          >Перепоручено</span>
+          >Перепоручить</span>
         </div>
-        <div class="mt-3 tags-custom active" ref="btnRefEmployee" v-on:click="togglePopover_employee()"  v-else>
+        <div class="mt-3 tags-custom active" ref="btnRefEmployee" v-on:click="togglePopover_employee()" v-else-if="selectedTask.type===4">
 
           <svg width="24" height="24" viewBox="0 0 96 96" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M83.7121 54.9882C80.8778 52.5882 77.4767 50.3294 73.5087 48.6353C71.8081 47.9294 69.8241 48.6353 69.1156 50.3294C68.407 52.0235 69.1156 54 70.8161 54.7059C74.0756 56.1177 76.9098 57.9529 79.319 59.9294C82.1533 62.4706 83.8538 66 83.8538 69.8118V84.9177C83.8538 86.7529 82.295 88.1647 80.5944 88.1647H15.4058C13.5636 88.1647 12.1464 86.6118 12.1464 84.9177V69.8118C12.1464 66 13.847 62.3294 16.6813 59.9294C20.0824 56.9647 29.8607 50.1882 48.0001 50.1882C61.6047 50.1882 72.5167 39.1765 72.5167 25.7647C72.5167 12.2118 61.6047 1.2 48.0001 1.2C34.3956 1.2 23.4836 12.2118 23.4836 25.6235C23.4836 33.5294 27.3098 40.5882 33.1201 44.9647C22.4916 47.3647 15.831 51.7412 12.2881 54.8471C7.89498 58.6588 5.48584 64.1647 5.48584 69.8118V84.9177C5.48584 90.4235 10.0207 94.8 15.4058 94.8H80.5944C86.1213 94.8 90.5144 90.2824 90.5144 84.9177V69.8118C90.5144 64.1647 88.1053 58.6588 83.7121 54.9882ZM30.0024 25.6235C30.0024 15.7412 38.0801 7.69412 48.0001 7.69412C57.9201 7.69412 65.9978 15.7412 65.9978 25.6235C65.9978 35.5059 57.9201 43.5529 48.0001 43.5529C38.0801 43.5529 30.0024 35.5059 30.0024 25.6235Z" fill="white" fill-opacity="1"/>
           </svg>
-       <span
-          class="rounded"
-        >Поручить</span>
+          <span
+            class="rounded"
+          >Поручить</span>
         </div>
+
         <div style="position: relative" ref="btnRef" @click="togglePopover_access()" v-if="selectedTask.emails!==''" >
         <div class="mt-3 tags-custom" v-for="(key,value) in selectedTask.emails.split('..')" :key="value">
           <svg width="24" height="24" viewBox="0 0 91 92" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -318,29 +336,38 @@ export default {
         <DatePicker
           is-range
           v-model="range"
-          @input="handleInput()"
           ref="calendar"
+          :masks = "masks"
+          @input="handleInput()"
         >
           <template v-slot="{ inputValue, togglePopover}" >
-            <span class="mt-3 tags-custom">
-                <span class="flex" v-if="selectedTask.customer_date_begin!=='' && selectedTask.customer_date_end!==''">
+            <span class="mt-3 tags-custom any-calendar">
+                <span class="flex" v-if="selectedTask.customer_date_begin!=='0001-01-01T00:00:00' && selectedTask.customer_date_end!=='0001-01-01T00:00:00'">
                  <button @click="togglePopover()" class="btn-calendar">
                 <svg width="24" height="24" viewBox="0 0 88 90" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path fill-rule="evenodd" clip-rule="evenodd" d="M17.5998 4.80001C17.5998 2.48041 19.4802 0.600006 21.7998 0.600006C24.1194 0.600006 25.9998 2.48041 25.9998 4.80001V7.8H61.9998V4.80001C61.9998 2.48041 63.8802 0.600006 66.1998 0.600006C68.5194 0.600006 70.3998 2.48041 70.3998 4.8V7.8H77.5998C82.9017 7.8 87.1998 12.0981 87.1998 17.4V79.8C87.1998 85.1019 82.9017 89.4 77.5998 89.4H10.3998C5.09787 89.4 0.799805 85.1019 0.799805 79.8V17.4C0.799805 12.0981 5.09787 7.8 10.3998 7.8H17.5998V4.80001ZM61.9998 14.4V19.2C61.9998 21.5196 63.8802 23.4 66.1998 23.4C68.5194 23.4 70.3998 21.5196 70.3998 19.2V14.4H77.5998C79.2567 14.4 80.5998 15.7431 80.5998 17.4V79.8C80.5998 81.4568 79.2567 82.8 77.5998 82.8H10.3998C8.74295 82.8 7.3998 81.4568 7.3998 79.8V17.4C7.3998 15.7431 8.74295 14.4 10.3998 14.4H17.5998V19.2C17.5998 21.5196 19.4802 23.4 21.7998 23.4C24.1194 23.4 25.9998 21.5196 25.9998 19.2V14.4H61.9998ZM19.9998 42.2348C19.9998 40.5779 21.343 39.2348 22.9998 39.2348H26.3911C28.048 39.2348 29.3911 40.5779 29.3911 42.2348V45.6261C29.3911 47.2829 28.048 48.6261 26.3911 48.6261H22.9998C21.343 48.6261 19.9998 47.2829 19.9998 45.6261V42.2348ZM39.8259 42.2348C39.8259 40.5779 41.1691 39.2348 42.8259 39.2348H46.2172C47.8741 39.2348 49.2172 40.5779 49.2172 42.2348V45.6261C49.2172 47.2829 47.8741 48.6261 46.2172 48.6261H42.8259C41.1691 48.6261 39.8259 47.2829 39.8259 45.6261V42.2348ZM61.6085 39.2348C59.9517 39.2348 58.6085 40.5779 58.6085 42.2348V45.6261C58.6085 47.2829 59.9517 48.6261 61.6085 48.6261H64.9998C66.6567 48.6261 67.9998 47.2829 67.9998 45.6261V42.2348C67.9998 40.5779 66.6567 39.2348 64.9998 39.2348H61.6085ZM22.9998 58.4348C21.343 58.4348 19.9998 59.7779 19.9998 61.4348V64.8261C19.9998 66.4829 21.343 67.8261 22.9998 67.8261H26.3911C28.048 67.8261 29.3911 66.4829 29.3911 64.8261V61.4348C29.3911 59.7779 28.048 58.4348 26.3911 58.4348H22.9998ZM42.8259 58.4348C41.1691 58.4348 39.8259 59.7779 39.8259 61.4348V64.8261C39.8259 66.4829 41.1691 67.8261 42.8259 67.8261H46.2172C47.8741 67.8261 49.2172 66.4829 49.2172 64.8261V61.4348C49.2172 59.7779 47.8741 58.4348 46.2172 58.4348H42.8259ZM58.6085 61.4348C58.6085 59.7779 59.9517 58.4348 61.6085 58.4348H64.9998C66.6567 58.4348 67.9998 59.7779 67.9998 61.4348V64.8261C67.9998 66.4829 66.6567 67.8261 64.9998 67.8261H61.6085C59.9517 67.8261 58.6085 66.4829 58.6085 64.8261V61.4348Z" fill="#3FBF64" fill-opacity="1"/>
 </svg>
               </button>
+                  <span v-if="new Date(selectedTask.customer_date_begin).toLocaleDateString() !== new Date(selectedTask.customer_date_end).toLocaleDateString()">
                   <input type="hidden" :value="selectedTask.customer_date_begin" ref="datePickerbegin">
                   <input type="hidden" :value="selectedTask.customer_date_end" ref="datePickerend">
-            <input type="text" v-on:input="[new Date(selectedTask.customer_date_begin).toLocaleDateString(),new Date(selectedTask.customer_date_end).toLocaleDateString()]" v-on="[togglePopover.start,togglePopover.end]"  :value="[inputValue.start,inputValue.end]" @click="togglePopover()" v-on:onload="selectdata()" class="form-control-custom-date rounded">
+                    <span @click="togglePopover()">{{inputValue.start}} - {{inputValue.end}}</span>
+                  </span>
+                  <span v-else>
+                        <input type="hidden" :value="selectedTask.customer_date_begin" ref="datePickerbegin">
+                     <input type="hidden" :value="selectedTask.customer_date_end" ref="datePickerend">
+                    <span @click="togglePopover()">{{inputValue.start}} {{inputValue.end}}</span>
+
+                  </span>
              </span>
-                        <span v-else
-                              class="rounded"
-                              @click="togglePopover()"
-                        >               <button @click="togglePopover()">
+             <span class="flex" v-else>
+               <button class="btn-calendar" @click="togglePopover()">
                 <svg width="24" height="24" viewBox="0 0 88 90" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path fill-rule="evenodd" clip-rule="evenodd" d="M17.5998 4.80001C17.5998 2.48041 19.4802 0.600006 21.7998 0.600006C24.1194 0.600006 25.9998 2.48041 25.9998 4.80001V7.8H61.9998V4.80001C61.9998 2.48041 63.8802 0.600006 66.1998 0.600006C68.5194 0.600006 70.3998 2.48041 70.3998 4.8V7.8H77.5998C82.9017 7.8 87.1998 12.0981 87.1998 17.4V79.8C87.1998 85.1019 82.9017 89.4 77.5998 89.4H10.3998C5.09787 89.4 0.799805 85.1019 0.799805 79.8V17.4C0.799805 12.0981 5.09787 7.8 10.3998 7.8H17.5998V4.80001ZM61.9998 14.4V19.2C61.9998 21.5196 63.8802 23.4 66.1998 23.4C68.5194 23.4 70.3998 21.5196 70.3998 19.2V14.4H77.5998C79.2567 14.4 80.5998 15.7431 80.5998 17.4V79.8C80.5998 81.4568 79.2567 82.8 77.5998 82.8H10.3998C8.74295 82.8 7.3998 81.4568 7.3998 79.8V17.4C7.3998 15.7431 8.74295 14.4 10.3998 14.4H17.5998V19.2C17.5998 21.5196 19.4802 23.4 21.7998 23.4C24.1194 23.4 25.9998 21.5196 25.9998 19.2V14.4H61.9998ZM19.9998 42.2348C19.9998 40.5779 21.343 39.2348 22.9998 39.2348H26.3911C28.048 39.2348 29.3911 40.5779 29.3911 42.2348V45.6261C29.3911 47.2829 28.048 48.6261 26.3911 48.6261H22.9998C21.343 48.6261 19.9998 47.2829 19.9998 45.6261V42.2348ZM39.8259 42.2348C39.8259 40.5779 41.1691 39.2348 42.8259 39.2348H46.2172C47.8741 39.2348 49.2172 40.5779 49.2172 42.2348V45.6261C49.2172 47.2829 47.8741 48.6261 46.2172 48.6261H42.8259C41.1691 48.6261 39.8259 47.2829 39.8259 45.6261V42.2348ZM61.6085 39.2348C59.9517 39.2348 58.6085 40.5779 58.6085 42.2348V45.6261C58.6085 47.2829 59.9517 48.6261 61.6085 48.6261H64.9998C66.6567 48.6261 67.9998 47.2829 67.9998 45.6261V42.2348C67.9998 40.5779 66.6567 39.2348 64.9998 39.2348H61.6085ZM22.9998 58.4348C21.343 58.4348 19.9998 59.7779 19.9998 61.4348V64.8261C19.9998 66.4829 21.343 67.8261 22.9998 67.8261H26.3911C28.048 67.8261 29.3911 66.4829 29.3911 64.8261V61.4348C29.3911 59.7779 28.048 58.4348 26.3911 58.4348H22.9998ZM42.8259 58.4348C41.1691 58.4348 39.8259 59.7779 39.8259 61.4348V64.8261C39.8259 66.4829 41.1691 67.8261 42.8259 67.8261H46.2172C47.8741 67.8261 49.2172 66.4829 49.2172 64.8261V61.4348C49.2172 59.7779 47.8741 58.4348 46.2172 58.4348H42.8259ZM58.6085 61.4348C58.6085 59.7779 59.9517 58.4348 61.6085 58.4348H64.9998C66.6567 58.4348 67.9998 59.7779 67.9998 61.4348V64.8261C67.9998 66.4829 66.6567 67.8261 64.9998 67.8261H61.6085C59.9517 67.8261 58.6085 66.4829 58.6085 64.8261V61.4348Z" fill="black" fill-opacity="0.5"/>
 </svg>
-              </button>Дата
+                              <input type="hidden" :value="selectedTask.customer_date_begin" ref="datePickerbegin">
+                     <input type="hidden" :value="selectedTask.customer_date_end" ref="datePickerend">
+               </button><span @click="togglePopover()" ><span ref="dateval">Дата</span> {{inputValue.start}}<span v-if="selectedTask.customer_date_begin!=='0001-01-01T00:00:00'">-</span> {{inputValue.end}}</span>
             </span>
             </span>
           </template>

@@ -61,6 +61,8 @@ const currentDate = computed({
   set: val => {
     store.commit('basic', { key: 'mainSectionState', value: 'tasks' })
     store.dispatch(TASK.TASKS_REQUEST, val)
+    // hardcoded and messy
+    store.commit('basic', { key: 'taskListSource', value: { uid: '901841d9-0016-491d-ad66-8ee42d2b496b', param: val } })
     store.commit('updateLabel', dateToLabelFormat(val))
     store.commit(TASK.CLEAN_UP_LOADED_TASKS)
   }

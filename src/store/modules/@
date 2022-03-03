@@ -530,7 +530,7 @@ const mutations = {
     }
   },
   [TASK.REMOVE_TASK]: (state, uid) => {
-    const uidParent = state.newtasks[uid].info.uid_parent === '00000000-0000-0000-0000-000000000000' ? uid : state.newtasks[uid].info.uid_parent
+    const uidParent = state.newtasks[uid].info.uid_parent ? state.newtasks[uid].info.uid_parent : state.newtasks[uid].uid
     console.log(uidParent, uidParent)
     if (
       state.newtasks[uidParent].children &&

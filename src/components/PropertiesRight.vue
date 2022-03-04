@@ -3,23 +3,17 @@ import { createPopper } from '@popperjs/core'
 import { computed } from 'vue'
 import { DatePicker } from 'v-calendar'
 import { useStore } from 'vuex'
-import VTab from 'v-tab'
 import TreeItem from '@/components/TreeItem.vue'
 import TreeTagsItem from '@/components/TreeTagsItem.vue'
 import 'v-tab/dist/v-tab.css'
 export default {
   components: {
     DatePicker,
-    VTab: VTab,
     TreeItem,
     TreeTagsItem
   },
   mounted () {
     this.handleInput()
-  },
-  updated () {
-    this.handleInput()
-    console.log('updated()')
   },
   data: () => {
     const store = useStore()
@@ -98,7 +92,8 @@ export default {
       popoverShowTags: false,
       isOpen: false,
       activeTab: '',
-      tabs: []
+      tabs: [],
+      isActive: false
     }
   },
   methods: {
@@ -117,8 +112,18 @@ export default {
         this.popoverShowProject = false
         this.popoverShowColor = false
         this.popoverShowTags = false
+        const mediaQuery = window.matchMedia('(max-width: 500px)')
         createPopper(this.$refs.btnRef, this.$refs.popoverRef, {
-          placement: 'auto'
+          placement: 'bottom-start',
+          modifiers: [
+            {
+              name: 'offset',
+              options: {
+                // 0px distance at <= 500px width, otherwise 10px distance
+                offset: () => [0, mediaQuery.matches ? 0 : 10]
+              }
+            }
+          ]
         })
       }
     },
@@ -133,8 +138,18 @@ export default {
         this.popoverShowProject = false
         this.popoverShowColor = false
         this.popoverShowTags = false
+        const mediaQuery = window.matchMedia('(max-width: 500px)')
         createPopper(this.$refs.btnRefEmployee, this.$refs.popoverRefEmployee, {
-          placement: 'bottom'
+          placement: 'bottom-start',
+          modifiers: [
+            {
+              name: 'offset',
+              options: {
+                // 0px distance at <= 500px width, otherwise 10px distance
+                offset: () => [0, mediaQuery.matches ? 0 : 10]
+              }
+            }
+          ]
         })
       }
     },
@@ -149,8 +164,18 @@ export default {
         this.popoverShowProject = false
         this.popoverShowColor = false
         this.popoverShowTags = false
+        const mediaQuery = window.matchMedia('(max-width: 500px)')
         createPopper(this.$refs.btnRefRepeat, this.$refs.popoverRefRepeat, {
-          placement: 'bottom'
+          placement: 'bottom-start',
+          modifiers: [
+            {
+              name: 'offset',
+              options: {
+                // 0px distance at <= 500px width, otherwise 10px distance
+                offset: () => [-400, mediaQuery.matches ? 0 : 10]
+              }
+            }
+          ]
         })
       }
     },
@@ -165,8 +190,18 @@ export default {
         this.popoverShowProject = false
         this.popoverShowColor = false
         this.popoverShowTags = false
+        const mediaQuery = window.matchMedia('(max-width: 500px)')
         createPopper(this.$refs.btnRefReminder, this.$refs.popoverRefReminder, {
-          placement: 'bottom'
+          placement: 'bottom-start',
+          modifiers: [
+            {
+              name: 'offset',
+              options: {
+                // 0px distance at <= 500px width, otherwise 10px distance
+                offset: () => [0, mediaQuery.matches ? 0 : 10]
+              }
+            }
+          ]
         })
       }
     },
@@ -181,8 +216,18 @@ export default {
         this.popoverShowReminder = false
         this.popoverShowColor = false
         this.popoverShowTags = false
+        const mediaQuery = window.matchMedia('(max-width: 500px)')
         createPopper(this.$refs.btnRefProject, this.$refs.popoverRefProject, {
-          placement: 'bottom'
+          placement: 'bottom-start',
+          modifiers: [
+            {
+              name: 'offset',
+              options: {
+                // 0px distance at <= 500px width, otherwise 10px distance
+                offset: () => [0, mediaQuery.matches ? 0 : 10]
+              }
+            }
+          ]
         })
       }
     },
@@ -197,8 +242,18 @@ export default {
         this.popoverShowReminder = false
         this.popoverShowProject = false
         this.popoverShowTags = false
+        const mediaQuery = window.matchMedia('(max-width: 500px)')
         createPopper(this.$refs.btnRefColor, this.$refs.popoverRefColor, {
-          placement: 'bottom'
+          placement: 'bottom-start',
+          modifiers: [
+            {
+              name: 'offset',
+              options: {
+                // 0px distance at <= 500px width, otherwise 10px distance
+                offset: () => [0, mediaQuery.matches ? 0 : 10]
+              }
+            }
+          ]
         })
       }
     },
@@ -213,8 +268,18 @@ export default {
         this.popoverShowReminder = false
         this.popoverShowProject = false
         this.popoverShowColor = false
+        const mediaQuery = window.matchMedia('(max-width: 500px)')
         createPopper(this.$refs.btnRefTags0, this.$refs.popoverRefTags0, {
-          placement: 'bottom'
+          placement: 'bottom-start',
+          modifiers: [
+            {
+              name: 'offset',
+              options: {
+                // 0px distance at <= 500px width, otherwise 10px distance
+                offset: () => [0, mediaQuery.matches ? 0 : 10]
+              }
+            }
+          ]
         })
       }
     },
@@ -233,6 +298,9 @@ export default {
         start: datebegin,
         end: dateend
       }
+    },
+    tabfunction: function (tab) {
+      this.isActive = tab
     }
   }
 }
@@ -379,7 +447,7 @@ export default {
             <path d="M76.4048 8.32H15.595V13.4985C15.595 15.6855 13.8263 17.4585 11.6444 17.4585C9.46253 17.4585 7.69378 15.6855 7.69378 13.4985V8.32C7.69378 3.94591 11.2313 0.400002 15.595 0.400002H76.4048C80.7685 0.400002 84.306 3.9459 84.306 8.32V40H89.164C91.2712 40 92.3806 42.5039 90.9676 44.071L82.159 53.8398C81.1937 54.9103 79.5171 54.9103 78.5518 53.8398L69.7432 44.071C68.3302 42.5039 69.4396 40 71.5469 40H76.4048V8.32Z" fill="#5D94F7" fill-opacity="1"/>
           </svg>
             <span v-if="selectedTask.SeriesType===0">Не повторять</span>
-            <span v-if="selectedTask.SeriesType===1"><span v-if="selectedTask.SeriesAfterCount===1">Ежедневно</span><span v-else>Каждый {{ selectedTask.SeriesAfterCount }} день.</span></span>
+          <span v-if="selectedTask.SeriesType===1"><span v-if="selectedTask.SeriesAfterType===1"><span v-if="selectedTask.SeriesAfterCount===1">Ежедневно </span><span v-else>Каждый {{ selectedTask.SeriesAfterCount }} день.</span></span><span v-else-if="selectedTask.SeriesAfterType===2"><span v-if="selectedTask.SeriesAfterCount===1">Еженедельно </span><span v-else>Каждый {{ selectedTask.SeriesAfterCount }} неделю.</span></span><span v-else-if="selectedTask.SeriesAfterType===3"><span v-if="selectedTask.SeriesAfterCount===1">Ежемесячно </span><span v-else>Каждый {{ selectedTask.SeriesAfterCount }} месяц.</span></span><span v-else-if="selectedTask.SeriesAfterType===4"><span v-if="selectedTask.SeriesAfterCount===1">Ежегодно </span><span v-else>Каждый {{ selectedTask.SeriesAfterCount }} год.</span></span> </span>
             <span v-if="selectedTask.SeriesType===2">Каждую {{selectedTask.SeriesWeekCount}} неделю, по: <span v-if="selectedTask.SeriesWeekMon===1">Пн. </span>
           <span v-if="selectedTask.SeriesWeekTue===1">Вт. </span>
           <span v-if="selectedTask.SeriesWeekWed===1">Ср. </span>
@@ -601,7 +669,7 @@ export default {
               {{ days[new Date(key.date_create.split('T')[0]).getDay()] }}, {{ new Date(key.date_create.split('T')[0]).getDate() }} {{ months[new Date(key.date_create).getMonth()] }}
             </p>
           </div>
-          <div v-if="key.uid_creator===cusers.current_user_uid">
+          <div v-if="key.uid_creator===cusers.current_user_uid" class="chat-name-attach-left">
             <div class="name-chat-custom-margin flex">
               <p class="name-chat-custom" v-if="value===0">
                 {{ employees[key.uid_creator].name }}
@@ -629,7 +697,7 @@ export default {
           </div>
           <div
             v-else
-            class=""
+            class="chat-name-attach-right"
           >
             <div class="name-chat-custom-margin flex">
               <p class="name-chat-custom" v-if="value===0">
@@ -1055,7 +1123,7 @@ export default {
     </div>
   </div>
   <!-- Всплывающее окно доступ -->
-  <div ref="popoverRef" v-bind:class="{'hidden': !popoverShowAccess, 'block': popoverShowAccess}" class="border-1 mt-3 block z-50 font-normal leading-normal text-sm max-w-xs text-left no-underline break-words rounded-lg popover-custom-access">
+  <div ref="popoverRef" id="tooltip" v-bind:class="{'hidden': !popoverShowAccess, 'block': popoverShowAccess}" class="border-1 mt-3 block z-50 font-normal leading-normal text-sm max-w-xs text-left no-underline break-words rounded-lg popover-custom-access">
     <div class="popover-padding-custom">
       <div class="text-white opacity-75 font-semibold p-3 mb-0 border-b border-solid border-blueGray-100 uppercase rounded-t-lg title-popover-main">
         <div class="dissmiss_popover" v-on:click="togglePopover_access()">
@@ -1114,6 +1182,7 @@ export default {
         </div>
 
       </div>
+      <div id="arrow" data-popper-arrow></div>
     </div>
   </div>
   <!--Всплывающее окно Повтор-->
@@ -1127,24 +1196,117 @@ export default {
         </div>
       </div>
       <div class="text-white p-3 body-popover-custom body-repeat-custom rounded-b-lg">
-        <button class="btn-width-custom active" type="button">Не повторять</button>
-        <button class="btn-width-custom" type="button">Ежедневно</button>
-        <button class="btn-width-custom" type="button">Еженедельно</button>
-        <button class="btn-width-custom" type="button">Ежемесячно</button>
-        <button class="btn-width-custom" type="button">Ежегодно</button>
-        <div class="list">
+        <button class="btn-width-custom" :class="selectedTask.SeriesType===0 ? {active:true} : {active:isActive==='#tabnorepeat'}" type="button" value="0" @click="tabfunction('#tabnorepeat')" ref="tabnorepeat">Не повторять</button>
+        <button class="btn-width-custom" :class="selectedTask.SeriesType===1 ? {active:true} : {active:isActive==='#tabeveryday'}"  type="button" value="1" @click="tabfunction('#tabeveryday')" ref="tabeveryday">Ежедневно</button>
+        <button class="btn-width-custom" :class="selectedTask.SeriesType===2 ? {active:true} : {active:isActive==='#tabeveryweek'}" type="button" value="2" @click="tabfunction('#tabeveryweek')" ref="tabeveryweek">Еженедельно</button>
+        <button class="btn-width-custom" :class="selectedTask.SeriesType===3 ? {active:true} : {active:isActive==='#tabverymonth'}" type="button" value="3" @click="tabfunction('#tabeverymonth')" ref="tabverymonth">Ежемесячно</button>
+        <button class="btn-width-custom" :class="selectedTask.SeriesType===4 ? {active:true} : {active:isActive==='#tabeveryyear'}" type="button" value="4" @click="tabfunction('#tabeveryyear')" ref="tabeveryyear">Ежегодно</button>
+      </div>
+      <div class="tab-content">
+        <div class="tab-content-repeat" :class="selectedTask.SeriesType===0 ? {active:true} : {active:isActive==='#tabnorepeat'}" id="tabnorepeat">
         </div>
-        <VTab class="v-tab-vertical">
-          <v-tab label='First'>
-            First tab content
-          </v-tab>
-          <v-tab label='Second'>
-            Second tab content
-          </v-tab>
-          <v-tab label='Third'>
-            Third tab content
-          </v-tab>
-        </VTab>
+        <div class="tab-content-repeat" :class="selectedTask.SeriesType===1 ? {active:true} : {active:isActive==='#tabeveryday'}" id="tabeveryday">
+          <div class="every-content flex">
+            <label>Каждый </label>
+            <div class="form-group">
+              <select class="form-control form-control-select" name="">
+                <option v-for="item in 365" :key="item" selected="{{selectedTask.SeriesAfterCount===item ? true :false}}">{{item}}</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <select class="form-control form-control-select">
+                <option value="1">День</option>
+                <option value="2">Неделю</option>
+                <option value="3">Месяц</option>
+                <option value="4">Год</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="tab-content-repeat" :class="selectedTask.SeriesType===2 ? {active:true} : {active:isActive==='#tabeveryweek'}" id="tabeveryweek">
+          <div class="everyweek-content">
+            <div class="flex">
+              <label>Каждую </label>
+            <div class="form-group">
+
+              <select class="form-control form-control-select" name="">
+                <option v-for="item in 365" :key="item">{{item}} неделю</option>
+              </select>
+            </div>
+            </div>
+            <div class="form-group">
+              <div class="form-everyweek-container">
+          <button class="btn-day-week">Вт. </button>
+          <button class="btn-day-week">Ср. </button>
+          <button class="btn-day-week">Чт. </button>
+          <button class="btn-day-week">Пт. </button>
+          <button class="btn-day-week">Сб. </button>
+          <button class="btn-day-week">Вск. </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="tab-content-repeat" :class="selectedTask.SeriesType===3 ? {active:true} : {active:isActive==='#tabeverymonth'}" id="tabeverymonth">
+          <div class="everymonth-content">
+            <div class="flex">
+              <label>Повтор </label>
+              <div class="form-group">
+
+                <select class="form-control form-control-select" name="">
+                  <option>Каждый</option>
+                  <option>Первый</option>
+                  <option>Второй</option>
+                  <option>Третий</option>
+                  <option>Четвертый</option>
+                  <option>Последний</option>
+                </select>
+              </div>
+              <div class="form-group">
+
+                <select class="form-control form-control-select" name="">
+                  <option v-for="item in 365" :key="item">{{item}} месяц</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="form-everymonth-container">
+                <button class="btn-day-month" v-for="day in 31" :key="day">{{day}}</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="tab-content-repeat" :class="selectedTask.SeriesType===4 ? {active:true} : {active:isActive==='#tabeveryyear'}" id="tabeveryyear">
+          <div class="everyyear-content">
+            <div class="flex">
+              <label>Повтор </label>
+              <div class="form-group" aria-valuemax="SeriesYearType">
+                <select class="form-control form-control-select" name="SeriesYearWeekType">
+                  <option value="1">Каждый</option>
+                  <option>Первый</option>
+                  <option>Второй</option>
+                  <option>Третий</option>
+                  <option>Четвертый</option>
+                  <option>Последний</option>
+                </select>
+              </div>
+              <div class="form-group">
+
+                <select class="form-control form-control-select" name="">
+                  <option v-for="item in months" :key="item">{{item}}</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="form-everyyear-container">
+                <button class="btn-day-year" v-for="day in 31" :key="day">{{day}}</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="form-group-button">
+          <div class="form-group"><button class="btn-save">Сохранить</button></div>
+          <div class="form-group"><button class="btn-cancel">Отменить</button></div>
+        </div>
       </div>
     </div>
   </div>

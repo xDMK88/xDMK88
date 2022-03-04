@@ -108,6 +108,7 @@ input:focus {outline: 0;}
   display: flex;
   width: 100%;
   position: relative;
+  padding-right: 12px;
 }
 .user_child_customer_custom
 {
@@ -115,6 +116,7 @@ input:focus {outline: 0;}
   font-size: 16px;
   width: 100%;
   position: relative;
+  padding-right: 12px;
 }
 .infocus-task
 {
@@ -196,6 +198,20 @@ input:focus {outline: 0;}
   width:100%;
   display: inline-block;
 }
+.chat-name-attach-left
+{
+  text-align: left;
+  float: left;
+  /* width: 100%; */
+  display: flex;
+}
+.chat-author-custom-right
+{
+  text-align: right;
+  float: right;
+  /* width: 100%; */
+  display: flex;
+}
 .file-custom_attach-left
 {
 
@@ -230,14 +246,13 @@ input:focus {outline: 0;}
   height: 50px;
   max-width: 200px;
   display: flex;
+  float: right;
 
 }
 .file-custom_attach-right svg
 {
   margin-right: 20px;
   padding: 5px;
-  border: 1px solid gray;
-  border-radius: 50%;
   margin-top:0px;
   width: 34px;
   height: 34px;
@@ -354,7 +369,6 @@ input:focus {outline: 0;}
   line-height: 1.42857143;
   color: #555;
   background-color: #fff;
-  background-image: none;
   border: 1px solid #fff;
   border-radius: 0px;
   outline: none;
@@ -456,22 +470,15 @@ input:focus {outline: 0;}
 }
 .popover-custom-access
 {
-  border-radius:10px;
-
   color:black;
-  padding: 2px;
-  position: absolute;
-  top: 0;
-  right: 1% !important;
-  min-width: 325px;
-  border:1px solid gray ;
-  background: white;
-
 }
 .popover-padding-custom
 {
-  display: inline-table;
 
+  display: table;
+  border: 1px solid black;
+  border-radius: 10px;
+  background: white;
 }
 .title-popover-main
 {
@@ -881,46 +888,6 @@ float: right;
   display: table-cell;
   width: 100%;
 }
-.title-repeat-custom {
-  color: black;
-  position: relative;
-  font-size: 13px;
-  vertical-align: middle;
-  width: 100%;
-}
-.btn-width-custom
-{
-  color: black;
-  border-radius: 10px;
-  background: #f0f0f0;
-  padding: 5px;
-  margin: 3px;
-  width: 115px;
-}
-.btn-width-custom:hover, .btn-width-custom:focus, .btn-width-custom.active
-{
-  background: #FF9123;
-  color:#ffffff;
-  cursor: pointer;
-}
-.title-repeat-head-center
-{
-  display: table;
-  margin: 0 auto;
-  position: relative;
-  cursor: pointer;
-  top: 7px;
-  color:black;
-  font-weight: bold;
-}
-.title-repeat-head-right
-{
-  position: absolute;
-  right:20px;
-  top: 7px;
-  cursor: pointer;
-  color:#007AFF;
-}
 .title-active-head
 {
   font-size:14px;
@@ -929,10 +896,7 @@ float: right;
 {
   color: #FF9123;
 }
-.body-repeat-custom
-{
 
-}
 .color_container
 {
   display: flex;
@@ -1050,4 +1014,252 @@ label
 {
   position: relative;
   top: 7px;
+}
+.body-repeat-custom
+{
+  display: flex;
+}
+.tab-content
+{
+  width: 100%;
+  display: inline-block;
+  position: relative;
+  min-height:100px;
+}
+.form-group-button
+{
+  position: absolute;
+  bottom:0px;
+  right:15px;
+}
+.btn-save
+{
+  width:120px;
+  display: table;
+  height: 35px;
+  color:white;
+  background: #FF9123;
+  -webkit-box-shadow: 3px 4px 5px 0px rgba(50, 50, 50, 0.5);
+  -moz-box-shadow:    3px 4px 5px 0px rgba(50, 50, 50, 0.5);
+  box-shadow:         3px 4px 5px 0px rgba(50, 50, 50, 0.5);
+}
+.btn-cancel
+{
+  width:120px;
+  display: table;
+  height: 35px;
+  color:white;
+  background: gray;
+  -webkit-box-shadow: 3px 4px 5px 0px rgba(50, 50, 50, 0.5);
+  -moz-box-shadow:    3px 4px 5px 0px rgba(50, 50, 50, 0.5);
+  box-shadow:         3px 4px 5px 0px rgba(50, 50, 50, 0.5);
+}
+
+
+
+.tab-content-repeat
+{
+  padding: 15px;
+  display: none;
+}
+.tab-content-repeat.active
+{
+  display: block;
+}
+.every-content
+{
+  display: flex;
+  margin-top: 15px;
+
+}
+.every-content label
+{
+  margin-right: 10px;
+  margin-top: 2px;
+}
+
+.everyweek-content
+{
+  margin-top: 15px;
+  margin-left: 20px;
+}
+.everyweek-content label
+{
+  margin-right: 10px;
+  margin-top: 2px;
+}
+.form-everyweek-container
+{
+  margin-left: 20px;
+  display: inline-block;
+}
+.btn-day-week
+{
+  background: #F0F0F0;
+  padding: 5px;
+  height: 30px;
+  width: 35px;
+  border: 1px solid #F0F0F0;
+  display: inline;
+  line-height: 15px;
+}
+.btn-day-week:hover, .btn-day-week.active
+{
+  border:1px solid gray;
+}
+
+.everymonth-content
+{
+  margin-top: 15px;
+  margin-left: 20px;
+}
+.everymonth-content label
+{
+  margin-right: 10px;
+  margin-top: 2px;
+}
+.form-everymonth-container
+{
+  margin-left: 60px;
+  display: inline-block;
+  width: 300px;
+}
+.btn-day-month
+{
+  background: #F0F0F0;
+  padding: 5px;
+  height: 30px;
+  width: 35px;
+  margin: 1px;
+  border: 1px solid #F0F0F0;
+  float: left;
+  line-height: 15px;
+}
+.btn-day-month:hover, .btn-day-month.active
+{
+  border:1px solid gray;
+}
+
+
+
+.everyyear-content
+{
+  margin-top: 15px;
+  margin-left: 20px;
+}
+.everyyear-content label
+{
+  margin-right: 10px;
+  margin-top: 2px;
+}
+.form-everyyear-container
+{
+  margin-left: 60px;
+  display: inline-block;
+  width: 300px;
+}
+.btn-day-year
+{
+  background: #F0F0F0;
+  padding: 5px;
+  height: 30px;
+  width: 35px;
+  margin: 1px;
+  border: 1px solid #F0F0F0;
+  float: left;
+  line-height: 15px;
+}
+.btn-day-year:hover, .btn-day-year.active
+{
+  border:1px solid gray;
+}
+
+
+
+.title-repeat-custom {
+  color: black;
+  position: relative;
+  font-size: 13px;
+  vertical-align: middle;
+  width: 100%;
+}
+.btn-width-custom {
+  color: black;
+  border-radius: 10px;
+  background: #f0f0f0;
+  padding: 5px;
+  margin: 3px;
+  width: 105px;
+  /* line-height: 40px; */
+  height: 40px;
+}
+.btn-width-custom:hover, .btn-width-custom:focus, .btn-width-custom.active
+{
+  background: #FF9123;
+  color:#ffffff;
+  cursor: pointer;
+}
+.title-repeat-head-center
+{
+  display: table;
+  margin: 0 auto;
+  position: relative;
+  cursor: pointer;
+  top: 7px;
+  color:black;
+  font-weight: bold;
+}
+.title-repeat-head-right
+{
+  position: absolute;
+  right:20px;
+  top: 7px;
+  cursor: pointer;
+  color:#007AFF;
+}
+.form-control-select
+{
+  width: 150px;
+  margin-right: 10px;
+  height: 30px;
+  line-height: 15px;
+  border:1px solid gray;
+}
+#tooltip {
+  padding: 5px 10px;
+  border-radius: 4px;
+}
+
+#arrow,
+#arrow::before {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: inherit;
+}
+
+#arrow {
+  visibility: hidden;
+}
+
+#arrow::before {
+  visibility: visible;
+  content: '';
+  transform: rotate(45deg);
+}
+
+#tooltip[data-popper-placement^='top'] > #arrow {
+  bottom: -4px;
+}
+
+#tooltip[data-popper-placement^='bottom'] > #arrow {
+  top: -4px;
+}
+
+#tooltip[data-popper-placement^='left'] > #arrow {
+  right: -4px;
+}
+
+#tooltip[data-popper-placement^='right'] > #arrow {
+  left: -4px;
 }

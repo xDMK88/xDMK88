@@ -1,7 +1,11 @@
 body {
   @apply pt-14 xl:pl-80 xl:pr-96;
 }
-
+html
+{
+  width: 100%;
+  height: 100%;
+}
 #app {
   @apply w-screen transition-position lg:w-auto;
 }
@@ -64,6 +68,7 @@ input:focus {outline: 0;}
 {
   padding: 4px 0px 4px 0px;
   position: relative;
+  display: table-cell;
 
 }
 .any-list-custom svg
@@ -180,6 +185,8 @@ input:focus {outline: 0;}
 {
   width:100%;
   display: inline-block;
+  padding-right: 5px;
+  position: relative;
 }
 .description-content
 {
@@ -223,20 +230,21 @@ input:focus {outline: 0;}
   padding: 5px;
   line-height: 18px;
   height: 50px;
+  min-width: 200px;
+  display: table-cell;
 
 }
 .file-custom_attach-left svg
 {
   margin-right: 10px;
   padding: 5px;
-  margin-top: 0px;
+  margin-top: 0;
   width: 34px;
   height: 34px;
   float: left;
 }
 .file-custom_attach-right
 {
-
   font-size: 13px;
   border-top-left-radius:10px ;
   border-bottom-right-radius:10px ;
@@ -244,18 +252,19 @@ input:focus {outline: 0;}
   padding: 5px;
   line-height: 18px;
   height: 50px;
-  max-width: 200px;
-  display: flex;
+  min-width: 200px;
+  display: table-cell;
   float: right;
 
 }
 .file-custom_attach-right svg
 {
-  margin-right: 20px;
+  margin-right: 5px;
   padding: 5px;
   margin-top:0px;
   width: 34px;
   height: 34px;
+  float: left;
 }
 .name-chat-custom
 {
@@ -855,9 +864,13 @@ input {
 .custom-dropdown
 {
   top: 25px;
-  color:black;
+  color: black;
   background: white;
-  font-size:13px;
+  font-size: 13px;
+  right: 0;
+  left: 2px;
+  width: 120px;
+  transform: translate(-87px, 7px);
 }
 .custom-dropdown a:hover, .custom-dropdown a:focus, .custom-dropdown a.active
 {
@@ -1226,8 +1239,7 @@ label
   border:1px solid gray;
 }
 #tooltip {
-  padding: 5px 10px;
-  border-radius: 4px;
+
 }
 
 #arrow,

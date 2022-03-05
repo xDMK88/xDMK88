@@ -56,7 +56,6 @@ export default {
         <path d="M61.788 19.8588C60.0885 19.8588 58.4969 20.5197 57.2965 21.7202C56.096 22.9206 55.4351 24.5123 55.4351 26.2118C55.4351 27.9113 56.096 29.5029 57.2965 30.7033C58.4969 31.9038 60.0885 32.5647 61.788 32.5647C63.4875 32.5647 65.0792 31.9038 66.2796 30.7033C67.4801 29.5029 68.141 27.9113 68.141 26.2118C68.141 24.5123 67.4801 22.9206 66.2796 21.7202C65.0792 20.5197 63.4875 19.8588 61.788 19.8588Z" fill="#6C6C6C" fill-opacity="1"></path>
       </svg>
       <label class="break-words">{{ model.name }}</label>    <input type="checkbox" name="check_employee" class="check-custom-project" checked>
-
     </div>
     <div
       :class="{ bold: isFolder }" class="list-tags-access" v-else
@@ -75,7 +74,6 @@ export default {
         <path d="M61.788 19.8588C60.0885 19.8588 58.4969 20.5197 57.2965 21.7202C56.096 22.9206 55.4351 24.5123 55.4351 26.2118C55.4351 27.9113 56.096 29.5029 57.2965 30.7033C58.4969 31.9038 60.0885 32.5647 61.788 32.5647C63.4875 32.5647 65.0792 31.9038 66.2796 30.7033C67.4801 29.5029 68.141 27.9113 68.141 26.2118C68.141 24.5123 67.4801 22.9206 66.2796 21.7202C65.0792 20.5197 63.4875 19.8588 61.788 19.8588Z" fill="#6C6C6C" fill-opacity="1"></path>
       </svg>
       <label class="break-words">{{ model.name }}</label>    <input type="checkbox" name="check_employee" class="check-custom-project">
-
     </div>
     <ul v-show="isOpen" v-if="isFolder">
       <!--

@@ -15,14 +15,17 @@ export default {
   mounted () {
     this.handleInput()
   },
+  filters: {
+    shorten: (val, words = 2) => val.split(' ').slice(0, words).join(' ')
+  },
   data: () => {
     const store = useStore()
     const taskMessages = computed(() => store.state.taskmessages.messages)
     const taskFiles = computed(() => store.state.taskfiles.files)
-    const myFiles = computed(() => store.state.taskfiles.myFiles)
+    const myFiles = computed(() => store.state.taskfiles.files.myFiles)
     const selectedTask = computed(() => store.state.tasks.selectedTask)
     const navigator = computed(() => store.state.navigator.navigator)
-    const tasks = computed(() => store.state.tasks)
+    const tasks = computed(() => store.state.tasks.newtasks)
     const employeesByEmail = computed(() => store.state.employees.employeesByEmail)
     return {
       show: false,
@@ -294,10 +297,11 @@ export default {
     handleInput: function () {
       const datebegin = this.$refs.datePickerbegin.value !== '0001-01-01T00:00:00' ? new Date(this.$refs.datePickerbegin.value) : ''
       const dateend = this.$refs.datePickerend.value !== '0001-01-01T00:00:00' ? new Date(this.$refs.datePickerend.value) : null
-      this.range = {
+      const b = this.range = {
         start: datebegin,
         end: dateend
       }
+      return b
     },
     tabfunction: function (tab) {
       this.isActive = tab
@@ -324,7 +328,7 @@ export default {
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M12 14.3125C12 13.9328 11.6922 13.625 11.3125 13.625H7.5L7.5 5.5H9.99877C10.1795 5.5 10.2675 5.27934 10.1365 5.15494L6.8125 2L3.8194 5.16252C3.69873 5.29002 3.78912 5.5 3.96466 5.5H6.125L6.125 15H11.3125C11.6922 15 12 14.6922 12 14.3125Z" fill="#7F7F80"/>
         </svg>
-        <a href="#" class="parent-name">{{ selectedTask.uid_parent }}</a>
+        <a href="#" class="parent-name">{{ tasks[selectedTask.uid_parent].info.name }}</a>
         <div v-if="selectedTask.focus===1" class="infocus-task">
           <svg width="24" height="24" viewBox="0 0 44 60" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path fill-rule="evenodd" clip-rule="evenodd" d="M2.47887 0H41.5211C42.8845 0 44 1.1195 44 2.48777V57.0416C44 58.0782 43.339 59.0318 42.3681 59.3843C42.0995 59.4879 41.8103 59.5294 41.5211 59.5294C40.7775 59.5294 40.0958 59.1977 39.6207 58.638L22 41.1088L4.37934 58.638C3.90423 59.1977 3.20188 59.5294 2.47887 59.5294C2.18967 59.5294 1.90047 59.4879 1.63192 59.3843C0.661033 59.0111 0 58.0782 0 57.0416V2.48777C0 1.1195 1.11549 0 2.47887 0ZM21.5922 11.4076C19.5672 11.4076 17.9255 13.0492 17.9255 15.0743C17.9255 17.0993 19.5672 18.7409 21.5922 18.7409C23.6173 18.7409 25.2589 17.0993 25.2589 15.0743C25.2589 13.0492 23.6173 11.4076 21.5922 11.4076Z" fill="#F2543F"/>
@@ -358,7 +362,7 @@ export default {
           </svg>
           <span
             class="rounded"
-          >Взять на исполнение</span>
+          >Поручить</span>
         </div>
         <div class="mt-3 tags-custom" ref="btnRefEmployee" v-on:click="togglePopover_employee()"  v-else-if="selectedTask.type===2">
           <svg width="24" height="24" viewBox="0 0 96 96" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -382,7 +386,7 @@ export default {
           </svg>
           <span
             class="rounded"
-          >Поручить</span>
+          >Взять на исполнение</span>
         </div>
 
         <div style="position: relative" ref="btnRef" @click="togglePopover_access()" v-if="selectedTask.emails!==''" >
@@ -662,27 +666,28 @@ export default {
           :key="value"
           class="mt-3 list-files-custom-item"
         >
-          <div class="date-section" v-if="value===0">
-            <p
-              class="text-center date-messages-chat divider "
-            >
-              {{ days[new Date(key.date_create.split('T')[0]).getDay()] }}, {{ new Date(key.date_create.split('T')[0]).getDate() }} {{ months[new Date(key.date_create).getMonth()] }}
-            </p>
-          </div>
-          <div v-if="key.uid_creator===cusers.current_user_uid" class="chat-name-attach-left">
-            <div class="name-chat-custom-margin flex">
-              <p class="name-chat-custom" v-if="value===0">
+          <div v-if="key.uid_creator!==cusers.current_user_uid">
+            <div class="date-section" v-if="value===0">
+              <p
+                class="text-center date-messages-chat divider "
+              >
+                {{ days[new Date(key.date_create.split('T')[0]).getDay()] }}, {{ new Date(key.date_create.split('T')[0]).getDate() }} {{ months[new Date(key.date_create).getMonth()] }}
+              </p>
+            </div>
+            <div class="flex" v-if="value===0">
+              <p class="name-chat-custom">
                 {{ employees[key.uid_creator].name }}
               </p>
-              <img v-if="value===0"
+              <img
                    :src="employees[key.uid_creator].fotolink"
                    class="mr-1 border-fotolink border-solid border-2 border-sky-500"
                    width="30"
                    height="30"
               >
             </div>
+            <div class="mt-1 chat-main">
             <div
-              class="file-custom_attach-left"
+              class="mt-1 file-custom_attach-left"
               style="background-color:#EDF7ED;"
             >
 
@@ -694,61 +699,71 @@ export default {
                 <div style="color:#3E3D3B;">{{formatBytes(key.file_size)}}</div>
               </a>
             </div>
+            </div>
           </div>
           <div
             v-else
-            class="chat-name-attach-right"
           >
-            <div class="name-chat-custom-margin flex">
-              <p class="name-chat-custom" v-if="value===0">
-                {{ employees[key.uid_creator].name }}
-              </p>
-              <img v-if="value===0"
-                   :src="employees[key.uid_creator].fotolink"
-                   class="mr-1 border-fotolink border-solid border-2 border-sky-500"
-                   width="30"
-                   height="30"
+            <div class="date-section">
+              <p
+                class="text-center date-messages-chat divider "
               >
+                {{ days[new Date(key.date_create.split('T')[0]).getDay()] }}, {{ new Date(key.date_create.split('T')[0]).getDate() }} {{ months[new Date(key.date_create).getMonth()] }}
+              </p>
             </div>
+            <div class="table-cell float-right">
+              <div class="chat-author-custom-right">
+                <p class="name-chat-custom">
+                  {{ employees[key.uid_creator].name }}
+                </p>
+                <img
+                     :src="employees[key.uid_creator].fotolink"
+                     class="mr-1 border-fotolink border-solid border-2 border-sky-500"
+                     width="30"
+                     height="30"
+                >
+              </div>
+            </div>
+            <div class="mt-1 chat-main">
             <div
-              class="file-custom_attach-right"
+              class="mt-1 file-custom_attach-right"
               style="background-color:#FCEAEA;"
             >
-              <div class="text-right text-employee-name">
-              </div>
               <a v-bind:href="'https://web.leadertask.com/User/Files/GetFile?uid='+key.uid">
               <svg width="22" height="27" viewBox="0 0 22 27" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path fill-rule="evenodd" clip-rule="evenodd" d="M21.6459 8.28333C21.675 8.3125 21.7042 8.37083 21.7334 8.42917C21.7625 8.51667 21.7917 8.63333 21.7917 8.75V24.7917C21.7917 25.9292 20.8875 26.8333 19.75 26.8333H2.25004C1.11254 26.8333 0.208374 25.9292 0.208374 24.7917V2.91667C0.208374 1.77917 1.11254 0.875 2.25004 0.875H13.9167C14.0334 0.875 14.15 0.904167 14.2084 0.933333H14.2375C14.2667 0.947917 14.2886 0.9625 14.3105 0.977083C14.3323 0.991667 14.3542 1.00625 14.3834 1.02083C14.4417 1.05 14.5 1.10833 14.5292 1.1375L21.5292 8.1375L21.5292 8.13751C21.5875 8.19584 21.6167 8.225 21.6459 8.28333ZM2.25004 2.625C2.07504 2.625 1.95837 2.74167 1.95837 2.91667V24.7917C1.95837 24.9667 2.07504 25.0833 2.25004 25.0833H19.75C19.925 25.0833 20.0417 24.9667 20.0417 24.7917V9.625H15.0834C13.9459 9.625 13.0417 8.72083 13.0417 7.58333V2.625H2.25004ZM14.7917 7.58333C14.7917 7.75833 14.9084 7.875 15.0834 7.875H18.8167L14.7917 3.85V7.58333ZM5.22504 11.375C4.70957 11.375 4.29171 11.7929 4.29171 12.3083C4.29171 12.8238 4.70957 13.2417 5.22504 13.2417H16.4834C16.9988 13.2417 17.4167 12.8238 17.4167 12.3083C17.4167 11.7929 16.9988 11.375 16.4834 11.375H5.22504ZM4.29171 9.1C4.29171 8.58453 4.70957 8.16667 5.22504 8.16667H10.65C11.1655 8.16667 11.5834 8.58453 11.5834 9.1C11.5834 9.61547 11.1655 10.0333 10.65 10.0333H5.22504C4.70957 10.0333 4.29171 9.61547 4.29171 9.1ZM5.22504 14.5833C4.70957 14.5833 4.29171 15.0012 4.29171 15.5167C4.29171 16.0321 4.70957 16.45 5.22504 16.45H16.4834C16.9988 16.45 17.4167 16.0321 17.4167 15.5167C17.4167 15.0012 16.9988 14.5833 16.4834 14.5833H5.22504ZM4.29171 18.725C4.29171 18.2095 4.70957 17.7917 5.22504 17.7917H16.4834C16.9988 17.7917 17.4167 18.2095 17.4167 18.725C17.4167 19.2405 16.9988 19.6583 16.4834 19.6583H5.22504C4.70957 19.6583 4.29171 19.2405 4.29171 18.725ZM5.22504 21C4.70957 21 4.29171 21.4179 4.29171 21.9333C4.29171 22.4488 4.70957 22.8667 5.22504 22.8667H16.4834C16.9988 22.8667 17.4167 22.4488 17.4167 21.9333C17.4167 21.4179 16.9988 21 16.4834 21H5.22504Z" fill="#757575"/>
               </svg>
-             <div style="color:black">{{ key.date_create }}</div>
-              <div style="color:#3E3D3B;">{{key.file_size}}</div>
+             <div style="color:black"><strong>{{ new Date(key.date_create).toLocaleDateString() }} {{ new Date(key.date_create).toLocaleTimeString() }}</strong></div>
+                <div style="color:#3E3D3B;">{{formatBytes(key.file_size)}}</div>
              </a>
 
+            </div>
             </div>
           </div>
         </div>
       </div>
       <div
-        class="mt-3 chat-custom" v-if="taskMessages.length>0"
+        class="mt-3 chat-custom" v-if="taskMessages"
       >
+
         <div
           v-for="(key,value) in taskMessages"
           :key="value"
           class="mt-3"
         >
-          <div class="date-section" v-if="value===0">
-            <p
-              class="text-center date-messages-chat divider "
-            >
-              {{ days[new Date(key.date_create.split('T')[0]).getDay()] }}, {{ new Date(key.date_create.split('T')[0]).getDate() }} {{ months[new Date(key.date_create).getMonth()] }}
-            </p>
-          </div>
-          <div v-if="key.uid_creator===cusers.current_user_uid">
+          <div v-if="key.uid_creator!==cusers.current_user_uid">
+            <div class="date-section">
+              <p
+                class="text-center date-messages-chat divider "
+              >
+                {{ days[new Date(key.date_create.split('T')[0]).getDay()] }}, {{ new Date(key.date_create.split('T')[0]).getDate() }} {{ months[new Date(key.date_create).getMonth()] }}
+              </p>
+            </div>
             <div class="flex">
-              <p class="name-chat-custom" v-if="value===0">
+              <p class="name-chat-custom">
                 {{ employees[key.uid_creator].name }}
               </p>
-              <img v-if="value===0"
+              <img
                    :src="employees[key.uid_creator].fotolink"
                    class="mr-1 border-fotolink border-solid border-2 border-sky-500"
                    width="30"
@@ -762,23 +777,6 @@ export default {
                 class="mt-1 msg-custom-chat-left"
                 style="background-color:#EDF7ED;"
               >
-              <!--    <div v-for="(key1,value1) in taskFiles[key.uid]" :key="value1">
-                    <div
-                      class="file-custom_attach-left"
-                      v-if="key1.file_name"
-                    >
-                  <svg
-                    style="width:35px;height:35px"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      fill="currentColor"
-                      d="M11,4H13V16L18.5,10.5L19.92,11.92L12,19.84L4.08,11.92L5.5,10.5L11,16V4Z"
-                    />
-                  </svg>
-                  <a :href="key1.file_name">{{ key1.file_name }}</a>
-                  </div>
-                </div>-->
                 {{ key.msg }}
                 <div class="time-chat">
                   {{ key.date_create.split('T')[1].split(":")[0] }}:{{ key.date_create.split('T')[1].split(":")[1] }}
@@ -786,13 +784,21 @@ export default {
               </div>
             </div>
           </div>
+
           <div v-else>
+            <div class="date-section">
+              <p
+                class="text-center date-messages-chat divider "
+              >
+                {{ days[new Date(key.date_create.split('T')[0]).getDay()] }}, {{ new Date(key.date_create.split('T')[0]).getDate() }} {{ months[new Date(key.date_create).getMonth()] }}
+              </p>
+            </div>
             <div class="table-cell float-right">
               <div class="chat-author-custom-right">
-                <p class="name-chat-custom" v-if="value===0">
+                <p class="name-chat-custom">
                   {{ employees[key.uid_creator].name }}
                 </p>
-                <img v-if="value===0"
+                <img
                      :src="employees[key.uid_creator].fotolink"
                      class="mr-1 border-fotolink border-solid border-2 border-sky-500"
                      width="30"
@@ -807,23 +813,6 @@ export default {
                 class="mt-1 msg-custom-chat-right"
                 style="background-color:#FCEAEA;"
               >
-              <!--  <div v-for="(key1,value1) in taskFiles[key.uid]" :key="value1">
-                <div
-                  v-if="key1.file_name"
-                  class="file-custom_attach-right"
-                >
-                  <svg
-                    style="width:35px;height:35px"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      fill="currentColor"
-                      d="M11,4H13V16L18.5,10.5L19.92,11.92L12,19.84L4.08,11.92L5.5,10.5L11,16V4Z"
-                    />
-                  </svg>
-                  <a :href="key1.file_name">{{ key1.file_name }}</a>
-                </div>
-                </div>-->
                 {{ key.msg }}
                 <div class="time-chat">
                   {{ key.date_create.split('T')[1].split(":")[0] }}:{{ key.date_create.split('T')[1].split(":")[1] }}
@@ -833,76 +822,6 @@ export default {
           </div>
         </div>
       </div>
-      <!--    <div
-        v-if="taskMessages.length"
-        class="mt-3 chat-custom"
-      >
-        <div
-          v-for="(key, value) in taskMessages"
-          :key="value"
-          class="mt-3"
-        >
-          <div
-            v-if="key.uid_creator===cusers.current_user_uid"
-          >
-            <div class="flex">
-              <p class="name-chat-custom">
-                {{ employees[key.uid_creator].name }}
-              </p>
-              <img
-                :src="employees[key.uid_creator].fotolink"
-                class="mr-1 border-fotolink border-solid border-2 border-sky-500"
-                width="30"
-                height="30"
-              >
-            </div>
-            <div
-
-              class="chat-main"
-            >
-              <div
-                class="mt-1 msg-custom-chat-left"
-                style="background-color:#EDF7ED;"
-              >
-                {{ key.msg }}
-                <div class="time-chat">
-                  {{ key.date_create.split('T')[1].split(":")[0] }}:{{ key.date_create.split('T')[1].split(":")[1] }}
-                </div>
-              </div>
-            </div>
-          </div>
-          <div
-            v-else
-          >
-            <div class="table-cell float-right">
-              <div class="chat-author-custom-right">
-                <p class="name-chat-custom">
-                  {{ employees[key.uid_creator].name }}
-                </p>
-                <img
-                  :src="employees[key.uid_creator].fotolink"
-                  class="mr-1 border-fotolink border-solid border-2 border-sky-500"
-                  width="30"
-                  height="30"
-                >
-              </div>
-            </div>
-            <div
-              class="chat-main"
-            >
-              <div
-                class="mt-1 msg-custom-chat-right"
-                style="background-color:#FCEAEA;"
-              >
-                {{ key.msg }}
-                <div class="time-chat">
-                  {{ key.date_create.split('T')[1].split(":")[0] }}:{{ key.date_create.split('T')[1].split(":")[1] }}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>-->
       </div>
       <div class="form-send-message">
         <div class="input-group">
@@ -1305,7 +1224,7 @@ export default {
         </div>
         <div class="form-group-button">
           <div class="form-group"><button class="btn-save">Сохранить</button></div>
-          <div class="form-group"><button class="btn-cancel">Отменить</button></div>
+          <div class="form-group"><button class="btn-cancel" v-on:click="togglePopover_repeat()">Отменить</button></div>
         </div>
       </div>
     </div>

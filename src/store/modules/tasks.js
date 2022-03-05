@@ -433,6 +433,21 @@ const actions = {
         })
     })
   },
+  [TASK.CHANGE_TASK_STATUS]: ({ commit, dispatch }, data) => {
+    return new Promise((resolve, reject) => {
+      const url = 'https://web.leadertask.com/api/v1/task/status?uid=' + data.uid + '&value=' + data.value
+      axios({
+        url: url,
+        method: 'PATCH'
+      })
+        .then(resp => {
+          commit(TASK.CHANGE_TASK_STATUS, data)
+          resolve(resp)
+        }).catch(err => {
+          reject(err)
+        })
+    })
+  },
   [TASK.REMOVE_TASK]: ({ commit, dispatch }, uid) => {
     return new Promise((resolve, reject) => {
       const url = 'https://web.leadertask.com/api/v1/task?uid=' + uid
@@ -516,6 +531,9 @@ const mutations = {
   },
   [TASK.MARK_TASK_AS_READ]: (state, uid) => {
     state.newtasks[uid].info.readed = 1
+  },
+  [TASK.CHANGE_TASK_STATUS]: (state, data) => {
+    state.newtasks[data.uid].info.status = data.value
   },
   [TASK.ADD_TASK]: (state, task) => {
     console.log('adding subtask', task)

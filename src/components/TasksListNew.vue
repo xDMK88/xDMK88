@@ -55,6 +55,7 @@
       >
         <!--
         <pre class="text-xs">children: {{ props.node.children }}</pre>
+        <pre class="text-xs">uid: {{ props.node.info.type }}</pre>
         <pre class="text-xs">uid: {{ props.node.info.uid}}</pre>
         <pre class="text-xs">state: {{ props.node.state }}</pre>
         -->
@@ -87,21 +88,59 @@
           <div
             class="flex items-start"
           >
-            <div
-              class="border-2 border-gray-300 rounded-md mr-1 flex items-center justify-center mt-0.5"
-              :class="{ 'cursor-pointer': [1, 2, 3].includes(props.node.info.type), 'cursor-not-allowed': props.node.info.type == 4 }"
-              style="min-width:20px; min-height: 20px;"
+            <!-- Status popper -->
+            <Popper
+              arrow
+              :class="isDark ? 'dark' : 'light'"
+              placement="left"
+              :disabled="props.node.info.type == 4"
             >
-              <Icon
-                v-if="statuses[props.node.info.status]"
-                :path="statuses[props.node.info.status].path"
-                :class="statusColor[props.node.info.status] ? statusColor[props.node.info.status] : 'text-gray-500 dark:text-gray-100'"
-                :style="{ color: colors[props.node.info.uid_marker] ? colors[props.node.info.uid_marker].fore_color : '' }"
-                :box="statuses[props.node.info.status].viewBox"
-                :width="statuses[props.node.info.status].width"
-                :height="statuses[props.node.info.status].height"
-              />
-            </div>
+              <template #content="{ close }">
+                <div class="flex flex-col">
+                  <div
+                    v-for="status in 10"
+                    @click="close"
+                    :key="status"
+                  >
+                    <div
+                      class="flex cursor-pointer items-center hover:bg-gray-100 py-0.5 px-1.5 rounded-xl"
+                      @click="changeTaskStatus(props.node.info.uid, status - 1)"
+                      v-if="showStatusOrNot(props.node.info.type, status - 1) && props.node.info.status != status - 1"
+                    >
+                      <div
+                        class="border-2 border-gray-300 rounded-md mr-1 flex items-center justify-center"
+                        style="min-width:20px; min-height: 20px;"
+                      >
+                        <Icon
+                          v-if="statuses[status-1]"
+                          :path="statuses[status-1].path"
+                          :class="statusColor[status-1] ? statusColor[status-1] : 'text-gray-500 dark:text-gray-100'"
+                          :box="statuses[status-1].viewBox"
+                          :width="statuses[status-1].width"
+                          :height="statuses[status-1].height"
+                        />
+                      </div>
+                    {{ localization[statusesLabels[status-1]] }}
+                    </div>
+                  </div>
+                </div>
+              </template>
+              <div
+                class="border-2 border-gray-300 rounded-md mr-1 flex items-center justify-center mt-0.5"
+                :class="{ 'cursor-pointer': [1, 2, 3].includes(props.node.info.type), 'cursor-not-allowed': props.node.info.type == 4 }"
+                style="min-width:20px; min-height: 20px;"
+              >
+                <Icon
+                  v-if="statuses[props.node.info.status]"
+                  :path="statuses[props.node.info.status].path"
+                  :class="statusColor[props.node.info.status] ? statusColor[props.node.info.status] : 'text-gray-500 dark:text-gray-100'"
+                  :style="{ color: colors[props.node.info.uid_marker] ? colors[props.node.info.uid_marker].fore_color : '' }"
+                  :box="statuses[props.node.info.status].viewBox"
+                  :width="statuses[props.node.info.status].width"
+                  :height="statuses[props.node.info.status].height"
+                />
+              </div>
+            </Popper>
             <p
               v-if="!props.node.info._isEditing"
               @click="props.node.info.type == 1 ? props.node.info._isEditing = true : props.node.info._isEditing == false"
@@ -112,7 +151,6 @@
             </p>
             <input
               v-if="props.node.info._isEditing && props.node.info.type == 1"
-              ref="subtaskInput"
               v-model="props.node.info.name"
               :class="{ 'text-gray-500': props.node.info.status == 1 || props.node.info.status == 7, 'line-through': props.node.info.status == 1 || props.node.info.status == 7, 'font-extrabold': props.node.info.readed == 0 }"
               @blur="updateTask(props.node.info)"
@@ -221,6 +259,12 @@
               :height="12"
             />
           </div>
+          <span
+            class="mr-1 mt-1.5 text-sm text-gray-600 dark:text-white self-center"
+            v-if="props.node.info.checklist"
+          >
+            {{ countChecklist(props.node.info.checklist).done }} / {{ countChecklist(props.node.info.checklist).undone }}
+          </span>
           <div
             v-if="props.node.info.has_files"
             class="bg-gray-200 dark:bg-gray-700 rounded px-1.5 mr-1 mt-1.5"
@@ -272,6 +316,7 @@ import treeview from 'vue3-treeview'
 import { useStore } from 'vuex'
 import Icon from '@/components/Icon.vue'
 import Control from '@/components/Control.vue'
+import Popper from 'vue3-popper'
 
 import * as TASK from '@/store/actions/tasks'
 import { MESSAGES_REQUEST, REFRESH_MESSAGES } from '@/store/actions/taskmessages'
@@ -299,7 +344,8 @@ export default {
   components: {
     tree: treeview,
     Icon,
-    Control
+    Control,
+    Popper
   },
   props: {
     storeTasks: Object,
@@ -314,6 +360,18 @@ export default {
       'd35fe0bc-1747-4eb1-a1b2-3411e07a92a0': TASK.READY_FOR_COMPLITION_TASKS_REQUEST,
       '511d871c-c5e9-43f0-8b4c-e8c447e1a823': TASK.DELEGATED_TO_USER_TASKS_REQUEST
     }
+    const statusesLabels = [
+      'status_not_begin',
+      'status_ready',
+      'task_by_link',
+      'status_note',
+      'status_in_work',
+      'status_task_ready',
+      'status_paused',
+      'status_cancelled',
+      'status_reject',
+      'status_refine'
+    ]
     const statuses = [
       undefined,
       readyStatus,
@@ -329,6 +387,7 @@ export default {
     return {
       DONT_SHOW_TASK_INPUT_UIDS,
       statuses,
+      statusesLabels,
       project,
       performerNotRead,
       performerRead,
@@ -347,13 +406,15 @@ export default {
     const projects = computed(() => store.state.projects.projects)
     const createTaskText = ref('')
     const status = computed(() => store.state.tasks.status)
+    const localization = computed(() => store.state.localization.localization)
     const user = computed(() => store.state.user.user)
+    const isDark = computed(() => store.state.darkMode)
     const lastSelectedTaskUid = ''
 
     const SHOW_TASK_INPUT_UIDS = {
       '901841d9-0016-491d-ad66-8ee42d2b496b': TASK.TASKS_REQUEST, // get today's day
       '5183b619-3968-4c3a-8d87-3190cfaab014': TASK.UNSORTED_TASKS_REQUEST,
-      '6fc44cc6-9d45-4052-917e-25b1189ab141': TASK.IN_FOCUS_TASKS_REQUEST,
+      '6fc44cc6-9d45-4052-917e-2taab1189ab141': TASK.IN_FOCUS_TASKS_REQUEST,
       '169d728b-b88b-462d-bd8e-3ac76806605b': TASK.DELEGATED_TASKS_REQUEST,
       '7af232ff-0e29-4c27-a33b-866b5fd6eade': TASK.PROJECT_TASKS_REQUEST, // private
       '431a3531-a77a-45c1-8035-f0bf75c32641': TASK.PROJECT_TASKS_REQUEST, // shared
@@ -374,6 +435,29 @@ export default {
           }
         })
       arg.state.isLoading = false
+    }
+
+    const countChecklist = (checklist) => {
+      const data = { done: 0, undone: 0 }
+      for (const line in checklist.split('\r\n\r\n')) {
+        if (line[0] === '1') {
+          data.done++
+        } else {
+          data.undone++
+        }
+      }
+      return data
+    }
+    const showStatusOrNot = (type, status) => {
+      if (type === 1 && [0, 1, 3, 4, 6, 7].includes(status)) {
+        return true
+      } else if (type === 2 && [0, 1, 3, 4, 6, 7, 9].includes(status)) {
+        return true
+      } else if (type === 3 && [0, 4, 5, 6, 8].includes(status)) {
+        return true
+      } else {
+        return false
+      }
     }
 
     function uuidv4 () {
@@ -456,6 +540,10 @@ export default {
       }
     }
 
+    const changeTaskStatus = (uid, status) => {
+      store.dispatch(TASK.CHANGE_TASK_STATUS, { uid: uid, value: status })
+    }
+
     const addSubtask = (uidParent) => {
       // start add subtask code
       const newSubtask = {
@@ -489,6 +577,7 @@ export default {
     }
 
     return {
+      isDark,
       status,
       tags: computed(() => store.state.tasks.tags),
       employees,
@@ -496,9 +585,12 @@ export default {
       projects,
       nodeExpanding,
       nodeSelected,
+      showStatusOrNot,
       lastSelectedTaskUid,
+      countChecklist,
       createTask,
       updateTask,
+      changeTaskStatus,
       addSubtask,
       createTaskText,
       taskListSource,
@@ -509,6 +601,7 @@ export default {
       taskcomment,
       checklist,
       colors: computed(() => store.state.colors.colors),
+      localization,
       statusColor: {
         4: 'text-green-600',
         5: 'text-red-600',
@@ -516,9 +609,6 @@ export default {
         9: 'text-blue-500'
       }
     }
-  },
-  methods: {
-
   }
 }
 </script>
@@ -749,5 +839,27 @@ export default {
 
 .tree-node {
   @apply ring-0 border-0
+}
+
+.dark {
+  --popper-theme-background-color: #333333;
+  --popper-theme-background-color-hover: #333333;
+  --popper-theme-text-color: white;
+  --popper-theme-border-width: 0px;
+  --popper-theme-border-radius: 0.75rem;
+  --popper-theme-padding: 10px;
+  --popper-theme-box-shadow: 0 6px 30px -6px rgba(0, 0, 0, 0.25);
+}
+
+.light {
+  --popper-theme-background-color: #ffffff;
+  --popper-theme-background-color-hover: #ffffff;
+  --popper-theme-text-color: #333333;
+  --popper-theme-border-width: 1px;
+  --popper-theme-border-style: solid;
+  --popper-theme-border-color: #eeeeee;
+  --popper-theme-border-radius: 0.75rem;
+  --popper-theme-padding: 10px;
+  --popper-theme-box-shadow: 0 6px 30px -6px rgba(0, 0, 0, 0.25);
 }
 </style>

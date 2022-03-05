@@ -26,6 +26,7 @@
     "vue": "^3.0.0",
     "vue-class-component": "^8.0.0-rc.1",
     "vue-router": "^4.0.0-0",
+    "vue3-popper": "^1.4.1",
     "vue3-treeview": "^0.3.5",
     "vuex": "^4.0.0-0"
   },

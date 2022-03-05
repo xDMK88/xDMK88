@@ -19,7 +19,7 @@ const mutations = {
     state.employees[employee.uid] = employee
   },
   [PUSH_EMPLOYEE_BY_EMAIL]: (state, employee) => {
-    state.employeesByEmail[employee.email] = employee
+    state.employeesByEmail[employee.email.toLowerCase()] = employee
   }
 }
 

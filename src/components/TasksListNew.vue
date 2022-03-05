@@ -49,6 +49,7 @@
   <tree :nodes="storeTasks" :config="newConfig" @nodeOpened="nodeExpanding" @nodeFocus="nodeSelected" v-if="status == 'success'" class="mt-0.5">
     <template #before-input="props">
       <div
+        :id="props.node.info.uid"
         class="task-node flex-col items-center w-full bg-white p-2 rounded-xl dark:bg-gray-900 dark:border-gray-700 border border-gray-300 my-0.5 focus:border-orange-300 focus:border-2 relative"
         :style="{ backgroundColor: colors[props.node.info.uid_marker] ? colors[props.node.info.uid_marker].back_color : '' }"
         :class="{ 'bg-gray-200 dark:bg-gray-900': (props.node.info.status == 1 || props.node.info.status == 7) && props.node.info.uid_marker == '00000000-0000-0000-0000-000000000000' }"
@@ -66,7 +67,7 @@
         >
           <Icon
             :path="subtask.path"
-            @click="addSubtask(props.node.info.uid)"
+            @click="addSubtask(props.node.info.uid); focusTaskByUid(props.node.info.uid);"
             class="text-gray-600 dark:text-white mr-3"
             :box="subtask.viewBox"
             :width="subtask.width"
@@ -152,6 +153,7 @@
             <input
               v-if="props.node.info._isEditing && props.node.info.type == 1"
               v-model="props.node.info.name"
+              class="bg-transparent"
               :class="{ 'text-gray-500': props.node.info.status == 1 || props.node.info.status == 7, 'line-through': props.node.info.status == 1 || props.node.info.status == 7, 'font-extrabold': props.node.info.readed == 0 }"
               @blur="updateTask(props.node.info)"
               :style="{ color: colors[props.node.info.uid_marker] ? colors[props.node.info.uid_marker].fore_color : '' }"
@@ -173,14 +175,16 @@
           class="flex items-center mt-1.5"
         >
           <div
-            v-if="props.node.info.uid_customer != '00000000-0000-0000-0000-000000000000' && employees[props.node.info.uid_customer]"
+            v-if="props.node.info.uid_customer != '00000000-0000-0000-0000-000000000000' && employees[props.node.info.uid_customer] && props.node.info.uid_customer != user.current_user_uid"
             class="p-1 px-2 text-xs text-white bg-red-500 rounded-lg mr-1 flex items-center"
+            :class="{ 'bg-gray-400': user.current_user_email != props.node.info.email_performer }"
           >
             {{ employees[props.node.info.uid_customer].name }}
           </div>
           <div
-            v-if="props.node.info.email_performer && employeesByEmail[props.node.info.email_performer]"
-            class="p-1 px-2 text-xs text-white bg-green-500 rounded-lg mr-1 flex items-center"
+            v-if="props.node.info.email_performer && employeesByEmail[props.node.info.email_performer] && user.current_user_email != props.node.info.email_performer && employees[props.node.info.uid_customer].email != props.node.info.email_performer"
+            class="p-1 px-2 text-xs text-white rounded-lg mr-1 flex items-center"
+            :class="{ 'bg-gray-400': user.current_user_email != props.node.info.email_performer }"
           >
             <Icon
               v-if="!props.node.info.performerreaded"
@@ -229,7 +233,7 @@
         </div>
         <!-- Icons, Messages, Files, Data, Checklist -->
         <div
-          v-if="props.node.info_term_customer || props.node.info.checklist || props.node.info.has_files || props.node.info.has_msgs || props.node.info.comment"
+          v-if="props.node.info.term_customer || props.node.info.checklist || props.node.info.has_files || props.node.info.has_msgs || props.node.info.comment"
           class="flex"
         >
           <div
@@ -351,52 +355,6 @@ export default {
     storeTasks: Object,
     newConfig: Object
   },
-  data () {
-    const DONT_SHOW_TASK_INPUT_UIDS = {
-      '46418722-a720-4c9e-b255-16db4e590c34': TASK.OVERDUE_TASKS_REQUEST,
-      '017a3e8c-79ac-452c-abb7-6652deecbd1c': TASK.OPENED_TASKS_REQUEST,
-      'fa042915-a3d2-469c-bd5a-708cf0339b89': TASK.UNREAD_TASKS_REQUEST,
-      '2a5cae4b-e877-4339-8ca1-bd61426864ec': TASK.IN_WORK_TASKS_REQUEST,
-      'd35fe0bc-1747-4eb1-a1b2-3411e07a92a0': TASK.READY_FOR_COMPLITION_TASKS_REQUEST,
-      '511d871c-c5e9-43f0-8b4c-e8c447e1a823': TASK.DELEGATED_TO_USER_TASKS_REQUEST
-    }
-    const statusesLabels = [
-      'status_not_begin',
-      'status_ready',
-      'task_by_link',
-      'status_note',
-      'status_in_work',
-      'status_task_ready',
-      'status_paused',
-      'status_cancelled',
-      'status_reject',
-      'status_refine'
-    ]
-    const statuses = [
-      undefined,
-      readyStatus,
-      readyStatus,
-      note,
-      inwork,
-      readyStatus,
-      pause,
-      canceled,
-      canceled,
-      improve
-    ]
-    return {
-      DONT_SHOW_TASK_INPUT_UIDS,
-      statuses,
-      statusesLabels,
-      project,
-      performerNotRead,
-      performerRead,
-      taskfocus,
-      clock,
-      subtask,
-      taskoptions
-    }
-  },
   setup () {
     const store = useStore()
     const loadedTasks = computed(() => store.state.tasks.loadedTasks)
@@ -485,7 +443,9 @@ export default {
         uid_parent: '00000000-0000-0000-0000-000000000000',
         uid_customer: user.value.current_user_uid,
         uid_project: '00000000-0000-0000-0000-000000000000',
+        status: 0,
         email_performer: '',
+        type: 1,
         name: createTaskText.value,
         comment: ''
       }
@@ -550,12 +510,25 @@ export default {
         uid: uuidv4(),
         uid_customer: user.value.current_user_uid,
         name: '',
+        status: 0,
         uid_parent: uidParent,
         type: 1,
         _isEditing: true,
         _justCreated: true
       }
-      store.commit(TASK.ADD_SUBTASK, newSubtask)
+      store.dispatch(TASK.ADD_SUBTASK, newSubtask).then(() => {
+        const element = document.getElementById(newSubtask.uid)
+        const parentElement = document.getElementById(newSubtask.uid)
+        parentElement.parentElement.blur()
+        element.parentElement.classList.add('focused')
+        console.log(element.parentElement)
+        element.parentElement.click()
+        element.parentElement.setActive()
+        element.parentElement.focus()
+        element.click()
+        element.setActive()
+        element.focus()
+      })
     }
 
     const nodeSelected = (arg) => {
@@ -608,6 +581,57 @@ export default {
         8: 'text-red-600',
         9: 'text-blue-500'
       }
+    }
+  },
+  data () {
+    const DONT_SHOW_TASK_INPUT_UIDS = {
+      '46418722-a720-4c9e-b255-16db4e590c34': TASK.OVERDUE_TASKS_REQUEST,
+      '017a3e8c-79ac-452c-abb7-6652deecbd1c': TASK.OPENED_TASKS_REQUEST,
+      'fa042915-a3d2-469c-bd5a-708cf0339b89': TASK.UNREAD_TASKS_REQUEST,
+      '2a5cae4b-e877-4339-8ca1-bd61426864ec': TASK.IN_WORK_TASKS_REQUEST,
+      'd35fe0bc-1747-4eb1-a1b2-3411e07a92a0': TASK.READY_FOR_COMPLITION_TASKS_REQUEST,
+      '511d871c-c5e9-43f0-8b4c-e8c447e1a823': TASK.DELEGATED_TO_USER_TASKS_REQUEST
+    }
+    const statusesLabels = [
+      'status_not_begin',
+      'status_ready',
+      'task_by_link',
+      'status_note',
+      'status_in_work',
+      'status_task_ready',
+      'status_paused',
+      'status_cancelled',
+      'status_reject',
+      'status_refine'
+    ]
+    const statuses = [
+      undefined,
+      readyStatus,
+      readyStatus,
+      note,
+      inwork,
+      readyStatus,
+      pause,
+      canceled,
+      canceled,
+      improve
+    ]
+    return {
+      DONT_SHOW_TASK_INPUT_UIDS,
+      statuses,
+      statusesLabels,
+      project,
+      performerNotRead,
+      performerRead,
+      taskfocus,
+      clock,
+      subtask,
+      taskoptions
+    }
+  },
+  methods: {
+    focusTaskByUid: (uid) => {
+      console.log(this.$refs)
     }
   }
 }

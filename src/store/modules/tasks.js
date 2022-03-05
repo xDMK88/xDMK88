@@ -462,6 +462,12 @@ const actions = {
           reject(err)
         })
     })
+  },
+  [TASK.ADD_SUBTASK]: ({ commit }, task) => {
+    return new Promise((resolve, reject) => {
+      commit(TASK.ADD_SUBTASK, task)
+      resolve()
+    })
   }
 }
 
@@ -536,12 +542,12 @@ const mutations = {
     state.newtasks[data.uid].info.status = data.value
   },
   [TASK.ADD_TASK]: (state, task) => {
-    console.log('adding subtask', task)
     if (!task._justCreated) {
       state.newConfig.roots.push(task.uid)
       task._justCreated = false
     }
     state.newConfig.leaves.push(task.uid)
+    task.type = 1
     state.newtasks[task.uid] = {
       info: task,
       children: task.has_children ? ['hello'] : ''
@@ -580,7 +586,6 @@ const mutations = {
       state.newtasks[task.uid_parent].children = [task.uid]
       state.newConfig.leaves = arrayRemove(state.newConfig.leaves, task.uid_parent)
     }
-    console.log('Parent uid ', task.uid_parent)
     state.newtasks[task.uid_parent].state.opened = true
   }
 }

@@ -69,7 +69,7 @@ const submit = e => {
   >
     <header
       v-if="title"
-      :class="{'bg-[#FFF2E0]': user.license_type == 0} || {'bg-[#FFF2E0]': user.license_type == 1} || {'bg-[#FFF2E0]': user.license_type == 2} || {'bg-[#FFF2E0]': user.license_type == 3}"
+      :class="{'bg-[#FFF2E0]': user.license_type == 0, 'bg-[#FFF2E0]': user.license_type == 1, 'bg-[#FFF2E0]': user.license_type == 2, 'bg-[#FFF2E0]': user.license_type == 3}"
       class="flex items-stretch p-5 pt-12 dark:border-gray-700"
     >
     <a
@@ -108,13 +108,13 @@ const submit = e => {
     </header>
     <div
       v-if="empty"
-      class="text-center py-24 text-gray-500 dark:text-gray-400"
+     b class="text-center py-24 text-gray-500 dark:text-gray-400"
     >
       <p>Nothing's here…</p>
     </div>
     <div
       v-else
-      :class="{'pb-6':!hasTable}"
+      :class="{'p-6':!hasTable}"
     >
       <slot />
     </div>

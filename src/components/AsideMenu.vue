@@ -107,9 +107,6 @@ const menuClick = (event, item) => {
   }
   store.commit(TASK.CLEAN_UP_LOADED_TASKS)
 }
-if (user.value.license_type === 0) {
-  document.getElementById('Lice').value = '234'
-}
 </script>
 
 <template>
@@ -120,10 +117,12 @@ if (user.value.license_type === 0) {
     @logout="logout()"
   ><form
   class="rounded-b-3xl pb-7 mb-3 text-center"
-  :class="{'bg-[#FFF2E0]': user.license_type == 0} || {'bg-[#FFF2E0]': user.license_type == 1} || {'bg-[#FFF2E0]': user.license_type == 2} || {'bg-[#FFF2E0]': user.license_type == 3}">
+  :class="{'bg-[#FFF2E0]': user.license_type == 0, 'bg-[#FFF2E0]': user.license_type == 1, 'bg-[#FFF2E0]': user.license_type == 2, 'bg-[#FFF2E0]': user.license_type == 3}">
     <img
-    :src="{'user.foto_link': user.foto_link == true} || {'':user.foto_link == false}"
-    class="mx-auto rounded-3xl content-center"
+    :src="user.foto_link"
+    width="180"
+    height="180"
+    class="mx-auto rounded-full content-center"
   ><div>
     <p>{{ user.current_user_name }}</p>
     <a>{{ user.current_user_email }}</a>
@@ -141,8 +140,11 @@ if (user.value.license_type === 0) {
     <br>
     <strong>Тариф</strong>
     <br>
-    <span id="Lice"
-    >{{ user.date_expired }}({{ user.days_left }})</span>
+    <span
+      id="Lice"
+    >
+      {{ user.date_expired }}({{ user.days_left }})
+    </span>
     <br>
     <br>
     <strong>Количество рабочих мест</strong>

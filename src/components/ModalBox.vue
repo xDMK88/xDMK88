@@ -1,6 +1,5 @@
 <script setup>
 import { computed } from 'vue'
-import { mdiClose } from '@mdi/js'
 import JbButton from '@/components/JbButton.vue'
 import JbButtons from '@/components/JbButtons.vue'
 import CardComponent from '@/components/CardComponent.vue'
@@ -32,17 +31,18 @@ const props = defineProps({
   hasButton: Boolean
 })
 
-const emit = defineEmits(['update:modelValue', 'cancel', 'confirm'])
+const emit = defineEmits(['update:modelValue', 'cancel', 'logout', 'confirm'])
 
 const value = computed({
   get: () => props.modelValue,
   set: value => emit('update:modelValue', value)
 })
-
+const logoutAcc = value => { emit(value) }
 const confirmCancel = mode => {
   value.value = false
   emit(mode)
 }
+const logout = () => logoutAcc('logout')
 
 const confirm = () => confirmCancel('confirm')
 
@@ -56,18 +56,19 @@ const cancel = () => confirmCancel('cancel')
   >
     <card-component
       v-show="value"
+      hasTable
       :title="title"
       class="shadow-lg w-full max-h-modal md:w-3/5 lg:w-2/5 z-50"
-      :header-icon="mdiClose"
       @header-icon-click="cancel"
+      @header-icon2-click="logout"
     >
-      <div class="space-y-3">
+      <div class="space-y-3 items-center">
         <h1
           v-if="largeTitle"
           class="text-2xl"
         >
-          {{ largeTitle }}
         </h1>
+        {{ largeTitle }}
         <slot />
       </div>
 

@@ -62,6 +62,8 @@ const currentDate = computed({
     // hardcoded and messy
     store.commit('basic', { key: 'taskListSource', value: { uid: '901841d9-0016-491d-ad66-8ee42d2b496b', param: val } })
     store.commit('updateLabel', dateToLabelFormat(val))
+    store.commit('updateLabelprojectchildren', '')
+    store.commit('updatedefalt', '')
     store.commit(TASK.CLEAN_UP_LOADED_TASKS)
   }
 })
@@ -90,6 +92,8 @@ const asideLgClose = () => {
 }
 const menuClick = (event, item) => {
   store.commit('updateLabel', item.label)
+  store.commit('updateLabelprojectchildren', '')
+  store.commit('updatedefalt', '')
   if (UID_TO_ACTION[item.uid] && item.type === 'uid') {
     store.dispatch(UID_TO_ACTION[item.uid])
     store.commit('basic', { key: 'taskListSource', value: { uid: item.uid, param: null } })

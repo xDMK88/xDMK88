@@ -15,12 +15,13 @@ const UID_TO_ACTION = {
   'ed8039ae-f3de-4369-8f32-829d401056e9': TASK.COLOR_TASKS_REQUEST
 }
 const clickOnGridCard = (value) => {
+  store.commit('updateLabel', 'Цвета')
   if (UID_TO_ACTION[value.parentID]) {
     store.dispatch(UID_TO_ACTION[value.parentID], value.uid)
     store.commit('basic', { key: 'taskListSource', value: { uid: value.parentID, param: value.uid } })
   }
   store.commit('basic', { key: 'mainSectionState', value: 'tasks' })
-  store.commit('updateLabel', value.name)
+  store.commit('updateLabelprojectchildren', value.name)
   store.commit(TASK.CLEAN_UP_LOADED_TASKS)
 }
 </script>

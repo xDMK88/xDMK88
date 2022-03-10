@@ -1275,3 +1275,13 @@ label
 #tooltip[data-popper-placement^='right'] > #arrow {
   left: -4px;
 }
+.breadcrumbs
+{
+  background-color: white;
+  padding: 10px;
+  display: table;
+}
+.nopadding {
+  padding: 0;
+  margin-right: 5px;
+}

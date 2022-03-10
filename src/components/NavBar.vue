@@ -13,17 +13,23 @@ import NavBarSearch from '@/components/NavBarSearch.vue'
 import arrowBack from '@/icons/arrow-back.js'
 
 const store = useStore()
-
+defineProps({
+  projects: {
+    type: Array,
+    default: () => []
+  }
+})
 // const toggleLightDark = () => {
 //   store.dispatch('darkMode')
 // }
+const projects = computed(() => store.state.projects.projects)
 const localization = computed(() => store.state.localization.localization)
 
 const isNavBarVisible = computed(() => !store.state.isFullScreen)
 
 const isAsideMobileExpanded = computed(() => store.state.isAsideMobileExpanded)
 const navbarLabel = computed(() => store.state.navbar.label)
-
+const labelprojectchilren = computed(() => store.state.navbar.labelprojectchilren)
 // const userName = computed(() => store.state.userName)
 
 const menuToggleMobileIcon = computed(() => isAsideMobileExpanded.value ? mdiBackburger : mdiForwardburger)
@@ -31,7 +37,6 @@ const menuToggleMobileIcon = computed(() => isAsideMobileExpanded.value ? mdiBac
 const menuToggleMobile = () => {
   store.dispatch('asideMobileToggle')
 }
-
 // const isMenuNavBarActive = ref(false)
 
 // const menuNavBarToggleIcon = computed(() => isMenuNavBarActive.value ? mdiClose : mdiDotsVertical)
@@ -42,6 +47,12 @@ const menuToggleMobile = () => {
 
 const menuOpenLg = () => {
   store.dispatch('asideLgToggle', true)
+}
+const goToChildren = (value) => {
+  if (value.children && value.children.length) {
+    store.commit('updateLabelprojectchildren', value.name)
+    store.commit('basic', { key: 'greedSource', value: value.children })
+  }
 }
 </script>
 
@@ -80,8 +91,12 @@ const menuOpenLg = () => {
           size="24"
         />
       </nav-bar-item>
-      <nav-bar-item class="bg-gray-50 dark:bg-gray-700 rounded-lg">
-        {{ navbarLabel }}
+      <nav-bar-item class="nopadding">
+        <span class="bg-white text-black dark:bg-gray-700 rounded-lg breadcrumbs">{{navbarLabel}}</span>
+      </nav-bar-item>
+      <nav-bar-item class="nopadding" @click="goToChildren(projects)" v-for="item in labelprojectchilren.split(',')" :key="item" >
+        <span v-if="item!==''" class="bg-white text-black dark:bg-gray-700 rounded-lg breadcrumbs">{{item}}</span>
+        <span v-else></span>
       </nav-bar-item>
     </div>
     <div class="flex-none items-stretch flex h-14">

@@ -7,7 +7,9 @@ function getTodaysDateInFormat () {
 }
 
 const state = {
-  label: getTodaysDateInFormat()
+  label: getTodaysDateInFormat(),
+  labelprojectchilren: '',
+  labeldefault: ''
 }
 
 const getters = {
@@ -17,8 +19,18 @@ const actions = {
 }
 
 const mutations = {
+  updatedefalt (state, payload) {
+    state.labeldefault = payload
+  },
   updateLabel (state, payload) {
     state.label = payload
+  },
+  updateLabelprojectchildren (state, payload) {
+    if (payload.length > 1) {
+      state.labelprojectchilren += payload.length > 1 ? payload + ',' : payload + ''
+    } else {
+      state.labelprojectchilren = payload
+    }
   }
 }
 

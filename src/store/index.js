@@ -33,8 +33,9 @@ export default createStore({
 
     /* Aside */
     isAsideMobileExpanded: false,
-    isPropertiesMobileExpanded: false,
     isAsideLgActive: false,
+    isPropertiesMobileExpanded: false,
+    isPropertiesLgActive: false,
 
     /* Dark mode */
     darkMode: false,
@@ -79,11 +80,11 @@ export default createStore({
 
     asidePropertiesToggle ({ commit, state }, payload = null) {
       const isShow = payload !== null ? payload : !state.isPropertiesMobileExpanded
-      document.getElementById('app').classList[isShow ? 'add' : 'remove']('mr-80', 'lg:mr-0')
+      document.getElementById('app').classList[isShow ? 'add' : 'remove']('mr-96')
       document.documentElement.classList[isShow ? 'add' : 'remove']('m-clipped')
 
       commit('basic', {
-        key: 'isAsideMobileExpanded',
+        key: 'isPropertiesMobileExpanded',
         value: isShow
       })
     },

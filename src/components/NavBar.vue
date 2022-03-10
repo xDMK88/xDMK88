@@ -22,6 +22,7 @@ const localization = computed(() => store.state.localization.localization)
 const isNavBarVisible = computed(() => !store.state.isFullScreen)
 
 const isAsideMobileExpanded = computed(() => store.state.isAsideMobileExpanded)
+const isPropertiesMobileExpanded = computed(() => store.state.isPropertiesMobileExpanded)
 const navbarLabel = computed(() => store.state.navbar.label)
 
 // const userName = computed(() => store.state.userName)
@@ -49,8 +50,8 @@ const menuOpenLg = () => {
   <nav
     v-show="isNavBarVisible"
     class="top-0 left-0 right-0 fixed flex h-14 z-30 bg-gray-100
-    transition-position xl:pl-80 xl:pr-96 w-auto lg:items-center dark:bg-gray-800 dark:border-gray-800"
-    :class="{'ml-80 lg:ml-80':isAsideMobileExpanded}"
+    transition-position xl:pl-80 w-auto lg:items-center dark:bg-gray-800 dark:border-gray-800"
+    :class="{ 'ml-80 lg:ml-80':isAsideMobileExpanded, 'mr-96':isPropertiesMobileExpanded}"
   >
     <div class="flex-1 items-stretch flex h-14 py-2">
       <nav-bar-item

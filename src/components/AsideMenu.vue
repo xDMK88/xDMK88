@@ -41,6 +41,7 @@ const UID_TO_ACTION = {
 const store = useStore()
 const isFullScreen = computed(() => store.state.isFullScreen)
 const isAsideMobileExpanded = computed(() => store.state.isAsideMobileExpanded)
+const isPropertiesMobileExpanded = computed(() => store.state.isPropertiesMobileExpanded)
 const isAsideLgActive = computed(() => store.state.isAsideLgActive)
 const isDark = computed(() => store.state.darkMode)
 
@@ -89,6 +90,9 @@ const asideLgClose = () => {
   store.dispatch('asideLgToggle', false)
 }
 const menuClick = (event, item) => {
+  if (isPropertiesMobileExpanded.value) {
+    store.dispatch('asidePropertiesToggle', false)
+  }
   store.commit('updateLabel', item.label)
   if (UID_TO_ACTION[item.uid] && item.type === 'uid') {
     store.dispatch(UID_TO_ACTION[item.uid])

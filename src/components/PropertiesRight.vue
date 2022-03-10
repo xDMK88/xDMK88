@@ -1,16 +1,19 @@
 <script>
 import { createPopper } from '@popperjs/core'
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { DatePicker } from 'v-calendar'
 import { useStore } from 'vuex'
 import TreeItem from '@/components/TreeItem.vue'
+import Icon from '@/components/Icon.vue'
+import close from '@/icons/close.js'
 import TreeTagsItem from '@/components/TreeTagsItem.vue'
-import 'v-tab/dist/v-tab.css'
+import { CREATE_MESSAGE_REQUEST } from '@/store/actions/taskmessages'
 export default {
   components: {
     DatePicker,
     TreeItem,
-    TreeTagsItem
+    TreeTagsItem,
+    Icon
   },
   mounted () {
     this.handleInput()
@@ -24,13 +27,60 @@ export default {
     const taskFiles = computed(() => store.state.taskfiles.files)
     const myFiles = computed(() => store.state.taskfiles.files.myFiles)
     const selectedTask = computed(() => store.state.tasks.selectedTask)
+    const user = computed(() => store.state.user.user)
     const navigator = computed(() => store.state.navigator.navigator)
     const tasks = computed(() => store.state.tasks.newtasks)
     const employeesByEmail = computed(() => store.state.employees.employeesByEmail)
+    const closeProperties = () => {
+      store.dispatch('asidePropertiesToggle', false)
+    }
+
+    const taskMsg = ref('')
+
+    // TODO: we use these functions at 2 components
+    // should move them to data helpers or to the store module
+    const pad2 = (n) => {
+      return (n < 10 ? '0' : '') + n
+    }
+    const getTodaysDate = (val = null) => {
+      if (val == null) {
+        val = new Date()
+      }
+      const month = pad2(val.getMonth() + 1)
+      const day = pad2(val.getDate())
+      const year = pad2(val.getFullYear())
+      const hours = pad2(val.getHours())
+      const minutes = pad2(val.getMinutes())
+      const seconds = pad2(val.getSeconds())
+      return year + '-' + month + '-' + day + 'T' + hours + ':' + minutes + ':' + seconds
+    }
+
+    function uuidv4 () {
+      return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
+        (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+      )
+    }
+
+    const createTaskMsg = () => {
+      const data = {
+        uid_task: selectedTask.value.uid,
+        uid_creator: user.value.current_user_uid,
+        uid_msg: uuidv4(),
+        date_create: getTodaysDate(),
+        text: taskMsg.value,
+        msg: taskMsg.value
+      }
+      store.dispatch(CREATE_MESSAGE_REQUEST, data)
+      taskMsg.value = ''
+    }
     return {
+      createTaskMsg,
+      closeProperties,
+      close,
+      taskMsg,
       show: false,
       isFullScreen: computed(() => store.state.isFullScreen),
-      isPropertiesMobileExpanded: computed(() => store.state.isAsideMobileExpanded),
+      isPropertiesMobileExpanded: computed(() => store.state.isPropertiesMobileExpanded),
       isAsideLgActive: computed(() => store.state.isAsideLgActive),
       selectedTask: selectedTask,
       taskMessages: taskMessages,
@@ -314,9 +364,17 @@ export default {
     v-if="selectedTask"
     v-show="!isFullScreen"
     id="aside"
-    class="-right-96 bg-white-right-column w-96 fixed top-0 z-40 h-screen transition-position lg:right-0 dark:border-r dark:border-gray-800 custom-column"
-    :class="[ isPropertiesMobileExpanded ? 'right-0' : '-right-90', isAsideLgActive ? 'block' : 'lg:hidden xl:block' ]"
+    class="bg-white-right-column w-96 fixed top-0 z-40 h-screen transition-position dark:border-r dark:border-gray-800 custom-column"
+    :class="[ isPropertiesMobileExpanded ? 'right-0' : '-right-96', isPropertiesMobileExpanded ? 'block' : 'hidden']"
   >
+    <Icon
+      @click="closeProperties"
+      :path="close.path"
+      class="text-gray-600 dark:text-white float-right mr-1 cursor-pointer"
+      :box="close.viewBox"
+      :width="close.width"
+      :height="close.height"
+    />
     <div class="break-words">
       <div class="column-resize">
         <div>
@@ -832,7 +890,13 @@ export default {
 </svg>
 </button>
 </span>
-          <input type="text" class="form-control text-group-design" placeholder="Введите сообщение">
+          <input
+            @keyup.enter="createTaskMsg"
+            v-model="taskMsg"
+            type="text"
+            class="form-control text-group-design"
+            placeholder="Введите сообщение"
+          >
           <span class="input-group-addon input-group-btn-send">
           <button type="button" name="btn-send" class="btn-send-custom"> <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
 <rect width="32" height="32" rx="16" fill="white"/>

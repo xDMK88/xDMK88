@@ -1,5 +1,6 @@
 import {
   MESSAGES_REQUEST,
+  CREATE_MESSAGE_REQUEST,
   MESSAGES_ERROR,
   MESSAGES_SUCCESS,
   REFRESH_MESSAGES
@@ -33,6 +34,19 @@ const actions = {
           reject(err)
         })
     })
+  },
+  [CREATE_MESSAGE_REQUEST]: ({ commit, dispatch }, data) => {
+    return new Promise((resolve, reject) => {
+      commit(MESSAGES_REQUEST)
+      const url = 'https://web.leadertask.com/api/v1/tasksmsgs'
+      axios({ url: url, method: 'POST', data: data })
+        .then(resp => {
+          resolve(resp)
+          commit(CREATE_MESSAGE_REQUEST, data)
+        }).catch(err => {
+          reject(err)
+        })
+    })
   }
 }
 
@@ -51,6 +65,9 @@ const mutations = {
   },
   [REFRESH_MESSAGES]: state => {
     state.messages = []
+  },
+  [CREATE_MESSAGE_REQUEST]: (state, data) => {
+    state.messages.push(data)
   }
 }
 

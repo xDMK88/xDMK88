@@ -507,6 +507,7 @@ export default {
     }
 
     const addSubtask = (uidParent) => {
+      // start add subtask code
       const newSubtask = {
         uid: uuidv4(),
         uid_customer: user.value.current_user_uid,
@@ -517,9 +518,19 @@ export default {
         _isEditing: true,
         _justCreated: true
       }
-      // TODO: focus on just created task
-      // returns promise -> use .then({ ... })
-      store.dispatch(TASK.ADD_SUBTASK, newSubtask)
+      store.dispatch(TASK.ADD_SUBTASK, newSubtask).then(() => {
+        const element = document.getElementById(newSubtask.uid)
+        const parentElement = document.getElementById(newSubtask.uid)
+        parentElement.parentElement.blur()
+        element.parentElement.classList.add('focused')
+        console.log(element.parentElement)
+        element.parentElement.click()
+        element.parentElement.setActive()
+        element.parentElement.focus()
+        element.click()
+        element.setActive()
+        element.focus()
+      })
     }
 
     const nodeSelected = (arg) => {

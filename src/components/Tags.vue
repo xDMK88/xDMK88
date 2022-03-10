@@ -8,8 +8,10 @@ import * as TASK from '@/store/actions/tasks'
 const store = useStore()
 
 const goToChildren = (value) => {
+  store.commit('updateLabel', 'Метки')
   if (value.children && value.children.length) {
     store.commit('basic', { key: 'greedSource', value: value.children })
+    store.commit('updateLabelprojectchildren', value.name)
   }
 }
 
@@ -18,12 +20,13 @@ const UID_TO_ACTION = {
 }
 
 const clickOnGridCard = (value) => {
+  store.commit('updateLabel', 'Метки')
   if (UID_TO_ACTION[value.global_property_uid]) {
     store.dispatch(UID_TO_ACTION[value.global_property_uid], value.uid)
     store.commit('basic', { key: 'taskListSource', value: { uid: value.global_property_uid, param: value.uid } })
   }
   store.commit('basic', { key: 'mainSectionState', value: 'tasks' })
-  store.commit('updateLabel', value.name)
+  store.commit('updateLabelprojectchildren', value.name)
   store.commit(TASK.CLEAN_UP_LOADED_TASKS)
 }
 

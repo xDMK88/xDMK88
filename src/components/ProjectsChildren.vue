@@ -19,17 +19,20 @@ const UID_TO_ACTION = {
   '7af232ff-0e29-4c27-a33b-866b5fd6eade': TASK.PROJECT_TASKS_REQUEST, // private
   '431a3531-a77a-45c1-8035-f0bf75c32641': TASK.PROJECT_TASKS_REQUEST // shared
 }
+store.commit('updateLabel', 'Мои проекты')
+store.commit('updatedefalt', '')
 const clickOnGridCard = (value) => {
   if (UID_TO_ACTION[value.global_property_uid]) {
     store.dispatch(UID_TO_ACTION[value.global_property_uid], value.uid)
     store.commit('basic', { key: 'taskListSource', value: { uid: value.global_property_uid, param: value.uid } })
   }
   store.commit('basic', { key: 'mainSectionState', value: 'tasks' })
-  store.commit('updateLabel', value.name)
+  store.commit('updateLabelprojectchildren', value.name)
   store.commit(TASK.CLEAN_UP_LOADED_TASKS)
 }
 const goToChildren = (value) => {
   if (value.children && value.children.length) {
+    store.commit('updateLabelprojectchildren', value.name)
     store.commit('basic', { key: 'greedSource', value: value.children })
   }
 }

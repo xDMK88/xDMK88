@@ -15,8 +15,8 @@ export default {
     TreeTagsItem,
     Icon
   },
-  mounted () {
-    this.handleInput()
+  async mounted () {
+    await this.handleInput()
   },
   filters: {
     shorten: (val, words = 2) => val.split(' ').slice(0, words).join(' ')
@@ -404,6 +404,7 @@ export default {
       <!--   <p class="mt-3"><strong>{{ localization.task_created }}:</strong> {{ selectedTask.date_create }}</p>
       <p><strong>Исполнитель:</strong> {{ selectedTask.email_performer }}</p>-->
       <p style="display: none">
+        {{selectedTask.status}}
         <strong>{{ localization.gc_status }}: </strong> {{ localization[statuses[selectedTask.status]] }}
       </p>
       <!--   <p v-if="selectedTask.plan"><strong>План:</strong> {{ selectedTask.plan }}</p>
@@ -412,6 +413,7 @@ export default {
       <div
         class="mt-3 custom-list-tags"
       >
+        <span v-if="selectedTask.status!==3">
         <!-- <p class="text-center">{{ localization.Labels }}</p>-->
         <div class="mt-3 tags-custom active" ref="btnRefEmployee" v-on:click="togglePopover_employee()"  v-if="selectedTask.type===1">
 
@@ -446,7 +448,7 @@ export default {
             class="rounded"
           >Взять на исполнение</span>
         </div>
-
+</span>
         <div style="position: relative" ref="btnRef" @click="togglePopover_access()" v-if="selectedTask.emails!==''" >
         <div class="mt-3 tags-custom" v-for="(key,value) in selectedTask.emails.split('..')" :key="value">
           <svg width="24" height="24" viewBox="0 0 91 92" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -898,14 +900,11 @@ export default {
             placeholder="Введите сообщение"
           >
           <span class="input-group-addon input-group-btn-send">
-          <button type="button" name="btn-send" class="btn-send-custom"> <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-<rect width="32" height="32" rx="16" fill="white"/>
-<rect width="32" height="32" rx="16" fill="#575758"/>
-<path d="M15.665 20.141C13.6069 20.141 11.9288 18.4263 11.9288 16.3234V8.8176C11.9288 6.71468 13.6069 5 15.665 5C17.7231 5 19.4012 6.71468 19.4012 8.8176V16.3396C19.4012 18.4425 17.7231 20.141 15.665 20.141ZM15.665 6.58527C14.4618 6.58527 13.4803 7.5882 13.4803 8.8176V16.3234C13.4803 17.5528 14.4618 18.5557 15.665 18.5557C16.8682 18.5557 17.8497 17.569 17.8497 16.3557V8.8176C17.8497 7.5882 16.8682 6.58527 15.665 6.58527Z" fill="#FCFDFF"/>
-<path d="M16.4407 22.4218H14.8893V25.9968H16.4407V22.4218Z" fill="#FCFDFF"/>
-<path d="M17.7231 26.7894H13.6228C13.1953 26.7894 12.847 26.4336 12.847 25.9968C12.847 25.56 13.1953 25.2042 13.6228 25.2042H17.7231C18.1505 25.2042 18.4988 25.56 18.4988 25.9968C18.4988 26.4336 18.1505 26.7894 17.7231 26.7894Z" fill="#FCFDFF"/>
-<path d="M15.665 23.2307C11.9921 23.2307 9 20.1895 9 16.4204V15.7896C9 15.3528 9.34829 14.9969 9.77574 14.9969C10.2032 14.9969 10.5515 15.3528 10.5515 15.7896V16.4204C10.5515 19.2998 12.847 21.6454 15.665 21.6454C18.483 21.6454 20.7785 19.2998 20.7785 16.4204V15.7896C20.7785 15.3528 21.1268 14.9969 21.5543 14.9969C21.9817 14.9969 22.33 15.3528 22.33 15.7896V16.4204C22.33 20.1895 19.3379 23.2307 15.665 23.2307Z" fill="#FCFDFF"/>
+          <button type="button" name="btn-send" class="btn-send-custom">
+<svg width="24" height="26" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M23.8021 10.5763C23.541 10.054 23.1166 9.59697 22.5617 9.33583L3.82473 0.261142C3.43302 0.0979283 3.07395 0 2.64959 0C1.63767 0 0.723669 0.58757 0.26667 1.50157C-0.0597576 2.18707 -0.0924003 2.93785 0.201385 3.65599L3.43302 11.7514L0.201385 19.8142C-0.353542 21.1852 0.331955 22.7194 1.70295 23.2743C1.99674 23.4049 2.32316 23.4701 2.68223 23.4701C3.07395 23.4701 3.46566 23.3722 3.82473 23.209L22.5943 14.1343C23.2472 13.8405 23.7042 13.2856 23.9327 12.6327C24.1612 11.9473 24.1285 11.1965 23.8021 10.5763ZM2.02938 20.5649L5.16308 12.7307H20.8969L2.94338 21.4137C2.84545 21.4463 2.74752 21.4789 2.64959 21.4789C2.38845 21.4789 2.15995 21.3157 2.06202 21.0872C1.96409 20.924 1.96409 20.7282 2.02938 20.5649ZM5.16308 10.7395L2.02938 2.90521C1.93145 2.64406 1.99674 2.35028 2.19259 2.15442C2.32316 2.02385 2.48638 1.95857 2.64959 1.95857C2.74752 1.95857 2.84545 1.99121 2.94338 2.02385L20.8969 10.7068H5.16308V10.7395Z" fill="#666666"/>
 </svg>
+
 </button>
 </span>
         </div>

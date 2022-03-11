@@ -1,11 +1,13 @@
 <script setup>
 import Icon from '@/components/Icon.vue'
+import { computed, ref } from 'vue'
 import { useStore } from 'vuex'
 import properties from '@/icons/properties.js'
 import subArrow from '@/icons/arrow-sub.js'
 import * as TASK from '@/store/actions/tasks'
 
 const store = useStore()
+const isGridView = ref(true)
 
 const goToChildren = (value) => {
   store.commit('updateLabel', 'Метки')
@@ -17,6 +19,16 @@ const goToChildren = (value) => {
 
 const UID_TO_ACTION = {
   '00a5b3de-9474-404d-b3ba-83f488ac6d30': TASK.TAG_TASKS_REQUEST
+}
+
+const isPropertiesMobileExpanded = computed(() => store.state.isPropertiesMobileExpanded)
+
+const openProperties = (tag) => {
+  if (!isPropertiesMobileExpanded.value) {
+    store.dispatch('asidePropertiesToggle', true)
+  }
+  store.commit('basic', { key: 'propertiesState', value: 'tag' })
+  store.commit(TASK.SELECT_TAG, tag)
 }
 
 const clickOnGridCard = (value) => {
@@ -40,7 +52,10 @@ defineProps({
 </script>
 
 <template class="w-full">
-  <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+  <div
+    class="grid gap-4"
+    :class="{ 'md:grid-cols-2 lg:grid-cols-4': isGridView, 'grid-cols-1': !isGridView, 'grid-cols-1': isPropertiesMobileExpanded && !isGridView, 'lg:grid-cols-2': isPropertiesMobileExpanded && isGridView }"
+  >
     <template v-for="(tag, pindex) in tags" :key="pindex">
       <div
         class="flex items-center bg-white dark:bg-gray-700 rounded-xl shadow hover:shadow-md cursor-pointer h-30 px-3 py-5"
@@ -83,6 +98,7 @@ defineProps({
               </div>
             </div>
             <icon
+              @click="openProperties(tag)"
               :path="properties.path"
               :width="properties.width"
               :height="properties.height"

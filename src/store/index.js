@@ -23,6 +23,9 @@ export default createStore({
     greedSource: null,
     taskListSource: null,
 
+    /* Properties state: (project, task, color, tag, empmloyee) */
+    propertiesState: null,
+
     /* User */
     userName: null,
     userEmail: null,

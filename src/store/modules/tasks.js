@@ -17,6 +17,7 @@ function pad2 (n) {
 const state = {
   tasks: false,
   tags: {},
+  selectedTag: null,
   subtasks: false,
   selectedTask: undefined,
   status: '',
@@ -587,6 +588,9 @@ const mutations = {
       state.newConfig.leaves = arrayRemove(state.newConfig.leaves, task.uid_parent)
     }
     state.newtasks[task.uid_parent].state.opened = true
+  },
+  [TASK.SELECT_TAG]: (state, tag) => {
+    state.selectedTag = tag
   }
 }
 

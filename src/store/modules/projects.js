@@ -2,7 +2,8 @@ import * as PROJECT from '../actions/projects'
 import axios from 'axios'
 
 const state = {
-  projects: {}
+  projects: {},
+  selectedProject: undefined
 }
 
 const getters = {
@@ -44,7 +45,7 @@ const actions = {
   },
   [PROJECT.QUIT_PROJECT_REQUEST]: ({ commit, dispatch }, data) => {
     return new Promise((resolve, reject) => {
-      const url = 'https://web.leadertask.com/api/v1/projects?uid=' + data.uid + '&value=' + data.value
+      const url = 'https://w eb.leadertask.com/api/v1/projects?uid=' + data.uid + '&value=' + data.value
       axios({ url: url, method: 'POST' })
         .then(resp => {
           resolve(resp)
@@ -60,6 +61,9 @@ const mutations = {
     for (const project of projects) {
       state.projects[project.uid] = project
     }
+  },
+  [PROJECT.SELECT_PROJECT]: (state, project) => {
+    state.selectedProject = project
   }
 }
 

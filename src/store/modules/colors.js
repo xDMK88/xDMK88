@@ -1,11 +1,13 @@
 import {
   PUSH_COLOR,
-  PUSH_MYCOLOR
+  PUSH_MYCOLOR,
+  SELECT_COLOR
 } from '../actions/colors'
 
 const state = {
   colors: {},
-  mycolors: {}
+  mycolors: {},
+  selectedColor: null
 }
 
 const getters = {
@@ -24,6 +26,9 @@ const mutations = {
     for (const color of mycolors) {
       state.mycolors[color.uid] = color
     }
+  },
+  [SELECT_COLOR]: (state, color) => {
+    state.selectedColor = color
   }
 }
 

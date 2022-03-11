@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import Icon from '@/components/Icon.vue'
 import { useStore } from 'vuex'
 import properties from '@/icons/properties.js'
@@ -9,6 +9,7 @@ import subArrow from '@/icons/arrow-sub.js'
 import gridView from '@/icons/grid-view.js'
 import listView from '@/icons/list-view.js'
 import * as TASK from '@/store/actions/tasks'
+import { SELECT_PROJECT } from '@/store/actions/projects'
 const store = useStore()
 defineProps({
   projects: {
@@ -22,6 +23,17 @@ const UID_TO_ACTION = {
   '431a3531-a77a-45c1-8035-f0bf75c32641': TASK.PROJECT_TASKS_REQUEST // shared
 }
 const isGridView = ref(true)
+
+const isPropertiesMobileExpanded = computed(() => store.state.isPropertiesMobileExpanded)
+
+const openProperties = (project) => {
+  if (!isPropertiesMobileExpanded.value) {
+    store.dispatch('asidePropertiesToggle', true)
+  }
+  store.commit('basic', { key: 'propertiesState', value: 'project' })
+  store.commit(SELECT_PROJECT, project)
+}
+
 const clickOnGridCard = (value) => {
   store.commit('updateLabel', 'Мои проекты')
   if (UID_TO_ACTION[value.global_property_uid]) {
@@ -69,7 +81,7 @@ const goToChildren = (value) => {
     </div>
     <div
       class="grid gap-4 mt-3"
-      :class="{ 'md:grid-cols-2 lg:grid-cols-4': isGridView, 'grid-cols-1': !isGridView } "
+      :class="{ 'md:grid-cols-2 lg:grid-cols-4': isGridView, 'grid-cols-1': !isGridView, 'grid-cols-1': isPropertiesMobileExpanded && !isGridView, 'lg:grid-cols-2': isPropertiesMobileExpanded && isGridView }"
     >
       <template v-for="(project, pindex) in value.items" :key="pindex">
         <div
@@ -92,6 +104,7 @@ const goToChildren = (value) => {
           <div>
             <div class="flex items-start">
               <icon
+                @click="openProperties(project)"
                 :path="properties.path"
                 :width="properties.width"
                 :height="properties.height"

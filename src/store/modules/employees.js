@@ -1,11 +1,13 @@
 import {
   PUSH_EMPLOYEE,
-  PUSH_EMPLOYEE_BY_EMAIL
+  PUSH_EMPLOYEE_BY_EMAIL,
+  SELECT_EMPLOYEE
 } from '../actions/employees'
 
 const state = {
   employees: {},
-  employeesByEmail: {}
+  employeesByEmail: {},
+  selectedEmployee: null
 }
 
 const getters = {
@@ -20,6 +22,9 @@ const mutations = {
   },
   [PUSH_EMPLOYEE_BY_EMAIL]: (state, employee) => {
     state.employeesByEmail[employee.email.toLowerCase()] = employee
+  },
+  [SELECT_EMPLOYEE]: (state, employee) => {
+    state.selectedEmployee = employee
   }
 }
 

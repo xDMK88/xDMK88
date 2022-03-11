@@ -1,7 +1,9 @@
 <script setup>
 import Icon from '@/components/Icon.vue'
+import { computed, ref } from 'vue'
 import { useStore } from 'vuex'
 import * as TASK from '@/store/actions/tasks'
+import { SELECT_COLOR } from '@/store/actions/colors'
 import properties from '@/icons/properties.js'
 defineProps({
   colors: {
@@ -13,6 +15,16 @@ const store = useStore()
 // Serves as linkage between requests from storage and tree view navigator
 const UID_TO_ACTION = {
   'ed8039ae-f3de-4369-8f32-829d401056e9': TASK.COLOR_TASKS_REQUEST
+}
+const isPropertiesMobileExpanded = computed(() => store.state.isPropertiesMobileExpanded)
+const isGridView = ref(true)
+
+const openProperties = (color) => {
+  if (!isPropertiesMobileExpanded.value) {
+    store.dispatch('asidePropertiesToggle', true)
+  }
+  store.commit('basic', { key: 'propertiesState', value: 'color' })
+  store.commit(SELECT_COLOR, color)
 }
 const clickOnGridCard = (value) => {
   store.commit('updateLabel', 'Цвета')
@@ -27,7 +39,10 @@ const clickOnGridCard = (value) => {
 </script>
 
 <template class="w-full">
-  <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+  <div
+    class="grid gap-4"
+    :class="{ 'md:grid-cols-2 lg:grid-cols-4': isGridView, 'grid-cols-1': !isGridView, 'grid-cols-1': isPropertiesMobileExpanded && !isGridView, 'lg:grid-cols-2': isPropertiesMobileExpanded && isGridView }"
+  >
     <template v-for="(color, pindex) in colors" :key="pindex">
       <div
         class="flex items-center bg-white dark:bg-gray-700 rounded-xl shadow hover:shadow-md cursor-pointer h-30 px-3 py-5"
@@ -51,6 +66,7 @@ const clickOnGridCard = (value) => {
               </p>
             </div>
             <icon
+              @click="openProperties(color)"
               :path="properties.path"
               :width="properties.width"
               :height="properties.height"

@@ -523,6 +523,7 @@ export default {
     }
 
     const nodeSelected = (arg) => {
+      store.commit('basic', { key: 'propertiesState', value: 'task' })
       if (lastSelectedTaskUid === arg.info.uid) {
         return
       }

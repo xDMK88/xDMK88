@@ -1285,3 +1285,59 @@ label
   padding: 0;
   margin-right: 5px;
 }
+.vc-weeknumber-content
+{
+  font-style: normal;
+}
+.is-today .vc-day-content.vc-focusable
+{
+  border: 2px solid #FF9123;
+  border-radius: 10px;
+  color:black !important;
+  background: white;
+}
+.is-today .vc-day-content.vc-focusable:hover, .is-today .vc-day-content.vc-focusable:focus
+{
+  border: 2px solid #FF9123;
+  border-radius: 10px;
+  color:black !important;
+  background: white;
+}
+.vc-arrow
+{
+  border-radius: 10px;
+}
+.vc-title {
+  /* html code => Html Code */
+  text-transform: capitalize;
+  font-size: 15px;
+}
+.vc-weekday
+{
+  text-transform: capitalize;
+}
+.vc-day-content .vc-focusable
+{
+  color:black !important;
+}
+.vc-highlights .vc-highlight
+{
+
+  border-radius: 10px;
+  color:black !important;
+  background: white;
+}
+.vc-weekday:nth-child(7), .vc-weekday:nth-child(8)
+{
+  color: #E23300;
+}
+.weekday-position-6, .weekday-position-6
+{
+  color: #E23300;
+}
+.custom-border-divider
+{
+  margin: 10px 0 0 15px;
+  padding-left: 5px;
+  border: 1px solid rgba(62, 59, 54, 0.15);
+}

@@ -97,9 +97,9 @@ const menuClick = (event, item) => {
   }
   store.commit('updateLabel', item.label)
   store.commit('updateLabelprojectchildren', '')
-  store.commit('updatedefalt', '')
   if (UID_TO_ACTION[item.uid] && item.type === 'uid') {
     store.dispatch(UID_TO_ACTION[item.uid])
+    store.commit('updatestart', item.uid)
     store.commit('basic', { key: 'taskListSource', value: { uid: item.uid, param: null } })
     store.commit('basic', { key: 'mainSectionState', value: 'tasks' })
   } else {
@@ -107,9 +107,11 @@ const menuClick = (event, item) => {
     store.commit('basic', { key: 'greedPath', value: item.path })
     if (item.path === 'new_private_projects' || item.path === 'new_emps' || item.path === 'new_delegate') {
       store.commit('basic', { key: 'greedSource', value: storeNavigator.value[item.path] })
+      store.commit('updatestart', item.path)
       console.log(storeNavigator.value[item.path])
     } else {
       store.commit('basic', { key: 'greedSource', value: storeNavigator.value[item.path].items })
+      store.commit('updatestart', item.path)
     }
     console.log(storeNavigator.value[item.path])
   }
@@ -241,6 +243,7 @@ const menuClick = (event, item) => {
         color="yellow"
         is-expanded
         :locale="navigatorMenu.lang"
+        :masks="{ weekdays: 'WW' }"
         :attributes="attrs"
         :is-dark="isDark"
        />
@@ -254,7 +257,7 @@ const menuClick = (event, item) => {
         >
           <hr
             :key="`a-${index}`"
-            class="text-xs mx-3"
+            class="text-xs mx-3 custom-border-divider"
             :class="[ asideMenuLabelStyle ]"
           >
         </div>

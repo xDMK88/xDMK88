@@ -28,12 +28,17 @@ const clickOnGridCard = (value) => {
   }
   store.commit('basic', { key: 'mainSectionState', value: 'tasks' })
   store.commit('updateLabelprojectchildren', value.name)
+  store.commit('updatedefalt', 'projects_children')
+  store.commit('updatestart', 'new_private_projects')
   store.commit(TASK.CLEAN_UP_LOADED_TASKS)
 }
 const goToChildren = (value) => {
   if (value.children && value.children.length) {
+    store.commit('updatedefalt', 'projects_children')
+    store.commit('updatestart', 'new_private_projects')
     store.commit('updateLabelprojectchildren', value.name)
     store.commit('basic', { key: 'greedSource', value: value.children })
+    store.commit('basic', { key: 'greedPath', value: 'projects_children' })
   }
 }
 </script>

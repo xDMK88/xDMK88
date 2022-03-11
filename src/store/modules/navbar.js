@@ -22,6 +22,9 @@ const mutations = {
   updatedefalt (state, payload) {
     state.labeldefault = payload
   },
+  updatestart (state, payload) {
+    state.labelstart = payload
+  },
   updateLabel (state, payload) {
     state.label = payload
   },

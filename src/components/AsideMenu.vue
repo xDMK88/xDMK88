@@ -241,6 +241,7 @@ const menuClick = (event, item) => {
         :style="{ backgroundColor: datePickerBG }"
         show-weeknumbers
         color="yellow"
+        trim-weeks
         is-expanded
         :locale="navigatorMenu.lang"
         :masks="{ weekdays: 'WW' }"

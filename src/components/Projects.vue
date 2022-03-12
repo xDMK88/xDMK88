@@ -35,7 +35,7 @@ const openProperties = (project) => {
 }
 
 const clickOnGridCard = (value) => {
-  store.commit('updateLabel', 'Мои проекты')
+  store.commit('updateLabel', 'проекты')
   if (UID_TO_ACTION[value.global_property_uid]) {
     store.dispatch(UID_TO_ACTION[value.global_property_uid], value.uid)
     store.commit('basic', { key: 'taskListSource', value: { uid: value.global_property_uid, param: value.uid } })
@@ -47,7 +47,7 @@ const clickOnGridCard = (value) => {
   store.commit(TASK.CLEAN_UP_LOADED_TASKS)
 }
 const goToChildren = (value) => {
-  store.commit('updateLabel', 'Мои проекты')
+  store.commit('updateLabel', 'Проекты')
   store.commit('updateLabelprojectchildren', value.name)
   if (value.children && value.children.length) {
     store.commit('updatedefalt', 'projects_children')

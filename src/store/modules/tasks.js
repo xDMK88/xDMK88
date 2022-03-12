@@ -1,7 +1,7 @@
 import * as TASK from '../actions/tasks'
 import { AUTH_LOGOUT } from '../actions/auth'
 import { PUSH_COLOR } from '../actions/colors'
-
+import { CHANGE_TASK_ACCESS, CHANGE_TASK_COLOR, CHANGE_TASK_FOCUS, CHANGE_TASK_TAGS, CHANGE_TASK_PERFORMER } from '../actions/tasks'
 import axios from 'axios'
 
 function arrayRemove (arr, value) {
@@ -468,6 +468,82 @@ const actions = {
     return new Promise((resolve, reject) => {
       commit(TASK.ADD_SUBTASK, task)
       resolve()
+    })
+  },
+  [CHANGE_TASK_ACCESS]: ({ commit, dispatch }, data) => {
+    return new Promise((resolve, reject) => {
+      const url = 'https://web.leadertask.com/api/v1/task/common?uid=' + data.uid + '&value=' + data.value
+      axios({
+        url: url,
+        method: 'PATCH'
+      })
+        .then(resp => {
+          commit(CHANGE_TASK_ACCESS, data)
+          resolve(resp)
+        }).catch(err => {
+          reject(err)
+        })
+    })
+  },
+  [CHANGE_TASK_COLOR]: ({ commit, dispatch }, data) => {
+    return new Promise((resolve, reject) => {
+      const url = 'https://web.leadertask.com/api/v1/task/marker?uid=' + data.uid + '&value=' + data.value
+      axios({
+        url: url,
+        method: 'PATCH'
+      })
+        .then(resp => {
+          commit(CHANGE_TASK_COLOR, data)
+          resolve(resp)
+        }).catch(err => {
+          reject(err)
+        })
+    })
+  },
+  [CHANGE_TASK_TAGS]: ({ commit, dispatch }, data) => {
+    return new Promise((resolve, reject) => {
+      const url = 'https://web.leadertask.com/api/v1/task/tags'
+      axios({
+        url: url,
+        method: 'PATCH',
+        data: data
+      })
+        .then(resp => {
+          commit(TASK.CHANGE_TASK_TAGS, data)
+          resolve(resp)
+        }).catch(err => {
+          reject(err)
+        })
+    })
+  },
+  [CHANGE_TASK_PERFORMER]: ({ commit, dispatch }, data) => {
+    return new Promise((resolve, reject) => {
+      const url = 'https://web.leadertask.com/api/v1/task/performer?uid=' + data.uid + '&value=' + data.value
+      axios({
+        url: url,
+        method: 'PATCH'
+      })
+        .then(resp => {
+          commit(TASK.CHANGE_TASK_PERFORMER, data)
+          resolve(resp)
+        }).catch(err => {
+          reject(err)
+        })
+    })
+  },
+  [CHANGE_TASK_FOCUS]: ({ commit, dispatch }, data) => {
+    return new Promise((resolve, reject) => {
+      const url = 'https://web.leadertask.com/api/v1/task/focus?uid=' + data.uid + '&focus=' + data.value
+      axios({
+        url: url,
+        method: 'PATCH'
+      })
+        .then(resp => {
+          commit(CHANGE_TASK_FOCUS, data)
+          resolve(resp)
+        }).catch(err => {
+          reject(err)
+        })
     })
   }
 }

@@ -19,7 +19,7 @@ const UID_TO_ACTION = {
   '7af232ff-0e29-4c27-a33b-866b5fd6eade': TASK.PROJECT_TASKS_REQUEST, // private
   '431a3531-a77a-45c1-8035-f0bf75c32641': TASK.PROJECT_TASKS_REQUEST // shared
 }
-store.commit('updateLabel', 'Мои проекты')
+store.commit('updateLabel', 'Проекты')
 store.commit('updatedefalt', '')
 const clickOnGridCard = (value) => {
   if (UID_TO_ACTION[value.global_property_uid]) {

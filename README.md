@@ -1,3 +1,4 @@
+[![.github/workflows/action-build.yml](https://github.com/LeaderTask/Web/actions/workflows/action-build.yml/badge.svg?branch=projects-and-emps&event=push)](https://github.com/LeaderTask/Web/actions/workflows/action-build.yml)
 # [Leadertask Web v2.0](https://app.leadertask.ru)
 
 [![Leadertask Web v2.0](images/leadertask_web2.png)](https://app.leadertask.ru)

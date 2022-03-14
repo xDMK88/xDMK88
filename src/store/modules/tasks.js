@@ -1,7 +1,7 @@
 import * as TASK from '../actions/tasks'
 import { AUTH_LOGOUT } from '../actions/auth'
 import { PUSH_COLOR } from '../actions/colors'
-import { CHANGE_TASK_ACCESS, CHANGE_TASK_COLOR, CHANGE_TASK_FOCUS, CHANGE_TASK_TAGS, CHANGE_TASK_PERFORMER } from '../actions/tasks'
+import { CHANGE_TASK_ACCESS, CHANGE_TASK_COLOR, CHANGE_TASK_FOCUS, CHANGE_TASK_TAGS, CHANGE_TASK_PERFORMER, CHANGE_TASK_PROJECT } from '../actions/tasks'
 import axios from 'axios'
 
 function arrayRemove (arr, value) {
@@ -540,6 +540,21 @@ const actions = {
       })
         .then(resp => {
           commit(CHANGE_TASK_FOCUS, data)
+          resolve(resp)
+        }).catch(err => {
+          reject(err)
+        })
+    })
+  },
+  [CHANGE_TASK_PROJECT]: ({ commit, dispatch }, data) => {
+    return new Promise((resolve, reject) => {
+      const url = 'https://web.leadertask.com/api/v1/task/project?uid=' + data.uid + '&value=' + data.value
+      axios({
+        url: url,
+        method: 'PATCH'
+      })
+        .then(resp => {
+          commit(CHANGE_TASK_PROJECT, data)
           resolve(resp)
         }).catch(err => {
           reject(err)

@@ -3,7 +3,8 @@ import {
   FILES_ERROR,
   FILES_SUCCESS,
   REFRESH_FILES,
-  MYFILES
+  MYFILES,
+  CREATE_FILES_REQUEST
 } from '../actions/taskfiles'
 import { AUTH_LOGOUT } from '../actions/auth'
 
@@ -32,6 +33,25 @@ const actions = {
         }).catch(err => {
           commit(FILES_ERROR, err)
           dispatch(AUTH_LOGOUT)
+          reject(err)
+        })
+    })
+  },
+  [CREATE_FILES_REQUEST]: ({ commit, dispatch }, data) => {
+    return new Promise((resolve, reject) => {
+      const url = 'https://web.leadertask.com/api/v1/tasksfiles?uid_task=' + data.uid_task
+      axios({
+        url: url,
+        method: 'POST',
+        data: data.name,
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      })
+        .then(resp => {
+          commit(CREATE_FILES_REQUEST, data)
+          resolve(resp)
+        }).catch(err => {
           reject(err)
         })
     })

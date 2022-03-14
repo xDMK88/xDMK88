@@ -25,7 +25,6 @@ defineProps({
 })
 
 let modalOneActive = ref(false)
-
 // Serves as linkage between requests from storage and tree view navigator
 const UID_TO_ACTION = {
   '901841d9-0016-491d-ad66-8ee42d2b496b': TASK.TASKS_REQUEST, // get today's day
@@ -72,7 +71,10 @@ const navigatorMenu = reactive({
   tasks: false,
   foldableNavigator: false,
   lang: getNavigatorLanguage(),
-  currentDate: currentDate
+  currentDate: currentDate,
+  themeStyles: {
+    dayNotInMonth: 'not-in-month'
+  }
 })
 
 const logout = () => {
@@ -117,6 +119,8 @@ const menuClick = (event, item) => {
   }
   store.commit(TASK.CLEAN_UP_LOADED_TASKS)
 }
+
+//  document.getElementById('Maincalendar').classList.remove('is-not-in-month')
 </script>
 
 <template>
@@ -239,13 +243,14 @@ const menuClick = (event, item) => {
         class="border-none text-xs px-3"
         style="border: none!important;"
         :style="{ backgroundColor: datePickerBG }"
+        id="Maincalendar"
         show-weeknumbers
         color="yellow"
-        trim-weeks
         is-expanded
         :locale="navigatorMenu.lang"
         :masks="{ weekdays: 'WW' }"
         :attributes="attrs"
+        :nav-visibility="visible"
         :is-dark="isDark"
        />
     </nav-bar-item>

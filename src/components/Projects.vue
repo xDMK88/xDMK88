@@ -25,12 +25,35 @@ const UID_TO_ACTION = {
 const isGridView = ref(true)
 
 const isPropertiesMobileExpanded = computed(() => store.state.isPropertiesMobileExpanded)
+const user = computed(() => store.state.user.user)
 
 const openProperties = (project) => {
   if (!isPropertiesMobileExpanded.value) {
     store.dispatch('asidePropertiesToggle', true)
   }
   store.commit('basic', { key: 'propertiesState', value: 'project' })
+  // create empty instanse of project
+  if (!project) {
+    project = {
+      uid_parent: '',
+      color: '',
+      comment: '',
+      plugin: '',
+      collapsed: 0,
+      isclosed: 0,
+      order: 0,
+      group: 0,
+      show: 0,
+      favorite: 0,
+      quiet: 0,
+      email_creator: user.value.current_user_email,
+      members: [user.value.current_user_email],
+      children: [],
+      uid: '',
+      name: '',
+      bold: 0
+    }
+  }
   store.commit(SELECT_PROJECT, project)
 }
 
@@ -157,6 +180,7 @@ const goToChildren = (value) => {
         </div>
       </template>
       <div
+        @click="openProperties(false)"
         class="flex items-center justify-center bg-gray-50 dark:bg-gray-700 rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-500 cursor-pointer px-5 py-7"
       >
         <div class="flex items-center justify-center w-10 h-10 bg-gray-200 dark:bg-gray-600 rounded-xl">

@@ -91,6 +91,8 @@ function dateToLabelFormat (calendarDate) {
 const asideLgClose = () => {
   store.dispatch('asideLgToggle', false)
 }
+
+// TODO: clean up messy logic
 const menuClick = (event, item) => {
   if (isPropertiesMobileExpanded.value) {
     store.dispatch('asidePropertiesToggle', false)

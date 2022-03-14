@@ -1,24 +1,63 @@
 <script setup>
 import Icon from '@/components/Icon.vue'
+import { computed, ref } from 'vue'
 import { useStore } from 'vuex'
 import properties from '@/icons/properties.js'
 import projectIcon from '@/icons/project.js'
 import sharedProject from '@/icons/shared_project.js'
 import subArrow from '@/icons/arrow-sub.js'
 import * as TASK from '@/store/actions/tasks'
+import { SELECT_PROJECT } from '@/store/actions/projects'
+
 const store = useStore()
 // const employeesByEmail = computed(() => store.state.employees.employeesByEmail)
-defineProps({
+const props = defineProps({
   projects: {
     type: Array,
     default: () => []
   }
 })
+const isGridView = ref(true)
+const isPropertiesMobileExpanded = computed(() => store.state.isPropertiesMobileExpanded)
+const user = computed(() => store.state.user.user)
+const allProjects = computed(() => store.state.projects.projects)
+
 // Serves as linkage between requests from storage and tree view navigator
 const UID_TO_ACTION = {
   '7af232ff-0e29-4c27-a33b-866b5fd6eade': TASK.PROJECT_TASKS_REQUEST, // private
   '431a3531-a77a-45c1-8035-f0bf75c32641': TASK.PROJECT_TASKS_REQUEST // shared
 }
+
+const openProperties = (project) => {
+  if (!isPropertiesMobileExpanded.value) {
+    store.dispatch('asidePropertiesToggle', true)
+  }
+  store.commit('basic', { key: 'propertiesState', value: 'project' })
+  // create empty instanse of project
+  if (!project) {
+    project = {
+      uid_parent: allProjects.value[props.projects[0].uid].uid_parent,
+      color: '',
+      comment: '',
+      plugin: '',
+      collapsed: 0,
+      isclosed: 0,
+      order: 0,
+      group: 0,
+      show: 0,
+      favorite: 0,
+      quiet: 0,
+      email_creator: user.value.current_user_email,
+      members: [user.value.current_user_email],
+      children: [],
+      uid: '',
+      name: '',
+      bold: 0
+    }
+  }
+  store.commit(SELECT_PROJECT, project)
+}
+
 store.commit('updateLabel', 'Проекты')
 store.commit('updatedefalt', '')
 const clickOnGridCard = (value) => {
@@ -44,7 +83,10 @@ const goToChildren = (value) => {
 </script>
 
 <template class="w-full">
-    <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-3">
+    <div
+      class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-3"
+      :class="{ 'md:grid-cols-2 lg:grid-cols-4': isGridView, 'grid-cols-1': !isGridView, 'grid-cols-1': isPropertiesMobileExpanded && !isGridView, 'lg:grid-cols-2': isPropertiesMobileExpanded && isGridView }"
+    >
       <template v-for="(project, pindex) in projects" :key="pindex">
         <div
           class="flex items-center bg-white dark:bg-gray-700 rounded-xl shadow px-5 py-7 relative"
@@ -53,12 +95,13 @@ const goToChildren = (value) => {
             v-if="project.color != '#A998B6'"
             :style="{ backgroundColor: project.color }"
             style="border-radius: 100% 0 0.75rem 0;"
-            class="w-7 h-7 absolute bottom-0 right-0 rounded-tl-full rounded-br-xl"
+            class="w-7 h-7 absolute bottom-0 right-0"
           >
           </div>
           <div>
             <div class="flex items-center w-96">
               <icon
+                @click="openProperties(project)"
                 :path="properties.path"
                 :width="properties.width"
                 :height="properties.height"
@@ -108,5 +151,16 @@ const goToChildren = (value) => {
             </div>
         </div>
       </template>
+      <div
+        v-if="allProjects[projects[0].uid_parent].email_creator === user.current_user_email"
+        @click="openProperties(false)"
+        class="flex items-center justify-center bg-gray-50 dark:bg-gray-700 rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-500 cursor-pointer px-5 py-7"
+      >
+        <div class="flex items-center justify-center w-10 h-10 bg-gray-200 dark:bg-gray-600 rounded-xl">
+         <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" class="dark:text-gray-100">
+           <path d="M8.00011 2.3457V8.4034M8.00011 8.4034V14.4611M8.00011 8.4034H14.4617M8.00011 8.4034H1.53857" stroke="#3E3D3B" stroke-width="3" stroke-linecap="round"/>
+         </svg>
+        </div>
+      </div>
     </div>
 </template>

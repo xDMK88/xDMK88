@@ -6,3 +6,12 @@ export function visitChildren (arr, callback) {
     }
   }
 }
+
+export function recursiveRemove (arr, uid) {
+  return arr.filter(item => {
+    if ('children' in item) {
+      item.children = recursiveRemove(item.children, uid)
+    }
+    return item.uid !== uid
+  })
+}

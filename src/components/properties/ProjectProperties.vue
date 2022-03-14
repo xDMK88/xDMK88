@@ -204,13 +204,13 @@ const quiet = ref(!selectedProject.value.quiet)
       </button>
       <button
         @click="removeProject(selectedProject)"
-        v-if="selectedProject.email_creator == user.current_user_email"
+        v-if="selectedProject.email_creator == user.current_user_email && selectedProject.uid"
         class="w-full bg-red-600 rounded-xl mt-4 p-3 text-white font-bold hover:bg-red-800"
       >
         Удалить
       </button>
       <button
-        v-else
+        v-if="selectedProject.email_creator !== user.current_user_email"
         @click="quitProject(selectedProject)"
         class="w-full bg-gray-100 rounded-xl mt-4 p-3 text-gray-700 font-bold hover:bg-gray-200"
       >

@@ -10,6 +10,8 @@ import gridView from '@/icons/grid-view.js'
 import listView from '@/icons/list-view.js'
 import * as TASK from '@/store/actions/tasks'
 import { SELECT_PROJECT } from '@/store/actions/projects'
+// import { visitChildren } from '@/store/helpers/functions'
+
 const store = useStore()
 defineProps({
   projects: {
@@ -26,6 +28,7 @@ const isGridView = ref(true)
 
 const isPropertiesMobileExpanded = computed(() => store.state.isPropertiesMobileExpanded)
 const user = computed(() => store.state.user.user)
+// const navigator = computed(() => store.state.navigator.navigator)
 
 const openProperties = (project) => {
   if (!isPropertiesMobileExpanded.value) {

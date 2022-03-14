@@ -1,8 +1,12 @@
 import {
   PUSH_EMPLOYEE,
   PUSH_EMPLOYEE_BY_EMAIL,
-  SELECT_EMPLOYEE
+  SELECT_EMPLOYEE,
+  CREATE_EMPLOYEE_REQUEST,
+  UPDATE_EMPLOYEE_REQUEST,
+  REMOVE_EMPLOYEE_REQUEST
 } from '../actions/employees'
+import axios from 'axios'
 
 const state = {
   employees: {},
@@ -14,6 +18,39 @@ const getters = {
 }
 
 const actions = {
+  [CREATE_EMPLOYEE_REQUEST]: ({ commit, dispatch }, data) => {
+    return new Promise((resolve, reject) => {
+      const url = 'https://web.leadertask.com/api/v1/emp'
+      axios({ url: url, method: 'POST', data: data })
+        .then(resp => {
+          resolve(resp)
+        }).catch(err => {
+          reject(err)
+        })
+    })
+  },
+  [UPDATE_EMPLOYEE_REQUEST]: ({ commit, dispatch }, data) => {
+    return new Promise((resolve, reject) => {
+      const url = 'https://web.leadertask.com/api/v1/emp'
+      axios({ url: url, method: 'PATCH', data: data })
+        .then(resp => {
+          resolve(resp)
+        }).catch(err => {
+          reject(err)
+        })
+    })
+  },
+  [REMOVE_EMPLOYEE_REQUEST]: ({ commit, dispatch }, data) => {
+    return new Promise((resolve, reject) => {
+      const url = 'https://web.leadertask.com/api/v1/emp?uid_delete=' + data.uid_delete + '&uid_delegate=' + data.uid_delegate
+      axios({ url: url, method: 'DELETE' })
+        .then(resp => {
+          resolve(resp)
+        }).catch(err => {
+          reject(err)
+        })
+    })
+  }
 }
 
 const mutations = {

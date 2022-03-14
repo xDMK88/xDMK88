@@ -14,7 +14,7 @@ import { ADD_TASK_TAGS } from '../actions/tasks'
 import { PUSH_EMPLOYEE, PUSH_EMPLOYEE_BY_EMAIL } from '../actions/employees'
 import { PUSH_PROJECT } from '../actions/projects'
 import { PUSH_COLOR, PUSH_MYCOLOR } from '../actions/colors'
-import { visitChildren } from '../helpers/functions'
+import { visitChildren, recursiveRemove } from '../helpers/functions'
 import { computed } from 'vue'
 
 import calendar from '@/icons/calendar.js'
@@ -389,13 +389,15 @@ const mutations = {
   },
   [NAVIGATOR_PUSH_PROJECT]: (state, projects) => {
     for (const project of projects) {
-      // first item of new_private_projects array is private, second - is shared
       state.navigator.new_private_projects[0].items.push(project)
     }
   },
   [NAVIGATOR_REMOVE_PROJECT]: (state, project) => {
-    state.navigator.new_private_projects[0].items = state.navigator.new_private_projects[0].items.filter((el) => { return el.uid !== project.uid })
-    state.navigator.new_private_projects[1].items = state.navigator.new_private_projects[1].items.filter((el) => { return el.uid !== project.uid })
+    // TODO: remove with recursion
+    console.log('new private project ', state.navigator.new_private_projects)
+    console.log('new private project after removing ', recursiveRemove(state.navigator.new_private_projects[0].items, project.uid))
+    state.navigator.new_private_projects[0].items = recursiveRemove(state.navigator.new_private_projects[0].items, project.uid)
+    console.log('state after removing', state.navigator.new_private_projects)
   },
   [NAVIGATOR_ERROR]: state => {
     state.status = 'error'

@@ -99,26 +99,29 @@ const menuClick = (event, item) => {
   if (isPropertiesMobileExpanded.value) {
     store.dispatch('asidePropertiesToggle', false)
   }
+
   store.commit('updateLabel', item.label)
   store.commit('updateLabelprojectchildren', '')
+
+  // Tasks list source
   if (UID_TO_ACTION[item.uid] && item.type === 'uid') {
     store.dispatch(UID_TO_ACTION[item.uid])
     store.commit('updatestart', item.uid)
     store.commit('basic', { key: 'taskListSource', value: { uid: item.uid, param: null } })
     store.commit('basic', { key: 'mainSectionState', value: 'tasks' })
+  // Grid source (projects, employees, colors, tags)
   } else {
     store.commit('basic', { key: 'mainSectionState', value: 'greed' })
     store.commit('basic', { key: 'greedPath', value: item.path })
     if (item.path === 'new_private_projects' || item.path === 'new_emps' || item.path === 'new_delegate') {
       store.commit('basic', { key: 'greedSource', value: storeNavigator.value[item.path] })
       store.commit('updatestart', item.path)
-      console.log(storeNavigator.value[item.path])
     } else {
       store.commit('basic', { key: 'greedSource', value: storeNavigator.value[item.path].items })
       store.commit('updatestart', item.path)
     }
-    console.log(storeNavigator.value[item.path])
   }
+
   store.commit(TASK.CLEAN_UP_LOADED_TASKS)
 }
 

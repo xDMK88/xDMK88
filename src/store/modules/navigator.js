@@ -14,9 +14,10 @@ import { ADD_TASK_TAGS } from '../actions/tasks'
 import { PUSH_EMPLOYEE, PUSH_EMPLOYEE_BY_EMAIL } from '../actions/employees'
 import { PUSH_PROJECT } from '../actions/projects'
 import { PUSH_COLOR, PUSH_MYCOLOR } from '../actions/colors'
-import { visitChildren, recursiveRemove } from '../helpers/functions'
+import { visitChildren } from '../helpers/functions'
 import { computed } from 'vue'
 
+// icons for navigator
 import calendar from '@/icons/calendar.js'
 import overdue from '@/icons/overdue.js'
 import unsorted from '@/icons/unsorted.js'
@@ -51,6 +52,12 @@ function getAllMembersByDepartmentUID (resp, departmentUID) {
     }
   }
   return employeesStuck
+}
+
+function arrayRemove (arr, value) {
+  return arr.filter(function (ele) {
+    return ele.uid !== value.uid
+  })
 }
 
 const state = getDefaultState()
@@ -382,22 +389,45 @@ const mutations = {
     const newCommonProjects = []
     newCommonProjects.push({
       dep: localization.value.Projects,
-      items: [...resp.data.private_projects.items, ...resp.data.common_projects.items]
+      items: resp.data.private_projects.items
+    })
+    newCommonProjects.push({
+      dep: localization.value.SharedProjects,
+      items: resp.data.common_projects.items
     })
     resp.data.new_private_projects = newCommonProjects
     state.navigator = resp.data
   },
   [NAVIGATOR_PUSH_PROJECT]: (state, projects) => {
     for (const project of projects) {
-      state.navigator.new_private_projects[0].items.push(project)
+      if (!project.uid_parent || project.uid_parent === '00000000-0000-0000-0000-000000000000') {
+        // adding projects to the root
+        state.navigator.new_private_projects[0].items.push(project)
+      } else {
+        // adding projects recursively to subarrays
+        visitChildren(state.navigator.new_private_projects[0].items, value => {
+          if (value.uid === project.uid_parent) {
+            value.children.push(project)
+          }
+        })
+      }
     }
   },
   [NAVIGATOR_REMOVE_PROJECT]: (state, project) => {
-    // TODO: remove with recursion
-    console.log('new private project ', state.navigator.new_private_projects)
-    console.log('new private project after removing ', recursiveRemove(state.navigator.new_private_projects[0].items, project.uid))
-    state.navigator.new_private_projects[0].items = recursiveRemove(state.navigator.new_private_projects[0].items, project.uid)
-    console.log('state after removing', state.navigator.new_private_projects)
+    if (!project.uid_parent || project.uid_parent === '00000000-0000-0000-0000-000000000000') {
+      state.navigator.new_private_projects[0].items = arrayRemove(state.navigator.new_private_projects[0].items, project)
+    } else {
+      visitChildren(state.navigator.new_private_projects[0].items, (value, index) => {
+        if (value.uid === project.uid_parent) {
+          for (let i = 0; i < value.children.length; i++) {
+            if (value.children[i].uid === project.uid) {
+              // remove element without mutation for reactivity
+              value.children.splice(i, 1)
+            }
+          }
+        }
+      })
+    }
   },
   [NAVIGATOR_ERROR]: state => {
     state.status = 'error'

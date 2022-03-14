@@ -408,6 +408,7 @@ export default {
       }
       return data
     }
+
     const showStatusOrNot = (type, status) => {
       if (type === 1 && [0, 1, 3, 4, 6, 7].includes(status)) {
         return true
@@ -429,6 +430,7 @@ export default {
     const pad2 = (n) => {
       return (n < 10 ? '0' : '') + n
     }
+
     const getTodaysDate = (val) => {
       if (val == null) {
         val = new Date()

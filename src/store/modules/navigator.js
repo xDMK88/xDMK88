@@ -2,6 +2,8 @@ import {
   NAVIGATOR_REQUEST,
   NAVIGATOR_ERROR,
   NAVIGATOR_SUCCESS,
+  NAVIGATOR_PUSH_PROJECT,
+  NAVIGATOR_REMOVE_PROJECT,
   PATCH_SETTINGS,
   PATCH_SETTINGS_SUCCESS,
   RESET_STATE_NAVIGATOR
@@ -384,6 +386,16 @@ const mutations = {
     })
     resp.data.new_private_projects = newCommonProjects
     state.navigator = resp.data
+  },
+  [NAVIGATOR_PUSH_PROJECT]: (state, projects) => {
+    for (const project of projects) {
+      // first item of new_private_projects array is private, second - is shared
+      state.navigator.new_private_projects[0].items.push(project)
+    }
+  },
+  [NAVIGATOR_REMOVE_PROJECT]: (state, project) => {
+    state.navigator.new_private_projects[0].items = state.navigator.new_private_projects[0].items.filter((el) => { return el.uid !== project.uid })
+    state.navigator.new_private_projects[1].items = state.navigator.new_private_projects[1].items.filter((el) => { return el.uid !== project.uid })
   },
   [NAVIGATOR_ERROR]: state => {
     state.status = 'error'

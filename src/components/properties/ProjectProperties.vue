@@ -1,11 +1,19 @@
 <script setup>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useStore } from 'vuex'
 import Icon from '@/components/Icon.vue'
 import ColorPicker from '@/components/properties/ColorPicker.vue'
 import add from '@/icons/add.js'
 import properties from '@/icons/properties.js'
 import Popper from 'vue3-popper'
+import {
+  CREATE_PROJECT_REQUEST,
+  UPDATE_PROJECT_REQUEST,
+  PUSH_PROJECT,
+  QUIT_PROJECT_REQUEST,
+  REMOVE_PROJECT_REQUEST
+} from '@/store/actions/projects'
+import { NAVIGATOR_PUSH_PROJECT, NAVIGATOR_REMOVE_PROJECT } from '@/store/actions/navigator'
 
 const store = useStore()
 const selectedProject = computed(() => store.state.projects.selectedProject)
@@ -18,6 +26,7 @@ function arrayRemove (arr, value) {
     return ele !== value
   })
 }
+
 const addRemoveMember = (email) => {
   if (email.included) {
     selectedProject.value.members.push(email.email)
@@ -26,15 +35,46 @@ const addRemoveMember = (email) => {
   }
 }
 
-// convert 1 or 0 to boolean (checkbox v-model needs only boolean values)
-const computedQuiet = computed(() => {
-  if (selectedProject.value.quiet === 1) {
-    return true
-  } else {
-    return false
-  }
-})
+function uuidv4 () {
+  return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
+    (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+  )
+}
 
+const createOrUpdateProject = (project) => {
+  project.quiet = quiet.value ? 1 : 0
+  if (!project.uid) {
+    project.uid = uuidv4()
+    store.dispatch(CREATE_PROJECT_REQUEST, project)
+      .then(() => {
+        store.dispatch('asidePropertiesToggle', false)
+        store.commit(PUSH_PROJECT, [project])
+        store.commit(NAVIGATOR_PUSH_PROJECT, [project])
+      })
+  } else {
+    store.dispatch(UPDATE_PROJECT_REQUEST, project)
+      .then(() => {
+        store.dispatch('asidePropertiesToggle', false)
+      })
+  }
+}
+
+const quitProject = (project) => {
+  store.dispatch(QUIT_PROJECT_REQUEST, { uid: project.uid, value: user.value.current_user_email })
+    .then(() => {
+      store.dispatch('asidePropertiesToggle', false)
+    })
+}
+
+const removeProject = (project) => {
+  store.dispatch(REMOVE_PROJECT_REQUEST, project.uid)
+    .then(() => {
+      store.dispatch('asidePropertiesToggle', false)
+      store.commit(NAVIGATOR_REMOVE_PROJECT, project)
+    })
+}
+
+const quiet = ref(!selectedProject.value.quiet)
 </script>
 
 <template>
@@ -69,7 +109,7 @@ const computedQuiet = computed(() => {
       >
         <input
           type="checkbox"
-          v-model="computedQuiet"
+          v-model="quiet"
           class="mr-1 bg-gray-100 border border-gray-300 rounded"
         >
         <p class="text-sm">Не следить за изменениями</p>
@@ -155,10 +195,26 @@ const computedQuiet = computed(() => {
         </template>
       </div>
       <button
+        @click="createOrUpdateProject(selectedProject)"
+        @keyup.enter="createOrUpdateProject(selectedProject)"
         v-if="selectedProject.email_creator == user.current_user_email"
-        class="w-full bg-gray-100 rounded-xl mt-4 p-3 text-gray-700 font-bold"
+        class="w-full bg-gray-100 rounded-xl mt-4 p-3 text-gray-700 font-bold hover:bg-gray-200"
       >
-        Сохранить
+        {{ selectedProject.uid ? 'Сохранить' : 'Создать' }}
+      </button>
+      <button
+        @click="removeProject(selectedProject)"
+        v-if="selectedProject.email_creator == user.current_user_email"
+        class="w-full bg-red-600 rounded-xl mt-4 p-3 text-white font-bold hover:bg-red-800"
+      >
+        Удалить
+      </button>
+      <button
+        v-else
+        @click="quitProject(selectedProject)"
+        class="w-full bg-gray-100 rounded-xl mt-4 p-3 text-gray-700 font-bold hover:bg-gray-200"
+      >
+        Выйти из проекта
       </button>
     </div>
   </div>

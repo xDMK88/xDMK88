@@ -633,7 +633,7 @@ input:focus {outline: 0;}
   cursor: pointer;
   border: 1px solid #FF9B00;
 }
-.list-project-access input[type="checkbox"]
+.list-project-access input[type="radio"]
 {
   margin-left: 10px;
   margin-top: 7px;
@@ -1340,4 +1340,41 @@ label
   margin: 10px 0 0 15px;
   padding-left: 5px;
   border: 1px solid rgba(62, 59, 54, 0.15);
+}
+.example-1
+{
+  width: 40px;
+}
+.example-1 input[type=file]
+{
+  outline:0;
+  opacity:0;
+  pointer-events: none;
+  user-select:none
+}
+.example-1 .label
+{
+  width: 40px;
+  position: relative;
+  cursor: pointer;
+  text-align: center;
+  top: 10px;
+}
+.example-1 .label i
+{
+  display:block;
+  font-size:42px;
+  padding-bottom:16px
+}
+.example-1 .label i,.example-1 .label .title
+{
+  color:grey;
+  transition:200ms color
+}
+.example-1 .label:hover
+{
+}
+.example-1 .label:hover i,.example-1 .label:hover .title
+{
+  color:#000
 }

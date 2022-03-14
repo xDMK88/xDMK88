@@ -7,6 +7,7 @@ import TreeItem from '@/components/TreeItem.vue'
 import close from '@/icons/close.js'
 import TreeTagsItem from '@/components/TreeTagsItem.vue'
 import { CREATE_MESSAGE_REQUEST } from '@/store/actions/taskmessages'
+import { CREATE_FILES_REQUEST } from '@/store/actions/taskfiles'
 import { CHANGE_TASK_ACCESS, CHANGE_TASK_COLOR, CHANGE_TASK_FOCUS, CHANGE_TASK_TAGS, CHANGE_TASK_PERFORMER } from '@/store/actions/tasks'
 export default {
   components: {
@@ -64,6 +65,9 @@ export default {
       console.log(emails)
       return emails
     }
+    const changeEmployee = (uid, email) => {
+      store.dispatch(CHANGE_TASK_PERFORMER, { uid: uid, value: email })
+    }
     const changeAccessEmail = (uid, emails) => {
       store.dispatch(CHANGE_TASK_ACCESS, { uid: uid, value: emails })
     }
@@ -80,8 +84,12 @@ export default {
       }
       store.dispatch(CHANGE_TASK_TAGS, data)
     }
-    const changeEmployee = (uid, email) => {
-      store.dispatch(CHANGE_TASK_PERFORMER, { uid: uid, value: email })
+    const createTaskFile = (event) => {
+      const data = {
+        uid_task: selectedTask.value.uid,
+        name: event.target.file_attach
+      }
+      store.dispatch(CREATE_FILES_REQUEST, data)
     }
     const createTaskMsg = () => {
       const data = {
@@ -97,6 +105,7 @@ export default {
     }
     return {
       createTaskMsg,
+      createTaskFile,
       closeProperties,
       changetags,
       emailtomass,
@@ -567,7 +576,7 @@ export default {
         </div>
         <div class="mt-3 tags-custom" ref="btnRefProject" v-on:click="togglePopover_project()" v-if="selectedTask.uid_project !== '00000000-0000-0000-0000-000000000000' && projects[selectedTask.uid_project].name!==''">
           <svg width="24" height="24" viewBox="0 0 90 81" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M81.8999 17.1334V12.1427C81.8999 7.51337 78.1159 3.74215 73.4708 3.74215H38.7349L37.6926 2.02591C37.0581 1.03229 35.9478 0.399994 34.7696 0.399994H9.02918C4.38412 0.399994 0.600098 4.17121 0.600098 8.80056V72.1661C0.600098 76.7954 4.38412 80.5667 9.02918 80.5667H80.9709C85.616 80.5667 89.4 76.7954 89.4 72.1661V25.4888C89.4226 21.153 86.1144 17.585 81.8999 17.1334ZM7.44306 8.80056C7.44306 7.91985 8.16814 7.19722 9.05183 7.19722H32.8662L42.111 22.2369C42.7228 23.2306 43.8331 23.8629 45.034 23.8629H81.0162C81.8999 23.8629 82.625 24.5855 82.625 25.4662V72.1661C82.625 73.0468 81.8999 73.7694 81.0162 73.7694H9.02918C8.14548 73.7694 7.4204 73.0468 7.4204 72.1661V8.80056H7.44306ZM75.0569 17.0656H46.9147L42.9041 10.5394H73.4482C74.3319 10.5394 75.0569 11.262 75.0569 12.1427V17.0656Z" v-if="projects[selectedTask.uid_project].color!==''" :fill="projects[selectedTask.uid_project].color" fill-opacity="1"/>
+            <path d="M81.8999 17.1334V12.1427C81.8999 7.51337 78.1159 3.74215 73.4708 3.74215H38.7349L37.6926 2.02591C37.0581 1.03229 35.9478 0.399994 34.7696 0.399994H9.02918C4.38412 0.399994 0.600098 4.17121 0.600098 8.80056V72.1661C0.600098 76.7954 4.38412 80.5667 9.02918 80.5667H80.9709C85.616 80.5667 89.4 76.7954 89.4 72.1661V25.4888C89.4226 21.153 86.1144 17.585 81.8999 17.1334ZM7.44306 8.80056C7.44306 7.91985 8.16814 7.19722 9.05183 7.19722H32.8662L42.111 22.2369C42.7228 23.2306 43.8331 23.8629 45.034 23.8629H81.0162C81.8999 23.8629 82.625 24.5855 82.625 25.4662V72.1661C82.625 73.0468 81.8999 73.7694 81.0162 73.7694H9.02918C8.14548 73.7694 7.4204 73.0468 7.4204 72.1661V8.80056H7.44306ZM75.0569 17.0656H46.9147L42.9041 10.5394H73.4482C74.3319 10.5394 75.0569 11.262 75.0569 12.1427V17.0656Z" v-if="projects[selectedTask.uid_project].color!==11114678 && projects[selectedTask.uid_project].color!==-4056036 && projects[selectedTask.uid_project].color!==-2679009" :fill="projects[selectedTask.uid_project].color" fill-opacity="1"/>
             <path d="M81.8999 17.1334V12.1427C81.8999 7.51337 78.1159 3.74215 73.4708 3.74215H38.7349L37.6926 2.02591C37.0581 1.03229 35.9478 0.399994 34.7696 0.399994H9.02918C4.38412 0.399994 0.600098 4.17121 0.600098 8.80056V72.1661C0.600098 76.7954 4.38412 80.5667 9.02918 80.5667H80.9709C85.616 80.5667 89.4 76.7954 89.4 72.1661V25.4888C89.4226 21.153 86.1144 17.585 81.8999 17.1334ZM7.44306 8.80056C7.44306 7.91985 8.16814 7.19722 9.05183 7.19722H32.8662L42.111 22.2369C42.7228 23.2306 43.8331 23.8629 45.034 23.8629H81.0162C81.8999 23.8629 82.625 24.5855 82.625 25.4662V72.1661C82.625 73.0468 81.8999 73.7694 81.0162 73.7694H9.02918C8.14548 73.7694 7.4204 73.0468 7.4204 72.1661V8.80056H7.44306ZM75.0569 17.0656H46.9147L42.9041 10.5394H73.4482C74.3319 10.5394 75.0569 11.262 75.0569 12.1427V17.0656Z" v-else fill="black" fill-opacity="0.5"/>
           </svg>
           {{projects[selectedTask.uid_project].name}}
@@ -899,11 +908,14 @@ export default {
       <div class="form-send-message">
         <div class="input-group">
            <span class="input-group-addon input-group-attach">
-            <button type="file" name="btn-attach">
-     <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <div class="example-1">
+    <label class="label">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M1.94475 17.443C3.17452 18.6611 4.78671 19.2627 6.3989 19.2627C8.0111 19.2627 9.62329 18.6537 10.8531 17.4356L18.5841 9.77812C20.3388 8.04015 20.3388 5.21038 18.5841 3.47241C17.7368 2.63313 16.6045 2.16522 15.4047 2.16522C14.2049 2.16522 13.0726 2.6257 12.2253 3.47241L5.12415 10.506C4.07435 11.5458 4.07435 13.2466 5.12415 14.2865C6.17395 15.3263 7.89112 15.3263 8.94092 14.2865L13.6125 9.65929C13.965 9.31021 13.965 8.74574 13.6125 8.39666C13.2601 8.04758 12.6902 8.04758 12.3378 8.39666L7.67366 13.0313C7.32123 13.3803 6.75134 13.3803 6.3989 13.0313C6.04647 12.6822 6.04647 12.1177 6.3989 11.7686L13.4926 4.74246C14.0025 4.23741 14.6773 3.96261 15.4047 3.96261C16.1246 3.96261 16.8069 4.23741 17.3168 4.74246C18.3666 5.78228 18.3666 7.48311 17.3168 8.52292L9.5783 16.1804C7.82364 17.9184 4.96668 17.9184 3.21201 16.1804C2.36467 15.3411 1.89976 14.2196 1.89976 13.0313C1.89976 11.8429 2.36467 10.7214 3.21951 9.88211L10.943 2.22463C11.2955 1.87555 11.2955 1.31108 10.943 0.962005C10.5906 0.612925 10.0207 0.612925 9.66829 0.962005L1.94475 8.61948C0.752474 9.79298 0.100098 11.3601 0.100098 13.0313C0.100098 14.695 0.752474 16.2621 1.94475 17.443Z" fill="black" fill-opacity="0.5"/>
 </svg>
-</button>
+      <input type="file" v-on:change="createTaskFile($event)" name="file_attach">
+    </label>
+</div>
 </span>
           <input
             @keyup.enter="createTaskMsg"
@@ -913,7 +925,7 @@ export default {
             placeholder="Введите сообщение"
           >
           <span class="input-group-addon input-group-btn-send">
-          <button type="button" name="btn-send" class="btn-send-custom">
+          <button type="button" name="btn-send" class="btn-send-custom" @click="createTaskMsg">
 <svg width="24" height="26" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M23.8021 10.5763C23.541 10.054 23.1166 9.59697 22.5617 9.33583L3.82473 0.261142C3.43302 0.0979283 3.07395 0 2.64959 0C1.63767 0 0.723669 0.58757 0.26667 1.50157C-0.0597576 2.18707 -0.0924003 2.93785 0.201385 3.65599L3.43302 11.7514L0.201385 19.8142C-0.353542 21.1852 0.331955 22.7194 1.70295 23.2743C1.99674 23.4049 2.32316 23.4701 2.68223 23.4701C3.07395 23.4701 3.46566 23.3722 3.82473 23.209L22.5943 14.1343C23.2472 13.8405 23.7042 13.2856 23.9327 12.6327C24.1612 11.9473 24.1285 11.1965 23.8021 10.5763ZM2.02938 20.5649L5.16308 12.7307H20.8969L2.94338 21.4137C2.84545 21.4463 2.74752 21.4789 2.64959 21.4789C2.38845 21.4789 2.15995 21.3157 2.06202 21.0872C1.96409 20.924 1.96409 20.7282 2.02938 20.5649ZM5.16308 10.7395L2.02938 2.90521C1.93145 2.64406 1.99674 2.35028 2.19259 2.15442C2.32316 2.02385 2.48638 1.95857 2.64959 1.95857C2.74752 1.95857 2.84545 1.99121 2.94338 2.02385L20.8969 10.7068H5.16308V10.7395Z" fill="#666666"/>
 </svg>

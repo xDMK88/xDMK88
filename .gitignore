@@ -1,7 +1,6 @@
 node_modules/
 public/hot
 public/storage
-package-lock.json
 storage/*.key
 dist/
 dist.zip

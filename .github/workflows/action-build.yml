@@ -11,14 +11,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Show Directory
-      run: pwd
-    - name: Run Ls
-      run: ls
-    - name: Install Dependencies
-      run: npm ci
-    - name: Build
-      run: npm build
     - name: Install SSH Key
       uses: shimataro/ssh-key-action@v2
       with:

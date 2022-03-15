@@ -12,7 +12,7 @@ jobs:
 
     steps:
     - name: Install Dependencies
-      run: npm install
+      run: npm ci
     - name: Build
       run: npm build
     - name: Install SSH Key

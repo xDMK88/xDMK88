@@ -8,7 +8,15 @@ import close from '@/icons/close.js'
 import TreeTagsItem from '@/components/TreeTagsItem.vue'
 import { CREATE_MESSAGE_REQUEST } from '@/store/actions/taskmessages'
 import { CREATE_FILES_REQUEST } from '@/store/actions/taskfiles'
-import { CHANGE_TASK_ACCESS, CHANGE_TASK_COLOR, CHANGE_TASK_FOCUS, CHANGE_TASK_TAGS, CHANGE_TASK_PERFORMER } from '@/store/actions/tasks'
+import {
+  CHANGE_TASK_ACCESS,
+  CHANGE_TASK_COLOR,
+  CHANGE_TASK_FOCUS,
+  CHANGE_TASK_TAGS,
+  CHANGE_TASK_PERFORMER,
+  CHANGE_TASK_CHEKCLIST,
+  CHANGE_TASK_COMMENT
+} from '@/store/actions/tasks'
 export default {
   components: {
     DatePicker,
@@ -36,7 +44,7 @@ export default {
     }
 
     const taskMsg = ref('')
-
+    const textcomment = ref('')
     // TODO: we use these functions at 2 components
     // should move them to data helpers or to the store module
     const pad2 = (n) => {
@@ -77,6 +85,9 @@ export default {
     const changeFocus = (uid, value) => {
       store.dispatch(CHANGE_TASK_FOCUS, { uid: uid, value: value })
     }
+    const changeCheck = (uid, value) => {
+      store.dispatch(CHANGE_TASK_CHEKCLIST, { uid: uid, value: value })
+    }
     const changetags = (uid, tags) => {
       const data = {
         uid: uid,
@@ -91,6 +102,15 @@ export default {
       }
       store.dispatch(CREATE_FILES_REQUEST, data)
     }
+    const changeComment = () => {
+      const data = {
+        uid: selectedTask.value.uid,
+        value: textcomment.value
+      }
+      store.dispatch(CHANGE_TASK_COMMENT, data)
+      textcomment.value = ''
+    }
+
     const createTaskMsg = () => {
       const data = {
         uid_task: selectedTask.value.uid,
@@ -113,8 +133,11 @@ export default {
       changeEmployee,
       changeAccessEmail,
       changeFocus,
+      changeCheck,
+      changeComment,
       close,
       taskMsg,
+      textcomment,
       show: false,
       isFullScreen: computed(() => store.state.isFullScreen),
       isPropertiesMobileExpanded: computed(() => store.state.isPropertiesMobileExpanded),
@@ -160,8 +183,8 @@ export default {
         timezone: 'Europe/Moscow'
       },
       range: {
-        start: new Date(),
-        end: new Date()
+        start: new Date(selectedTask.value.customer_date_begin),
+        end: new Date(selectedTask.value.customer_date_end)
       },
       masks: {
         input: 'D MMM'
@@ -640,14 +663,14 @@ export default {
           <span class="rounded"> Чек-лист</span>
         </div>
 
-        <div class="mt-3 tags-custom" @click="changeFocus(selectedTask.uid, 1)" v-if="selectedTask.focus===1">
+        <div class="mt-3 tags-custom" @click="changeFocus(selectedTask.uid, 0)" v-if="selectedTask.focus===1">
           <svg width="24" height="24" viewBox="0 0 44 60" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path fill-rule="evenodd" clip-rule="evenodd" d="M2.47887 0H41.5211C42.8845 0 44 1.1195 44 2.48777V57.0416C44 58.0782 43.339 59.0318 42.3681 59.3843C42.0995 59.4879 41.8103 59.5294 41.5211 59.5294C40.7775 59.5294 40.0958 59.1977 39.6207 58.638L22 41.1088L4.37934 58.638C3.90423 59.1977 3.20188 59.5294 2.47887 59.5294C2.18967 59.5294 1.90047 59.4879 1.63192 59.3843C0.661033 59.0111 0 58.0782 0 57.0416V2.48777C0 1.1195 1.11549 0 2.47887 0ZM21.5922 11.4076C19.5672 11.4076 17.9255 13.0492 17.9255 15.0743C17.9255 17.0993 19.5672 18.7409 21.5922 18.7409C23.6173 18.7409 25.2589 17.0993 25.2589 15.0743C25.2589 13.0492 23.6173 11.4076 21.5922 11.4076Z" fill="#F2543F"/>
           </svg>
 
           <span class="rounded"> В фокусе</span>
         </div>
-        <div class="mt-3 tags-custom" @click="changeFocus(selectedTask.uid, 0)" v-else>
+        <div class="mt-3 tags-custom" @click="changeFocus(selectedTask.uid, 1)" v-else>
           <svg width="24" height="24" viewBox="0 0 66 89" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M61.7494 0.599998H4.2508C2.24291 0.599998 0.600098 2.24871 0.600098 4.2638V84.6068C0.600098 86.1334 1.57362 87.5073 3.00348 88.0569C3.39897 88.2095 3.82489 88.2706 4.2508 88.2706C5.31559 88.2706 6.34996 87.7821 7.04968 86.9577L33.0001 61.142L58.9505 86.9577C59.6503 87.7821 60.6542 88.2706 61.7494 88.2706C62.1753 88.2706 62.6012 88.2095 62.9967 88.0569C64.4266 87.5378 65.4001 86.1334 65.4001 84.6068V4.2638C65.4001 2.24871 63.7573 0.599998 61.7494 0.599998ZM30.2012 54.3122L6.70151 76.9619V6.72761H59.2987V76.9619L35.799 54.3122C35.0993 53.4878 34.0953 52.9993 33.0001 52.9993C31.9049 52.9993 30.9009 53.4878 30.2012 54.3122Z" fill="black" fill-opacity="0.5"/>
           </svg>
@@ -725,20 +748,17 @@ export default {
           <li v-for="(key,value) in selectedTask.checklist.split('\r\n\r\n')" :key="value">
             <div v-if="selectedTask.checklist.split('\r\n\r\n')[value]!==''">
             <span v-if="selectedTask.checklist.split('\r\n\r\n')[value][0]==='1'">
-              <del> <input type="checkbox" value="value" checked="checked">&nbsp;{{selectedTask.checklist.split('\r\n\r\n')[value].replace('1','')}}</del>
+              <del> <input type="checkbox" value="value" checked="checked" @click="changeCheck(selectedTask.uid,'0' + '\r\n' + selectedTask.checklist.split('\r\n\r\n')[value].replace('1','') + '\r\n\r\n')">&nbsp;{{selectedTask.checklist.split('\r\n\r\n')[value].replace('1','')}}</del>
               </span>
-            <span v-else><input type="checkbox" value="value">&nbsp;{{selectedTask.checklist.split('\r\n\r\n')[value].replace('0','')}}</span>
+            <span v-else><input type="checkbox" value="value" @click="changeCheck(selectedTask.uid,'1' + '\r\n' + selectedTask.checklist.split('\r\n\r\n')[value].replace('0','') + '\r\n\r\n')">&nbsp;{{selectedTask.checklist.split('\r\n\r\n')[value].replace('0','')}}</span>
             </div>
           </li>
         </ul>
         <div><button class="btn btn-transperant">Добавить</button></div>
       </div>
       <div class="mt-3 description-content">
-        <div v-if="selectedTask.comment!==''">
-          {{ selectedTask.comment }}
-        </div><div v-else>
-        Напишите заметку...
-      </div>
+        <textarea v-model="textcomment" @keyup.enter="changeComment" ref="comment" rows="10" cols="40" style="height: 100%" class="form-control"></textarea>
+        <div style="white-space: pre-line">{{selectedTask.comment}}</div>
       </div>
       <div
         class="mt-3 list-files-custom" v-if="taskFiles.length>0"
@@ -1021,19 +1041,12 @@ export default {
         </div>
         <div class="container-color-popover">
           <div v-for="(key,value) in colors" :key="value">
-            <div class="color_container" v-if="key.uid===selectedTask.uid_marker">
+            <div class="color_container">
               <label class="list-color-access" :style="{'background-color': key.back_color, 'border:1px solid ': key.back_color}" >
                 <span  style="text-transform:uppercase" :style="{'color': key.force_color}" v-if="uppercase===1">{{key.name}}</span>
                 <span :style="{'color': key.force_color}" v-else>{{key.name}}</span>
               </label>
-              <input type="checkbox" name="check_colors" class="check-custom-project" @click="changeColors(selectedTask.uid, key.uid)" checked="checked">
-            </div>
-            <div class="color_container" v-else>
-              <label class="list-color-access" :style="{'background-color': key.back_color, 'border:1px solid ':key.back_color}">
-                <span  style="text-transform:uppercase" :style="{'color': key.force_color}" v-if="uppercase===1">{{key.name}}</span>
-                <span :style="{'color': key.force_color}" v-else>{{key.name}}</span>
-              </label>
-              <input type="checkbox" name="check_colors" class="check-custom-project" @click="changeColors(selectedTask.uid, key.uid)">
+              <input type="radio" name="check_colors" class="check-custom-project" @click="changeColors(selectedTask.uid, key.uid)" :checked="key.uid===selectedTask.uid_marker">
             </div>
           </div>
         </div>
@@ -1098,7 +1111,7 @@ export default {
           <form>
           <div v-for="(key,value) in employees" :key="value">
 
-            <div class="list-employee-access active" v-if="selectedTask.email_performer!=='' && selectedTask.email_performer===key.email">
+            <div class="list-employee-access">
 
               <img
                 :src="key.fotolink"
@@ -1110,21 +1123,7 @@ export default {
                 {{key.name}}
                 <div class="popover-employee-email">{{key.email}}</div>
               </label>
-              <input type="checkbox" name="check_so_employee" @click="changeEmployee(selectedTask.uid, key.email)" class="check-custom-empployee" checked>
-            </div>
-            <div class="list-employee-access" v-else>
-
-              <img
-                :src="key.fotolink"
-                class="mr-1 border-fotolink border-solid border-2 border-sky-500"
-                width="30"
-                height="30"
-              >
-              <label class="employee-name-custom">
-                {{key.name}}
-                <div class="popover-employee-email">{{key.email}}</div>
-              </label>
-              <input type="checkbox" name="check_so_employee" @click="changeEmployee(selectedTask.uid, key.email)" class="check-custom-empployee">
+              <input type="checkbox" name="check_so_employee" @click="changeEmployee(selectedTask.uid, key.email)" class="check-custom-empployee" :checked="selectedTask.email_performer!=='' && selectedTask.email_performer===key.email">
             </div>
           </div>
           </form>
@@ -1160,7 +1159,7 @@ export default {
         <div class="container-employee-popover">
           <form>
           <div v-for="(key,value, index) in employees" :key="index">
-            <div class="list-employee-access active" v-if="selectedTask.emails.split('..').filter(email=>email===key.email)[0]===key.email">
+            <div class="list-employee-access">
 
               <img
                 :src="key.fotolink"
@@ -1172,22 +1171,7 @@ export default {
 
                 <div class="popover-employee-email"><div style="color: black;">{{key.name}}</div>{{key.email}}</div>
               </label>
-              <input type="checkbox" name="check_access_employee" class="check-custom-empployee" @click="changeAccessEmail(selectedTask.uid, key.email)" checked="checked">
-
-            </div>
-            <div class="list-employee-access" v-else>
-
-              <img
-                :src="key.fotolink"
-                class="mr-1 border-fotolink border-solid border-2 border-sky-500"
-                width="30"
-                height="30"
-              >
-              <label class="employee-name-custom">
-
-                <div class="popover-employee-email"><div style="color: black;">{{key.name}}</div> {{key.email}}</div>
-              </label>
-              <input type="checkbox" name="check_access_employee" class="check-custom-empployee" @click="changeAccessEmail(selectedTask.uid, key.email)">
+              <input type="checkbox" name="check_access_employee" class="check-custom-empployee" @click="changeAccessEmail(selectedTask.uid, key.email)" :checked="selectedTask.emails.split('..').filter(email=>email===key.email)[0]===key.email">
 
             </div>
           </div>

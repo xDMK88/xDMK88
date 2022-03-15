@@ -1,7 +1,16 @@
 import * as TASK from '../actions/tasks'
 import { AUTH_LOGOUT } from '../actions/auth'
 import { PUSH_COLOR } from '../actions/colors'
-import { CHANGE_TASK_ACCESS, CHANGE_TASK_COLOR, CHANGE_TASK_FOCUS, CHANGE_TASK_TAGS, CHANGE_TASK_PERFORMER, CHANGE_TASK_PROJECT } from '../actions/tasks'
+import {
+  CHANGE_TASK_ACCESS,
+  CHANGE_TASK_COLOR,
+  CHANGE_TASK_FOCUS,
+  CHANGE_TASK_TAGS,
+  CHANGE_TASK_PERFORMER,
+  CHANGE_TASK_PROJECT,
+  CHANGE_TASK_CHEKCLIST,
+  CHANGE_TASK_COMMENT
+} from '../actions/tasks'
 import axios from 'axios'
 
 function arrayRemove (arr, value) {
@@ -23,6 +32,7 @@ const state = {
   status: '',
   hasLoadedOnce: false,
   loadedTasks: {},
+  comment: [],
   newtasks: false,
   newConfig: {
     roots: [],
@@ -506,7 +516,7 @@ const actions = {
       axios({
         url: url,
         method: 'PATCH',
-        data: data
+        data: { uid: data.uid, tags: data.tags }
       })
         .then(resp => {
           commit(TASK.CHANGE_TASK_TAGS, data)
@@ -555,6 +565,36 @@ const actions = {
       })
         .then(resp => {
           commit(CHANGE_TASK_PROJECT, data)
+          resolve(resp)
+        }).catch(err => {
+          reject(err)
+        })
+    })
+  },
+  [CHANGE_TASK_CHEKCLIST]: ({ commit, dispatch }, data) => {
+    return new Promise((resolve, reject) => {
+      const url = 'https://web.leadertask.com/api/v1/task/checklist?uid=' + data.uid + '&value=' + data.value
+      axios({
+        url: url,
+        method: 'PATCH'
+      })
+        .then(resp => {
+          commit(CHANGE_TASK_CHEKCLIST, data)
+          resolve(resp)
+        }).catch(err => {
+          reject(err)
+        })
+    })
+  },
+  [CHANGE_TASK_COMMENT]: ({ commit, dispatch }, data) => {
+    return new Promise((resolve, reject) => {
+      const url = 'https://web.leadertask.com/api/v1/task/comment?uid=' + data.uid + '&value=' + data.value
+      axios({
+        url: url,
+        method: 'PATCH'
+      })
+        .then(resp => {
+          commit(CHANGE_TASK_COMMENT, data)
           resolve(resp)
         }).catch(err => {
           reject(err)
@@ -632,6 +672,9 @@ const mutations = {
   },
   [TASK.CHANGE_TASK_STATUS]: (state, data) => {
     state.newtasks[data.uid].info.status = data.value
+  },
+  [CHANGE_TASK_COMMENT]: (state, data) => {
+    state.comment.push(data)
   },
   [TASK.ADD_TASK]: (state, task) => {
     if (!task._justCreated) {

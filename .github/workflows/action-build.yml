@@ -1,19 +1,21 @@
-name: build
+name: Build and deploy
+
 on:
   push:
     branches:
       - projects-and-emps
 jobs:
-  write-to-console:
+  build-and-deploy:
+    name: build
     runs-on: ubuntu-latest
-      steps:
-        uses: shimataro/ssh-key-action@v2
-        with:
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          known_hosts: ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
-        - name: Build project
-        - run: npm install
-        - run: npm run build
-        - name: Install SSH Key
-        - name: Deploy with rsync
-        - run: rsync -navz ./dist/ ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/home/users/l/leadertask/domains/app.leadertask.ru/
+    steps:
+      uses: shimataro/ssh-key-action@v2
+      with:
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        known_hosts: ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
+    - name: Build project
+      run: npm install
+    - name: Build
+      run: npm run build
+    - name: Deploy with rsync
+      run: rsync -navz ./dist/ ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/home/users/l/leadertask/domains/app.leadertask.ru/

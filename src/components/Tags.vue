@@ -6,6 +6,13 @@ import properties from '@/icons/properties.js'
 import subArrow from '@/icons/arrow-sub.js'
 import * as TASK from '@/store/actions/tasks'
 
+const props = defineProps({
+  tags: {
+    type: Array,
+    default: () => []
+  }
+})
+
 const store = useStore()
 const isGridView = ref(true)
 
@@ -22,12 +29,36 @@ const UID_TO_ACTION = {
 }
 
 const isPropertiesMobileExpanded = computed(() => store.state.isPropertiesMobileExpanded)
+const focusedTag = ref('')
 
-const openProperties = (tag) => {
+const openProperties = (tag, parentTagUid = '') => {
   if (!isPropertiesMobileExpanded.value) {
     store.dispatch('asidePropertiesToggle', true)
   }
+
+  focusedTag.value = tag.uid
+
+  // add uid_parent if adding subtag in parent's children
+  if (props.tags[0].uid_parent && props.tags[0].uid_parent !== '00000000-0000-0000-0000-000000000000' && !parentTagUid) {
+    parentTagUid = props.tags[0].uid_parent
+  }
   store.commit('basic', { key: 'propertiesState', value: 'tag' })
+  if (!tag) {
+    tag = {
+      uid_parent: parentTagUid,
+      back_color: '',
+      comment: '',
+      collapsed: 0,
+      order: 0,
+      group: 0,
+      show: 0,
+      children: [],
+      favorite: 0,
+      uid: '',
+      name: '',
+      bold: 0
+    }
+  }
   store.commit(TASK.SELECT_TAG, tag)
 }
 
@@ -41,14 +72,6 @@ const clickOnGridCard = (value) => {
   store.commit('updateLabelprojectchildren', value.name)
   store.commit(TASK.CLEAN_UP_LOADED_TASKS)
 }
-
-defineProps({
-  tags: {
-    type: Array,
-    default: () => []
-  }
-})
-
 </script>
 
 <template class="w-full">
@@ -59,6 +82,7 @@ defineProps({
     <template v-for="(tag, pindex) in tags" :key="pindex">
       <div
         class="flex items-center bg-white dark:bg-gray-700 rounded-xl shadow hover:shadow-md cursor-pointer h-30 px-3 py-5"
+        :class="{ 'ring-4 ring-orange-300': focusedTag == tag.uid && isPropertiesMobileExpanded }"
       >
         <div class="w-full">
           <div class="flex items-center justify-between">
@@ -78,8 +102,10 @@ defineProps({
                 >
                   {{ tag.name }}
                 </p>
-                <div class="flex items-center"
-                  v-if="tag.children && tag.children.length">
+                <div
+                  v-if="tag.children && tag.children.length"
+                  class="flex items-center"
+                >
                   <icon
                     :path="subArrow.path"
                     :box="subArrow.viewBox"
@@ -93,6 +119,25 @@ defineProps({
                     @click="goToChildren(tag)"
                   >
                     Подметок: {{ tag.children.length }}
+                  </p>
+                </div>
+                <div
+                  v-if="tag.children && !tag.children.length"
+                  class="flex items-center"
+                >
+                  <icon
+                    :path="subArrow.path"
+                    :box="subArrow.viewBox"
+                    :width="subArrow.width"
+                    :height="subArrow.height"
+                    class="text-gray-500 cursor-pointer mr-1"
+                    @click="openProperties(false, parentTagUid = tag.uid)"
+                  />
+                  <p
+                    class="font-light text-xs text-violet-500 cursor-pointer"
+                    @click="openProperties(false, parentTagUid = tag.uid)"
+                  >
+                    Добавить подметку
                   </p>
                 </div>
               </div>
@@ -110,6 +155,7 @@ defineProps({
       </div>
     </template>
     <div
+      @click="openProperties(false)"
       class="flex items-center justify-center bg-gray-50 dark:bg-gray-700 rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-500 cursor-pointer px-5 py-7"
     >
       <div class="flex items-center justify-center w-10 h-10 bg-gray-200 dark:bg-gray-600 rounded-xl">

@@ -5,9 +5,46 @@ import { useStore } from 'vuex'
 import ColorPicker from '@/components/properties/ColorPicker.vue'
 // import add from '@/icons/add.js'
 // import properties from '@/icons/properties.js'
+import {
+  CREATE_TAG_REQUEST,
+  UPDATE_TAG_REQUEST,
+  REMOVE_TAG_REQUEST
+} from '@/store/actions/tasks'
+import { NAVIGATOR_PUSH_TAG, NAVIGATOR_REMOVE_TAG } from '@/store/actions/navigator'
 
 const store = useStore()
 const selectedTag = computed(() => store.state.tasks.selectedTag)
+
+function uuidv4 () {
+  return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
+    (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+  )
+}
+
+const createOrUpdateTag = (tag) => {
+  if (!tag.uid) {
+    tag.uid = uuidv4()
+    store.dispatch(CREATE_TAG_REQUEST, tag)
+      .then(() => {
+        store.dispatch('asidePropertiesToggle', false)
+        // store.commit(PUSH_PROJECT, [tag])
+        store.commit(NAVIGATOR_PUSH_TAG, [tag])
+      })
+  } else {
+    store.dispatch(UPDATE_TAG_REQUEST, tag)
+      .then(() => {
+        store.dispatch('asidePropertiesToggle', false)
+      })
+  }
+}
+
+const removeTag = (tag) => {
+  store.dispatch(REMOVE_TAG_REQUEST, tag.uid)
+    .then(() => {
+      store.dispatch('asidePropertiesToggle', false)
+      store.commit(NAVIGATOR_REMOVE_TAG, tag)
+    })
+}
 
 </script>
 
@@ -36,19 +73,18 @@ const selectedTag = computed(() => store.state.tasks.selectedTag)
           v-model="selectedTag.back_color"
         />
       </div>
-      <div
-        class="flex items-center mt-3"
-      >
-        <input
-          type="checkbox"
-          class="mr-1 bg-gray-100 border border-gray-300 rounded"
-        >
-        <p class="text-sm">Не следить за изменениями</p>
-      </div>
       <button
-        class="w-full bg-gray-100 rounded-xl mt-4 p-3 text-gray-700 font-bold"
+        @click="createOrUpdateTag(selectedTag)"
+        class="w-full bg-gray-100 rounded-xl mt-4 p-3 text-gray-700 font-bold hover:bg-gray-200"
       >
-        Сохранить
+        {{ selectedTag.uid ? 'Сохранить' : 'Создать' }}
+      </button>
+      <button
+        @click="removeTag(selectedTag)"
+        class="w-full bg-red-600 rounded-xl mt-4 p-3 text-white font-bold hover:bg-red-800"
+        v-if="selectedTag.uid"
+      >
+        Удалить
       </button>
     </div>
   </div>

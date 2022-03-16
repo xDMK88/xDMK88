@@ -600,6 +600,39 @@ const actions = {
           reject(err)
         })
     })
+  },
+  [TASK.CREATE_TAG_REQUEST]: ({ commit, dispatch }, data) => {
+    return new Promise((resolve, reject) => {
+      const url = 'https://web.leadertask.com/api/v1/tag'
+      axios({ url: url, method: 'POST', data: data })
+        .then(resp => {
+          resolve(resp)
+        }).catch(err => {
+          reject(err)
+        })
+    })
+  },
+  [TASK.UPDATE_TAG_REQUEST]: ({ commit, dispatch }, data) => {
+    return new Promise((resolve, reject) => {
+      const url = 'https://web.leadertask.com/api/v1/tag'
+      axios({ url: url, method: 'PATCH', data: data })
+        .then(resp => {
+          resolve(resp)
+        }).catch(err => {
+          reject(err)
+        })
+    })
+  },
+  [TASK.REMOVE_TAG_REQUEST]: ({ commit, dispatch }, uid) => {
+    return new Promise((resolve, reject) => {
+      const url = 'https://web.leadertask.com/api/v1/tag?uid=' + uid
+      axios({ url: url, method: 'DELETE' })
+        .then(resp => {
+          resolve(resp)
+        }).catch(err => {
+          reject(err)
+        })
+    })
   }
 }
 

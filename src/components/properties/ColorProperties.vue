@@ -5,9 +5,42 @@ import { useStore } from 'vuex'
 import ColorPicker from '@/components/properties/ColorPicker.vue'
 import characters from '@/icons/characters.js'
 // import properties from '@/icons/properties.js'
+import { NAVIGATOR_PUSH_COLOR, NAVIGATOR_REMOVE_COLOR } from '@/store/actions/navigator'
+import { CREATE_COLOR_REQUEST, UPDATE_COLOR_REQUEST, REMOVE_COLOR_REQUEST } from '@/store/actions/colors'
 
 const store = useStore()
 const selectedColor = computed(() => store.state.colors.selectedColor)
+
+function uuidv4 () {
+  return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
+    (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+  )
+}
+
+const createOrUpdateColor = (color) => {
+  if (!color.uid) {
+    color.uid = uuidv4()
+    store.dispatch(CREATE_COLOR_REQUEST, color)
+      .then(() => {
+        store.dispatch('asidePropertiesToggle', false)
+        // store.commit(PUSH_PROJECT, [project])
+        store.commit(NAVIGATOR_PUSH_COLOR, [color])
+      })
+  } else {
+    store.dispatch(UPDATE_COLOR_REQUEST, color)
+      .then(() => {
+        store.dispatch('asidePropertiesToggle', false)
+      })
+  }
+}
+
+const removeColor = (color) => {
+  store.dispatch(REMOVE_COLOR_REQUEST, color.uid)
+    .then(() => {
+      store.dispatch('asidePropertiesToggle', false)
+      store.commit(NAVIGATOR_REMOVE_COLOR, color)
+    })
+}
 
 </script>
 
@@ -69,9 +102,17 @@ const selectedColor = computed(() => store.state.colors.selectedColor)
         </p>
       </div>
       <button
-        class="w-full bg-gray-100 rounded-xl mt-4 p-3 text-gray-700 font-bold"
+        @click="createOrUpdateColor(selectedColor)"
+        class="w-full bg-gray-100 rounded-xl mt-4 p-3 text-gray-700 font-bold hover:bg-gray-200"
       >
-        Сохранить
+        {{ selectedColor.uid ? 'Сохранить' : 'Создать' }}
+      </button>
+      <button
+        @click="removeColor(selectedColor)"
+        v-if="selectedColor.uid"
+        class="w-full bg-red-600 rounded-xl mt-4 p-3 text-white font-bold hover:bg-red-800"
+      >
+        Удалить
       </button>
     </div>
   </div>

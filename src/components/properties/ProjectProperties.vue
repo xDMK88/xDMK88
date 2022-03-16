@@ -196,7 +196,6 @@ const quiet = ref(!selectedProject.value.quiet)
       </div>
       <button
         @click="createOrUpdateProject(selectedProject)"
-        @keyup.enter="createOrUpdateProject(selectedProject)"
         v-if="selectedProject.email_creator == user.current_user_email"
         class="w-full bg-gray-100 rounded-xl mt-4 p-3 text-gray-700 font-bold hover:bg-gray-200"
       >

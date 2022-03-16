@@ -29,16 +29,16 @@ const isPropertiesMobileExpanded = computed(() => store.state.isPropertiesMobile
 const user = computed(() => store.state.user.user)
 const focusedProject = ref('')
 
-const openProperties = (project) => {
+const openProperties = (project, parentProjectUid = '') => {
   if (!isPropertiesMobileExpanded.value) {
     store.dispatch('asidePropertiesToggle', true)
   }
   focusedProject.value = project.uid
   store.commit('basic', { key: 'propertiesState', value: 'project' })
   // create empty instanse of project
-  if (!project) {
+  if (!project || parentProjectUid) {
     project = {
-      uid_parent: '',
+      uid_parent: parentProjectUid,
       color: '',
       comment: '',
       plugin: '',
@@ -121,7 +121,7 @@ const goToChildren = (value) => {
       <template v-for="(project, pindex) in value.items" :key="pindex">
         <div
           class="flex items-center bg-white dark:bg-gray-700 rounded-xl shadow px-5 py-7 relative"
-          :class="{ 'ring-4 ring-orange-300': focusedProject == project.uid && isPropertiesMobileExpanded }"
+          :class="{ 'ring-4 ring-orange-300': focusedProject == project.uid }"
         >
           <div
             v-if="project.color != '#A998B6'"
@@ -203,7 +203,7 @@ const goToChildren = (value) => {
               />
               <p
                 class="font-light text-xs text-violet-500 cursor-pointer"
-                @click="openProperties(false)"
+                @click="openProperties(project, parentProjectUid = project.uid)"
               >
                 Добавить подпроект
               </p>

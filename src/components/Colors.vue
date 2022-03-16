@@ -24,6 +24,18 @@ const openProperties = (color) => {
     store.dispatch('asidePropertiesToggle', true)
   }
   store.commit('basic', { key: 'propertiesState', value: 'color' })
+  if (!color) {
+    color = {
+      back_color: '',
+      fore_color: '',
+      uppercase: 0,
+      order: 0,
+      default: 0,
+      uid: '',
+      name: '',
+      bold: 0
+    }
+  }
   store.commit(SELECT_COLOR, color)
 }
 const clickOnGridCard = (value) => {
@@ -78,6 +90,7 @@ const clickOnGridCard = (value) => {
       </div>
     </template>
     <div
+      @click="openProperties(false)"
       class="flex items-center justify-center bg-gray-50 dark:bg-gray-700 rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-500 cursor-pointer px-5 py-7"
     >
       <div class="flex items-center justify-center w-10 h-10 bg-gray-200 dark:bg-gray-600 rounded-xl">

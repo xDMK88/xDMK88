@@ -4,6 +4,10 @@ import {
   NAVIGATOR_SUCCESS,
   NAVIGATOR_PUSH_PROJECT,
   NAVIGATOR_REMOVE_PROJECT,
+  NAVIGATOR_PUSH_TAG,
+  NAVIGATOR_REMOVE_TAG,
+  NAVIGATOR_PUSH_COLOR,
+  NAVIGATOR_REMOVE_COLOR,
   PATCH_SETTINGS,
   PATCH_SETTINGS_SUCCESS,
   RESET_STATE_NAVIGATOR
@@ -382,6 +386,7 @@ const mutations = {
       }
       newEmps.push(dep)
     }
+    newEmps.push({ dep: 'Вне отдела', items: getAllMembersByDepartmentUID(resp, '00000000-0000-0000-0000-000000000000') })
     resp.data.new_emps = newEmps
 
     // Merge common projects and private projects into my own data structure
@@ -413,6 +418,26 @@ const mutations = {
       }
     }
   },
+  [NAVIGATOR_PUSH_TAG]: (state, tags) => {
+    for (const tag of tags) {
+      if (!tag.uid_parent || tag.uid_parent === '00000000-0000-0000-0000-000000000000') {
+        // adding tags to the root
+        state.navigator.tags.items.push(tag)
+      } else {
+        // adding projects recursively to subarrays
+        visitChildren(state.navigator.tags.items, value => {
+          if (value.uid === tag.uid_parent) {
+            value.children.push(tag)
+          }
+        })
+      }
+    }
+  },
+  [NAVIGATOR_PUSH_COLOR]: (state, colors) => {
+    for (const color of colors) {
+      state.navigator.colors.items.push(color)
+    }
+  },
   [NAVIGATOR_REMOVE_PROJECT]: (state, project) => {
     if (!project.uid_parent || project.uid_parent === '00000000-0000-0000-0000-000000000000') {
       state.navigator.new_private_projects[0].items = arrayRemove(state.navigator.new_private_projects[0].items, project)
@@ -421,13 +446,32 @@ const mutations = {
         if (value.uid === project.uid_parent) {
           for (let i = 0; i < value.children.length; i++) {
             if (value.children[i].uid === project.uid) {
-              // remove element without mutation for reactivity
+              // remove element without mutation
               value.children.splice(i, 1)
             }
           }
         }
       })
     }
+  },
+  [NAVIGATOR_REMOVE_TAG]: (state, tag) => {
+    if (!tag.uid_parent || tag.uid_parent === '00000000-0000-0000-0000-000000000000') {
+      state.navigator.tags.items = arrayRemove(state.navigator.tags.items, tag)
+    } else {
+      visitChildren(state.navigator.tags.items, (value, index) => {
+        if (value.uid === tag.uid_parent) {
+          for (let i = 0; i < value.children.length; i++) {
+            if (value.children[i].uid === tag.uid) {
+              // remove element without mutationy
+              value.children.splice(i, 1)
+            }
+          }
+        }
+      })
+    }
+  },
+  [NAVIGATOR_REMOVE_COLOR]: (state, color) => {
+    state.navigator.colors = arrayRemove(state.navigator.colors, color)
   },
   [NAVIGATOR_ERROR]: state => {
     state.status = 'error'

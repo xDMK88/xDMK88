@@ -19,6 +19,7 @@ const props = defineProps({
 })
 const isGridView = ref(true)
 const isPropertiesMobileExpanded = computed(() => store.state.isPropertiesMobileExpanded)
+const focusedProject = ref('')
 const user = computed(() => store.state.user.user)
 const allProjects = computed(() => store.state.projects.projects)
 
@@ -28,15 +29,19 @@ const UID_TO_ACTION = {
   '431a3531-a77a-45c1-8035-f0bf75c32641': TASK.PROJECT_TASKS_REQUEST // shared
 }
 
-const openProperties = (project) => {
+const openProperties = (project, parentProjectUid = '') => {
   if (!isPropertiesMobileExpanded.value) {
     store.dispatch('asidePropertiesToggle', true)
+  }
+  focusedProject.value = project.uid
+  if (props.projects[0].uid_parent && props.projects[0].uid_parent !== '00000000-0000-0000-0000-000000000000' && !parentProjectUid) {
+    parentProjectUid = props.projects[0].uid_parent
   }
   store.commit('basic', { key: 'propertiesState', value: 'project' })
   // create empty instanse of project
   if (!project) {
     project = {
-      uid_parent: allProjects.value[props.projects[0].uid].uid_parent,
+      uid_parent: parentProjectUid,
       color: '',
       comment: '',
       plugin: '',
@@ -90,6 +95,7 @@ const goToChildren = (value) => {
       <template v-for="(project, pindex) in projects" :key="pindex">
         <div
           class="flex items-center bg-white dark:bg-gray-700 rounded-xl shadow px-5 py-7 relative"
+          :class="{ 'ring-4 ring-orange-300': focusedProject == project.uid && isPropertiesMobileExpanded }"
         >
           <div
             v-if="project.color != '#A998B6'"
@@ -132,7 +138,10 @@ const goToChildren = (value) => {
                 {{ project.name }}
               </p>
             </div>
-            <div class="flex items-center" v-if="project.children && project.children.length">
+            <div
+              v-if="project.children && project.children.length"
+              class="flex items-center"
+            >
               <icon
                 :path="subArrow.path"
                 :box="subArrow.viewBox"
@@ -146,6 +155,25 @@ const goToChildren = (value) => {
                 @click="goToChildren(project)"
               >
                 Подпроектов: {{ project.children.length }}
+              </p>
+            </div>
+            <div
+              v-if="project.children && !project.children.length && project.email_creator == user.current_user_email"
+              class="flex items-center"
+            >
+              <icon
+                :path="subArrow.path"
+                :box="subArrow.viewBox"
+                :width="subArrow.width"
+                :height="subArrow.height"
+                class="text-gray-500 cursor-pointer mr-1"
+                @click="openProperties(false, parentProjectUid = project.uid)"
+              />
+              <p
+                class="font-light text-xs text-violet-500 cursor-pointer"
+                @click="openProperties(false, parentProjectUid = project.uid)"
+              >
+                Добавить подпроект
               </p>
             </div>
             </div>

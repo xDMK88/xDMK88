@@ -60,10 +60,13 @@ const currentDate = computed({
     store.commit('basic', { key: 'mainSectionState', value: 'tasks' })
     store.dispatch(TASK.TASKS_REQUEST, val)
     // hardcoded and messy
+    const navElem = {
+      name: dateToLabelFormat(val),
+      key: 'taskListSource',
+      value: { uid: '901841d9-0016-491d-ad66-8ee42d2b496b', param: val }
+    }
+    store.commit('updateStackWithInitValue', navElem)
     store.commit('basic', { key: 'taskListSource', value: { uid: '901841d9-0016-491d-ad66-8ee42d2b496b', param: val } })
-    store.commit('updateLabel', dateToLabelFormat(val))
-    store.commit('updateLabelprojectchildren', '')
-    store.commit('updatedefalt', '')
     store.commit(TASK.CLEAN_UP_LOADED_TASKS)
   }
 })
@@ -100,13 +103,15 @@ const menuClick = (event, item) => {
     store.dispatch('asidePropertiesToggle', false)
   }
 
-  store.commit('updateLabel', item.label)
-  store.commit('updateLabelprojectchildren', '')
-
   // Tasks list source
   if (UID_TO_ACTION[item.uid] && item.type === 'uid') {
     store.dispatch(UID_TO_ACTION[item.uid])
-    store.commit('updatestart', item.uid)
+    const navElem = {
+      name: item.label,
+      key: 'taskListSource',
+      value: { uid: item.uid, param: null }
+    }
+    store.commit('updateStackWithInitValue', navElem)
     store.commit('basic', { key: 'taskListSource', value: { uid: item.uid, param: null } })
     store.commit('basic', { key: 'mainSectionState', value: 'tasks' })
   // Grid source (projects, employees, colors, tags)
@@ -114,11 +119,22 @@ const menuClick = (event, item) => {
     store.commit('basic', { key: 'mainSectionState', value: 'greed' })
     store.commit('basic', { key: 'greedPath', value: item.path })
     if (item.path === 'new_private_projects' || item.path === 'new_emps' || item.path === 'new_delegate') {
+      const navElem = {
+        name: item.label,
+        key: 'greedSource',
+        greedPath: item.path,
+        value: storeNavigator.value[item.path]
+      }
+      store.commit('updateStackWithInitValue', navElem)
       store.commit('basic', { key: 'greedSource', value: storeNavigator.value[item.path] })
-      store.commit('updatestart', item.path)
     } else {
+      const navElem = {
+        name: item.label,
+        key: 'greedSource',
+        value: storeNavigator.value[item.path].items
+      }
+      store.commit('updateStackWithInitValue', navElem)
       store.commit('basic', { key: 'greedSource', value: storeNavigator.value[item.path].items })
-      store.commit('updatestart', item.path)
     }
   }
 

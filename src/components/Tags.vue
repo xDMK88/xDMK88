@@ -17,10 +17,14 @@ const store = useStore()
 const isGridView = ref(true)
 
 const goToChildren = (value) => {
-  store.commit('updateLabel', 'Метки')
   if (value.children && value.children.length) {
+    const navElem = {
+      name: value.name,
+      key: 'greedSource',
+      value: value.children
+    }
+    store.commit('pushIntoNavStack', navElem)
     store.commit('basic', { key: 'greedSource', value: value.children })
-    store.commit('updateLabelprojectchildren', value.name)
   }
 }
 
@@ -63,13 +67,17 @@ const openProperties = (tag, parentTagUid = '') => {
 }
 
 const clickOnGridCard = (value) => {
-  store.commit('updateLabel', 'Метки')
   if (UID_TO_ACTION[value.global_property_uid]) {
     store.dispatch(UID_TO_ACTION[value.global_property_uid], value.uid)
+    const navElem = {
+      name: value.name,
+      key: 'taskListSource',
+      value: { uid: value.global_property_uid, param: value.uid }
+    }
+    store.commit('pushIntoNavStack', navElem)
     store.commit('basic', { key: 'taskListSource', value: { uid: value.global_property_uid, param: value.uid } })
   }
   store.commit('basic', { key: 'mainSectionState', value: 'tasks' })
-  store.commit('updateLabelprojectchildren', value.name)
   store.commit(TASK.CLEAN_UP_LOADED_TASKS)
 }
 </script>

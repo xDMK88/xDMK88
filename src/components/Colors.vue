@@ -39,13 +39,17 @@ const openProperties = (color) => {
   store.commit(SELECT_COLOR, color)
 }
 const clickOnGridCard = (value) => {
-  store.commit('updateLabel', 'Цвета')
   if (UID_TO_ACTION[value.parentID]) {
     store.dispatch(UID_TO_ACTION[value.parentID], value.uid)
+    const navElem = {
+      name: value.name,
+      key: 'taskListSource',
+      value: { uid: value.parentID, param: value.uid }
+    }
+    store.commit('pushIntoNavStack', navElem)
     store.commit('basic', { key: 'taskListSource', value: { uid: value.parentID, param: value.uid } })
   }
   store.commit('basic', { key: 'mainSectionState', value: 'tasks' })
-  store.commit('updateLabelprojectchildren', value.name)
   store.commit(TASK.CLEAN_UP_LOADED_TASKS)
 }
 </script>

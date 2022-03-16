@@ -41,23 +41,17 @@ const openProperties = (employee) => {
 }
 
 const clickOnGridCard = (value) => {
-  console.log(value)
   if (UID_TO_ACTION[value.parentID]) {
-    if (value.email) {
-      if (UID_TO_ACTION[value.parentID] === TASK.EMPLOYEE_TASKS_REQUEST) {
-        store.dispatch(UID_TO_ACTION[value.parentID], value.uid)
-        store.commit('basic', { key: 'taskListSource', value: { uid: value.parentID, param: value.uid } })
-      } else {
-        store.dispatch(UID_TO_ACTION[value.parentID], value.email)
-        store.commit('basic', { key: 'taskListSource', value: { uid: value.parentID, param: value.email } })
-      }
-    } else {
-      store.dispatch(UID_TO_ACTION[value.parentID], value.uid)
-      store.commit('basic', { key: 'taskListSource', value: { uid: value.parentID, param: value.uid } })
+    store.dispatch(UID_TO_ACTION[value.parentID], value.uid)
+    const navElem = {
+      name: value.name,
+      key: 'taskListSource',
+      value: { uid: value.parentID, param: value.uid }
     }
+    store.commit('pushIntoNavStack', navElem)
+    store.commit('basic', { key: 'taskListSource', value: { uid: value.parentID, param: value.uid } })
   }
   store.commit('basic', { key: 'mainSectionState', value: 'tasks' })
-  store.commit('updateLabel', value.name)
   store.commit(TASK.CLEAN_UP_LOADED_TASKS)
 }
 

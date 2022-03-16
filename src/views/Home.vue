@@ -19,21 +19,19 @@ const mainSectionState = computed(() => store.state.mainSectionState)
 const greedPath = computed(() => store.state.greedPath)
 const greedSource = computed(() => store.state.greedSource)
 
-// const storeTasks = computed(() => {
-//   return {
-//     dataSource: store.state.tasks.tasks.tasks,
-//     id: 'uid',
-//     text: 'name',
-//     hasChildren: 'has_children'
-//   }
-// })
-
 const storeTasks = computed(() => store.state.tasks.newtasks)
 const newConfig = computed(() => store.state.tasks.newConfig)
 
 const getTasks = () => {
   if (store.state.auth.token) {
     store.commit('basic', { key: 'taskListSource', value: { uid: '901841d9-0016-491d-ad66-8ee42d2b496b', param: null } })
+
+    // TODO: here we need localization
+    store.commit(
+      'updateStackWithInitValue',
+      { name: 'Today', key: 'taskListSource', value: { uid: '901841d9-0016-491d-ad66-8ee42d2b496b', param: null } }
+    )
+
     store.dispatch(TASK.TASKS_REQUEST, new Date())
       .then(() => {
         store.commit(TASK.CLEAN_UP_LOADED_TASKS)

@@ -14,28 +14,15 @@ const UID_TO_ACTION = {
   '511d871c-c5e9-43f0-8b4c-e8c447e1a823': TASK.DELEGATED_TO_USER_TASKS_REQUEST
 }
 const clickOnGridCard = (value) => {
-  if (UID_TO_ACTION[value.uid]) {
-    store.dispatch(UID_TO_ACTION[value.uid])
-    store.commit('basic', { key: 'taskListSource', value: { uid: value.uid, param: null } })
-  } else if (UID_TO_ACTION[value.parentID]) {
-    if (value.email) {
-      if (UID_TO_ACTION[value.parentID] === TASK.EMPLOYEE_TASKS_REQUEST) {
-        store.dispatch(UID_TO_ACTION[value.parentID], value.uid)
-        store.commit('basic', { key: 'taskListSource', value: { uid: value.parentID, param: value.uid } })
-      } else {
-        store.dispatch(UID_TO_ACTION[value.parentID], value.email)
-        store.commit('basic', { key: 'taskListSource', value: { uid: value.parentID, param: value.email } })
-      }
-    } else {
-      store.dispatch(UID_TO_ACTION[value.parentID], value.uid)
-      store.commit('basic', { key: 'taskListSource', value: { uid: value.parentID, param: value.uid } })
-    }
-  } else if (UID_TO_ACTION[value.global_property_uid]) {
-    store.dispatch(UID_TO_ACTION[value.global_property_uid], value.uid)
-    store.commit('basic', { key: 'taskListSource', value: { uid: value.global_property_uid, param: value.uid } })
+  store.dispatch(UID_TO_ACTION[value.parentID], value.email)
+  const navElem = {
+    name: value.name,
+    key: 'taskListSource',
+    value: { uid: value.parentID, param: value.email }
   }
+  store.commit('pushIntoNavStack', navElem)
+  store.commit('basic', { key: 'taskListSource', value: { uid: value.parentID, param: value.email } })
   store.commit('basic', { key: 'mainSectionState', value: 'tasks' })
-  store.commit('updateLabel', value.name)
   store.commit(TASK.CLEAN_UP_LOADED_TASKS)
 }
 </script>

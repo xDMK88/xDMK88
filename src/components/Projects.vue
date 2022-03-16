@@ -61,22 +61,28 @@ const openProperties = (project, parentProjectUid = '') => {
 }
 
 const clickOnGridCard = (value) => {
-  store.commit('updateLabel', 'проекты')
   if (UID_TO_ACTION[value.global_property_uid]) {
     store.dispatch(UID_TO_ACTION[value.global_property_uid], value.uid)
+    const navElem = {
+      name: value.name,
+      key: 'taskListSource',
+      value: { uid: value.global_property_uid, param: value.uid }
+    }
+    store.commit('pushIntoNavStack', navElem)
     store.commit('basic', { key: 'taskListSource', value: { uid: value.global_property_uid, param: value.uid } })
   }
-  store.commit('updatedefalt', 'projects_children')
-  store.commit('updatestart', 'new_private_projects')
-  store.commit('updateLabelprojectchildren', value.name)
   store.commit('basic', { key: 'mainSectionState', value: 'tasks' })
   store.commit(TASK.CLEAN_UP_LOADED_TASKS)
 }
+
 const goToChildren = (value) => {
-  store.commit('updateLabel', 'Проекты')
-  store.commit('updateLabelprojectchildren', value.name)
   if (value.children && value.children.length) {
-    store.commit('updatedefalt', 'projects_children')
+    const navElem = {
+      name: value.name,
+      key: 'greedSource',
+      value: value.children
+    }
+    store.commit('pushIntoNavStack', navElem)
     store.commit('basic', { key: 'greedSource', value: value.children })
     store.commit('basic', { key: 'greedPath', value: 'projects_children' })
   }

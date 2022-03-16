@@ -8,20 +8,15 @@ import close from '@/icons/close.js'
 import TreeTagsItem from '@/components/TreeTagsItem.vue'
 import { CREATE_MESSAGE_REQUEST } from '@/store/actions/taskmessages'
 import { CREATE_FILES_REQUEST } from '@/store/actions/taskfiles'
-import {
-  CHANGE_TASK_ACCESS,
-  CHANGE_TASK_COLOR,
-  CHANGE_TASK_FOCUS,
-  CHANGE_TASK_TAGS,
-  CHANGE_TASK_PERFORMER,
-  CHANGE_TASK_CHEKCLIST,
-  CHANGE_TASK_COMMENT
-} from '@/store/actions/tasks'
+import * as TASK from '@/store/actions/tasks'
 export default {
   components: {
     DatePicker,
     TreeItem,
     TreeTagsItem
+  },
+  props: {
+    selectTags: Object
   },
   async mounted () {
     await this.handleInput()
@@ -42,7 +37,6 @@ export default {
     const closeProperties = () => {
       store.dispatch('asidePropertiesToggle', false)
     }
-
     const taskMsg = ref('')
     const textcomment = ref('')
     // TODO: we use these functions at 2 components
@@ -74,41 +68,51 @@ export default {
       return emails
     }
     const changeEmployee = (uid, email) => {
-      store.dispatch(CHANGE_TASK_PERFORMER, { uid: uid, value: email })
+      store.dispatch(TASK.CHANGE_TASK_PERFORMER, { uid: uid, value: email })
     }
     const changeAccessEmail = (uid, emails) => {
-      store.dispatch(CHANGE_TASK_ACCESS, { uid: uid, value: emails })
+      store.dispatch(TASK.CHANGE_TASK_ACCESS, { uid: uid, value: emails })
+    }
+    const ClickAccessEmail = () => {
+      store.dispatch(TASK.CHANGE_TASK_ACCESS, { uid: selectedTask.value.uid, value: this.checkEmail })
     }
     const changeColors = (uid, marker) => {
-      store.dispatch(CHANGE_TASK_COLOR, { uid: uid, value: marker })
+      store.dispatch(TASK.CHANGE_TASK_COLOR, { uid: uid, value: marker })
     }
     const changeFocus = (uid, value) => {
-      store.dispatch(CHANGE_TASK_FOCUS, { uid: uid, value: value })
+      store.dispatch(TASK.CHANGE_TASK_FOCUS, { uid: uid, value: value })
     }
     const changeCheck = (uid, value) => {
-      store.dispatch(CHANGE_TASK_CHEKCLIST, { uid: uid, value: value })
+      store.dispatch(TASK.CHANGE_TASK_CHEKCLIST, { uid: uid, value: value })
+    }
+    const ClickTagsChange = () => {
+      const data = {
+        uid: selectedTask.value.uid,
+        tags: this.selectTags
+      }
+      store.dispatch(TASK.CHANGE_TASK_TAGS, data)
     }
     const changetags = (uid, tags) => {
       const data = {
         uid: uid,
         tags: tags
       }
-      store.dispatch(CHANGE_TASK_TAGS, data)
+      store.dispatch(TASK.CHANGE_TASK_TAGS, data)
     }
     const createTaskFile = (event) => {
       const data = {
         uid_task: selectedTask.value.uid,
-        name: event.target.file_attach
+        name: event.target.files[0]
       }
       store.dispatch(CREATE_FILES_REQUEST, data)
     }
-    const changeComment = () => {
+    const changeComment = (comment, event) => {
       const data = {
         uid: selectedTask.value.uid,
-        value: textcomment.value
+        value: comment
       }
-      store.dispatch(CHANGE_TASK_COMMENT, data)
-      textcomment.value = ''
+      store.dispatch(TASK.CHANGE_TASK_COMMENT, data)
+      event.target.value = comment
     }
 
     const createTaskMsg = () => {
@@ -127,7 +131,9 @@ export default {
       createTaskMsg,
       createTaskFile,
       closeProperties,
+      ClickAccessEmail,
       changetags,
+      ClickTagsChange,
       emailtomass,
       changeColors,
       changeEmployee,
@@ -135,7 +141,9 @@ export default {
       changeFocus,
       changeCheck,
       changeComment,
+      checkEmail: [],
       close,
+      file: '',
       taskMsg,
       textcomment,
       show: false,
@@ -183,11 +191,12 @@ export default {
         timezone: 'Europe/Moscow'
       },
       range: {
-        start: new Date(selectedTask.value.customer_date_begin),
-        end: new Date(selectedTask.value.customer_date_end)
+        start: new Date(),
+        end: new Date()
       },
       masks: {
-        input: 'D MMM'
+        input: 'D MMM',
+        weekdays: 'WW'
       },
       modelConfig: {
         type: 'string',
@@ -517,7 +526,7 @@ export default {
           :masks = "masks"
           @input="handleInput()"
         >
-          <template v-slot="{ inputValue, togglePopover}" >
+          <template v-slot="{ inputValue, togglePopover }" >
             <span class="mt-3 tags-custom any-calendar">
                 <span class="flex" v-if="selectedTask.customer_date_begin!=='0001-01-01T00:00:00' && selectedTask.customer_date_end!=='0001-01-01T00:00:00'">
                  <button @click="togglePopover()" class="btn-calendar">
@@ -625,7 +634,6 @@ export default {
           </svg>
                <span class="rounded">Цвет</span>
           </span>
-
         </div>
 
         <span ref="btnRefTags0" v-on:click="togglePopover_tags()" v-if="selectedTask.tags.length">
@@ -757,8 +765,7 @@ export default {
         <div><button class="btn btn-transperant">Добавить</button></div>
       </div>
       <div class="mt-3 description-content">
-        <textarea v-model="textcomment" @keyup.enter="changeComment" ref="comment" rows="10" cols="40" style="height: 100%" class="form-control"></textarea>
-        <div style="white-space: pre-line">{{selectedTask.comment}}</div>
+        <textarea :value="selectedTask.comment" @keyup.enter="changeComment(this.$refs.comment.value, $event)" ref="comment" rows="10" cols="40" style="height: 100%" class="form-control"></textarea>
       </div>
       <div
         class="mt-3 list-files-custom" v-if="taskFiles.length>0"
@@ -933,7 +940,7 @@ export default {
           <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M1.94475 17.443C3.17452 18.6611 4.78671 19.2627 6.3989 19.2627C8.0111 19.2627 9.62329 18.6537 10.8531 17.4356L18.5841 9.77812C20.3388 8.04015 20.3388 5.21038 18.5841 3.47241C17.7368 2.63313 16.6045 2.16522 15.4047 2.16522C14.2049 2.16522 13.0726 2.6257 12.2253 3.47241L5.12415 10.506C4.07435 11.5458 4.07435 13.2466 5.12415 14.2865C6.17395 15.3263 7.89112 15.3263 8.94092 14.2865L13.6125 9.65929C13.965 9.31021 13.965 8.74574 13.6125 8.39666C13.2601 8.04758 12.6902 8.04758 12.3378 8.39666L7.67366 13.0313C7.32123 13.3803 6.75134 13.3803 6.3989 13.0313C6.04647 12.6822 6.04647 12.1177 6.3989 11.7686L13.4926 4.74246C14.0025 4.23741 14.6773 3.96261 15.4047 3.96261C16.1246 3.96261 16.8069 4.23741 17.3168 4.74246C18.3666 5.78228 18.3666 7.48311 17.3168 8.52292L9.5783 16.1804C7.82364 17.9184 4.96668 17.9184 3.21201 16.1804C2.36467 15.3411 1.89976 14.2196 1.89976 13.0313C1.89976 11.8429 2.36467 10.7214 3.21951 9.88211L10.943 2.22463C11.2955 1.87555 11.2955 1.31108 10.943 0.962005C10.5906 0.612925 10.0207 0.612925 9.66829 0.962005L1.94475 8.61948C0.752474 9.79298 0.100098 11.3601 0.100098 13.0313C0.100098 14.695 0.752474 16.2621 1.94475 17.443Z" fill="black" fill-opacity="0.5"/>
 </svg>
-      <input type="file" v-on:change="createTaskFile($event)" name="file_attach">
+      <input type="file" v-on:change="createTaskFile($event)" name="file_attach" ref="file_attach">
     </label>
 </div>
 </span>
@@ -965,7 +972,7 @@ export default {
           </svg>
           Назад</div>
         <div class="title-project-custom">
-          <span class="title-z-popover">Готово</span>
+          <span class="title-z-popover" @click="ClickTagsChange">Готово</span>
         </div>
       </div>
       <div class="text-white p-3 body-popover-custom">
@@ -1046,7 +1053,7 @@ export default {
                 <span  style="text-transform:uppercase" :style="{'color': key.force_color}" v-if="uppercase===1">{{key.name}}</span>
                 <span :style="{'color': key.force_color}" v-else>{{key.name}}</span>
               </label>
-              <input type="radio" name="check_colors" class="check-custom-project" @click="changeColors(selectedTask.uid, key.uid)" :checked="key.uid===selectedTask.uid_marker">
+              <input type="radio" name="check_colors" :value="key.uid" class="check-custom-project" @click="changeColors(selectedTask.uid, key.uid)" :checked="key.uid===selectedTask.uid_marker">
             </div>
           </div>
         </div>
@@ -1142,7 +1149,7 @@ export default {
           </svg>
           Назад</div>
         <div class="title-project-custom">
-          <span class="title-z-popover">Готово</span>
+          <span class="title-z-popover" @click="ClickAccessEmail">Готово</span>
         </div>
 
       </div>
@@ -1171,7 +1178,7 @@ export default {
 
                 <div class="popover-employee-email"><div style="color: black;">{{key.name}}</div>{{key.email}}</div>
               </label>
-              <input type="checkbox" name="check_access_employee" class="check-custom-empployee" @click="changeAccessEmail(selectedTask.uid, key.email)" :checked="selectedTask.emails.split('..').filter(email=>email===key.email)[0]===key.email">
+              <input type="checkbox" name="check_access_employee" class="check-custom-empployee" v-model="checkEmail[key.email]" @click="changeAccessEmail(selectedTask.uid, key.email)" :checked="selectedTask.emails.split('..').filter(email=>email===key.email)[0]===key.email">
 
             </div>
           </div>

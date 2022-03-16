@@ -60,7 +60,7 @@ export default {
         <path d="M27.2999 6.3778V4.71425C27.2999 3.17114 26.0386 1.91406 24.4902 1.91406H12.9116L12.5642 1.34198C12.3527 1.01078 11.9826 0.800011 11.5898 0.800011H3.00969C1.46134 0.800011 0.199997 2.05708 0.199997 3.6002V24.722C0.199997 26.2652 1.46134 27.5222 3.00969 27.5222H26.9903C28.5386 27.5222 29.8 26.2652 29.8 24.722V9.16294C29.8075 7.71768 28.7048 6.52835 27.2999 6.3778ZM2.48098 3.6002C2.48098 3.30663 2.72268 3.06575 3.01724 3.06575H10.9554L14.037 8.07899C14.2409 8.4102 14.611 8.62097 15.0113 8.62097H27.0054C27.2999 8.62097 27.5416 8.86184 27.5416 9.15541V24.722C27.5416 25.0156 27.2999 25.2565 27.0054 25.2565H3.00969C2.71512 25.2565 2.47343 25.0156 2.47343 24.722V3.6002H2.48098ZM25.0189 6.35522H15.6382L14.3013 4.17981H24.4827C24.7773 4.17981 25.0189 4.42068 25.0189 4.71425V6.35522Z" fill="#A998B6" fill-opacity="1"/>
       </svg>
       <label class="break-words">{{ model.name }}</label>
-      <input type="radio"  @change="checked = $event.target.checked ? model : null" @click="changeProject(selectedTask.uid, model.uid)" :value="model.uid" v-model="selecteProject[selectedTask.uid_project]" name="check_projects" class="check-custom-project" :checked="selectedTask.uid_project === model.uid">
+      <input type="radio" @click="changeProject(selectedTask.uid, model.uid)" :value="model.uid" v-model="selecteProject[model.uid]" name="check_projects" class="check-custom-project" :checked="selectedTask.uid_project === model.uid">
 
     </div>
     <ul v-show="isOpen" v-if="isFolder">

@@ -1,16 +1,6 @@
 import * as TASK from '../actions/tasks'
 import { AUTH_LOGOUT } from '../actions/auth'
 import { PUSH_COLOR } from '../actions/colors'
-import {
-  CHANGE_TASK_ACCESS,
-  CHANGE_TASK_COLOR,
-  CHANGE_TASK_FOCUS,
-  CHANGE_TASK_TAGS,
-  CHANGE_TASK_PERFORMER,
-  CHANGE_TASK_PROJECT,
-  CHANGE_TASK_CHEKCLIST,
-  CHANGE_TASK_COMMENT
-} from '../actions/tasks'
 import axios from 'axios'
 
 function arrayRemove (arr, value) {
@@ -30,6 +20,13 @@ const state = {
   subtasks: false,
   selectedTask: undefined,
   status: '',
+  selectedColor: null,
+  project: '',
+  checklist: '',
+  performer: '',
+  access: [],
+  focus: 0,
+  date: null,
   hasLoadedOnce: false,
   loadedTasks: {},
   comment: [],
@@ -432,6 +429,7 @@ const actions = {
   },
   [TASK.CHANGE_TASK_NAME]: ({ commit, dispatch }, data) => {
     return new Promise((resolve, reject) => {
+      commit(TASK.EMPLOYEE_TASKS_REQUEST)
       const url = 'https://web.leadertask.com/api/v1/task/name?uid=' + data.uid + '&value=' + data.value
       axios({
         url: url,
@@ -480,7 +478,7 @@ const actions = {
       resolve()
     })
   },
-  [CHANGE_TASK_ACCESS]: ({ commit, dispatch }, data) => {
+  [TASK.CHANGE_TASK_ACCESS]: ({ commit, dispatch }, data) => {
     return new Promise((resolve, reject) => {
       const url = 'https://web.leadertask.com/api/v1/task/common?uid=' + data.uid + '&value=' + data.value
       axios({
@@ -488,30 +486,32 @@ const actions = {
         method: 'PATCH'
       })
         .then(resp => {
-          commit(CHANGE_TASK_ACCESS, data)
+          commit(TASK.CHANGE_TASK_ACCESS, data)
           resolve(resp)
         }).catch(err => {
           reject(err)
         })
     })
   },
-  [CHANGE_TASK_COLOR]: ({ commit, dispatch }, data) => {
+  [TASK.CHANGE_TASK_COLOR]: ({ commit, dispatch }, data) => {
     return new Promise((resolve, reject) => {
+      commit(TASK.COLOR_TASKS_REQUEST, data.uid)
       const url = 'https://web.leadertask.com/api/v1/task/marker?uid=' + data.uid + '&value=' + data.value
       axios({
         url: url,
         method: 'PATCH'
       })
         .then(resp => {
-          commit(CHANGE_TASK_COLOR, data)
+          commit(TASK.CHANGE_TASK_COLOR, data)
           resolve(resp)
         }).catch(err => {
           reject(err)
         })
     })
   },
-  [CHANGE_TASK_TAGS]: ({ commit, dispatch }, data) => {
+  [TASK.CHANGE_TASK_TAGS]: ({ commit, dispatch }, data) => {
     return new Promise((resolve, reject) => {
+      commit(TASK.TAG_TASKS_REQUEST)
       const url = 'https://web.leadertask.com/api/v1/task/tags'
       axios({
         url: url,
@@ -526,7 +526,7 @@ const actions = {
         })
     })
   },
-  [CHANGE_TASK_PERFORMER]: ({ commit, dispatch }, data) => {
+  [TASK.CHANGE_TASK_PERFORMER]: ({ commit, dispatch }, data) => {
     return new Promise((resolve, reject) => {
       const url = 'https://web.leadertask.com/api/v1/task/performer?uid=' + data.uid + '&value=' + data.value
       axios({
@@ -541,37 +541,39 @@ const actions = {
         })
     })
   },
-  [CHANGE_TASK_FOCUS]: ({ commit, dispatch }, data) => {
+  [TASK.CHANGE_TASK_FOCUS]: ({ commit, dispatch }, data) => {
     return new Promise((resolve, reject) => {
+      commit(TASK.IN_FOCUS_TASKS_REQUEST)
       const url = 'https://web.leadertask.com/api/v1/task/focus?uid=' + data.uid + '&focus=' + data.value
       axios({
         url: url,
         method: 'PATCH'
       })
         .then(resp => {
-          commit(CHANGE_TASK_FOCUS, data)
+          commit(TASK.CHANGE_TASK_FOCUS, data)
           resolve(resp)
         }).catch(err => {
           reject(err)
         })
     })
   },
-  [CHANGE_TASK_PROJECT]: ({ commit, dispatch }, data) => {
+  [TASK.CHANGE_TASK_PROJECT]: ({ commit, dispatch }, data) => {
     return new Promise((resolve, reject) => {
+      commit(TASK.PROJECT_TASKS_REQUEST)
       const url = 'https://web.leadertask.com/api/v1/task/project?uid=' + data.uid + '&value=' + data.value
       axios({
         url: url,
         method: 'PATCH'
       })
         .then(resp => {
-          commit(CHANGE_TASK_PROJECT, data)
+          commit(TASK.CHANGE_TASK_PROJECT, data)
           resolve(resp)
         }).catch(err => {
           reject(err)
         })
     })
   },
-  [CHANGE_TASK_CHEKCLIST]: ({ commit, dispatch }, data) => {
+  [TASK.CHANGE_TASK_CHEKCLIST]: ({ commit, dispatch }, data) => {
     return new Promise((resolve, reject) => {
       const url = 'https://web.leadertask.com/api/v1/task/checklist?uid=' + data.uid + '&value=' + data.value
       axios({
@@ -579,23 +581,41 @@ const actions = {
         method: 'PATCH'
       })
         .then(resp => {
-          commit(CHANGE_TASK_CHEKCLIST, data)
+          commit(TASK.CHANGE_TASK_CHEKCLIST, data)
           resolve(resp)
         }).catch(err => {
           reject(err)
         })
     })
   },
-  [CHANGE_TASK_COMMENT]: ({ commit, dispatch }, data) => {
+  [TASK.CHANGE_TASK_COMMENT]: ({ commit, dispatch }, data) => {
     return new Promise((resolve, reject) => {
+      commit([TASK.TASKS_REQUEST])
       const url = 'https://web.leadertask.com/api/v1/task/comment?uid=' + data.uid + '&value=' + data.value
       axios({
         url: url,
         method: 'PATCH'
       })
         .then(resp => {
-          commit(CHANGE_TASK_COMMENT, data)
           resolve(resp)
+          commit(TASK.CHANGE_TASK_COMMENT, data)
+        }).catch(err => {
+          reject(err)
+        })
+    })
+  },
+  [TASK.DATE_TASKS_REQUEST]: ({ commit, dispatch }, data) => {
+    return new Promise((resolve, reject) => {
+      commit([TASK.TASKS_REQUEST])
+      const url = 'https://web.leadertask.com/api/v1/task/term'
+      axios({
+        url: url,
+        method: 'PATCH',
+        data
+      })
+        .then(resp => {
+          resolve(resp)
+          commit(TASK.DATE_TASKS_REQUEST, data)
         }).catch(err => {
           reject(err)
         })
@@ -706,9 +726,6 @@ const mutations = {
   [TASK.CHANGE_TASK_STATUS]: (state, data) => {
     state.newtasks[data.uid].info.status = data.value
   },
-  [CHANGE_TASK_COMMENT]: (state, data) => {
-    state.comment.push(data)
-  },
   [TASK.ADD_TASK]: (state, task) => {
     if (!task._justCreated) {
       state.newConfig.roots.push(task.uid)
@@ -758,6 +775,45 @@ const mutations = {
   },
   [TASK.SELECT_TAG]: (state, tag) => {
     state.selectedTag = tag
+  },
+  [TASK.CHANGE_TASK_COMMENT]: (state, data) => {
+    state.comment.push(data.value)
+  },
+  [TASK.CHANGE_TASK_PERFORMER]: (state, data) => {
+    state.performer.push(data.value)
+  },
+  [TASK.COLOR_TASKS_REQUEST]: (state, color) => {
+    state.selectedColor = color.value
+  },
+  [TASK.PROJECT_TASKS_REQUEST]: (state, project) => {
+    state.project = project
+  },
+  [TASK.TAG_TASKS_REQUEST]: (state, data) => {
+    state.tags = data
+  },
+  [TASK.CHANGE_TASK_COLOR]: (state, data) => {
+    state.selectedColor = data.value
+  },
+  [TASK.CHANGE_TASK_PROJECT]: (state, data) => {
+    state.project = data.value
+  },
+  [TASK.CHANGE_TASK_CHEKCLIST]: (state, data) => {
+    state.checklist.push(data.value)
+  },
+  [TASK.CHANGE_TASK_ACCESS]: (state, data) => {
+    state.access.push(data.value)
+  },
+  [TASK.IN_FOCUS_TASKS_REQUEST]: (state, data) => {
+    state.focus = data
+  },
+  [TASK.CHANGE_TASK_FOCUS]: (state, data) => {
+    state.focus = data.value
+  },
+  [TASK.CHANGE_TASK_TAGS]: (state, data) => {
+    state.tags = data.value
+  },
+  [TASK.CHANGE_TASK_DATE]: (state, data) => {
+    state.date.push(data.value)
   }
 }
 

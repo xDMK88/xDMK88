@@ -528,6 +528,7 @@ input:focus {outline: 0;}
 .title-z-popover
 {
   margin-top: 7px;
+  cursor: pointer;
 }
 .title-popover-custom svg
 {

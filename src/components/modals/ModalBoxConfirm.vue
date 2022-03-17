@@ -1,23 +1,17 @@
 <script setup>
 import { computed } from 'vue'
 import JbButton from '@/components/JbButton.vue'
-import JbButtons from '@/components/JbButtons.vue'
 import CardComponent from '@/components/CardComponent.vue'
-import Divider from '@/components/Divider.vue'
-import Overlay from '@/components/Overlay.vue'
+import OverlayConfirm from '@/components/modals/OverlayConfirm.vue'
 
 const props = defineProps({
   title: {
     type: String,
     default: null
   },
-  largeTitle: {
-    type: String,
-    default: null
-  },
   button: {
     type: String,
-    default: 'info'
+    default: 'white'
   },
   buttonLabel: {
     type: String,
@@ -31,26 +25,25 @@ const props = defineProps({
   hasButton: Boolean
 })
 
-const emit = defineEmits(['update:modelValue', 'cancel', 'logout', 'confirm'])
+const emit = defineEmits(['update:modelValue', 'cancel', 'confirm'])
 
 const value = computed({
   get: () => props.modelValue,
   set: value => emit('update:modelValue', value)
 })
-const logoutAcc = value => { emit(value) }
+
 const confirmCancel = mode => {
   value.value = false
   emit(mode)
 }
 
-const logout = () => logoutAcc('logout')
 const confirm = () => confirmCancel('confirm')
 const cancel = () => confirmCancel('cancel')
 
 </script>
 
 <template>
-  <overlay
+  <overlay-confirm
     v-show="value"
     @overlay-click="cancel"
   >
@@ -58,39 +51,33 @@ const cancel = () => confirmCancel('cancel')
       v-show="value"
       hasTable
       :title="title"
-      class="shadow-lg w-full max-h-modal md:w-3/5 lg:w-2/5 z-50"
+      class="shadow-xl border border-gray-300 w-50 max-h-modal md:w-2/5 lg:w-1/5 z-50 p-5 rounded-2xl"
       @header-icon-click="cancel"
       @header-icon2-click="logout"
     >
-      <div class="space-y-3 items-center">
-        <h1
-          v-if="largeTitle"
-          class="text-2xl"
-        >
-        </h1>
-        {{ largeTitle }}
+      <div class="space-y-3 items-center justify-center">
         <slot />
       </div>
 
-      <divider
-        v-if="hasButton"
-      />
-
-      <jb-buttons>
+      <div
+        class="flex items-stretch justify-between mt-5"
+      >
         <jb-button
-          v-if="hasButton"
-          :label="buttonLabel"
-          :color="button"
-          @click="confirm"
-        />
-        <jb-button
+          class="w-full mr-5"
           v-if="hasCancel"
           label="Cancel"
           :color="button"
           outline
           @click="cancel"
         />
-      </jb-buttons>
+        <jb-button
+          v-if="hasButton"
+          :label="buttonLabel"
+          :color="button"
+          class="w-full"
+          @click="confirm"
+        />
+      </div>
     </card-component>
-  </overlay>
+  </overlay-confirm>
 </template>

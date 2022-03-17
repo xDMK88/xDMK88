@@ -6,6 +6,9 @@ import ColorPicker from '@/components/properties/ColorPicker.vue'
 import add from '@/icons/add.js'
 import properties from '@/icons/properties.js'
 import Popper from 'vue3-popper'
+
+import ModalBoxConfirm from '@/components/modals/ModalBoxConfirm.vue'
+
 import {
   CREATE_PROJECT_REQUEST,
   UPDATE_PROJECT_REQUEST,
@@ -20,6 +23,7 @@ const selectedProject = computed(() => store.state.projects.selectedProject)
 const user = computed(() => store.state.user.user)
 const employeesByEmail = computed(() => store.state.employees.employeesByEmail)
 const isDark = computed(() => store.state.darkMode)
+const showConfirm = ref(false)
 
 function arrayRemove (arr, value) {
   return arr.filter(function (ele) {
@@ -78,6 +82,16 @@ const quiet = ref(!selectedProject.value.quiet)
 </script>
 
 <template>
+  <modal-box-confirm
+    v-model="showConfirm"
+    button="warning"
+    hasButton
+    hasCancel
+    buttonLabel="Delete"
+    @confirm="removeProject(selectedProject)"
+  >
+    <p class="text-center">Do you really wanna delete "<strong>{{ selectedProject.name }}</strong>" project?</p>
+  </modal-box-confirm>
   <div>
     <div>
       <p class="text-sm text-gray-500 dark:text-gray-200">
@@ -202,7 +216,7 @@ const quiet = ref(!selectedProject.value.quiet)
         {{ selectedProject.uid ? 'Сохранить' : 'Создать' }}
       </button>
       <button
-        @click="removeProject(selectedProject)"
+        @click="showConfirm = true"
         v-if="selectedProject.email_creator == user.current_user_email && selectedProject.uid"
         class="w-full bg-red-600 rounded-xl mt-4 p-3 text-white font-bold hover:bg-red-800"
       >

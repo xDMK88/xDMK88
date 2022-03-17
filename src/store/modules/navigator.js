@@ -208,6 +208,7 @@ const mutations = {
     state.hasLoadedOnce = true
 
     const localization = computed(() => resp.rootState.localization.localization)
+    console.log('navigator ', resp)
 
     // Push statickly tasks to menu array from state
     state.memu = []
@@ -455,8 +456,13 @@ const mutations = {
     }
   },
   [NAVIGATOR_REMOVE_TAG]: (state, tag) => {
+    // removing wihtout mutation even on root level
     if (!tag.uid_parent || tag.uid_parent === '00000000-0000-0000-0000-000000000000') {
-      state.navigator.tags.items = arrayRemove(state.navigator.tags.items, tag)
+      for (let i = 0; i < state.navigator.tags.items.length; i++) {
+        if (state.navigator.tags.items[i].uid === tag.uid) {
+          state.navigator.tags.items.splice(i, 1)
+        }
+      }
     } else {
       visitChildren(state.navigator.tags.items, (value, index) => {
         if (value.uid === tag.uid_parent) {
@@ -471,7 +477,7 @@ const mutations = {
     }
   },
   [NAVIGATOR_REMOVE_COLOR]: (state, color) => {
-    state.navigator.colors = arrayRemove(state.navigator.colors, color)
+    state.navigator.colors.items = arrayRemove(state.navigator.colors, color)
   },
   [NAVIGATOR_ERROR]: state => {
     state.status = 'error'

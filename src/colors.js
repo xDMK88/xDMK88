@@ -3,7 +3,7 @@ export const colorsBg = {
   light: 'bg-gray-100 text-black',
   success: 'bg-emerald-500 text-white',
   danger: 'bg-red-500 text-white',
-  warning: 'bg-yellow-500 text-white',
+  warning: 'bg-orange-400 text-white',
   info: 'bg-blue-500 text-white',
   login: 'main-button text-white'
 }
@@ -13,7 +13,7 @@ export const colorsBgHover = {
   light: 'hover:bg-gray-200',
   success: 'hover:bg-emerald-600',
   danger: 'hover:bg-red-600',
-  warning: 'hover:bg-yellow-600',
+  warning: 'hover:bg-orange-500',
   info: 'hover:bg-blue-600',
   login: 'main-button text-white'
 }
@@ -23,7 +23,7 @@ export const colorsBorders = {
   light: 'border-gray-200 dark:border-gray-400',
   success: 'border-emerald-600',
   danger: 'border-red-600',
-  warning: 'border-yellow-600',
+  warning: 'border-orange-600',
   info: 'border-blue-600',
   login: 'border-none rounded-lg'
 }
@@ -33,7 +33,7 @@ export const colorsText = {
   light: 'text-gray-700 dark:text-gray-400',
   success: 'text-emerald-500',
   danger: 'text-red-500',
-  warning: 'text-yellow-500',
+  warning: 'text-orange-500',
   info: 'text-blue-500',
   login: 'text-white'
 }
@@ -52,7 +52,7 @@ export const colorsOutlineHover = {
   light: 'hover:bg-gray-100 hover:text-gray-900 dark:hover:text-gray-900',
   success: 'hover:bg-emerald-500 hover:text-white',
   danger: 'hover:bg-red-500 hover:text-white',
-  warning: 'hover:bg-yellow-500 hover:text-white',
+  warning: 'hover:bg-orange-500 hover:text-white',
   info: 'hover:bg-blue-500 hover:text-white'
 }
 

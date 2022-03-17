@@ -42,7 +42,7 @@ const actions = {
   },
   [REMOVE_EMPLOYEE_REQUEST]: ({ commit, dispatch }, data) => {
     return new Promise((resolve, reject) => {
-      const url = 'https://web.leadertask.com/api/v1/emp?uid_delete=' + data.uid_delete + '&uid_delegate=' + data.uid_delegate
+      const url = 'https://web.leadertask.com/api/v1/emp?uid_delete=' + data.uid + '&uid_delegate=00000000-0000-0000-0000-000000000000'
       axios({ url: url, method: 'DELETE' })
         .then(resp => {
           resolve(resp)

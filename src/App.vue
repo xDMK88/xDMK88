@@ -8,6 +8,8 @@ import PropertiesRight from '@/components/PropertiesRight.vue'
 import Overlay from '@/components/Overlay.vue'
 import { LOCALIZATION_REQUEST } from '@/store/actions/localization'
 
+import { NotificationGroup, Notification } from 'notiwind'
+
 const store = useStore()
 
 console.log('localization request', LOCALIZATION_REQUEST)
@@ -22,6 +24,12 @@ const overlayClick = () => {
 </script>
 
 <template>
+  <NotificationGroup group="api">
+    hello world
+    <Notification v-slot="{ notification }">
+      hello world {{ notification }}
+    </Notification>
+  </NotificationGroup>
   <nav-bar />
   <aside-menu :menu="menu" />
   <router-view />

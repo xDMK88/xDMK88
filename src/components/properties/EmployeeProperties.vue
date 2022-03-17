@@ -1,18 +1,61 @@
 <script setup>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useStore } from 'vuex'
-// import Icon from '@/components/Icon.vue'
-// import add from '@/icons/add.js'
-// import properties from '@/icons/properties.js'
+
+import ModalBoxConfirm from '@/components/modals/ModalBoxConfirm.vue'
+
+import { CREATE_EMPLOYEE_REQUEST, UPDATE_EMPLOYEE_REQUEST, REMOVE_EMPLOYEE_REQUEST } from '@/store/actions/employees'
+import { NAVIGATOR_PUSH_EMPLOYEE, NAVIGATOR_REMOVE_EMPLOYEE } from '@/store/actions/navigator'
 
 const store = useStore()
 const selectedEmployee = computed(() => store.state.employees.selectedEmployee)
 const user = computed(() => store.state.user.user)
 const employees = computed(() => store.state.employees.employees)
+const showConfirm = ref(false)
 
+function uuidv4 () {
+  return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
+    (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+  )
+}
+
+const createOrUpdateEmployee = (employee) => {
+  if (!employee.uid) {
+    employee.uid = uuidv4()
+    store.dispatch(CREATE_EMPLOYEE_REQUEST, employee)
+      .then(() => {
+        store.dispatch('asidePropertiesToggle', false)
+        // store.commit(PUSH_PROJECT, [project])
+        store.commit(NAVIGATOR_PUSH_EMPLOYEE, [employee])
+      })
+  } else {
+    store.dispatch(UPDATE_EMPLOYEE_REQUEST, employee)
+      .then(() => {
+        store.dispatch('asidePropertiesToggle', false)
+      })
+  }
+}
+
+const removeEmployee = (employee) => {
+  store.dispatch(REMOVE_EMPLOYEE_REQUEST, employee)
+    .then(() => {
+      store.dispatch('asidePropertiesToggle', false)
+      store.commit(NAVIGATOR_REMOVE_EMPLOYEE, employee)
+    })
+}
 </script>
 
 <template>
+  <modal-box-confirm
+    v-model="showConfirm"
+    button="warning"
+    hasButton
+    hasCancel
+    buttonLabel="Delete"
+    @confirm="removeEmployee(selectedEmployee)"
+  >
+    <p class="text-center">Do you really wanna delete "<strong>{{ selectedEmployee.name }}</strong>" employee?</p>
+  </modal-box-confirm>
   <div>
     <div>
       <p class="text-sm text-gray-500 dark:text-gray-200">
@@ -64,10 +107,17 @@ const employees = computed(() => store.state.employees.employees)
       </div>
       <button
         v-if="employees[user.current_user_uid].type != 3"
-        @click="createOrUpdateColor(selectedColor)"
+        @click="createOrUpdateEmployee(selectedEmployee)"
         class="w-full bg-gray-100 rounded-xl mt-8 p-3 text-gray-700 font-bold hover:bg-gray-200"
       >
         {{ selectedEmployee.uid ? 'Сохранить' : 'Создать' }}
+      </button>
+      <button
+        @click="showConfirm = true"
+        v-if="selectedEmployee.uid && employees[user.current_user_uid].type != 3 && selectedEmployee.type != 1"
+        class="w-full bg-red-600 rounded-xl mt-4 p-3 text-white font-bold hover:bg-red-800"
+      >
+        Удалить
       </button>
     </div>
   </div>

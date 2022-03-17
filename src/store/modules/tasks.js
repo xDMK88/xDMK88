@@ -16,6 +16,7 @@ function pad2 (n) {
 const state = {
   tasks: false,
   tags: {},
+  mass: '',
   selectedTag: null,
   subtasks: false,
   selectedTask: undefined,
@@ -495,7 +496,7 @@ const actions = {
   },
   [TASK.CHANGE_TASK_COLOR]: ({ commit, dispatch }, data) => {
     return new Promise((resolve, reject) => {
-      commit(TASK.COLOR_TASKS_REQUEST, data.uid)
+      commit(TASK.COLOR_TASKS_REQUEST)
       const url = 'https://web.leadertask.com/api/v1/task/marker?uid=' + data.uid + '&value=' + data.value
       axios({
         url: url,
@@ -780,10 +781,10 @@ const mutations = {
     state.comment.push(data.value)
   },
   [TASK.CHANGE_TASK_PERFORMER]: (state, data) => {
-    state.performer.push(data.value)
+    state.performer = data.value
   },
   [TASK.COLOR_TASKS_REQUEST]: (state, color) => {
-    state.selectedColor = color.value
+    state.selectedColor = color
   },
   [TASK.PROJECT_TASKS_REQUEST]: (state, project) => {
     state.project = project
@@ -814,6 +815,9 @@ const mutations = {
   },
   [TASK.CHANGE_TASK_DATE]: (state, data) => {
     state.date.push(data.value)
+  },
+  [TASK.TASK_MASS_TAGS]: (state, tags) => {
+    state.mass = tags
   }
 }
 

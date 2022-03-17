@@ -13,6 +13,8 @@ import {
   RESET_STATE_NAVIGATOR
 } from '../actions/navigator'
 
+import { notify } from 'notiwind'
+
 import { AUTH_LOGOUT } from '../actions/auth'
 import { ADD_TASK_TAGS } from '../actions/tasks'
 import { PUSH_EMPLOYEE, PUSH_EMPLOYEE_BY_EMAIL } from '../actions/employees'
@@ -139,6 +141,12 @@ const actions = {
           resolve(resp)
         }).catch(err => {
           commit(NAVIGATOR_ERROR, err)
+          notify({
+            group: 'api',
+            title: 'REST API Error, please make screenshot',
+            action: NAVIGATOR_REQUEST,
+            text: err.response.data
+          }, 15000)
           dispatch(AUTH_LOGOUT)
           reject(err)
         })
@@ -192,6 +200,12 @@ const actions = {
           resolve(resp)
         }).catch(err => {
           commit(NAVIGATOR_ERROR, err)
+          notify({
+            group: 'api',
+            title: 'REST API Error, please make screenshot',
+            action: PATCH_SETTINGS,
+            text: err.response.data
+          }, 15000)
           dispatch(AUTH_LOGOUT)
           reject(err)
         })

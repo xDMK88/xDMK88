@@ -7,6 +7,7 @@ import {
   REMOVE_EMPLOYEE_REQUEST
 } from '../actions/employees'
 import axios from 'axios'
+import { notify } from 'notiwind'
 
 const state = {
   employees: {},
@@ -25,6 +26,12 @@ const actions = {
         .then(resp => {
           resolve(resp)
         }).catch(err => {
+          notify({
+            group: 'api',
+            title: 'REST API Error, please make screenshot',
+            action: CREATE_EMPLOYEE_REQUEST,
+            text: err.response.data
+          }, 15000)
           reject(err)
         })
     })
@@ -36,6 +43,12 @@ const actions = {
         .then(resp => {
           resolve(resp)
         }).catch(err => {
+          notify({
+            group: 'api',
+            title: 'REST API Error, please make screenshot',
+            action: UPDATE_EMPLOYEE_REQUEST,
+            text: err.response.data
+          }, 15000)
           reject(err)
         })
     })
@@ -47,6 +60,12 @@ const actions = {
         .then(resp => {
           resolve(resp)
         }).catch(err => {
+          notify({
+            group: 'api',
+            title: 'REST API Error, please make screenshot',
+            action: REMOVE_EMPLOYEE_REQUEST,
+            text: err.response.data
+          }, 15000)
           reject(err)
         })
     })

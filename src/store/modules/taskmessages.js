@@ -6,6 +6,7 @@ import {
   REFRESH_MESSAGES
 } from '../actions/taskmessages'
 import { AUTH_LOGOUT } from '../actions/auth'
+import { notify } from 'notiwind'
 
 import axios from 'axios'
 
@@ -30,6 +31,12 @@ const actions = {
           resolve(resp)
         }).catch(err => {
           commit(MESSAGES_ERROR, err)
+          notify({
+            group: 'api',
+            title: 'REST API Error, please make screenshot',
+            action: MESSAGES_REQUEST,
+            text: err.response.data
+          }, 15000)
           dispatch(AUTH_LOGOUT)
           reject(err)
         })
@@ -44,6 +51,12 @@ const actions = {
           resolve(resp)
           commit(CREATE_MESSAGE_REQUEST, data)
         }).catch(err => {
+          notify({
+            group: 'api',
+            title: 'REST API Error, please make screenshot',
+            action: CREATE_MESSAGE_REQUEST,
+            text: err.response.data
+          }, 15000)
           reject(err)
         })
     })

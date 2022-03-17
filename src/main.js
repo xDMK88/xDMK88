@@ -3,6 +3,7 @@ import axios from 'axios'
 import App from './App.vue'
 import router from './router'
 import store from './store'
+import Notifications from 'notiwind'
 import { darkModeKey } from '@/config.js'
 
 import './css/main.css'
@@ -56,4 +57,4 @@ router.afterEach(to => {
   store.dispatch('fullScreenToggle', !!to.meta.fullScreen)
 })
 
-createApp(App).use(store).use(router).mount('#app')
+createApp(App).use(store).use(router).use(Notifications).mount('#app')

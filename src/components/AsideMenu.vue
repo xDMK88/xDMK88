@@ -8,8 +8,6 @@ import { mdiMenu } from '@mdi/js'
 import NavBarItem from '@/components/NavBarItem.vue'
 import Icon from '@/components/Icon.vue'
 
-import { notify } from 'notiwind'
-
 import AsideMenuList from '@/components/AsideMenuList.vue'
 
 import * as TASK from '@/store/actions/tasks'
@@ -101,13 +99,6 @@ const asideLgClose = () => {
 
 // TODO: clean up messy logic
 const menuClick = (event, item) => {
-  console.log('notify')
-  notify({
-    group: 'api',
-    title: 'menu click',
-    text: item.label
-  }, 4000)
-
   if (isPropertiesMobileExpanded.value) {
     store.dispatch('asidePropertiesToggle', false)
   }

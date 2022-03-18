@@ -1,15 +1,17 @@
 <script setup>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useStore } from 'vuex'
-// import Icon from '@/components/Icon.vue'
 import ColorPicker from '@/components/properties/ColorPicker.vue'
 import characters from '@/icons/characters.js'
-// import properties from '@/icons/properties.js'
+
+import ModalBoxConfirm from '@/components/modals/ModalBoxConfirm.vue'
+
 import { NAVIGATOR_PUSH_COLOR, NAVIGATOR_REMOVE_COLOR } from '@/store/actions/navigator'
 import { CREATE_COLOR_REQUEST, UPDATE_COLOR_REQUEST, REMOVE_COLOR_REQUEST } from '@/store/actions/colors'
 
 const store = useStore()
 const selectedColor = computed(() => store.state.colors.selectedColor)
+const showConfirm = ref(false)
 
 function uuidv4 () {
   return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
@@ -45,6 +47,16 @@ const removeColor = (color) => {
 </script>
 
 <template>
+  <modal-box-confirm
+    v-model="showConfirm"
+    button="warning"
+    hasButton
+    hasCancel
+    buttonLabel="Delete"
+    @confirm="removeColor(selectedColor)"
+  >
+    <p class="text-center">Do you really wanna delete "<strong>{{ selectedColor.name }}</strong>" color?</p>
+  </modal-box-confirm>
   <div>
     <div>
       <p class="text-sm text-gray-500 dark:text-gray-200">
@@ -108,7 +120,7 @@ const removeColor = (color) => {
         {{ selectedColor.uid ? 'Сохранить' : 'Создать' }}
       </button>
       <button
-        @click="removeColor(selectedColor)"
+        @click="showConfirm = true"
         v-if="selectedColor.uid"
         class="w-full bg-red-600 rounded-xl mt-4 p-3 text-white font-bold hover:bg-red-800"
       >

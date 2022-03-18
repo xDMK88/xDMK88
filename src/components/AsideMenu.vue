@@ -150,15 +150,18 @@ const menuClick = (event, item) => {
     v-model="modalOneActive"
     title="Аккаунт и лицензия"
     @logout="logout()"
-  ><form
-  class="rounded-b-3xl pb-7 mb-3 text-center"
-  :class="{'bg-[#FFF2E0]': user.license_type == 0, 'bg-[#FFF2E0]': user.license_type == 1, 'bg-[#FFF2E0]': user.license_type == 2, 'bg-[#FFF2E0]': user.license_type == 3}">
+  >
+  <form
+    class="rounded-b-3xl pb-7 mb-3 text-center"
+    :class="{'bg-[#FFF2E0]': user.license_type == 0, 'bg-[#FFF2E0]': user.license_type == 1, 'bg-[#FFF2E0]': user.license_type == 2, 'bg-[#FFF2E0]': user.license_type == 3}"
+  >
     <img
-    :src="user.foto_link"
-    width="180"
-    height="180"
-    class="mx-auto rounded-full content-center"
-  ><div>
+      :src="user.foto_link"
+      width="180"
+      height="180"
+      class="mx-auto rounded-full content-center"
+    >
+    <div>
     <p>{{ user.current_user_name }}</p>
     <a>{{ user.current_user_email }}</a>
     </div>

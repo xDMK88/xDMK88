@@ -4,6 +4,7 @@ import {
   USER_SUCCESS
 } from '../actions/user'
 
+import { notify } from 'notiwind'
 import axios from 'axios'
 
 const state = {
@@ -25,6 +26,12 @@ const actions = {
           commit(USER_SUCCESS, resp)
           resolve(resp)
         }).catch(err => {
+          notify({
+            group: 'api',
+            title: 'REST API Error, please make screenshot',
+            action: USER_REQUEST,
+            text: err.response.data
+          }, 15000)
           commit(USER_ERROR, err)
           reject(err)
         })

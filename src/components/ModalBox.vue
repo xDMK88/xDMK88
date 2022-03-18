@@ -42,11 +42,11 @@ const confirmCancel = mode => {
   value.value = false
   emit(mode)
 }
+
 const logout = () => logoutAcc('logout')
-
 const confirm = () => confirmCancel('confirm')
-
 const cancel = () => confirmCancel('cancel')
+
 </script>
 
 <template>

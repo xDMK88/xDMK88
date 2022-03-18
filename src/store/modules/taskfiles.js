@@ -7,6 +7,7 @@ import {
   CREATE_FILES_REQUEST
 } from '../actions/taskfiles'
 import { AUTH_LOGOUT } from '../actions/auth'
+import { notify } from 'notiwind'
 
 import axios from 'axios'
 
@@ -32,6 +33,12 @@ const actions = {
           resolve(resp)
         }).catch(err => {
           commit(FILES_ERROR, err)
+          notify({
+            group: 'api',
+            title: 'REST API Error, please make screenshot',
+            action: FILES_REQUEST,
+            text: err.response.data
+          }, 15000)
           dispatch(AUTH_LOGOUT)
           reject(err)
         })

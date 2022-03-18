@@ -7,6 +7,7 @@ import {
   REMOVE_COLOR_REQUEST
 } from '../actions/colors'
 import axios from 'axios'
+import { notify } from 'notiwind'
 
 const state = {
   colors: {},
@@ -25,6 +26,12 @@ const actions = {
         .then(resp => {
           resolve(resp)
         }).catch(err => {
+          notify({
+            group: 'api',
+            title: 'REST API Error, please make screenshot',
+            action: CREATE_COLOR_REQUEST,
+            text: err.response.data
+          }, 30000)
           reject(err)
         })
     })
@@ -36,6 +43,12 @@ const actions = {
         .then(resp => {
           resolve(resp)
         }).catch(err => {
+          notify({
+            group: 'api',
+            title: 'REST API Error, please make screenshot',
+            action: UPDATE_COLOR_REQUEST,
+            text: err.response.data
+          }, 30000)
           reject(err)
         })
     })
@@ -47,6 +60,12 @@ const actions = {
         .then(resp => {
           resolve(resp)
         }).catch(err => {
+          notify({
+            group: 'api',
+            title: 'REST API Error, please make screenshot',
+            action: REMOVE_COLOR_REQUEST,
+            text: err.response.data
+          }, 10000)
           reject(err)
         })
     })

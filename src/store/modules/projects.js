@@ -1,5 +1,6 @@
 import * as PROJECT from '../actions/projects'
 import axios from 'axios'
+import { notify } from 'notiwind'
 
 const state = {
   projects: {},
@@ -17,6 +18,12 @@ const actions = {
         .then(resp => {
           resolve(resp)
         }).catch(err => {
+          notify({
+            group: 'api',
+            title: 'REST API Error, please make screenshot',
+            action: PROJECT.CREATE_PROJECT_REQUEST,
+            text: err.response.data
+          }, 15000)
           reject(err)
         })
     })
@@ -28,6 +35,12 @@ const actions = {
         .then(resp => {
           resolve(resp)
         }).catch(err => {
+          notify({
+            group: 'api',
+            title: 'REST API Error, please make screenshot',
+            action: PROJECT.UPDATE_PROJECT_REQUEST,
+            text: err.response.data
+          }, 15000)
           reject(err)
         })
     })
@@ -39,6 +52,12 @@ const actions = {
         .then(resp => {
           resolve(resp)
         }).catch(err => {
+          notify({
+            group: 'api',
+            title: 'REST API Error, please make screenshot',
+            action: PROJECT.REMOVE_PROJECT_REQUEST,
+            text: err.response.data
+          }, 15000)
           reject(err)
         })
     })
@@ -50,6 +69,12 @@ const actions = {
         .then(resp => {
           resolve(resp)
         }).catch(err => {
+          notify({
+            group: 'api',
+            title: 'REST API Error, please make screenshot',
+            action: PROJECT.QUIT_PROJECT_REQUEST,
+            text: err.response.data
+          }, 15000)
           reject(err)
         })
     })

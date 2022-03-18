@@ -7,6 +7,7 @@ import {
   REMOVE_EMPLOYEE_REQUEST
 } from '../actions/employees'
 import axios from 'axios'
+import { notify } from 'notiwind'
 
 const state = {
   employees: {},
@@ -25,6 +26,12 @@ const actions = {
         .then(resp => {
           resolve(resp)
         }).catch(err => {
+          notify({
+            group: 'api',
+            title: 'REST API Error, please make screenshot',
+            action: CREATE_EMPLOYEE_REQUEST,
+            text: err.response.data
+          }, 15000)
           reject(err)
         })
     })
@@ -36,17 +43,29 @@ const actions = {
         .then(resp => {
           resolve(resp)
         }).catch(err => {
+          notify({
+            group: 'api',
+            title: 'REST API Error, please make screenshot',
+            action: UPDATE_EMPLOYEE_REQUEST,
+            text: err.response.data
+          }, 15000)
           reject(err)
         })
     })
   },
   [REMOVE_EMPLOYEE_REQUEST]: ({ commit, dispatch }, data) => {
     return new Promise((resolve, reject) => {
-      const url = 'https://web.leadertask.com/api/v1/emp?uid_delete=' + data.uid_delete + '&uid_delegate=' + data.uid_delegate
+      const url = 'https://web.leadertask.com/api/v1/emp?uid_delete=' + data.uid + '&uid_delegate=00000000-0000-0000-0000-000000000000'
       axios({ url: url, method: 'DELETE' })
         .then(resp => {
           resolve(resp)
         }).catch(err => {
+          notify({
+            group: 'api',
+            title: 'REST API Error, please make screenshot',
+            action: REMOVE_EMPLOYEE_REQUEST,
+            text: err.response.data
+          }, 15000)
           reject(err)
         })
     })

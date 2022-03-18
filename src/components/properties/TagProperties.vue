@@ -1,10 +1,10 @@
 <script setup>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useStore } from 'vuex'
-// import Icon from '@/components/Icon.vue'
 import ColorPicker from '@/components/properties/ColorPicker.vue'
-// import add from '@/icons/add.js'
-// import properties from '@/icons/properties.js'
+
+import ModalBoxConfirm from '@/components/modals/ModalBoxConfirm.vue'
+
 import {
   CREATE_TAG_REQUEST,
   UPDATE_TAG_REQUEST,
@@ -14,6 +14,7 @@ import { NAVIGATOR_PUSH_TAG, NAVIGATOR_REMOVE_TAG } from '@/store/actions/naviga
 
 const store = useStore()
 const selectedTag = computed(() => store.state.tasks.selectedTag)
+const showConfirm = ref(false)
 
 function uuidv4 () {
   return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
@@ -49,6 +50,16 @@ const removeTag = (tag) => {
 </script>
 
 <template>
+  <modal-box-confirm
+    v-model="showConfirm"
+    button="warning"
+    hasButton
+    hasCancel
+    buttonLabel="Delete"
+    @confirm="removeTag(selectedTag)"
+  >
+    <p class="text-center">Do you really wanna delete "<strong>{{ selectedTag.name }}</strong>" tag?</p>
+  </modal-box-confirm>
   <div>
     <div>
       <p class="text-sm text-gray-500 dark:text-gray-200">
@@ -80,7 +91,7 @@ const removeTag = (tag) => {
         {{ selectedTag.uid ? 'Сохранить' : 'Создать' }}
       </button>
       <button
-        @click="removeTag(selectedTag)"
+        @click="showConfirm = true"
         class="w-full bg-red-600 rounded-xl mt-4 p-3 text-white font-bold hover:bg-red-800"
         v-if="selectedTag.uid"
       >

@@ -7,6 +7,7 @@ import {
 } from '../actions/auth'
 import { RESET_STATE_NAVIGATOR } from '../actions/navigator'
 import { RESET_STATE_TASKS } from '../actions/tasks'
+import { notify } from 'notiwind'
 import axios from 'axios'
 
 const state = {
@@ -34,6 +35,12 @@ const actions = {
         }).catch(err => {
           commit(AUTH_ERROR, err)
           localStorage.removeItem('user-token')
+          notify({
+            group: 'api',
+            title: 'REST API Error, please make screenshot',
+            action: AUTH_REQUEST,
+            text: err.response.data
+          }, 15000)
           reject(err)
         })
     })
@@ -51,9 +58,14 @@ const actions = {
           commit(AUTH_SUCCESS, resp)
           resolve(resp)
         }).catch(err => {
-          console.log(err.message)
           commit(AUTH_ERROR, err)
           localStorage.removeItem('user-token')
+          notify({
+            group: 'api',
+            title: 'REST API Error, please make screenshot',
+            action: AUTH_REGISTER,
+            text: err.response.data
+          }, 15000)
           reject(err)
         })
     })
@@ -69,6 +81,12 @@ const actions = {
           resolve(resp)
         }).catch(err => {
           commit(AUTH_ERROR, err)
+          notify({
+            group: 'api',
+            title: 'REST API Error, please make screenshot',
+            action: AUTH_LOGOUT,
+            text: err.response.data
+          }, 15000)
           reject(err)
         })
       localStorage.removeItem('user-token')

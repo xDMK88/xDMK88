@@ -17,6 +17,7 @@ function pad2 (n) {
 const state = {
   tasks: false,
   tags: {},
+  mass: '',
   selectedTag: null,
   subtasks: false,
   selectedTask: undefined,
@@ -607,6 +608,9 @@ const actions = {
   },
   [TASK.CHANGE_TASK_ACCESS]: ({ commit, dispatch }, data) => {
     return new Promise((resolve, reject) => {
+      if (data.value === '') {
+        data.value = null
+      }
       const url = 'https://web.leadertask.com/api/v1/task/common?uid=' + data.uid + '&value=' + data.value
       axios({
         url: url,
@@ -628,7 +632,7 @@ const actions = {
   },
   [TASK.CHANGE_TASK_COLOR]: ({ commit, dispatch }, data) => {
     return new Promise((resolve, reject) => {
-      commit(TASK.COLOR_TASKS_REQUEST, data.uid)
+      commit(TASK.COLOR_TASKS_REQUEST)
       const url = 'https://web.leadertask.com/api/v1/task/marker?uid=' + data.uid + '&value=' + data.value
       axios({
         url: url,
@@ -759,7 +763,6 @@ const actions = {
   },
   [TASK.CHANGE_TASK_COMMENT]: ({ commit, dispatch }, data) => {
     return new Promise((resolve, reject) => {
-      commit([TASK.TASKS_REQUEST])
       const url = 'https://web.leadertask.com/api/v1/task/comment?uid=' + data.uid + '&value=' + data.value
       axios({
         url: url,
@@ -779,24 +782,24 @@ const actions = {
         })
     })
   },
-  [TASK.DATE_TASKS_REQUEST]: ({ commit, dispatch }, data) => {
+  [TASK.CHANGE_TASK_DATE]: ({ commit, dispatch }, data) => {
+    console.log(data)
     return new Promise((resolve, reject) => {
-      commit([TASK.TASKS_REQUEST])
       const url = 'https://web.leadertask.com/api/v1/task/term'
       axios({
         url: url,
         method: 'PATCH',
-        data
+        data: { uid: data.uid, str_date_begin: data.str_date_begin, str_date_end: data.str_date_end, str_time_begin: data.str_time_begin, str_time_end: data.str_time_end }
       })
         .then(resp => {
           resolve(resp)
-          commit(TASK.DATE_TASKS_REQUEST, data)
+          commit(TASK.CHANGE_TASK_DATE, data)
         }).catch(err => {
           notify({
             group: 'api',
             title: 'REST API Error, please make screenshot',
-            action: TASK.DATE_TASKS_REQUEST,
-            text: err.response.data
+            action: TASK.CHANGE_TASK_DATE,
+            text: 'Ошибка даты'
           }, 15000)
           reject(err)
         })
@@ -979,10 +982,10 @@ const mutations = {
     state.comment.push(data.value)
   },
   [TASK.CHANGE_TASK_PERFORMER]: (state, data) => {
-    state.performer.push(data.value)
+    state.performer = data.value
   },
   [TASK.COLOR_TASKS_REQUEST]: (state, color) => {
-    state.selectedColor = color.value
+    state.selectedColor = color
   },
   [TASK.PROJECT_TASKS_REQUEST]: (state, project) => {
     state.project = project

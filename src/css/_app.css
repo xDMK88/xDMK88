@@ -1379,3 +1379,14 @@ label
 {
   color:#000
 }
+.comment-custom {
+  border: 1px solid white;
+  overflow:hidden;
+  outline: none;
+  -webkit-box-shadow: none;
+  -moz-box-shadow: none;
+  box-shadow: none;
+  resize: none; /*remove the resize handle on the bottom right*/
+  display: block;
+  height: 100%;
+}

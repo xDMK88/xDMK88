@@ -6,6 +6,7 @@ import ProjectProperties from '@/components/properties/ProjectProperties.vue'
 import ColorProperties from '@/components/properties/ColorProperties.vue'
 import TagProperties from '@/components/properties/TagProperties.vue'
 import EmployeeProperties from '@/components/properties/EmployeeProperties.vue'
+import DepartmentProperties from '@/components/properties/DepartmentProperties.vue'
 import Icon from '@/components/Icon.vue'
 import close from '@/icons/close.js'
 
@@ -16,6 +17,7 @@ export default {
     ColorProperties,
     TagProperties,
     EmployeeProperties,
+    DepartmentProperties,
     Icon
   },
   data: () => {
@@ -72,5 +74,9 @@ export default {
       v-if="propertiesState == 'employee'"
     >
     </EmployeeProperties>
+    <DepartmentProperties
+      v-if="propertiesState == 'department'"
+    >
+    </DepartmentProperties>
   </aside>
 </template>

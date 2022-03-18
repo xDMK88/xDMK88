@@ -5,6 +5,7 @@ import properties from '@/icons/properties.js'
 import { useStore } from 'vuex'
 import * as TASK from '@/store/actions/tasks'
 import { SELECT_EMPLOYEE } from '@/store/actions/employees'
+import { SELECT_DEPARTMENT } from '@/store/actions/departments'
 
 defineProps({
   employees: {
@@ -25,7 +26,26 @@ const isPropertiesMobileExpanded = computed(() => store.state.isPropertiesMobile
 const storeEmployees = computed(() => store.state.employees.employees)
 const user = computed(() => store.state.user.user)
 
-const openProperties = (employee) => {
+const openDepartmentProperties = (department) => {
+  if (!isPropertiesMobileExpanded.value) {
+    store.dispatch('asidePropertiesToggle', true)
+  }
+  if (!department) {
+    department = {
+      uid: '',
+      uid_parent: '',
+      name: '',
+      password: '',
+      order: 0,
+      collapsed: 0,
+      emails: ''
+    }
+  }
+  store.commit('basic', { key: 'propertiesState', value: 'department' })
+  store.commit(SELECT_DEPARTMENT, department)
+}
+
+const openEmployeeProperties = (employee) => {
   if (!isPropertiesMobileExpanded.value) {
     store.dispatch('asidePropertiesToggle', true)
   }
@@ -65,7 +85,7 @@ const clickOnGridCard = (value) => {
     :class="{ 'md:grid-cols-2 lg:grid-cols-4': isGridView, 'grid-cols-1': !isGridView, 'grid-cols-1': isPropertiesMobileExpanded && !isGridView, 'lg:grid-cols-2': isPropertiesMobileExpanded && isGridView }"
   >
     <div
-      @click="openProperties(false)"
+      @click="openEmployeeProperties(false)"
       class="flex items-center bg-gray-50 dark:bg-gray-700 rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-500 cursor-pointer px-3 py-3"
     >
       <div class="flex items-center justify-center w-10 h-10 bg-gray-200 dark:bg-gray-600 rounded-xl mr-2">
@@ -79,7 +99,7 @@ const clickOnGridCard = (value) => {
     </div>
 
     <div
-      @click="openProperties(false)"
+      @click="openDepartmentProperties(false)"
       class="flex items-center bg-gray-50 dark:bg-gray-700 rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-500 cursor-pointer px-3 py-3"
     >
       <div class="flex items-center justify-center w-10 h-10 bg-gray-200 mr-2 dark:bg-gray-600 rounded-xl">
@@ -94,7 +114,18 @@ const clickOnGridCard = (value) => {
   </div>
 
   <div v-for="(value, index) in employees" :key="index">
-    <p class="text-2xl text-gray-800 font-bold dark:text-gray-100" :class="index !=0 ? 'mt-5' : ''">{{ value.dep }}</p>
+    <div class="flex items-center" :class="index !=0 ? 'mt-5' : ''">
+      <p class="text-2xl text-gray-800 font-bold dark:text-gray-100 mr-2" >{{ value.dep.name }}</p>
+      <icon
+        v-if="value.dep.uid"
+        @click="openDepartmentProperties(value.dep)"
+        :path="properties.path"
+        :width="properties.width"
+        :height="properties.height"
+        :box="properties.viewBox"
+        class="text-gray-400 cursor-pointer hover:text-gray-800 mt-1"
+      />
+    </div>
     <div
       class="grid gap-4 mt-5"
       :class="{ 'md:grid-cols-2 lg:grid-cols-4': isGridView, 'grid-cols-1': !isGridView, 'grid-cols-1': isPropertiesMobileExpanded && !isGridView, 'lg:grid-cols-2': isPropertiesMobileExpanded && isGridView }"
@@ -123,7 +154,7 @@ const clickOnGridCard = (value) => {
                 {{ employee.name }}
               </p>
               <icon
-                @click="openProperties(employee)"
+                @click="openEmployeeProperties(employee)"
                 :path="properties.path"
                 :width="properties.width"
                 :height="properties.height"

@@ -51,7 +51,7 @@ const styleInactive = 'text-dark-500 font-light'
       >
         <icon
           :path="item.icon"
-          class="flex-none text-gray-500 dark:text-white"
+          class="flex-none text-gray-600 dark:text-white"
           :box="item.iconBox"
           :width="item.width"
           :height="item.height"

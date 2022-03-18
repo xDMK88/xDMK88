@@ -396,12 +396,12 @@ const mutations = {
     const newEmps = []
     for (const department of resp.data.deps.items) {
       const dep = {
-        dep: department.name,
+        dep: department,
         items: getAllMembersByDepartmentUID(resp, department.uid)
       }
       newEmps.push(dep)
     }
-    newEmps.push({ dep: 'Вне отдела', items: getAllMembersByDepartmentUID(resp, '00000000-0000-0000-0000-000000000000') })
+    newEmps.push({ dep: { uid: '', name: 'Вне отдела' }, items: getAllMembersByDepartmentUID(resp, '00000000-0000-0000-0000-000000000000') })
     resp.data.new_emps = newEmps
 
     // Merge common projects and private projects into my own data structure

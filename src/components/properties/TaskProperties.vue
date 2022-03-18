@@ -18,11 +18,11 @@ export default {
   props: {
     selectTags: Array
   },
-  async mounted () {
-    await this.handleInput()
-  },
   filters: {
     shorten: (val, words = 2) => val.split(' ').slice(0, words).join(' ')
+  },
+  mounted () {
+    this.$refs.comment.style.minHeight = this.$refs.comment.scrollHeight + 'px'
   },
   data () {
     const store = useStore()
@@ -34,7 +34,6 @@ export default {
     const navigator = computed(() => store.state.navigator.navigator)
     const tasks = computed(() => store.state.tasks.newtasks)
     const employeesByEmail = computed(() => store.state.employees.employeesByEmail)
-    const test = computed(() => store.state.tasks.mass)
     //  const test2 = toRef(this.props, 'selectTags')
     const closeProperties = () => {
       store.dispatch('asidePropertiesToggle', false)
@@ -69,31 +68,48 @@ export default {
       return emails
     }
     const changeEmployee = (uid, email) => {
-      store.dispatch(TASK.CHANGE_TASK_PERFORMER, { uid: uid, value: email })
+      store.dispatch(TASK.CHANGE_TASK_PERFORMER, { uid: uid, value: email }).then(
+        resp => {
+          selectedTask.value.email_performer = email
+        }
+      )
     }
     const ClickAccessEmail = () => {
       const emails = this.checkEmail.join('..')
-      store.dispatch(TASK.CHANGE_TASK_ACCESS, { uid: selectedTask.value.uid, value: emails })
+      store.dispatch(TASK.CHANGE_TASK_ACCESS, { uid: selectedTask.value.uid, value: emails }).then(
+        resp => {
+          selectedTask.value.emails = emails
+        }
+      )
       this.popoverShowAccess = false
     }
     const changeAccessEmail = (emails) => {
-      console.log(emails.length)
       this.checkEmail.push(emails)
     }
     const changeColors = (uid, marker) => {
-      store.dispatch(TASK.CHANGE_TASK_COLOR, { uid: uid, value: marker })
+      store.dispatch(TASK.CHANGE_TASK_COLOR, { uid: uid, value: marker }).then(
+        resp => {
+          selectedTask.value.uid_marker = marker
+        }
+      )
     }
     const changeFocus = (uid, value) => {
-      store.dispatch(TASK.CHANGE_TASK_FOCUS, { uid: uid, value: value })
+      store.dispatch(TASK.CHANGE_TASK_FOCUS, { uid: uid, value: value }).then(
+        resp => {
+          selectedTask.value.focus = value
+        })
     }
     const changeCheck = (uid, value) => {
-      store.dispatch(TASK.CHANGE_TASK_CHEKCLIST, { uid: uid, value: value })
+      store.dispatch(TASK.CHANGE_TASK_CHEKCLIST, { uid: uid, value: value }).then(
+        resp => {
+          selectedTask.value.checklist = value
+        })
     }
     const ClickTagsChange = () => {
-      console.log(test.value.mass)
+      console.log(selectedTask.value.tags)
       const data = {
         uid: selectedTask.value.uid,
-        tags: test.value.mass
+        tags: selectedTask.value.tags
       }
       store.dispatch(TASK.CHANGE_TASK_TAGS, data)
     }
@@ -109,14 +125,20 @@ export default {
         uid_task: selectedTask.value.uid,
         name: event.target.files[0]
       }
-      store.dispatch(CREATE_FILES_REQUEST, data)
+      store.dispatch(CREATE_FILES_REQUEST, data).then(
+        resp => {
+          taskFiles.value.uid = data.uid_task
+        })
     }
     const changeComment = (comment, event) => {
       const data = {
         uid: selectedTask.value.uid,
         value: comment
       }
-      store.dispatch(TASK.CHANGE_TASK_COMMENT, data)
+      store.dispatch(TASK.CHANGE_TASK_COMMENT, data).then(
+        resp => {
+          selectedTask.value.comment = comment
+        })
       event.target.value = comment
     }
 
@@ -133,13 +155,21 @@ export default {
       taskMsg.value = ''
     }
     const handleInput = () => {
-      const datebegin = selectedTask.value.customer_date_begin !== '0001-01-01T00:00:00' ? new Date(selectedTask.value.customer_date_begin) : ''
-      const dateend = selectedTask.value.customer_date_end !== '0001-01-01T00:00:00' ? new Date(selectedTask.value.customer_date_end) : null
-      const b = this.range = {
-        start: datebegin,
-        end: dateend
+      console.log(new Date(this.range.start).toLocaleDateString())
+      console.log(new Date(this.range.start).toLocaleTimeString() + '-' + new Date(this.range.end).toLocaleTimeString())
+      const data = {
+        uid: selectedTask.value.uid,
+        str_date_begin: new Date(this.range.start).toLocaleDateString(),
+        str_date_end: new Date(this.range.end).toLocaleDateString(),
+        str_time_begin: new Date(this.range.start).toLocaleTimeString(),
+        str_time_end: new Date(this.range.end).toLocaleTimeString(),
+        reset: 0
       }
-      return b
+      store.dispatch(TASK.CHANGE_TASK_DATE, data).then(
+        resp => {
+          selectedTask.value.customer_date_begin = new Date(this.range.start)
+          selectedTask.value.customer_date_end = new Date(this.range.end)
+        })
     }
     return {
       createTaskMsg,
@@ -156,7 +186,7 @@ export default {
       changeCheck,
       changeComment,
       handleInput,
-      checkEmail: selectedTask.value.emails.split('...'),
+      checkEmail: selectedTask.value.emails.split('..'),
       close,
       file: '',
       taskMsg,
@@ -204,10 +234,7 @@ export default {
         date: new Date(),
         timezone: 'Europe/Moscow'
       },
-      range: {
-        start: new Date(),
-        end: new Date()
-      },
+      range: [],
       masks: {
         input: 'D MMM',
         weekdays: 'WW'
@@ -429,6 +456,9 @@ export default {
     },
     tabfunction: function (tab) {
       this.isActive = tab
+    },
+    textareaResize () {
+      this.$refs.comment.style.minHeight = this.$refs.comment.scrollHeight + 'px'
     }
   }
 }
@@ -521,14 +551,13 @@ export default {
             <path fill-rule="evenodd" clip-rule="evenodd" d="M73.9839 48.8864C73.9839 50.6954 72.5056 52.1754 70.6989 52.1754C68.8921 52.1754 67.4139 50.6954 67.4139 48.8864V44.4723C67.4139 40.8379 64.4738 37.8943 60.8439 37.8943H13.5399C9.90998 37.8943 6.9699 40.8379 6.9699 44.4723V78.7765C6.9699 82.4109 9.90998 85.3545 13.5399 85.3545H46.2096C48.026 85.3545 49.4986 86.827 49.4986 88.6435C49.4986 90.4599 48.026 91.9324 46.2096 91.9324H13.5399C6.29648 91.9324 0.399902 86.0287 0.399902 78.7765V44.4723C0.399902 37.2201 6.29648 31.3164 13.5399 31.3164H17.4819V19.7227C17.4819 9.06645 26.335 0.400002 37.1919 0.400002C48.0488 0.400002 56.9019 9.06645 56.9019 19.7227V31.3164H60.8439C68.0873 31.3164 73.9839 37.2201 73.9839 44.4723V48.8864ZM50.3319 31.3164H24.0519V19.7227C24.0519 12.7008 29.9485 6.97795 37.1919 6.97795C44.4353 6.97795 50.3319 12.7008 50.3319 19.7227V31.3164ZM39.6617 74.5013C39.2039 72.1608 37.9572 70.1461 36.2429 68.7334C35.9442 68.4873 35.8725 68.0521 36.0635 67.7155C38.5384 63.3546 35.4507 57.5131 30.3371 57.5369C25.2466 57.5131 22.1379 63.3545 24.6108 67.7154C24.8018 68.0521 24.7301 68.4873 24.4312 68.7331C22.713 70.1458 21.4486 72.1606 21.0126 74.5013L20.0665 79.3638C19.9824 79.796 20.3133 80.1975 20.7536 80.1975H39.9207C40.3609 80.1975 40.6919 79.796 40.6078 79.3638L39.6617 74.5013ZM28.1445 64.3525C28.1445 63.1087 29.1324 62.0889 30.3371 62.0889C33.2526 62.2133 33.2526 66.4917 30.3371 66.616C29.1324 66.616 28.1445 65.5962 28.1445 64.3525ZM26.0807 75.6703C25.6477 75.6703 25.3161 75.2764 25.4414 74.8619C26.9349 69.9202 33.7153 69.9202 35.2088 74.8619C35.334 75.2764 35.0024 75.6703 34.5695 75.6703H26.0807ZM64.4788 74.5013C64.021 72.1608 62.7743 70.1461 61.06 68.7334C60.7613 68.4873 60.6896 68.0521 60.8806 67.7155C63.3555 63.3546 60.2678 57.5131 55.1542 57.5369C50.0637 57.5131 46.955 63.3545 49.4279 67.7154C49.6189 68.0521 49.5472 68.4873 49.2483 68.7331C47.5301 70.1458 46.2657 72.1606 45.8297 74.5013L44.8836 79.3638C44.7995 79.796 45.1304 80.1975 45.5707 80.1975H64.7378C65.178 80.1975 65.509 79.796 65.4249 79.3638L64.4788 74.5013ZM52.9616 64.3525C52.9616 63.1087 53.9495 62.0889 55.1542 62.0889C58.0697 62.2133 58.0697 66.4917 55.1542 66.616C53.9495 66.616 52.9616 65.5962 52.9616 64.3525ZM50.8978 75.6703C50.4648 75.6703 50.1332 75.2764 50.2585 74.8619C51.752 69.9202 58.5324 69.9202 60.0259 74.8619C60.1511 75.2764 59.8195 75.6703 59.3866 75.6703H50.8978ZM85.8771 68.7334C87.5914 70.1461 88.8381 72.1608 89.2959 74.5013L90.242 79.3638C90.3261 79.796 89.9951 80.1975 89.5549 80.1975H70.3878C69.9475 80.1975 69.6166 79.796 69.7006 79.3638L70.6468 74.5013C71.0828 72.1606 72.3472 70.1458 74.0654 68.7331C74.3643 68.4873 74.4359 68.0521 74.245 67.7154C71.7721 63.3545 74.8808 57.5131 79.9713 57.5369C85.0849 57.5131 88.1726 63.3546 85.6977 67.7155C85.5067 68.0521 85.5784 68.4873 85.8771 68.7334ZM79.9713 62.0889C78.7666 62.0889 77.7787 63.1087 77.7787 64.3525C77.7787 65.5962 78.7666 66.616 79.9713 66.616C82.8868 66.4917 82.8868 62.2133 79.9713 62.0889ZM75.0756 74.8619C74.9503 75.2764 75.2819 75.6703 75.7149 75.6703H84.2037C84.6366 75.6703 84.9682 75.2764 84.843 74.8619C83.3495 69.9202 76.5691 69.9202 75.0756 74.8619Z" fill="black" fill-opacity="0.5"/>
           </svg>
           <span class="rounded"> Доступ</span>
-
         </div>
         <DatePicker
           is-range
           v-model="range"
           ref="calendar"
           :masks = "masks"
-          @input="handleInput()"
+          @click="handleInput"
         >
           <template v-slot="{ inputValue, togglePopover }" >
             <span class="mt-3 tags-custom any-calendar">
@@ -539,15 +568,14 @@ export default {
 </svg>
               </button>
                   <span v-if="new Date(selectedTask.customer_date_begin).toLocaleDateString() !== new Date(selectedTask.customer_date_end).toLocaleDateString()">
-                  <input type="hidden" :value="selectedTask.customer_date_begin" ref="datePickerbegin">
-                  <input type="hidden" :value="selectedTask.customer_date_end" ref="datePickerend">
-                    <span @click="togglePopover()">{{inputValue.start}} - {{inputValue.end}}</span>
+                  <input type="hidden" :value="inputValue.start" ref="datePickerbegin">
+                  <input type="hidden" :value="inputValue.end" ref="datePickerend">
+                    <span @click="togglePopover()">{{ new Date(selectedTask.customer_date_begin).getDate() }}<span v-if="new Date(selectedTask.customer_date_end).toLocaleString()!==new Date(selectedTask.customer_date_begin).toLocaleString()">-{{ new Date(selectedTask.customer_date_end).getDate() }}</span> {{ months[new Date(selectedTask.customer_date_end).getMonth()] }}</span>
                   </span>
                   <span v-else>
-                        <input type="hidden" :value="selectedTask.customer_date_begin" ref="datePickerbegin">
-                     <input type="hidden" :value="selectedTask.customer_date_end" ref="datePickerend">
-                    <span @click="togglePopover()">{{inputValue.start}} {{inputValue.end}}</span>
-
+                        <input type="hidden" :value="inputValue.start" ref="datePickerbegin">
+                     <input type="hidden" :value="inputValue.end" ref="datePickerend">
+                    <span @click="togglePopover()">{{ new Date(selectedTask.customer_date_begin).getDate() }} {{ months[new Date(selectedTask.customer_date_end).getMonth()] }}</span>
                   </span>
              </span>
              <span class="flex" v-else>
@@ -555,9 +583,9 @@ export default {
                 <svg width="24" height="24" viewBox="0 0 88 90" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path fill-rule="evenodd" clip-rule="evenodd" d="M17.5998 4.80001C17.5998 2.48041 19.4802 0.600006 21.7998 0.600006C24.1194 0.600006 25.9998 2.48041 25.9998 4.80001V7.8H61.9998V4.80001C61.9998 2.48041 63.8802 0.600006 66.1998 0.600006C68.5194 0.600006 70.3998 2.48041 70.3998 4.8V7.8H77.5998C82.9017 7.8 87.1998 12.0981 87.1998 17.4V79.8C87.1998 85.1019 82.9017 89.4 77.5998 89.4H10.3998C5.09787 89.4 0.799805 85.1019 0.799805 79.8V17.4C0.799805 12.0981 5.09787 7.8 10.3998 7.8H17.5998V4.80001ZM61.9998 14.4V19.2C61.9998 21.5196 63.8802 23.4 66.1998 23.4C68.5194 23.4 70.3998 21.5196 70.3998 19.2V14.4H77.5998C79.2567 14.4 80.5998 15.7431 80.5998 17.4V79.8C80.5998 81.4568 79.2567 82.8 77.5998 82.8H10.3998C8.74295 82.8 7.3998 81.4568 7.3998 79.8V17.4C7.3998 15.7431 8.74295 14.4 10.3998 14.4H17.5998V19.2C17.5998 21.5196 19.4802 23.4 21.7998 23.4C24.1194 23.4 25.9998 21.5196 25.9998 19.2V14.4H61.9998ZM19.9998 42.2348C19.9998 40.5779 21.343 39.2348 22.9998 39.2348H26.3911C28.048 39.2348 29.3911 40.5779 29.3911 42.2348V45.6261C29.3911 47.2829 28.048 48.6261 26.3911 48.6261H22.9998C21.343 48.6261 19.9998 47.2829 19.9998 45.6261V42.2348ZM39.8259 42.2348C39.8259 40.5779 41.1691 39.2348 42.8259 39.2348H46.2172C47.8741 39.2348 49.2172 40.5779 49.2172 42.2348V45.6261C49.2172 47.2829 47.8741 48.6261 46.2172 48.6261H42.8259C41.1691 48.6261 39.8259 47.2829 39.8259 45.6261V42.2348ZM61.6085 39.2348C59.9517 39.2348 58.6085 40.5779 58.6085 42.2348V45.6261C58.6085 47.2829 59.9517 48.6261 61.6085 48.6261H64.9998C66.6567 48.6261 67.9998 47.2829 67.9998 45.6261V42.2348C67.9998 40.5779 66.6567 39.2348 64.9998 39.2348H61.6085ZM22.9998 58.4348C21.343 58.4348 19.9998 59.7779 19.9998 61.4348V64.8261C19.9998 66.4829 21.343 67.8261 22.9998 67.8261H26.3911C28.048 67.8261 29.3911 66.4829 29.3911 64.8261V61.4348C29.3911 59.7779 28.048 58.4348 26.3911 58.4348H22.9998ZM42.8259 58.4348C41.1691 58.4348 39.8259 59.7779 39.8259 61.4348V64.8261C39.8259 66.4829 41.1691 67.8261 42.8259 67.8261H46.2172C47.8741 67.8261 49.2172 66.4829 49.2172 64.8261V61.4348C49.2172 59.7779 47.8741 58.4348 46.2172 58.4348H42.8259ZM58.6085 61.4348C58.6085 59.7779 59.9517 58.4348 61.6085 58.4348H64.9998C66.6567 58.4348 67.9998 59.7779 67.9998 61.4348V64.8261C67.9998 66.4829 66.6567 67.8261 64.9998 67.8261H61.6085C59.9517 67.8261 58.6085 66.4829 58.6085 64.8261V61.4348Z" fill="black" fill-opacity="0.5"/>
 </svg>
-                              <input type="hidden" :value="selectedTask.customer_date_begin" ref="datePickerbegin">
-                     <input type="hidden" :value="selectedTask.customer_date_end" ref="datePickerend">
-               </button><span @click="togglePopover()" ><span ref="dateval">Дата</span> {{inputValue.start}}<span v-if="selectedTask.customer_date_begin!=='0001-01-01T00:00:00'">-</span> {{inputValue.end}}</span>
+                              <input type="hidden" :value="inputValue.start" ref="datePickerbegin">
+                     <input type="hidden" :value="inputValue.end" ref="datePickerend">
+               </button><span @click="togglePopover()" ><span ref="dateval">Дата</span></span>
             </span>
             </span>
           </template>
@@ -723,7 +751,6 @@ export default {
             px-4
             py-2
             text-sm
-
           "
             >
               Копировать как ссылку
@@ -769,7 +796,7 @@ export default {
         <div><button class="btn btn-transperant">Добавить</button></div>
       </div>
       <div class="mt-3 description-content">
-        <textarea :value="selectedTask.comment" @keyup.enter="changeComment(this.$refs.comment.value, $event)" ref="comment" rows="10" cols="40" style="height: 100%" class="form-control"></textarea>
+        <textarea :value="selectedTask.comment" @keyup.enter="changeComment(this.$refs.comment.value, $event)" ref="comment" rows="10" cols="40" style="height: 100%" class="form-control comment-custom" @input="textareaResize"></textarea>
       </div>
       <div
         class="mt-3 list-files-custom" v-if="taskFiles.length>0"
@@ -1057,7 +1084,7 @@ export default {
                 <span  style="text-transform:uppercase" :style="{'color': key.force_color}" v-if="uppercase===1">{{key.name}}</span>
                 <span :style="{'color': key.force_color}" v-else>{{key.name}}</span>
               </label>
-              <input type="radio" name="check_colors" :value="key.uid" class="check-custom-project" @click="changeColors(selectedTask.uid, key.uid)" :checked="key.uid===selectedTask.uid_marker">
+              <input type="radio" name="check_colors" :value="key.uid" class="check-custom-project" @change="changeColors(selectedTask.uid, key.uid)" :checked="key.uid===selectedTask.uid_marker">
             </div>
           </div>
         </div>
@@ -1182,7 +1209,7 @@ export default {
 
                 <div class="popover-employee-email"><div style="color: black;">{{key.name}}</div>{{key.email}}</div>
               </label>
-              <input type="checkbox" name="check_access_employee" :value="key.email" class="check-custom-empployee" v-model="checkEmail[key.email]" @change="changeAccessEmail(key.email)" :checked="selectedTask.emails.split('..').filter(email=>email===key.email)[0]===key.email">
+              <input type="checkbox" name="check_access_employee" :value="key.email" class="check-custom-empployee" v-model="checkEmail" :checked="selectedTask.emails.split('..').filter(email=>email===key.email)[0]===key.email">
 
             </div>
           </div>

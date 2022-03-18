@@ -11,7 +11,11 @@ export default {
     const store = useStore()
     const selectedTask = computed(() => store.state.tasks.selectedTask)
     const changeProject = (uid, uidproject) => {
-      store.dispatch(TASK.CHANGE_TASK_PROJECT, { uid: uid, value: uidproject })
+      store.dispatch(TASK.CHANGE_TASK_PROJECT, { uid: uid, value: uidproject }).then(
+        resp => {
+          selectedTask.value.uid_project = uidproject
+        }
+      )
     }
     return {
       checked: null,

@@ -10,11 +10,7 @@ export default {
     const store = useStore()
     const selectedTask = computed(() => store.state.tasks.selectedTask)
     const changetags = (tags) => {
-      const data = {
-        uid: selectedTask.value.uid,
-        tags: this.selectTags.push(tags)
-      }
-      console.log(data)
+      selectedTask.value.tags.push(tags)
     }
     return {
       selectTags: [],

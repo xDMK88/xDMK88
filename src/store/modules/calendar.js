@@ -1,5 +1,5 @@
 const state = {
-  calendar: [{ key: 'today', highlight: { color: 'yellow', fillMode: 'outline' }, dates: new Date() }],
+  calendar: [{ key: 'today', highlight: { color: 'gray', fillMode: 'outline' }, dates: new Date() }],
   currentDate: new Date()
 }
 
@@ -8,7 +8,7 @@ const getters = {
 
 const actions = {
   getDefaultCalendarAttributes ({ commit, state }) {
-    const value = [{ key: 'today', highlight: { color: 'yellow', fillMode: 'outline' }, dates: new Date() }]
+    const value = [{ key: 'today', highlight: { color: 'gray', fillMode: 'outline' }, dates: new Date() }]
     commit('basic', { key: 'calendar', value })
   },
   setDots ({ commit, state }, dates) {

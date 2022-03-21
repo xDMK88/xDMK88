@@ -48,7 +48,7 @@ export default {
 }
 </script>
 <template>
-  <li class="item-element-class">
+  <li class="item-element-class" @click="changeProject(selectedTask.uid, model.uid)">
     <div
       :class="{ bold: isFolder }" class="list-project-access"
       @click="toggle"

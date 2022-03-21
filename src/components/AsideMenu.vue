@@ -264,12 +264,14 @@ const menuClick = (event, item) => {
     <nav-bar-item class="rounded-b-3xl pt-0 mt-0">
       <DatePicker
         v-model="navigatorMenu.currentDate"
-        class="border-none text-xs px-3"
+        class="border-none text-xs px-3 calendar-custom"
         style="border: none!important;"
         :style="{ backgroundColor: datePickerBG }"
         id="Maincalendar"
         show-weeknumbers
-        color="yellow"
+        color="gray"
+        :from-page="fromPage"
+        :to-page="toPage"
         is-expanded
         :locale="navigatorMenu.lang"
         :masks="{ weekdays: 'WW' }"
@@ -343,7 +345,7 @@ const menuClick = (event, item) => {
     padding-right: 0;
   }
   .vc-container .vc-day-content:hover:not(.is-disabled) {
-    @apply bg-gray-400 text-white;
+    @apply bg-gray-400 text-black;
   }
   .vc-container .vc-day-content.is-disabled {
     @apply pointer-events-none;

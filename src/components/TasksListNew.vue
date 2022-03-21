@@ -1,25 +1,32 @@
 <template>
-  <!--
-  <pre>{{ newConfig }}</pre>
-  -->
+  <modal-box-confirm
+    v-model="showConfirm"
+    button="warning"
+    hasButton
+    hasCancel
+    buttonLabel="Delete"
+    @confirm="removeTask(lastSelectedTaskUid)"
+  >
+    <p class="text-center">Do you really wanna delete this task?</p>
+  </modal-box-confirm>
   <div
     v-if="!DONT_SHOW_TASK_INPUT_UIDS[taskListSource.uid]"
-    class="pr-4"
-    :class="newConfig.leaves.length == newConfig.roots.length ? 'pl-0' : 'pl-8'"
+    class="pr-3"
+    :class="newConfig.listHasChildren ? 'pl-8' : 'pl-0'"
   >
     <div
-      class="flex items-center bg-gray-50 dark:bg-gray-700 rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-500 p-2"
+      class="flex items-center bg-gray-600 dark:bg-gray-700  opacity-70 rounded-xl pl-4"
     >
-      <div class="flex items-center justify-center w-10 h-10 bg-gray-200 dark:bg-gray-600 rounded-xl">
-       <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" class="dark:text-gray-100">
-         <path d="M8.00011 2.3457V8.4034M8.00011 8.4034V14.4611M8.00011 8.4034H14.4617M8.00011 8.4034H1.53857" stroke="#3E3D3B" stroke-width="3" stroke-linecap="round"/>
+      <div class="flex items-center">
+       <svg width="16" height="16" viewBox="0 0 16 16" fill="white" xmlns="http://www.w3.org/2000/svg">
+         <path d="M8.00011 2.3457V8.4034M8.00011 8.4034V14.4611M8.00011 8.4034H14.4617M8.00011 8.4034H1.53857" stroke="#FFF" stroke-width="3" stroke-linecap="round"/>
        </svg>
       </div>
       <control
         ref="root"
         v-model="createTaskText"
         @keyup.enter="createTask"
-        class="w-full"
+        class="w-full text-white"
         :placeholder="'Enter task name'"
         borderless
         transparent
@@ -30,7 +37,7 @@
   <div
     v-if="status == 'loading'"
     class="animate-pulse flex pr-4 mt-0.5"
-    :class="newConfig.leaves && newConfig.leaves.length ? 'pl-8' : 'pl-0'"
+    :class="newConfig.listHasChildren ? 'pl-8' : 'pl-0'"
   >
     <div class="flex-col w-full">
       <div class="animate-pulse h-20 dark:bg-slate-900 bg-white my-1 border border-gray-300 dark:border-gray-700 rounded-xl"></div>
@@ -45,6 +52,7 @@
       <div class="animate-pulse h-10 dark:bg-slate-900 bg-white my-1 border border-gray-300 dark:border-gray-700 rounded-xl"></div>
     </div>
   </div>
+
   <!-- vue3-treeview -->
   <tree :nodes="storeTasks" :config="newConfig" @nodeOpened="nodeExpanding" @nodeFocus="nodeSelected" v-if="status == 'success'" class="mt-0.5">
     <template #before-input="props">
@@ -75,41 +83,90 @@
               :style="{ color: colors[props.node.info.uid_marker] ? colors[props.node.info.uid_marker].fore_color : '' }"
               :height="subtask.height"
             />
+            <!-- Task action popper -->
             <Popper
+              class="w-full"
               arrow
               :class="isDark ? 'dark' : 'light'"
               placement="bottom"
               :disabled="props.node.info.type == 4"
             >
               <template #content="{ close }">
-                <div class="flex flex-col">
-                  <div
-                    v-for="status in 10"
-                    @click="close"
-                    :key="status"
-                  >
+                <div class="flex flex-col w-40">
+                    <!-- Set task for tomorrow -->
                     <div
                       class="flex cursor-pointer items-center hover:bg-gray-100 py-0.5 px-1.5 rounded-xl"
-                      @click="changeTaskStatus(props.node.info.uid, status - 1)"
-                      v-if="showStatusOrNot(props.node.info.type, status - 1) && props.node.info.status != status - 1"
+                      @click="moveTaskTomorrow(props.node.info)"
                     >
-                      <div
-                        class="border-2 border-gray-300 rounded-md mr-1 flex items-center justify-center"
-                        style="min-width:20px; min-height: 20px;"
-                      >
-                        <Icon
-                          v-if="statuses[status-1]"
-                          :path="statuses[status-1].path"
-                          :class="statusColor[status-1] ? statusColor[status-1] : 'text-gray-500 dark:text-gray-100'"
-                          :box="statuses[status-1].viewBox"
-                          :width="statuses[status-1].width"
-                          :height="statuses[status-1].height"
-                        />
-                      </div>
-                    {{ localization[statusesLabels[status-1]] }}
+                      <Icon
+                        :path="fortomorrow.path"
+                        class="text-gray-600 dark:text-white mr-3 cursor-pointer"
+                        :box="fortomorrow.viewBox"
+                        :width="fortomorrow.width"
+                        :height="fortomorrow.height"
+                      />
+                      <p>{{ localization.Tomorrow }}</p>
                     </div>
-                  </div>
-                </div>
+                    <!-- Copy task name -->
+                    <div
+                      class="flex cursor-pointer items-center hover:bg-gray-100 py-0.5 px-1.5 rounded-xl"
+                      @click="copyTaskName(props.node.info); close();"
+                    >
+                      <Icon
+                        :path="copy.path"
+                        class="text-gray-600 dark:text-white mr-3 cursor-pointer"
+                        :box="copy.viewBox"
+                        :width="copy.width"
+                        :height="copy.height"
+                      />
+                      <p>{{ props.node.info.taskNameCopied ? 'Copied!' : localization.copy_taskname }}</p>
+                    </div>
+                    <!-- Copy task -->
+                    <div
+                      class="flex cursor-pointer items-center hover:bg-gray-100 py-0.5 px-1.5 rounded-xl"
+                      v-if="props.node.info.type == 1"
+                      @click="close"
+                    >
+                      <Icon
+                        :path="copy.path"
+                        class="text-gray-600 dark:text-white mr-3 cursor-pointer"
+                        :box="copy.viewBox"
+                        :width="copy.width"
+                        :height="copy.height"
+                      />
+                      <p>Copy</p>
+                    </div>
+                    <!-- Cut task -->
+                    <div
+                      class="flex cursor-pointer items-center hover:bg-gray-100 py-0.5 px-1.5 rounded-xl"
+                      v-if="props.node.info.type == 1"
+                      @click="close"
+                    >
+                      <Icon
+                        :path="cut.path"
+                        class="text-gray-600 dark:text-white mr-3 cursor-pointer"
+                        :box="cut.viewBox"
+                        :width="cut.width"
+                        :height="cut.height"
+                      />
+                      <p>Cut</p>
+                    </div>
+                    <!-- Delete task -->
+                    <div
+                      class="flex cursor-pointer items-center hover:bg-gray-100 py-0.5 px-1.5 rounded-xl"
+                      v-if="props.node.info.type == 1"
+                      @click="showConfirm = true;"
+                    >
+                      <Icon
+                        :path="bin.path"
+                        class="text-gray-600 dark:text-white mr-3 cursor-pointer"
+                        :box="bin.viewBox"
+                        :width="bin.width"
+                        :height="bin.height"
+                      />
+                      <p>{{ localization.remove }}</p>
+                    </div>
+                 </div>
               </template>
               <Icon
                 :path="taskoptions.path"
@@ -370,6 +427,7 @@ import { useStore } from 'vuex'
 import Icon from '@/components/Icon.vue'
 import Control from '@/components/Control.vue'
 import Popper from 'vue3-popper'
+import ModalBoxConfirm from '@/components/modals/ModalBoxConfirm.vue'
 
 import * as TASK from '@/store/actions/tasks'
 import { MESSAGES_REQUEST, REFRESH_MESSAGES } from '@/store/actions/taskmessages'
@@ -393,13 +451,18 @@ import clock from '@/icons/clock.js'
 import subtask from '@/icons/subtask.js'
 import taskoptions from '@/icons/taskoptions.js'
 import repeat from '@/icons/repeat.js'
+import fortomorrow from '@/icons/for-tomorrow.js'
+import copy from '@/icons/copy.js'
+import cut from '@/icons/cut.js'
+import bin from '@/icons/bin.js'
 
 export default {
   components: {
     tree: treeview,
     Icon,
     Control,
-    Popper
+    Popper,
+    ModalBoxConfirm
   },
   props: {
     storeTasks: Object,
@@ -418,7 +481,7 @@ export default {
     const user = computed(() => store.state.user.user)
     const isDark = computed(() => store.state.darkMode)
     const isPropertiesMobileExpanded = computed(() => store.state.isPropertiesMobileExpanded)
-    const lastSelectedTaskUid = ''
+    const lastSelectedTaskUid = ref('')
 
     const SHOW_TASK_INPUT_UIDS = {
       '901841d9-0016-491d-ad66-8ee42d2b496b': TASK.TASKS_REQUEST, // get today's day
@@ -479,14 +542,18 @@ export default {
       return (n < 10 ? '0' : '') + n
     }
 
-    const getTodaysDate = (val) => {
+    const getTodaysDate = (val, isYearFirst = true) => {
       if (val == null) {
         val = new Date()
       }
       const month = pad2(val.getMonth() + 1)
       const day = pad2(val.getDate())
       const year = pad2(val.getFullYear())
-      return year + '-' + month + '-' + day
+      if (isYearFirst) {
+        return year + '-' + month + '-' + day
+      } else {
+        return day + '-' + month + '-' + year
+      }
     }
 
     const handleTaskSource = () => {
@@ -547,9 +614,33 @@ export default {
         if (task._justCreated) {
           store.commit(TASK.REMOVE_TASK, task.uid)
         } else {
-          store.dispatch(TASK.REMOVE_TASK, task.uid)
+          removeTask(task.uid)
         }
       }
+    }
+
+    const moveTaskTomorrow = (task) => {
+      const today = new Date()
+      const tomorrow = new Date(today)
+      tomorrow.setDate(tomorrow.getDate() + 1)
+      store.dispatch(
+        TASK.CHANGE_TASK_DATE,
+        {
+          uid: task.uid,
+          str_date_begin: getTodaysDate(tomorrow, false),
+          str_date_end: getTodaysDate(tomorrow, false),
+          str_time_begin: '00:00',
+          str_time_end: '23:59'
+        }
+      )
+    }
+
+    const copyTaskName = (task) => {
+      navigator.clipboard.writeText(task.name)
+    }
+
+    const removeTask = (uid) => {
+      store.dispatch(TASK.REMOVE_TASK, uid)
     }
 
     const changeTaskStatus = (uid, status) => {
@@ -574,9 +665,10 @@ export default {
 
     const nodeSelected = (arg) => {
       store.commit('basic', { key: 'propertiesState', value: 'task' })
-      if (lastSelectedTaskUid === arg.info.uid) {
+      if (lastSelectedTaskUid.value === arg.info.uid) {
         return
       }
+      lastSelectedTaskUid.value = arg.info.uid
       if (arg.info.readed === 0) {
         store.dispatch(TASK.CHANGE_TASK_READ, arg.info.uid)
       }
@@ -608,6 +700,9 @@ export default {
       countChecklist,
       createTask,
       updateTask,
+      removeTask,
+      copyTaskName,
+      moveTaskTomorrow,
       changeTaskStatus,
       addSubtask,
       createTaskText,
@@ -663,6 +758,7 @@ export default {
     ]
     return {
       DONT_SHOW_TASK_INPUT_UIDS,
+      showConfirm: false,
       statuses,
       statusesLabels,
       project,
@@ -672,7 +768,11 @@ export default {
       clock,
       subtask,
       taskoptions,
-      repeat
+      repeat,
+      fortomorrow,
+      copy,
+      cut,
+      bin
     }
   },
   methods: {

@@ -789,7 +789,13 @@ const actions = {
       axios({
         url: url,
         method: 'PATCH',
-        data: { uid: data.uid, str_date_begin: data.str_date_begin, str_date_end: data.str_date_end, str_time_begin: data.str_time_begin, str_time_end: data.str_time_end }
+        data: {
+          uid: data.uid,
+          str_date_begin: data.str_date_begin,
+          str_date_end: data.str_date_end,
+          str_time_begin: data.str_time_begin,
+          str_time_end: data.str_time_end
+        }
       })
         .then(resp => {
           resolve(resp)
@@ -868,10 +874,13 @@ const mutations = {
     state.hasLoadedOnce = true
 
     Object.assign(state.newtasks, {})
-    Object.assign(state.newConfig, { roots: [], leaves: [] })
+    Object.assign(state.newConfig, { roots: [], leaves: [], listHasChildren: false, dragAndDrop: true })
 
     const nodes = {}
     for (const node of resp.data.tasks) {
+      if (node.has_children && !state.newConfig.listHasChildren) {
+        state.newConfig.listHasChildren = true
+      }
       // write root uid to array
       state.newConfig.roots.push(node.uid)
       if (!node.has_children) {
@@ -882,7 +891,9 @@ const mutations = {
         // text: node.name,
         info: node,
         children: node.has_children ? ['hello'] : '',
-        state: {}
+        state: {
+          draggable: node.type === 1
+        }
       }
     }
     state.newtasks = nodes
@@ -929,6 +940,7 @@ const mutations = {
     state.newtasks[data.uid].info.status = data.value
   },
   [TASK.ADD_TASK]: (state, task) => {
+    task.children = []
     if (!task._justCreated) {
       state.newConfig.roots.push(task.uid)
       task._justCreated = false

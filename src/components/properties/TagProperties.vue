@@ -74,7 +74,7 @@ const removeTag = (tag) => {
         v-model="selectedTag.name"
         type="text"
         placeholder="Название проекта"
-        class="mt-2 rounded-xl bg-gray-100 font-bold text-gray-700 w-full border-none ring-0 outline-none"
+        class="mt-2 p-3 rounded-xl bg-gray-100 font-bold text-gray-700 w-full border-none ring-0 outline-none"
       >
       <div
          class="mt-8"

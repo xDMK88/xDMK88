@@ -132,7 +132,7 @@ const clickOnGridCard = (value) => {
     >
       <template v-for="(employee, pindex) in value.items" :key="pindex">
         <div
-          class="flex items-center bg-white dark:bg-gray-700 rounded-xl shadow cursor-pointer h-30 px-3 py-5"
+          class="flex items-center bg-white dark:bg-gray-700 rounded-xl shadow hover:shadow-md cursor-pointer h-30 px-3 py-5"
         >
           <span
             v-if="employee.type == 1"

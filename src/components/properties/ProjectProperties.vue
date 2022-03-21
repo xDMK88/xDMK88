@@ -106,7 +106,7 @@ const quiet = ref(!selectedProject.value.quiet)
         v-model="selectedProject.name"
         type="text"
         placeholder="Название проекта"
-        class="mt-2 rounded-xl bg-gray-100 font-bold text-gray-700 w-full border-none ring-0 outline-none"
+        class="mt-2 rounded-xl bg-gray-100 font-bold text-gray-700 w-full border-none ring-0 outline-none p-3"
         :disabled="selectedProject.email_creator != user.current_user_email"
       >
       <div

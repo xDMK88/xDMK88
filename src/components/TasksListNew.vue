@@ -61,28 +61,67 @@
         <pre class="text-xs">state: {{ props.node.state }}</pre>
         -->
         <!-- Hover task options -->
-        <div
-          class="absolute hidden group-hover:flex bg-opacity-75 hover:bg-opacity-100 right-2 top-2 bg-gray-200 dark:bg-gray-700 rounded-lg items-cetner justify-center py-1.5 px-3"
-          :style="{ backgroundColor: colors[props.node.info.uid_marker] ? colors[props.node.info.uid_marker].back_color : '' }"
-        >
-        <Icon
-          :path="subtask.path"
-          @click="addSubtask(props.node.info.uid); focusTaskByUid(props.node.info.uid);"
-          class="text-gray-600 dark:text-white mr-3"
-          :box="subtask.viewBox"
-          :width="subtask.width"
-          :style="{ color: colors[props.node.info.uid_marker] ? colors[props.node.info.uid_marker].fore_color : '' }"
-          :height="subtask.height"
-        />
-        <Icon
-          :path="taskoptions.path"
-          class="text-gray-600 dark:text-white"
-          :box="taskoptions.viewBox"
-          :width="taskoptions.width"
-          :style="{ color: colors[props.node.info.uid_marker] ? colors[props.node.info.uid_marker].fore_color : '' }"
-          :height="taskoptions.height"
-        />
-        </div>
+        <Transition>
+          <div
+            class="absolute hidden group-hover:flex bg-opacity-75 hover:bg-opacity-100 right-2 top-2 bg-gray-200 dark:bg-gray-700 rounded-lg items-cetner justify-center py-0.5 px-3"
+            :style="{ backgroundColor: colors[props.node.info.uid_marker] ? colors[props.node.info.uid_marker].back_color : '' }"
+          >
+            <Icon
+              :path="subtask.path"
+              @click="addSubtask(props.node.info.uid); focusTaskByUid(props.node.info.uid);"
+              class="text-gray-600 dark:text-white mr-3 cursor-pointer"
+              :box="subtask.viewBox"
+              :width="subtask.width"
+              :style="{ color: colors[props.node.info.uid_marker] ? colors[props.node.info.uid_marker].fore_color : '' }"
+              :height="subtask.height"
+            />
+            <Popper
+              arrow
+              :class="isDark ? 'dark' : 'light'"
+              placement="bottom"
+              :disabled="props.node.info.type == 4"
+            >
+              <template #content="{ close }">
+                <div class="flex flex-col">
+                  <div
+                    v-for="status in 10"
+                    @click="close"
+                    :key="status"
+                  >
+                    <div
+                      class="flex cursor-pointer items-center hover:bg-gray-100 py-0.5 px-1.5 rounded-xl"
+                      @click="changeTaskStatus(props.node.info.uid, status - 1)"
+                      v-if="showStatusOrNot(props.node.info.type, status - 1) && props.node.info.status != status - 1"
+                    >
+                      <div
+                        class="border-2 border-gray-300 rounded-md mr-1 flex items-center justify-center"
+                        style="min-width:20px; min-height: 20px;"
+                      >
+                        <Icon
+                          v-if="statuses[status-1]"
+                          :path="statuses[status-1].path"
+                          :class="statusColor[status-1] ? statusColor[status-1] : 'text-gray-500 dark:text-gray-100'"
+                          :box="statuses[status-1].viewBox"
+                          :width="statuses[status-1].width"
+                          :height="statuses[status-1].height"
+                        />
+                      </div>
+                    {{ localization[statusesLabels[status-1]] }}
+                    </div>
+                  </div>
+                </div>
+              </template>
+              <Icon
+                :path="taskoptions.path"
+                class="text-gray-600 dark:text-white cursor-pointer"
+                :box="taskoptions.viewBox"
+                :width="taskoptions.width"
+                :style="{ color: colors[props.node.info.uid_marker] ? colors[props.node.info.uid_marker].fore_color : '' }"
+                :height="taskoptions.height"
+              />
+            </Popper>
+          </div>
+        </Transition>
         <!-- Name, Status -->
         <div
           class="flex"
@@ -129,7 +168,7 @@
                 </div>
               </template>
               <div
-                class="border-2 border-gray-300 rounded-md mr-1 flex items-center justify-center mt-0.5"
+                class="relative border-2 border-gray-300 rounded-md mr-1 flex items-center justify-center mt-0.5"
                 :class="{ 'cursor-pointer': [1, 2, 3].includes(props.node.info.type), 'cursor-not-allowed': props.node.info.type == 4 }"
                 style="min-width:20px; min-height: 20px;"
               >
@@ -141,6 +180,14 @@
                   :box="statuses[props.node.info.status].viewBox"
                   :width="statuses[props.node.info.status].width"
                   :height="statuses[props.node.info.status].height"
+                />
+                <Icon
+                  v-if="props.node.info.SeriesType == 1"
+                  :path="repeat.path"
+                  class="text-blue-500 bg-white absolute -bottom-1.5 -right-1.5 p-0.5 rounded-full"
+                  :box="repeat.viewBox"
+                  :width="repeat.width"
+                  :height="repeat.height"
                 />
               </div>
             </Popper>
@@ -345,6 +392,7 @@ import improve from '@/icons/improve.js'
 import clock from '@/icons/clock.js'
 import subtask from '@/icons/subtask.js'
 import taskoptions from '@/icons/taskoptions.js'
+import repeat from '@/icons/repeat.js'
 
 export default {
   components: {
@@ -623,7 +671,8 @@ export default {
       taskfocus,
       clock,
       subtask,
-      taskoptions
+      taskoptions,
+      repeat
     }
   },
   methods: {

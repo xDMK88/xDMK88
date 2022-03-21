@@ -126,7 +126,7 @@ const goToChildren = (value) => {
     >
       <template v-for="(project, pindex) in value.items" :key="pindex">
         <div
-          class="flex items-center bg-white dark:bg-gray-700 rounded-xl shadow px-5 py-7 relative"
+          class="flex items-center bg-white dark:bg-gray-700 rounded-xl shadow hover:shadow-md px-5 py-7 relative"
           :class="{ 'ring-4 ring-orange-300': focusedProject == project.uid }"
         >
           <div

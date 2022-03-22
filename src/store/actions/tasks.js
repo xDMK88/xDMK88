@@ -47,6 +47,8 @@ export const ADD_LOADED_TASK = 'ADD_LOADED_TASK'
 export const CLEAN_UP_LOADED_TASKS = 'CLEAN_UP_LOADED_TASKS'
 
 export const SELECT_TASK = 'SELECT_TASK'
+export const COPY_TASK = 'COPY_TASK'
+export const RESET_COPY_TASK = 'RESET_COPY_TASK'
 export const SEARCH_TASK = 'SEARCH_TASK'
 
 export const ADD_TASK_TAGS = 'ADD_TASK_TAGS'

@@ -1,4 +1,5 @@
 <template>
+  <!-- Confirm modal -->
   <modal-box-confirm
     v-model="showConfirm"
     button="warning"
@@ -11,16 +12,23 @@
       Do you really wanna delete this task?
     </p>
   </modal-box-confirm>
+
+  <!-- Add task input -->
   <div
     v-if="!DONT_SHOW_TASK_INPUT_UIDS[taskListSource.uid]"
     class="pr-3"
     :class="newConfig.listHasChildren ? 'pl-8' : 'pl-0'"
   >
     <div
-      class="flex items-center bg-gray-600 dark:bg-gray-700  opacity-70 rounded-xl pl-4"
+      class="flex items-center bg-gray-600 dark:bg-gray-700 opacity-70 rounded-xl"
     >
-      <div class="flex items-center">
+      <div
+        class="flex items-center pl-3"
+        :class="{ 'bg-gray-500 p-3 rounded-l-xl cursor-pointer': Object.keys(copiedTasks).length }"
+        @click="pasteCopiedTasks"
+      >
         <svg
+          :class="{ 'mr-2': Object.keys(copiedTasks).length }"
           width="16"
           height="16"
           viewBox="0 0 16 16"
@@ -34,6 +42,14 @@
             stroke-linecap="round"
           />
         </svg>
+        <div
+          v-if="Object.keys(copiedTasks).length"
+          class="flex items-center justify-center bg-rose-600 rounded-full w-6 h-6"
+        >
+          <p class="text-white text-sm font-bold">
+            {{ Object.keys(copiedTasks).length }}
+          </p>
+        </div>
       </div>
       <control
         ref="root"
@@ -46,6 +62,7 @@
       />
     </div>
   </div>
+
   <!-- Skeleton -->
   <div
     v-if="status == 'loading'"
@@ -82,16 +99,16 @@
         :style="{ backgroundColor: colors[props.node.info.uid_marker] ? colors[props.node.info.uid_marker].back_color : '' }"
         :class="{ 'bg-gray-200 dark:bg-gray-900': (props.node.info.status == 1 || props.node.info.status == 7) && props.node.info.uid_marker == '00000000-0000-0000-0000-000000000000' }"
       >
-        <!--
-        <pre class="text-xs">children: {{ props.node.children }}</pre>
-        <pre class="text-xs">uid: {{ props.node.info.type }}</pre>
-        <pre class="text-xs">uid: {{ props.node.info.uid}}</pre>
-        <pre class="text-xs">state: {{ props.node.state }}</pre>
-        -->
         <!-- Hover task options -->
         <Transition>
           <div
-            class="absolute hidden group-hover:flex bg-opacity-75 hover:bg-opacity-100 right-2 top-2 bg-gray-200 dark:bg-gray-700 rounded-lg items-cetner justify-center py-0.5 px-3"
+            class="absolute right-2 top-2 bg-gray-200 rounded-lg items-cetner justify-center py-0.5 px-3"
+            :class="{
+              'flex': isTaskHoverPopperActive && lastSelectedTaskUid == props.node.id,
+              'hidden': isTaskHoverPopperActive && lastSelectedTaskUid != props.node.id,
+              'group-hover:flex': !isTaskHoverPopperActive
+              }
+            "
             :style="{ backgroundColor: colors[props.node.info.uid_marker] ? colors[props.node.info.uid_marker].back_color : '' }"
           >
             <Icon
@@ -101,14 +118,15 @@
               :width="subtask.width"
               :style="{ color: colors[props.node.info.uid_marker] ? colors[props.node.info.uid_marker].fore_color : '' }"
               :height="subtask.height"
-              @click="addSubtask(props.node.info.uid); focusTaskByUid(props.node.info.uid);"
+              @click="addSubtask(props.node.info.uid);"
             />
+
             <!-- Task action popper -->
             <Popper
-              class="w-full"
               arrow
+              @open:popper="toggleTaskHoverPopper(true)"
+              @close:popper="toggleTaskHoverPopper(false)"
               :class="isDark ? 'dark' : 'light'"
-              placement="bottom"
               :disabled="props.node.info.type == 4"
             >
               <template #content="{ close }">
@@ -127,6 +145,7 @@
                     />
                     <p>{{ localization.Tomorrow }}</p>
                   </div>
+
                   <!-- Copy task name -->
                   <div
                     class="flex cursor-pointer items-center hover:bg-gray-100 py-0.5 px-1.5 rounded-xl"
@@ -141,26 +160,30 @@
                     />
                     <p>{{ props.node.info.taskNameCopied ? 'Copied!' : localization.copy_taskname }}</p>
                   </div>
+
                   <!-- Copy task -->
                   <div
                     v-if="props.node.info.type == 1"
-                    class="flex cursor-pointer items-center hover:bg-gray-100 py-0.5 px-1.5 rounded-xl"
-                    @click="close"
+                    class="flex items-center py-0.5 px-1.5 rounded-xl"
+                    :class="{ 'cursor-pointer': !copiedTasks[props.node.info.uid], 'hover:bg-gray-100': !copiedTasks[props.node.info.uid], 'text-gray-200': copiedTasks[props.node.info.uid] }"
+                    @click="copyTask(props.node.info)"
                   >
                     <Icon
                       :path="copy.path"
                       class="text-gray-600 dark:text-white mr-3 cursor-pointer"
+                      :class="{ 'text-gray-200': copiedTasks[props.node.info.uid] }"
                       :box="copy.viewBox"
                       :width="copy.width"
                       :height="copy.height"
                     />
-                    <p>Copy</p>
+                    <p>{{ copiedTasks[props.node.info.uid] ? 'Copied' : 'Copy' }}</p>
                   </div>
+
                   <!-- Cut task -->
                   <div
                     v-if="props.node.info.type == 1"
                     class="flex cursor-pointer items-center hover:bg-gray-100 py-0.5 px-1.5 rounded-xl"
-                    @click="close"
+                    @click="cutTask(props.node.info); close();"
                   >
                     <Icon
                       :path="cut.path"
@@ -171,6 +194,7 @@
                     />
                     <p>Cut</p>
                   </div>
+
                   <!-- Delete task -->
                   <div
                     v-if="props.node.info.type == 1"
@@ -190,7 +214,7 @@
               </template>
               <Icon
                 :path="taskoptions.path"
-                class="text-gray-600 dark:text-white cursor-pointer"
+                class="text-gray-600 dark:text-white cursor-pointer h-full"
                 :box="taskoptions.viewBox"
                 :width="taskoptions.width"
                 :style="{ color: colors[props.node.info.uid_marker] ? colors[props.node.info.uid_marker].fore_color : '' }"
@@ -199,6 +223,7 @@
             </Popper>
           </div>
         </Transition>
+
         <!-- Name, Status -->
         <div
           class="flex"
@@ -217,29 +242,29 @@
               <template #content="{ close }">
                 <div class="flex flex-col">
                   <div
-                    v-for="status in 10"
-                    :key="status"
+                    v-for="taskStatus in 10"
+                    :key="taskStatus"
                     @click="close"
                   >
                     <div
-                      v-if="showStatusOrNot(props.node.info.type, status - 1) && props.node.info.status != status - 1"
+                      v-if="showStatusOrNot(props.node.info.type, taskStatus - 1) && props.node.info.status != taskStatus - 1"
                       class="flex cursor-pointer items-center hover:bg-gray-100 py-0.5 px-1.5 rounded-xl"
-                      @click="changeTaskStatus(props.node.info.uid, status - 1)"
+                      @click="changeTaskStatus(props.node.info.uid, taskStatus - 1)"
                     >
                       <div
                         class="border-2 border-gray-300 rounded-md mr-1 flex items-center justify-center"
                         style="min-width:20px; min-height: 20px;"
                       >
                         <Icon
-                          v-if="statuses[status-1]"
-                          :path="statuses[status-1].path"
-                          :class="statusColor[status-1] ? statusColor[status-1] : 'text-gray-500 dark:text-gray-100'"
-                          :box="statuses[status-1].viewBox"
-                          :width="statuses[status-1].width"
-                          :height="statuses[status-1].height"
+                          v-if="statuses[taskStatus-1]"
+                          :path="statuses[taskStatus-1].path"
+                          :class="statusColor[taskStatus-1] ? statusColor[taskStatus-1] : 'text-gray-500 dark:text-gray-100'"
+                          :box="statuses[taskStatus-1].viewBox"
+                          :width="statuses[taskStatus-1].width"
+                          :height="statuses[taskStatus-1].height"
                         />
                       </div>
-                      {{ localization[statusesLabels[status-1]] }}
+                      {{ localization[statusesLabels[taskStatus-1]] }}
                     </div>
                   </div>
                 </div>
@@ -295,6 +320,7 @@
             :height="taskfocus.height"
           />
         </div>
+
         <!-- Tags, Overdue, Customer, Performer -->
         <div
           v-if="props.node.info.uid_customer == '00000000-0000-0000-0000-000000000000' || props.node.info.email_performer || props.node.info.is_overdue || props.node.info.tags || props.node.info.uid_project == '00000000-0000-0000-0000-000000000000'"
@@ -361,6 +387,7 @@
             {{ projects[props.node.info.uid_project].name }}
           </div>
         </div>
+
         <!-- Icons, Messages, Files, Data, Checklist -->
         <div
           v-if="props.node.info.term_customer || props.node.info.checklist || props.node.info.has_files || props.node.info.has_msgs || props.node.info.comment"
@@ -489,8 +516,14 @@ export default {
     ModalBoxConfirm
   },
   props: {
-    storeTasks: Object,
-    newConfig: Object
+    storeTasks: {
+      type: Object,
+      default () { return {} }
+    },
+    newConfig: {
+      type: Object,
+      default () { return {} }
+    }
   },
   setup () {
     const store = useStore()
@@ -505,7 +538,9 @@ export default {
     const user = computed(() => store.state.user.user)
     const isDark = computed(() => store.state.darkMode)
     const isPropertiesMobileExpanded = computed(() => store.state.isPropertiesMobileExpanded)
+    const copiedTasks = computed(() => store.state.tasks.copiedTasks)
     const lastSelectedTaskUid = ref('')
+    const isTaskHoverPopperActive = ref(false)
 
     const SHOW_TASK_INPUT_UIDS = {
       '901841d9-0016-491d-ad66-8ee42d2b496b': TASK.TASKS_REQUEST, // get today's day
@@ -517,6 +552,10 @@ export default {
       'd28e3872-9a23-4158-aea0-246e2874da73': TASK.EMPLOYEE_TASKS_REQUEST,
       'ed8039ae-f3de-4369-8f32-829d401056e9': TASK.COLOR_TASKS_REQUEST,
       '00a5b3de-9474-404d-b3ba-83f488ac6d30': TASK.TAG_TASKS_REQUEST
+    }
+
+    const toggleTaskHoverPopper = (val) => {
+      isTaskHoverPopperActive.value = val
     }
 
     const nodeExpanding = (arg) => {
@@ -580,17 +619,23 @@ export default {
       }
     }
 
-    const handleTaskSource = () => {
-      const data = {
-        uid: uuidv4(),
-        uid_parent: '00000000-0000-0000-0000-000000000000',
-        uid_customer: user.value.current_user_uid,
-        uid_project: '00000000-0000-0000-0000-000000000000',
-        status: 0,
-        email_performer: '',
-        type: 1,
-        name: createTaskText.value,
-        comment: ''
+    const handleTaskSource = (taskData) => {
+      let data
+      if (taskData) {
+        data = taskData
+        data.uid = uuidv4()
+      } else {
+        data = {
+          uid: uuidv4(),
+          uid_parent: '00000000-0000-0000-0000-000000000000',
+          uid_customer: user.value.current_user_uid,
+          uid_project: '00000000-0000-0000-0000-000000000000',
+          status: 0,
+          email_performer: '',
+          type: 1,
+          name: createTaskText.value,
+          comment: ''
+        }
       }
 
       switch (SHOW_TASK_INPUT_UIDS[taskListSource.value.uid]) {
@@ -618,6 +663,18 @@ export default {
           break
       }
       return data
+    }
+
+    const pasteCopiedTasks = () => {
+      if (!copiedTasks.value) {
+        return
+      }
+
+      for (const uid in copiedTasks.value) {
+        const data = handleTaskSource(copiedTasks.value[uid])
+        store.dispatch(TASK.CREATE_TASK, data)
+      }
+      store.commit(TASK.RESET_COPY_TASK)
     }
 
     const createTask = () => {
@@ -687,6 +744,15 @@ export default {
       store.dispatch(TASK.ADD_SUBTASK, newSubtask)
     }
 
+    const copyTask = (task) => {
+      store.commit(TASK.COPY_TASK, task)
+    }
+
+    const cutTask = (task) => {
+      store.commit(TASK.COPY_TASK, task)
+      removeTask(task.uid)
+    }
+
     const nodeSelected = (arg) => {
       store.commit('basic', { key: 'propertiesState', value: 'task' })
       if (lastSelectedTaskUid.value === arg.info.uid) {
@@ -716,13 +782,19 @@ export default {
       tags: computed(() => store.state.tasks.tags),
       employees,
       employeesByEmail,
+      isTaskHoverPopperActive,
       projects,
+      toggleTaskHoverPopper,
       nodeExpanding,
       nodeSelected,
       showStatusOrNot,
       lastSelectedTaskUid,
       countChecklist,
       createTask,
+      pasteCopiedTasks,
+      copiedTasks,
+      copyTask,
+      cutTask,
       updateTask,
       removeTask,
       copyTaskName,
@@ -800,9 +872,6 @@ export default {
     }
   },
   methods: {
-    focusTaskByUid: (uid) => {
-      console.log(this.$refs)
-    }
   }
 }
 </script>

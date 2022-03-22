@@ -17,10 +17,10 @@ function pad2 (n) {
 const state = {
   tasks: false,
   tags: {},
-  mass: '',
   selectedTag: null,
   subtasks: false,
   selectedTask: undefined,
+  copiedTasks: {},
   status: '',
   selectedColor: null,
   project: '',
@@ -539,7 +539,6 @@ const actions = {
   },
   [TASK.CHANGE_TASK_NAME]: ({ commit, dispatch }, data) => {
     return new Promise((resolve, reject) => {
-      commit(TASK.EMPLOYEE_TASKS_REQUEST)
       const url = 'https://web.leadertask.com/api/v1/task/name?uid=' + data.uid + '&value=' + data.value
       axios({
         url: url,
@@ -590,12 +589,12 @@ const actions = {
           commit(TASK.REMOVE_TASK, uid)
           resolve(resp)
         }).catch(err => {
-          notify({
-            group: 'api',
-            title: 'REST API Error, please make screenshot',
-            action: TASK.REMOVE_TASK,
-            text: err.response.data
-          }, 15000)
+          // notify({
+          //   group: 'api',
+          //   title: 'REST API Error, please make screenshot',
+          //   action: TASK.REMOVE_TASK,
+          //   text: err.response.data
+          // }, 15000)
           reject(err)
         })
     })
@@ -783,7 +782,6 @@ const actions = {
     })
   },
   [TASK.CHANGE_TASK_DATE]: ({ commit, dispatch }, data) => {
-    console.log(data)
     return new Promise((resolve, reject) => {
       const url = 'https://web.leadertask.com/api/v1/task/term'
       axios({
@@ -800,6 +798,26 @@ const actions = {
         .then(resp => {
           resolve(resp)
           commit(TASK.CHANGE_TASK_DATE, data)
+        }).catch(err => {
+          notify({
+            group: 'api',
+            title: 'REST API Error, please make screenshot',
+            action: TASK.CHANGE_TASK_DATE,
+            text: 'Ошибка даты'
+          }, 15000)
+          reject(err)
+        })
+    })
+  },
+  [TASK.CHANGE_TASK_PARENT_AND_ORDER]: ({ commit, dispatch }, data) => {
+    return new Promise((resolve, reject) => {
+      const url = 'https://web.leadertask.com/api/v1/task/parent?uid=' + data.uid + '&parent=' + data.parent + '&order' + data.order
+      axios({
+        url: url,
+        method: 'PATCH'
+      })
+        .then(resp => {
+          resolve(resp)
         }).catch(err => {
           notify({
             group: 'api',
@@ -881,21 +899,21 @@ const mutations = {
       if (node.has_children && !state.newConfig.listHasChildren) {
         state.newConfig.listHasChildren = true
       }
-      // write root uid to array
+
       state.newConfig.roots.push(node.uid)
       if (!node.has_children) {
         state.newConfig.leaves.push(node.uid)
       }
-      // write every node into 1d array with objects that has children array in that
+
       nodes[node.uid] = {
-        // text: node.name,
         info: node,
-        children: node.has_children ? ['hello'] : '',
+        children: node.has_children ? ['fake-uid'] : [],
         state: {
           draggable: node.type === 1
         }
       }
     }
+
     state.newtasks = nodes
   },
   [TASK.SUBTASKS_SUCCESS]: (state, resp) => {
@@ -928,7 +946,7 @@ const mutations = {
       }
       state.newtasks[task.uid] = {
         info: task,
-        children: task.has_children ? ['hello'] : '',
+        children: [],
         state: { checked: false, opened: false }
       }
     }
@@ -940,7 +958,6 @@ const mutations = {
     state.newtasks[data.uid].info.status = data.value
   },
   [TASK.ADD_TASK]: (state, task) => {
-    task.children = []
     if (!task._justCreated) {
       state.newConfig.roots.push(task.uid)
       task._justCreated = false
@@ -949,12 +966,18 @@ const mutations = {
     task.type = 1
     state.newtasks[task.uid] = {
       info: task,
-      children: task.has_children ? ['hello'] : ''
+      // even if copy, we would copy without children
+      children: [],
+      state: {
+        draggable: true,
+        disabled: false,
+        checked: false
+      }
     }
   },
   [TASK.REMOVE_TASK]: (state, uid) => {
     const uidParent = state.newtasks[uid].info.uid_parent === '00000000-0000-0000-0000-000000000000' ? uid : state.newtasks[uid].info.uid_parent
-    console.log(uidParent, uidParent)
+
     if (
       state.newtasks[uidParent].children &&
       state.newtasks[uidParent].children.length > 1
@@ -963,21 +986,33 @@ const mutations = {
         state.newtasks[uidParent].children,
         uid
       )
+      // delete last fake-uid because we don't want to show collapsing task node
+      if (state.newtasks[uidParent].children.length === 1 && state.newtasks[uidParent].children[0] === 'fake-uid') {
+        state.newtasks[uidParent].children = []
+      }
     } else if (
       state.newtasks[uidParent].children &&
-      state.newtasks[uidParent].children.length === 1
+      state.newtasks[uidParent].children.length === 1 &&
+      state.newtasks[uidParent].children[0] !== 'fake-uid'
     ) {
-      state.newConfig.leaves.push(state.newtasks[uid].info.uid_parent)
+      state.newConfig.leaves.push(uidParent)
+      state.newtasks[uidParent].info.has_children = false
       state.newtasks[uidParent].children = []
     }
+
+    state.newConfig.roots = arrayRemove(state.newConfig.roots, uid)
     delete state.newtasks[uid]
   },
   [TASK.ADD_SUBTASK]: (state, task) => {
     state.newConfig.leaves.push(task.uid)
     state.newtasks[task.uid] = {
       info: task,
-      children: task.has_children ? ['hello'] : '',
-      state: {}
+      children: [],
+      state: {
+        checked: false,
+        disabled: false,
+        draggable: true
+      }
     }
     if (state.newtasks[task.uid_parent].children && state.newtasks[task.uid_parent].children.length) {
       state.newtasks[task.uid_parent].children.push(task.uid)
@@ -1028,6 +1063,12 @@ const mutations = {
   },
   [TASK.CHANGE_TASK_DATE]: (state, data) => {
     state.date.push(data.value)
+  },
+  [TASK.COPY_TASK]: (state, task) => {
+    state.copiedTasks[task.uid] = task
+  },
+  [TASK.RESET_COPY_TASK]: (state) => {
+    state.copiedTasks = {}
   }
 }
 

@@ -140,7 +140,6 @@ const menuClick = (event, item) => {
 
   store.commit(TASK.CLEAN_UP_LOADED_TASKS)
 }
-
 //  document.getElementById('Maincalendar').classList.remove('is-not-in-month')
 </script>
 
@@ -295,6 +294,7 @@ const menuClick = (event, item) => {
         :masks="{ weekdays: 'WW' }"
         :attributes="attrs"
         :nav-visibility="visible"
+        :class="{ 'is-not-in-month':false }"
         :is-dark="isDark"
       />
     </nav-bar-item>

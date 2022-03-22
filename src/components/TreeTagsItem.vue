@@ -59,7 +59,7 @@ export default {
 </script>
 
 <template>
-  <li class="item-element-class">
+  <li>
     <div
       :class="{ bold: isFolder }"
       class="list-tags-access"

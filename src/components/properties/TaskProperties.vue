@@ -1,5 +1,4 @@
 <script>
-import { createPopper } from '@popperjs/core'
 import Popper from 'vue3-popper'
 import { computed, ref } from 'vue'
 import { DatePicker } from 'v-calendar'
@@ -33,6 +32,7 @@ export default {
     const navigator = computed(() => store.state.navigator.navigator)
     const tasks = computed(() => store.state.tasks.newtasks)
     const employeesByEmail = computed(() => store.state.employees.employeesByEmail)
+    const isDark = computed(() => store.state.darkMode)
     //  const test2 = toRef(this.props, 'selectTags')
     const closeProperties = () => {
       store.dispatch('asidePropertiesToggle', false)
@@ -81,9 +81,6 @@ export default {
         }
       )
       this.popoverShowAccess = false
-    }
-    const changeAccessEmail = (emails) => {
-      this.checkEmail.push(emails)
     }
     const changeColors = (uid, marker) => {
       store.dispatch(TASK.CHANGE_TASK_COLOR, { uid: uid, value: marker }).then(
@@ -166,6 +163,62 @@ export default {
         })
       event.target.value = name
     }
+    const resetProject = () => {
+      store.dispatch(TASK.CHANGE_TASK_PROJECT, { uid: selectedTask.value.uid, value: '00000000-0000-0000-0000-000000000000' }).then(
+        resp => {
+          selectedTask.value.uid_project = '00000000-0000-0000-0000-000000000000'
+        }
+      )
+    }
+    const resetColor = () => {
+      store.dispatch(TASK.CHANGE_TASK_COLOR, { uid: selectedTask.value.uid, value: '00000000-0000-0000-0000-000000000000' }).then(
+        resp => {
+          selectedTask.value.uid_marker = '00000000-0000-0000-0000-000000000000'
+        }
+      )
+    }
+    const resetTags = (key) => {
+      selectedTask.value.tags.push(key)
+      store.dispatch(TASK.CHANGE_TASK_TAGS, { uid: selectedTask.value.uid, value: selectedTask.value.tags }).then(
+        resp => {
+          selectedTask.value.tags = key
+        }
+      )
+    }
+    const resetAccess = () => {
+      store.dispatch(TASK.CHANGE_TASK_ACCESS, { uid: selectedTask.value.uid, value: '' }).then(
+        resp => {
+          selectedTask.value.emails = ''
+        }
+      )
+    }
+    const resetEmployes = () => {
+      store.dispatch(TASK.CHANGE_TASK_PERFORMER, { uid: selectedTask.value.uid, value: '' }).then(
+        resp => {
+          selectedTask.value.email_performer = ''
+        }
+      )
+    }
+    const resetCalendar = () => {
+      console.log(new Date(this.range.start).toLocaleDateString())
+      console.log(new Date(this.range.start).toLocaleTimeString() + '-' + new Date(this.range.end).toLocaleTimeString())
+      const data = {
+        uid: selectedTask.value.uid,
+        str_date_begin: '0001-01-01',
+        str_date_end: '0001-01-01',
+        str_time_begin: '00:00:00',
+        str_time_end: '00:00:00',
+        reset: 0
+      }
+      store.dispatch(TASK.CHANGE_TASK_DATE, data).then(
+        resp => {
+          selectedTask.value.customer_date_begin = new Date(this.range.start)
+          selectedTask.value.customer_date_end = new Date(this.range.end)
+        })
+    }
+    const getImgUrl = (image) => {
+      return `${image}`
+    }
     const handleInput = () => {
       console.log(new Date(this.range.start).toLocaleDateString())
       console.log(new Date(this.range.start).toLocaleTimeString() + '-' + new Date(this.range.end).toLocaleTimeString())
@@ -184,13 +237,13 @@ export default {
         })
     }
     return {
+      isDark,
       unchecked,
       changeName,
       createTaskMsg,
       createTaskFile,
       closeProperties,
       ClickAccessEmail,
-      changeAccessEmail,
       changetags,
       ClickTagsChange,
       emailtomass,
@@ -200,6 +253,13 @@ export default {
       changeCheck,
       changeComment,
       handleInput,
+      resetProject,
+      resetColor,
+      resetTags,
+      resetAccess,
+      resetEmployes,
+      resetCalendar,
+      getImgUrl,
       checkEmail: selectedTask.value.emails.split('..'),
       close,
       file: '',
@@ -260,13 +320,6 @@ export default {
       firstDayOfWeek: 2,
       mode: 'single',
       selected: {},
-      popoverShowAccess: false,
-      popoverShowEmployee: false,
-      popoverShowRepeat: false,
-      popoverShowReminder: false,
-      popoverShowProject: false,
-      popoverShowColor: false,
-      popoverShowTags: false,
       isOpen: false,
       activeTab: '',
       tabs: [],
@@ -281,188 +334,6 @@ export default {
     activate (tab) {
       this.activeTab = tab.name
       this.$emit('activateTab', tab.name)
-    },
-    togglePopover_access: function () {
-      if (this.popoverShowAccess) {
-        this.popoverShowAccess = false
-      } else {
-        this.popoverShowAccess = true
-        this.popoverShowEmployee = false
-        this.popoverShowRepeat = false
-        this.popoverShowReminder = false
-        this.popoverShowProject = false
-        this.popoverShowColor = false
-        this.popoverShowTags = false
-        const mediaQuery = window.matchMedia('(max-width: 500px)')
-        createPopper(this.$refs.btnRef, this.$refs.popoverRef, {
-          placement: 'bottom-start',
-          modifiers: [
-            {
-              name: 'offset',
-              options: {
-                // 0px distance at <= 500px width, otherwise 10px distance
-                offset: () => [0, mediaQuery.matches ? 0 : 10]
-              }
-            }
-          ]
-        })
-      }
-    },
-    togglePopover_employee: function () {
-      if (this.popoverShowEmployee) {
-        this.popoverShowEmployee = false
-      } else {
-        this.popoverShowEmployee = true
-        this.popoverShowAccess = false
-        this.popoverShowRepeat = false
-        this.popoverShowReminder = false
-        this.popoverShowProject = false
-        this.popoverShowColor = false
-        this.popoverShowTags = false
-        const mediaQuery = window.matchMedia('(max-width: 500px)')
-        createPopper(this.$refs.btnRefEmployee, this.$refs.popoverRefEmployee, {
-          placement: 'bottom-start',
-          modifiers: [
-            {
-              name: 'offset',
-              options: {
-                // 0px distance at <= 500px width, otherwise 10px distance
-                offset: () => [0, mediaQuery.matches ? 0 : 10]
-              }
-            }
-          ]
-        })
-      }
-    },
-    togglePopover_repeat: function () {
-      if (this.popoverShowRepeat) {
-        this.popoverShowRepeat = false
-      } else {
-        this.popoverShowRepeat = true
-        this.popoverShowAccess = false
-        this.popoverShowEmployee = false
-        this.popoverShowReminder = false
-        this.popoverShowProject = false
-        this.popoverShowColor = false
-        this.popoverShowTags = false
-        const mediaQuery = window.matchMedia('(max-width: 500px)')
-        createPopper(this.$refs.btnRefRepeat, this.$refs.popoverRefRepeat, {
-          placement: 'bottom-start',
-          modifiers: [
-            {
-              name: 'offset',
-              options: {
-                // 0px distance at <= 500px width, otherwise 10px distance
-                offset: () => [-400, mediaQuery.matches ? 0 : 10]
-              }
-            }
-          ]
-        })
-      }
-    },
-    togglePopover_reminder: function () {
-      if (this.popoverShowReminder) {
-        this.popoverShowReminder = false
-      } else {
-        this.popoverShowReminder = true
-        this.popoverShowAccess = false
-        this.popoverShowEmployee = false
-        this.popoverShowRepeat = false
-        this.popoverShowProject = false
-        this.popoverShowColor = false
-        this.popoverShowTags = false
-        const mediaQuery = window.matchMedia('(max-width: 500px)')
-        createPopper(this.$refs.btnRefReminder, this.$refs.popoverRefReminder, {
-          placement: 'bottom-start',
-          modifiers: [
-            {
-              name: 'offset',
-              options: {
-                // 0px distance at <= 500px width, otherwise 10px distance
-                offset: () => [0, mediaQuery.matches ? 0 : 10]
-              }
-            }
-          ]
-        })
-      }
-    },
-    togglePopover_project: function () {
-      if (this.popoverShowProject) {
-        this.popoverShowProject = false
-      } else {
-        this.popoverShowProject = true
-        this.popoverShowAccess = false
-        this.popoverShowEmployee = false
-        this.popoverShowRepeat = false
-        this.popoverShowReminder = false
-        this.popoverShowColor = false
-        this.popoverShowTags = false
-        const mediaQuery = window.matchMedia('(max-width: 500px)')
-        createPopper(this.$refs.btnRefProject, this.$refs.popoverRefProject, {
-          placement: 'bottom-start',
-          modifiers: [
-            {
-              name: 'offset',
-              options: {
-                // 0px distance at <= 500px width, otherwise 10px distance
-                offset: () => [0, mediaQuery.matches ? 0 : 10]
-              }
-            }
-          ]
-        })
-      }
-    },
-    togglePopover_color: function () {
-      if (this.popoverShowColor) {
-        this.popoverShowColor = false
-      } else {
-        this.popoverShowColor = true
-        this.popoverShowAccess = false
-        this.popoverShowEmployee = false
-        this.popoverShowRepeat = false
-        this.popoverShowReminder = false
-        this.popoverShowProject = false
-        this.popoverShowTags = false
-        const mediaQuery = window.matchMedia('(max-width: 500px)')
-        createPopper(this.$refs.btnRefColor, this.$refs.popoverRefColor, {
-          placement: 'bottom-start',
-          modifiers: [
-            {
-              name: 'offset',
-              options: {
-                // 0px distance at <= 500px width, otherwise 10px distance
-                offset: () => [0, mediaQuery.matches ? 0 : 10]
-              }
-            }
-          ]
-        })
-      }
-    },
-    togglePopover_tags: function () {
-      if (this.popoverShowTags) {
-        this.popoverShowTags = false
-      } else {
-        this.popoverShowTags = true
-        this.popoverShowAccess = false
-        this.popoverShowEmployee = false
-        this.popoverShowRepeat = false
-        this.popoverShowReminder = false
-        this.popoverShowProject = false
-        this.popoverShowColor = false
-        const mediaQuery = window.matchMedia('(max-width: 500px)')
-        createPopper(this.$refs.btnRefTags0, this.$refs.popoverRefTags0, {
-          placement: 'bottom-start',
-          modifiers: [
-            {
-              name: 'offset',
-              options: {
-                // 0px distance at <= 500px width, otherwise 10px distance
-                offset: () => [0, mediaQuery.matches ? 0 : 10]
-              }
-            }
-          ]
-        })
-      }
     },
     formatBytes: function (bytes, decimals = 2) {
       if (bytes === 0) return '0 Bytes'
@@ -576,90 +447,20 @@ export default {
       <div
         class="mt-3 custom-list-tags"
       >
+        <!-- Всплывающее окно сотрудник -->
         <Popper
+          class="w-full"
           arrow
-          trigger="hover"
           :class="isDark ? 'dark' : 'light'"
-          placement="bottom"
-          :options="{
-            placement: 'top',
-            modifiers: { offset: { offset: '0,10px' } }
-          }"
+          placement="bottom-start"
         >
-          <template
-            #content="{ close }"
-            class="bottom"
-          >
-            <div class="popper">
-              <div class="text-white opacity-1 font-semibold title-popover-main">
-                <div
-                  class="dissmiss_popover"
-                  @click="close"
-                >
-                  <svg
-                    viewBox="0 0 14 14"
-                    width="14"
-                    height="14"
-                    class="inline-block"
-                  ><path
-                    fill="currentColor"
-                    fill-rule="evenodd"
-                    clip-rule="evenodd"
-                    d="M13.7071 1.70711C14.0976 1.31658 14.0976 0.683417 13.7071 0.292893C13.3166 -0.0976311 12.6834 -0.0976311 12.2929 0.292893L7 5.58579L1.70711 0.292893C1.31658 -0.0976311 0.683417 -0.0976311 0.292893 0.292893C-0.0976311 0.683417 -0.0976311 1.31658 0.292893 1.70711L5.58579 7L0.292893 12.2929C-0.0976311 12.6834 -0.0976311 13.3166 0.292893 13.7071C0.683417 14.0976 1.31658 14.0976 1.70711 13.7071L7 8.41421L12.2929 13.7071C12.6834 14.0976 13.3166 14.0976 13.7071 13.7071C14.0976 13.3166 14.0976 12.6834 13.7071 12.2929L8.41421 7L13.7071 1.70711Z"
-                  /></svg>
-                  Отменить
-                </div>
-                <div class="title-project-custom">
-                  <span
-                    class="title-z-popover"
-                    @click="close"
-                  >Сохранить</span>
-                </div>
-              </div>
-              <div class="text-white body-popover-custom">
-                <div class="container-employee-popover">
-                  <form>
-                    <div
-                      v-for="(key,value) in employees"
-                      :key="value"
-                    >
-                      <div
-                        class="list-employee-access"
-                        @click="changeEmployee(selectedTask.uid, key.email)"
-                      >
-                        <img
-                          :src="key.fotolink"
-                          class="mr-1 border-fotolink border-solid border-2 border-sky-500"
-                          width="30"
-                          height="30"
-                        >
-                        <label class="employee-name-custom">
-                          {{ key.name }}
-                          <div class="popover-employee-email">{{ key.email }}</div>
-                        </label>
-                        <input
-                          type="radio"
-                          name="check_so_employee"
-                          class="check-custom-empployee"
-                          :checked="selectedTask.email_performer!=='' && selectedTask.email_performer===key.email"
-                          @click="unchecked"
-                          @change="changeEmployee(selectedTask.uid, key.email)"
-                        >
-                      </div>
-                    </div>
-                  </form>
-                </div>
-              </div>
-            </div>
-          </template>
-          <span v-if="selectedTask.status!==3">
+            <span v-if="selectedTask.status!==3">
             <!-- <p class="text-center">{{ localization.Labels }}</p>-->
-            <a
+            <button
               v-if="selectedTask.type===1"
               ref="btnRefEmployee"
               class="mt-3 tags-custom active"
             >
-
               <svg
                 width="24"
                 height="24"
@@ -676,7 +477,7 @@ export default {
               <span
                 class="rounded"
               >Поручить</span>
-            </a>
+            </button>
             <a
               v-else-if="selectedTask.type===2"
               ref="btnRefEmployee"
@@ -744,7 +545,50 @@ export default {
               >Взять на исполнение</span>
             </a>
           </span>
+          <template
+            #content
+            class="bottom"
+          >
+            <div class="popper">
+              <div @click="close"></div>
+              <div class="text-white body-popover-custom">
+                <div class="container-employee-popover">
+                  <form>
+                    <div
+                      v-for="(key,value) in employees"
+                      :key="value"
+                    >
+                      <div
+                        class="list-employee-access"
+                        @click="changeEmployee(selectedTask.uid, key.email)"
+                      >
+                        <img
+                          :src="key.fotolink"
+                          class="mr-1 border-fotolink border-solid border-2 border-sky-500"
+                          width="30"
+                          height="30"
+                        >
+                        <label class="employee-name-custom">
+                          {{ key.name }}
+                          <div class="popover-employee-email">{{ key.email }}</div>
+                        </label>
+                        <input
+                          type="radio"
+                          name="check_so_employee"
+                          class="check-custom-empployee"
+                          :checked="selectedTask.email_performer!=='' && selectedTask.email_performer===key.email"
+                          @click="unchecked"
+                          @change="changeEmployee(selectedTask.uid, key.email)"
+                        >
+                      </div>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </template>
         </Popper>
+        <!-- Всплывающее окно доступ -->
         <Popper
           arrow
           trigger="hover"
@@ -757,53 +601,21 @@ export default {
           >
             <div class="popper">
               <div class="text-white opacity-75 font-semibold title-popover-main">
-                <div
-                  class="dissmiss_popover"
-                  @click="close"
+                <div @click="close"></div>
+                <button
+                  class="btn-clear-popover"
+                  @change="resetAccess"
                 >
-                  <svg
-                    viewBox="0 0 14 14"
-                    width="14"
-                    height="14"
-                    class="inline-block"
-                  ><path
-                    fill="currentColor"
-                    fill-rule="evenodd"
-                    clip-rule="evenodd"
-                    d="M13.7071 1.70711C14.0976 1.31658 14.0976 0.683417 13.7071 0.292893C13.3166 -0.0976311 12.6834 -0.0976311 12.2929 0.292893L7 5.58579L1.70711 0.292893C1.31658 -0.0976311 0.683417 -0.0976311 0.292893 0.292893C-0.0976311 0.683417 -0.0976311 1.31658 0.292893 1.70711L5.58579 7L0.292893 12.2929C-0.0976311 12.6834 -0.0976311 13.3166 0.292893 13.7071C0.683417 14.0976 1.31658 14.0976 1.70711 13.7071L7 8.41421L12.2929 13.7071C12.6834 14.0976 13.3166 14.0976 13.7071 13.7071C14.0976 13.3166 14.0976 12.6834 13.7071 12.2929L8.41421 7L13.7071 1.70711Z"
-                  /></svg>
-                  Отмена
-                </div>
-                <div class="title-project-custom">
+                  Отменить
+                </button>
+                <button class="btn-save-popover">
                   <span
                     class="title-z-popover"
                     @click="ClickAccessEmail"
                   >Применить</span>
-                </div>
+                </button>
               </div>
               <div class="text-white">
-                <div class="input-group">
-                  <label class="title-label-search">Доступ</label>
-                  <span class="input-group-addon input-group-custom"><svg
-                    width="16"
-                    height="16"
-                    viewBox="0 0 82 83"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M81.0655 76.0627L64.1173 59.1145C69.4264 52.6824 72.3872 44.5146 72.3872 36.1426C72.3872 16.2335 56.1537 0 36.1425 0C16.2335 0 0 16.2335 0 36.1426C0 56.1537 16.2335 72.3872 36.1425 72.3872C44.5145 72.3872 52.6824 69.4264 59.1145 64.1173L76.0627 81.0655C76.7774 81.7802 77.5942 82.0865 78.513 82.0865C79.4319 82.0865 80.3508 81.6781 80.9634 81.0655C81.6781 80.3508 81.9844 79.534 81.9844 78.6152C82.0865 77.5942 81.6781 76.7774 81.0655 76.0627ZM36.1425 65.3425C20.1132 65.3425 7.04473 52.274 7.04473 36.1426C7.04473 20.0111 20.1132 7.04473 36.1425 7.04473C52.1719 7.04473 65.3425 20.1132 65.3425 36.1426C65.3425 52.1719 52.274 65.3425 36.1425 65.3425Z"
-                      fill="#757575"
-                    />
-                  </svg>
-                  </span>
-                  <input
-                    type="search"
-                    value=""
-                    placeholder="Поиск"
-                    class="form-control form-control-custom"
-                  >
-                </div>
                 <div class="container-employee-popover">
                   <form>
                     <div
@@ -837,16 +649,16 @@ export default {
             </div>
           </template>
           <a
-            v-if="selectedTask.emails!==''"
+            v-if="selectedTask.emails!=='' && selectedTask.emails!=='null'"
             ref="btnRef"
             style="position: relative"
           >
             <div
               v-for="(key,value) in selectedTask.emails.split('..')"
               :key="value"
-              class="mt-3 tags-custom"
+              :class=" key !=='null' ? 'mt-3 tags-custom' : ''"
             >
-              <svg
+              <svg v-if="key!=='null'"
                 width="24"
                 height="24"
                 viewBox="0 0 91 92"
@@ -861,7 +673,7 @@ export default {
                   fill-opacity="0.5"
                 />
               </svg>
-              <span class="rounded">{{ key }}</span>
+              <span class="rounded" v-if="key!=='null'">{{employeesByEmail[key].name}}</span>
 
             </div>
           </a>
@@ -888,26 +700,43 @@ export default {
             <span class="rounded"> Доступ</span>
           </a>
         </Popper>
-
-        <DatePicker
-          ref="calendar"
-          v-model="range"
-          is-range
-          :masks="masks"
-          is-dragging="false"
-          offset-distance="30"
-          :class="{ 'is-not-in-month':false }"
-          @click="handleInput"
+        <!-- Всплывающее окно Календарь -->
+        <Popper
+          arrow
+          append-to-body="true"
+          trigger="hover"
+          :class="isDark ? 'dark' : 'light'"
+          placement="bottom"
         >
-          <template #default="{ inputValue, togglePopover }">
-            <span class="mt-3 tags-custom any-calendar">
+          <template
+            #content="{ close }"
+            class="bottom"
+          >
+            <div class="popper">
+              <div @click="close"></div>
+              <DatePicker
+                ref="calendar"
+                v-model="range"
+                is-range
+                mode="dateTime"
+                is24hr
+                class="border-none text-xs"
+                style="border: none!important;"
+                title-position="left"
+                :masks="masks"
+                is-dragging="false"
+                offset-distance="30"
+                :class="{ 'is-not-in-month':false }"
+                @click="handleInput" />
+            </div>
+          </template>
+          <a class="mt-3 tags-custom any-calendar project-hover-close">
               <span
                 v-if="selectedTask.customer_date_begin!=='0001-01-01T00:00:00' && selectedTask.customer_date_end!=='0001-01-01T00:00:00'"
                 class="flex"
               >
                 <button
                   class="btn-calendar"
-                  @click="togglePopover()"
                 >
                   <svg
                     width="24"
@@ -926,31 +755,15 @@ export default {
                   </svg>
                 </button>
                 <span v-if="new Date(selectedTask.customer_date_begin).toLocaleDateString() !== new Date(selectedTask.customer_date_end).toLocaleDateString()">
-                  <input
-                    ref="datePickerbegin"
-                    type="hidden"
-                    :value="inputValue.start"
-                  >
-                  <input
-                    ref="datePickerend"
-                    type="hidden"
-                    :value="inputValue.end"
-                  >
-                  <span @click="togglePopover()">{{ new Date(selectedTask.customer_date_begin).getDate() }}<span v-if="new Date(selectedTask.customer_date_end).toLocaleString()!==new Date(selectedTask.customer_date_begin).toLocaleString()">-{{ new Date(selectedTask.customer_date_end).getDate() }}</span> {{ months[new Date(selectedTask.customer_date_end).getMonth()] }}</span>
+                  <span>{{ new Date(selectedTask.customer_date_begin).getDate() }}<span v-if="new Date(selectedTask.customer_date_end).toLocaleString()!==new Date(selectedTask.customer_date_begin).toLocaleString()">-{{ new Date(selectedTask.customer_date_end).getDate() }}</span> {{ months[new Date(selectedTask.customer_date_end).getMonth()] }}</span>
                 </span>
                 <span v-else>
-                  <input
-                    ref="datePickerbegin"
-                    type="hidden"
-                    :value="inputValue.start"
-                  >
-                  <input
-                    ref="datePickerend"
-                    type="hidden"
-                    :value="inputValue.end"
-                  >
-                  <span @click="togglePopover()">{{ new Date(selectedTask.customer_date_begin).getDate() }} {{ months[new Date(selectedTask.customer_date_end).getMonth()] }}</span>
+                  <span>{{ new Date(selectedTask.customer_date_begin).getDate() }} {{ months[new Date(selectedTask.customer_date_end).getMonth()] }}</span>
                 </span>
+                <button @click="resetCalendar" class="btn-close-popover"><svg width="5" height="5" viewBox="0 0 16 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M14.8483 2.34833C15.317 1.8797 15.317 1.11991 14.8483 0.651277C14.3797 0.182647 13.6199 0.182647 13.1513 0.651277L7.99981 5.80275L2.84833 0.651277C2.3797 0.182647 1.61991 0.182647 1.15128 0.651277C0.682647 1.11991 0.682647 1.8797 1.15128 2.34833L6.30275 7.4998L1.15128 12.6513C0.682647 13.1199 0.682647 13.8797 1.15128 14.3483C1.61991 14.817 2.3797 14.817 2.84833 14.3483L7.99981 9.19686L13.1513 14.3483C13.6199 14.817 14.3797 14.817 14.8483 14.3483C15.317 13.8797 15.317 13.1199 14.8483 12.6513L9.69686 7.4998L14.8483 2.34833Z" fill="black" fill-opacity="0.5"/>
+          </svg>
+          </button>
               </span>
               <span
                 v-else
@@ -958,7 +771,6 @@ export default {
               >
                 <button
                   class="btn-calendar"
-                  @click="togglePopover()"
                 >
                   <svg
                     width="24"
@@ -975,167 +787,23 @@ export default {
                       fill-opacity="0.5"
                     />
                   </svg>
-                  <input
-                    ref="datePickerbegin"
-                    type="hidden"
-                    :value="inputValue.start"
-                  >
-                  <input
-                    ref="datePickerend"
-                    type="hidden"
-                    :value="inputValue.end"
-                  >
-                </button><span @click="togglePopover()"><span ref="dateval">Дата</span></span>
+                </button><span><span ref="dateval">Дата</span></span>
               </span>
-            </span>
-          </template>
-        </DatePicker>
-        <div v-if="selectedTask.customer_date_begin!=='' && selectedTask.customer_date_end!==''">
-          <div
-            v-if="selectedTask.SeriesEnd!==''"
-            ref="btnRefRepeat"
-            class="mt-3 tags-custom"
-          >
-            <svg
-              width="24"
-              height="24"
-              viewBox="0 0 92 80"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M15.595 71.68H76.4048V66.5015C76.4048 64.3145 78.1735 62.5415 80.3554 62.5415C82.5373 62.5415 84.306 64.3145 84.306 66.5015V71.68C84.306 76.0541 80.7685 79.6 76.4048 79.6H15.595C11.2313 79.6 7.69378 76.0541 7.69378 71.68L7.69378 40H2.83583C0.728566 40 -0.380779 37.4961 1.03222 35.929L9.84079 26.1602C10.8061 25.0897 12.4827 25.0897 13.448 26.1602L22.2566 35.929C23.6696 37.4961 22.5602 40 20.453 40H15.595L15.595 71.68Z"
-                fill="#5D94F7"
-                fill-opacity="1"
-              />
-              <path
-                d="M76.4048 8.32H15.595V13.4985C15.595 15.6855 13.8263 17.4585 11.6444 17.4585C9.46253 17.4585 7.69378 15.6855 7.69378 13.4985V8.32C7.69378 3.94591 11.2313 0.400002 15.595 0.400002H76.4048C80.7685 0.400002 84.306 3.9459 84.306 8.32V40H89.164C91.2712 40 92.3806 42.5039 90.9676 44.071L82.159 53.8398C81.1937 54.9103 79.5171 54.9103 78.5518 53.8398L69.7432 44.071C68.3302 42.5039 69.4396 40 71.5469 40H76.4048V8.32Z"
-                fill="#5D94F7"
-                fill-opacity="1"
-              />
-            </svg>
-            <span v-if="selectedTask.SeriesType===0">Не повторять</span>
-            <span v-if="selectedTask.SeriesType===1"><span v-if="selectedTask.SeriesAfterType===1"><span v-if="selectedTask.SeriesAfterCount===1">Ежедневно </span><span v-else>Каждый {{ selectedTask.SeriesAfterCount }} день.</span></span><span v-else-if="selectedTask.SeriesAfterType===2"><span v-if="selectedTask.SeriesAfterCount===1">Еженедельно </span><span v-else>Каждый {{ selectedTask.SeriesAfterCount }} неделю.</span></span><span v-else-if="selectedTask.SeriesAfterType===3"><span v-if="selectedTask.SeriesAfterCount===1">Ежемесячно </span><span v-else>Каждый {{ selectedTask.SeriesAfterCount }} месяц.</span></span><span v-else-if="selectedTask.SeriesAfterType===4"><span v-if="selectedTask.SeriesAfterCount===1">Ежегодно </span><span v-else>Каждый {{ selectedTask.SeriesAfterCount }} год.</span></span> </span>
-            <span v-if="selectedTask.SeriesType===2">Каждую {{ selectedTask.SeriesWeekCount }} неделю, по: <span v-if="selectedTask.SeriesWeekMon===1">Пн. </span>
-              <span v-if="selectedTask.SeriesWeekTue===1">Вт. </span>
-              <span v-if="selectedTask.SeriesWeekWed===1">Ср. </span>
-              <span v-if="selectedTask.SeriesWeekThu===1">Чт. </span>
-              <span v-if="selectedTask.SeriesWeekFri===1">Пт. </span>
-              <span v-if="selectedTask.SeriesWeekSat===1">Сб. </span>
-              <span v-if="selectedTask.SeriesWeekSun===1">Вск. </span>
-            </span>
-            <span v-if="selectedTask.SeriesType===3"><span v-if="selectedTask.SeriesMonthType===1">Каждый {{ selectedTask.SeriesMonthCount }} месяц {{ selectedTask.SeriesYearMonthDay }} числа</span><span v-else>
-              {{ firstcount[selectedTask.SeriesMonthWeekType] }} <span>{{ day[selectedTask.SeriesMonthDayOfWeek] }} каждый {{ selectedTask.SeriesMonthCount }} месяц</span>
-            </span></span>
-            <span v-if="selectedTask.SeriesType===4"><span v-if="selectedTask.SeriesYearType===1">Каждый год {{ selectedTask.SeriesYearMonthDay }}  {{ months[selectedTask.SeriesYearMonth-1] }}</span><span v-else>
-              Каждый {{ months[selectedTask.SeriesYearMonth-1] }} {{ firstcount[selectedTask.SeriesYearWeekType] }}
-              {{ day[selectedTask.SeriesYearDayOfWeek] }}
-            </span></span>
-          </div>
-        </div>
-        <div
-          v-else
-          ref="btnRefRepeat"
-          class="mt-3 tags-custom"
-        >
-          <svg
-            width="24"
-            height="24"
-            viewBox="0 0 92 80"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M15.595 71.68H76.4048V66.5015C76.4048 64.3145 78.1735 62.5415 80.3554 62.5415C82.5373 62.5415 84.306 64.3145 84.306 66.5015V71.68C84.306 76.0541 80.7685 79.6 76.4048 79.6H15.595C11.2313 79.6 7.69378 76.0541 7.69378 71.68L7.69378 40H2.83583C0.728566 40 -0.380779 37.4961 1.03222 35.929L9.84079 26.1602C10.8061 25.0897 12.4827 25.0897 13.448 26.1602L22.2566 35.929C23.6696 37.4961 22.5602 40 20.453 40H15.595L15.595 71.68Z"
-              fill="black"
-              fill-opacity="0.5"
-            />
-            <path
-              d="M76.4048 8.32H15.595V13.4985C15.595 15.6855 13.8263 17.4585 11.6444 17.4585C9.46253 17.4585 7.69378 15.6855 7.69378 13.4985V8.32C7.69378 3.94591 11.2313 0.400002 15.595 0.400002H76.4048C80.7685 0.400002 84.306 3.9459 84.306 8.32V40H89.164C91.2712 40 92.3806 42.5039 90.9676 44.071L82.159 53.8398C81.1937 54.9103 79.5171 54.9103 78.5518 53.8398L69.7432 44.071C68.3302 42.5039 69.4396 40 71.5469 40H76.4048V8.32Z"
-              fill="black"
-              fill-opacity="0.5"
-            />
-          </svg>
-          <span class="rounded"> Повтор</span>
-        </div>
-        <a
-          v-if="selectedTask.date_reminder!==''"
-          ref="btnRefReminder"
-          class="mt-3 tags-custom"
-          @click="togglePopover_reminder()"
-        >
-          <svg
-            width="24"
-            height="24"
-            viewBox="0 0 81 88"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M67.12 5.72C66.52 5.12 65.8 4.88 65.08 4.88C64.24 4.88 63.52 5.24 63.04 5.72C61.84 6.92 61.84 8.72 63.04 9.92C70.36 17.24 74.32 26.84 74.32 37.16C74.32 38.84 75.64 40.16 77.32 40.16C79 40.16 80.32 38.84 80.32 37.16C80.08 25.16 75.52 14 67.12 5.72Z"
-              fill="#3FBF64"
-              fill-opacity="1"
-            />
-            <path
-              d="M6.28002 37.04C6.28002 26.72 10.24 17.12 17.56 9.8C18.16 9.32 18.4 8.6 18.4 7.76C18.4 6.92 18.04 6.2 17.56 5.72C17.08 5.24 16.24 4.88 15.52 4.88C14.8 4.88 13.96 5.24 13.48 5.72C4.96002 14 0.400024 25.16 0.400024 37.04C0.400024 38.72 1.72002 40.04 3.40002 40.04C5.08002 40.04 6.28002 38.72 6.28002 37.04Z"
-              fill="#3FBF64"
-              fill-opacity="1"
-            />
-            <path
-              d="M74.2 65.36C68.8 60.8 65.68 54.2 65.68 47.12V37.04C65.68 24.08 56.08 13.28 43.24 11.72V3.8C43.24 2.12 41.92 0.800003 40.24 0.800003C38.56 0.800003 37.24 2.12 37.24 3.8V11.84C24.4 13.28 14.8 24.08 14.8 37.04V47.12C14.8 54.2 11.68 60.8 6.28002 65.36C4.84002 66.56 4.00002 68.48 4.00002 70.4C4.00002 74 6.88002 77 10.6 77H26.8C28.12 83.24 33.76 87.8 40.24 87.8C46.72 87.8 52.24 83.24 53.68 77H70C73.6 77 76.48 74.12 76.48 70.4C76.48 68.48 75.64 66.56 74.2 65.36ZM40.24 81.8C37 81.8 34.12 79.88 32.92 76.88H47.44C46.36 79.88 43.48 81.8 40.24 81.8ZM70 71H10.6C10.24 71 10 70.64 10 70.4C10 70.16 10.12 70.04 10.24 69.92C16.96 64.28 20.8 56 20.8 47.12V37.04C20.8 26.24 29.56 17.48 40.36 17.48C51.16 17.48 59.92 26.24 59.92 37.04V47.12C59.92 55.88 63.76 64.16 70.48 69.92C70.6 70.04 70.72 70.16 70.72 70.4C70.6 70.64 70.24 71 70 71Z"
-              fill="#3FBF64"
-              fill-opacity="1"
-            />
-          </svg>
-          <span class="rounded">{{ new Date(selectedTask.date_reminder).getDate() }}, {{ new Date(selectedTask.date_reminder).getMonth() }}, {{ new Date(selectedTask.date_reminder).getHours() }}</span>
-        </a>
-        <a
-          v-else
-          ref="btnRefReminder"
-          class="mt-3 tags-custom"
-          @click="togglePopover_reminder()"
-        >
-          <svg
-            width="24"
-            height="24"
-            viewBox="0 0 81 88"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M67.12 5.72C66.52 5.12 65.8 4.88 65.08 4.88C64.24 4.88 63.52 5.24 63.04 5.72C61.84 6.92 61.84 8.72 63.04 9.92C70.36 17.24 74.32 26.84 74.32 37.16C74.32 38.84 75.64 40.16 77.32 40.16C79 40.16 80.32 38.84 80.32 37.16C80.08 25.16 75.52 14 67.12 5.72Z"
-              fill="black"
-              fill-opacity="0.5"
-            />
-            <path
-              d="M6.28002 37.04C6.28002 26.72 10.24 17.12 17.56 9.8C18.16 9.32 18.4 8.6 18.4 7.76C18.4 6.92 18.04 6.2 17.56 5.72C17.08 5.24 16.24 4.88 15.52 4.88C14.8 4.88 13.96 5.24 13.48 5.72C4.96002 14 0.400024 25.16 0.400024 37.04C0.400024 38.72 1.72002 40.04 3.40002 40.04C5.08002 40.04 6.28002 38.72 6.28002 37.04Z"
-              fill="black"
-              fill-opacity="0.5"
-            />
-            <path
-              d="M74.2 65.36C68.8 60.8 65.68 54.2 65.68 47.12V37.04C65.68 24.08 56.08 13.28 43.24 11.72V3.8C43.24 2.12 41.92 0.800003 40.24 0.800003C38.56 0.800003 37.24 2.12 37.24 3.8V11.84C24.4 13.28 14.8 24.08 14.8 37.04V47.12C14.8 54.2 11.68 60.8 6.28002 65.36C4.84002 66.56 4.00002 68.48 4.00002 70.4C4.00002 74 6.88002 77 10.6 77H26.8C28.12 83.24 33.76 87.8 40.24 87.8C46.72 87.8 52.24 83.24 53.68 77H70C73.6 77 76.48 74.12 76.48 70.4C76.48 68.48 75.64 66.56 74.2 65.36ZM40.24 81.8C37 81.8 34.12 79.88 32.92 76.88H47.44C46.36 79.88 43.48 81.8 40.24 81.8ZM70 71H10.6C10.24 71 10 70.64 10 70.4C10 70.16 10.12 70.04 10.24 69.92C16.96 64.28 20.8 56 20.8 47.12V37.04C20.8 26.24 29.56 17.48 40.36 17.48C51.16 17.48 59.92 26.24 59.92 37.04V47.12C59.92 55.88 63.76 64.16 70.48 69.92C70.6 70.04 70.72 70.16 70.72 70.4C70.6 70.64 70.24 71 70 71Z"
-              fill="black"
-              fill-opacity="0.5"
-            />
-          </svg>
-          <span class="rounded"> Напоминание</span>
-        </a>
+            </a>
+        </Popper>
+        <!-- Повтор -->
         <Popper
           arrow
           trigger="hover"
           :class="isDark ? 'dark' : 'light'"
           placement="bottom"
-          :options="{
-            placement: 'top',
-            modifiers: { offset: { offset: '0,10px' } }
-          }"
         >
           <template
             #content="{ close }"
             class="bottom"
           >
             <div class="popper">
-              <div class="text-white opacity-1 font-semibold title-popover-main">
+              <div class="text-white opacity-75 font-semibold title-popover-main">
                 <div
                   class="dissmiss_popover"
                   @click="close"
@@ -1156,9 +824,443 @@ export default {
                 <div class="title-project-custom">
                   <span
                     class="title-z-popover"
-                    @click="close"
-                  >Сохранить</span>
+                  >Применить</span>
                 </div>
+              </div>
+              <div class="text-white p-3 body-popover-custom body-repeat-custom rounded-b-lg">
+                <button
+                  ref="tabnorepeat"
+                  class="btn-width-custom"
+                  :class="selectedTask.SeriesType===0 ? {active:true} : {active:isActive==='#tabnorepeat'}"
+                  type="button"
+                  value="0"
+                  @click="tabfunction('#tabnorepeat')"
+                >
+                  Не повторять
+                </button>
+                <button
+                  ref="tabeveryday"
+                  class="btn-width-custom"
+                  :class="selectedTask.SeriesType===1 ? {active:true} : {active:isActive==='#tabeveryday'}"
+                  type="button"
+                  value="1"
+                  @click="tabfunction('#tabeveryday')"
+                >
+                  Ежедневно
+                </button>
+                <button
+                  ref="tabeveryweek"
+                  class="btn-width-custom"
+                  :class="selectedTask.SeriesType===2 ? {active:true} : {active:isActive==='#tabeveryweek'}"
+                  type="button"
+                  value="2"
+                  @click="tabfunction('#tabeveryweek')"
+                >
+                  Еженедельно
+                </button>
+                <button
+                  ref="tabverymonth"
+                  class="btn-width-custom"
+                  :class="selectedTask.SeriesType===3 ? {active:true} : {active:isActive==='#tabverymonth'}"
+                  type="button"
+                  value="3"
+                  @click="tabfunction('#tabeverymonth')"
+                >
+                  Ежемесячно
+                </button>
+                <button
+                  ref="tabeveryyear"
+                  class="btn-width-custom"
+                  :class="selectedTask.SeriesType===4 ? {active:true} : {active:isActive==='#tabeveryyear'}"
+                  type="button"
+                  value="4"
+                  @click="tabfunction('#tabeveryyear')"
+                >
+                  Ежегодно
+                </button>
+              </div>
+              <div class="tab-content">
+                <div
+                  id="tabnorepeat"
+                  class="tab-content-repeat"
+                  :class="selectedTask.SeriesType===0 ? {active:true} : {active:isActive==='#tabnorepeat'}"
+                />
+                <div
+                  id="tabeveryday"
+                  class="tab-content-repeat"
+                  :class="selectedTask.SeriesType===1 ? {active:true} : {active:isActive==='#tabeveryday'}"
+                >
+                  <div class="every-content flex">
+                    <label>Каждый </label>
+                    <div class="form-group">
+                      <select
+                        class="form-control form-control-select"
+                        name=""
+                      >
+                        <option
+                          v-for="item in 365"
+                          :key="item"
+                          selected="{{selectedTask.SeriesAfterCount===item ? true :false}}"
+                        >
+                          {{ item }}
+                        </option>
+                      </select>
+                    </div>
+                    <div class="form-group">
+                      <select class="form-control form-control-select">
+                        <option value="1">
+                          День
+                        </option>
+                        <option value="2">
+                          Неделю
+                        </option>
+                        <option value="3">
+                          Месяц
+                        </option>
+                        <option value="4">
+                          Год
+                        </option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  id="tabeveryweek"
+                  class="tab-content-repeat"
+                  :class="selectedTask.SeriesType===2 ? {active:true} : {active:isActive==='#tabeveryweek'}"
+                >
+                  <div class="everyweek-content">
+                    <div class="flex">
+                      <label>Каждую </label>
+                      <div class="form-group">
+                        <select
+                          class="form-control form-control-select"
+                          name=""
+                        >
+                          <option
+                            v-for="item in 365"
+                            :key="item"
+                          >
+                            {{ item }} неделю
+                          </option>
+                        </select>
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <div class="form-everyweek-container">
+                        <button class="btn-day-week">
+                          Вт.
+                        </button>
+                        <button class="btn-day-week">
+                          Ср.
+                        </button>
+                        <button class="btn-day-week">
+                          Чт.
+                        </button>
+                        <button class="btn-day-week">
+                          Пт.
+                        </button>
+                        <button class="btn-day-week">
+                          Сб.
+                        </button>
+                        <button class="btn-day-week">
+                          Вск.
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  id="tabeverymonth"
+                  class="tab-content-repeat"
+                  :class="selectedTask.SeriesType===3 ? {active:true} : {active:isActive==='#tabeverymonth'}"
+                >
+                  <div class="everymonth-content">
+                    <div class="flex">
+                      <label>Повтор </label>
+                      <div class="form-group">
+                        <select
+                          class="form-control form-control-select"
+                          name=""
+                        >
+                          <option>Каждый</option>
+                          <option>Первый</option>
+                          <option>Второй</option>
+                          <option>Третий</option>
+                          <option>Четвертый</option>
+                          <option>Последний</option>
+                        </select>
+                      </div>
+                      <div class="form-group">
+                        <select
+                          class="form-control form-control-select"
+                          name=""
+                        >
+                          <option
+                            v-for="item in 365"
+                            :key="item"
+                          >
+                            {{ item }} месяц
+                          </option>
+                        </select>
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <div class="form-everymonth-container">
+                        <button
+                          v-for="day in 31"
+                          :key="day"
+                          class="btn-day-month"
+                        >
+                          {{ day }}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  id="tabeveryyear"
+                  class="tab-content-repeat"
+                  :class="selectedTask.SeriesType===4 ? {active:true} : {active:isActive==='#tabeveryyear'}"
+                >
+                  <div class="everyyear-content">
+                    <div class="flex">
+                      <label>Повтор </label>
+                      <div
+                        class="form-group"
+                        aria-valuemax="SeriesYearType"
+                      >
+                        <select
+                          class="form-control form-control-select"
+                          name="SeriesYearWeekType"
+                        >
+                          <option value="1">
+                            Каждый
+                          </option>
+                          <option>Первый</option>
+                          <option>Второй</option>
+                          <option>Третий</option>
+                          <option>Четвертый</option>
+                          <option>Последний</option>
+                        </select>
+                      </div>
+                      <div class="form-group">
+                        <select
+                          class="form-control form-control-select"
+                          name=""
+                        >
+                          <option
+                            v-for="item in months"
+                            :key="item"
+                          >
+                            {{ item }}
+                          </option>
+                        </select>
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <div class="form-everyyear-container">
+                        <button
+                          v-for="day in 31"
+                          :key="day"
+                          class="btn-day-year"
+                        >
+                          {{ day }}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="form-group-button">
+                  <div class="form-group">
+                    <button class="btn-save">
+                      Сохранить
+                    </button>
+                  </div>
+                  <div class="form-group">
+                    <button
+                      class="btn-cancel"
+                      @click="togglePopover_repeat()"
+                    >
+                      Отменить
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </template>
+          <div v-if="selectedTask.customer_date_begin!=='' && selectedTask.customer_date_end!==''">
+            <a
+              v-if="selectedTask.SeriesEnd!==''"
+              ref="btnRefRepeat"
+              class="mt-3 tags-custom"
+            >
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 92 80"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M15.595 71.68H76.4048V66.5015C76.4048 64.3145 78.1735 62.5415 80.3554 62.5415C82.5373 62.5415 84.306 64.3145 84.306 66.5015V71.68C84.306 76.0541 80.7685 79.6 76.4048 79.6H15.595C11.2313 79.6 7.69378 76.0541 7.69378 71.68L7.69378 40H2.83583C0.728566 40 -0.380779 37.4961 1.03222 35.929L9.84079 26.1602C10.8061 25.0897 12.4827 25.0897 13.448 26.1602L22.2566 35.929C23.6696 37.4961 22.5602 40 20.453 40H15.595L15.595 71.68Z"
+                  fill="#5D94F7"
+                  fill-opacity="1"
+                />
+                <path
+                  d="M76.4048 8.32H15.595V13.4985C15.595 15.6855 13.8263 17.4585 11.6444 17.4585C9.46253 17.4585 7.69378 15.6855 7.69378 13.4985V8.32C7.69378 3.94591 11.2313 0.400002 15.595 0.400002H76.4048C80.7685 0.400002 84.306 3.9459 84.306 8.32V40H89.164C91.2712 40 92.3806 42.5039 90.9676 44.071L82.159 53.8398C81.1937 54.9103 79.5171 54.9103 78.5518 53.8398L69.7432 44.071C68.3302 42.5039 69.4396 40 71.5469 40H76.4048V8.32Z"
+                  fill="#5D94F7"
+                  fill-opacity="1"
+                />
+              </svg>
+              <span v-if="selectedTask.SeriesType===0">Не повторять</span>
+              <span v-if="selectedTask.SeriesType===1"><span v-if="selectedTask.SeriesAfterType===1"><span v-if="selectedTask.SeriesAfterCount===1">Ежедневно </span><span v-else>Каждый {{ selectedTask.SeriesAfterCount }} день.</span></span><span v-else-if="selectedTask.SeriesAfterType===2"><span v-if="selectedTask.SeriesAfterCount===1">Еженедельно </span><span v-else>Каждый {{ selectedTask.SeriesAfterCount }} неделю.</span></span><span v-else-if="selectedTask.SeriesAfterType===3"><span v-if="selectedTask.SeriesAfterCount===1">Ежемесячно </span><span v-else>Каждый {{ selectedTask.SeriesAfterCount }} месяц.</span></span><span v-else-if="selectedTask.SeriesAfterType===4"><span v-if="selectedTask.SeriesAfterCount===1">Ежегодно </span><span v-else>Каждый {{ selectedTask.SeriesAfterCount }} год.</span></span> </span>
+              <span v-if="selectedTask.SeriesType===2">Каждую {{ selectedTask.SeriesWeekCount }} неделю, по: <span v-if="selectedTask.SeriesWeekMon===1">Пн. </span>
+              <span v-if="selectedTask.SeriesWeekTue===1">Вт. </span>
+              <span v-if="selectedTask.SeriesWeekWed===1">Ср. </span>
+              <span v-if="selectedTask.SeriesWeekThu===1">Чт. </span>
+              <span v-if="selectedTask.SeriesWeekFri===1">Пт. </span>
+              <span v-if="selectedTask.SeriesWeekSat===1">Сб. </span>
+              <span v-if="selectedTask.SeriesWeekSun===1">Вск. </span>
+            </span>
+              <span v-if="selectedTask.SeriesType===3"><span v-if="selectedTask.SeriesMonthType===1">Каждый {{ selectedTask.SeriesMonthCount }} месяц {{ selectedTask.SeriesYearMonthDay }} числа</span><span v-else>
+              {{ firstcount[selectedTask.SeriesMonthWeekType] }} <span>{{ day[selectedTask.SeriesMonthDayOfWeek] }} каждый {{ selectedTask.SeriesMonthCount }} месяц</span>
+            </span></span>
+              <span v-if="selectedTask.SeriesType===4"><span v-if="selectedTask.SeriesYearType===1">Каждый год {{ selectedTask.SeriesYearMonthDay }}  {{ months[selectedTask.SeriesYearMonth-1] }}</span><span v-else>
+              Каждый {{ months[selectedTask.SeriesYearMonth-1] }} {{ firstcount[selectedTask.SeriesYearWeekType] }}
+              {{ day[selectedTask.SeriesYearDayOfWeek] }}
+            </span></span>
+            </a>
+          </div>
+          <div
+            v-else
+            ref="btnRefRepeat"
+            class="mt-3 tags-custom"
+          >
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 92 80"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M15.595 71.68H76.4048V66.5015C76.4048 64.3145 78.1735 62.5415 80.3554 62.5415C82.5373 62.5415 84.306 64.3145 84.306 66.5015V71.68C84.306 76.0541 80.7685 79.6 76.4048 79.6H15.595C11.2313 79.6 7.69378 76.0541 7.69378 71.68L7.69378 40H2.83583C0.728566 40 -0.380779 37.4961 1.03222 35.929L9.84079 26.1602C10.8061 25.0897 12.4827 25.0897 13.448 26.1602L22.2566 35.929C23.6696 37.4961 22.5602 40 20.453 40H15.595L15.595 71.68Z"
+                fill="black"
+                fill-opacity="0.5"
+              />
+              <path
+                d="M76.4048 8.32H15.595V13.4985C15.595 15.6855 13.8263 17.4585 11.6444 17.4585C9.46253 17.4585 7.69378 15.6855 7.69378 13.4985V8.32C7.69378 3.94591 11.2313 0.400002 15.595 0.400002H76.4048C80.7685 0.400002 84.306 3.9459 84.306 8.32V40H89.164C91.2712 40 92.3806 42.5039 90.9676 44.071L82.159 53.8398C81.1937 54.9103 79.5171 54.9103 78.5518 53.8398L69.7432 44.071C68.3302 42.5039 69.4396 40 71.5469 40H76.4048V8.32Z"
+                fill="black"
+                fill-opacity="0.5"
+              />
+            </svg>
+            <span class="rounded"> Повтор</span>
+          </div>
+        </Popper>
+        <!-- Всплывающее окно Напоминание -->
+        <Popper
+          arrow
+          trigger="hover"
+          :class="isDark ? 'dark' : 'light'"
+          placement="bottom"
+        >
+          <template
+            #content="{ close }"
+            class="bottom"
+          >
+            <div class="popper">
+              <div @click="close"></div>
+               <div class="text-white p-3 body-popover-custom">
+                <DatePicker
+                  v-model="remi"
+                  mode="dateTime"
+                  locale="ru"
+                  is24hr
+                />
+              </div>
+            </div>
+          </template>
+          <a
+            v-if="selectedTask.date_reminder!==''"
+            ref="btnRefReminder"
+            class="mt-3 tags-custom"
+            @click="togglePopover_reminder()"
+          >
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 81 88"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M67.12 5.72C66.52 5.12 65.8 4.88 65.08 4.88C64.24 4.88 63.52 5.24 63.04 5.72C61.84 6.92 61.84 8.72 63.04 9.92C70.36 17.24 74.32 26.84 74.32 37.16C74.32 38.84 75.64 40.16 77.32 40.16C79 40.16 80.32 38.84 80.32 37.16C80.08 25.16 75.52 14 67.12 5.72Z"
+                fill="#3FBF64"
+                fill-opacity="1"
+              />
+              <path
+                d="M6.28002 37.04C6.28002 26.72 10.24 17.12 17.56 9.8C18.16 9.32 18.4 8.6 18.4 7.76C18.4 6.92 18.04 6.2 17.56 5.72C17.08 5.24 16.24 4.88 15.52 4.88C14.8 4.88 13.96 5.24 13.48 5.72C4.96002 14 0.400024 25.16 0.400024 37.04C0.400024 38.72 1.72002 40.04 3.40002 40.04C5.08002 40.04 6.28002 38.72 6.28002 37.04Z"
+                fill="#3FBF64"
+                fill-opacity="1"
+              />
+              <path
+                d="M74.2 65.36C68.8 60.8 65.68 54.2 65.68 47.12V37.04C65.68 24.08 56.08 13.28 43.24 11.72V3.8C43.24 2.12 41.92 0.800003 40.24 0.800003C38.56 0.800003 37.24 2.12 37.24 3.8V11.84C24.4 13.28 14.8 24.08 14.8 37.04V47.12C14.8 54.2 11.68 60.8 6.28002 65.36C4.84002 66.56 4.00002 68.48 4.00002 70.4C4.00002 74 6.88002 77 10.6 77H26.8C28.12 83.24 33.76 87.8 40.24 87.8C46.72 87.8 52.24 83.24 53.68 77H70C73.6 77 76.48 74.12 76.48 70.4C76.48 68.48 75.64 66.56 74.2 65.36ZM40.24 81.8C37 81.8 34.12 79.88 32.92 76.88H47.44C46.36 79.88 43.48 81.8 40.24 81.8ZM70 71H10.6C10.24 71 10 70.64 10 70.4C10 70.16 10.12 70.04 10.24 69.92C16.96 64.28 20.8 56 20.8 47.12V37.04C20.8 26.24 29.56 17.48 40.36 17.48C51.16 17.48 59.92 26.24 59.92 37.04V47.12C59.92 55.88 63.76 64.16 70.48 69.92C70.6 70.04 70.72 70.16 70.72 70.4C70.6 70.64 70.24 71 70 71Z"
+                fill="#3FBF64"
+                fill-opacity="1"
+              />
+            </svg>
+            <span class="rounded">{{ new Date(selectedTask.date_reminder).getDate() }}, {{ new Date(selectedTask.date_reminder).getMonth() }}, {{ new Date(selectedTask.date_reminder).getHours() }}</span>
+          </a>
+          <a
+            v-else
+            ref="btnRefReminder"
+            class="mt-3 tags-custom"
+            @click="togglePopover_reminder()"
+          >
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 81 88"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M67.12 5.72C66.52 5.12 65.8 4.88 65.08 4.88C64.24 4.88 63.52 5.24 63.04 5.72C61.84 6.92 61.84 8.72 63.04 9.92C70.36 17.24 74.32 26.84 74.32 37.16C74.32 38.84 75.64 40.16 77.32 40.16C79 40.16 80.32 38.84 80.32 37.16C80.08 25.16 75.52 14 67.12 5.72Z"
+                fill="black"
+                fill-opacity="0.5"
+              />
+              <path
+                d="M6.28002 37.04C6.28002 26.72 10.24 17.12 17.56 9.8C18.16 9.32 18.4 8.6 18.4 7.76C18.4 6.92 18.04 6.2 17.56 5.72C17.08 5.24 16.24 4.88 15.52 4.88C14.8 4.88 13.96 5.24 13.48 5.72C4.96002 14 0.400024 25.16 0.400024 37.04C0.400024 38.72 1.72002 40.04 3.40002 40.04C5.08002 40.04 6.28002 38.72 6.28002 37.04Z"
+                fill="black"
+                fill-opacity="0.5"
+              />
+              <path
+                d="M74.2 65.36C68.8 60.8 65.68 54.2 65.68 47.12V37.04C65.68 24.08 56.08 13.28 43.24 11.72V3.8C43.24 2.12 41.92 0.800003 40.24 0.800003C38.56 0.800003 37.24 2.12 37.24 3.8V11.84C24.4 13.28 14.8 24.08 14.8 37.04V47.12C14.8 54.2 11.68 60.8 6.28002 65.36C4.84002 66.56 4.00002 68.48 4.00002 70.4C4.00002 74 6.88002 77 10.6 77H26.8C28.12 83.24 33.76 87.8 40.24 87.8C46.72 87.8 52.24 83.24 53.68 77H70C73.6 77 76.48 74.12 76.48 70.4C76.48 68.48 75.64 66.56 74.2 65.36ZM40.24 81.8C37 81.8 34.12 79.88 32.92 76.88H47.44C46.36 79.88 43.48 81.8 40.24 81.8ZM70 71H10.6C10.24 71 10 70.64 10 70.4C10 70.16 10.12 70.04 10.24 69.92C16.96 64.28 20.8 56 20.8 47.12V37.04C20.8 26.24 29.56 17.48 40.36 17.48C51.16 17.48 59.92 26.24 59.92 37.04V47.12C59.92 55.88 63.76 64.16 70.48 69.92C70.6 70.04 70.72 70.16 70.72 70.4C70.6 70.64 70.24 71 70 71Z"
+                fill="black"
+                fill-opacity="0.5"
+              />
+            </svg>
+            <span class="rounded"> Напоминание</span>
+          </a>
+        </Popper>
+        <!--Всплывающее окно Проекты-->
+        <Popper
+          arrow
+          trigger="hover"
+          :class="isDark ? 'dark' : 'light'"
+          placement="bottom"
+          :options="{
+            placement: 'top',
+            modifiers: { offset: { offset: '0,10px' } }
+          }"
+        >
+          <template
+            #content="{ close }"
+            class="bottom"
+          >
+            <div class="popper">
+              <div @click="close">
               </div>
               <div class="text-white body-popover-custom">
                 <div class="container-project-popover">
@@ -1179,7 +1281,7 @@ export default {
           <a
             v-if="selectedTask.uid_project !== '00000000-0000-0000-0000-000000000000' && projects[selectedTask.uid_project].name!==''"
             ref="btnRefProject"
-            class="mt-3 tags-custom"
+            class="mt-3 tags-custom project-hover-close"
           >
             <svg
               width="24"
@@ -1202,6 +1304,10 @@ export default {
               />
             </svg>
             {{ projects[selectedTask.uid_project].name }}
+            <button @click="resetProject" class="btn-close-popover"><svg width="5" height="5" viewBox="0 0 16 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M14.8483 2.34833C15.317 1.8797 15.317 1.11991 14.8483 0.651277C14.3797 0.182647 13.6199 0.182647 13.1513 0.651277L7.99981 5.80275L2.84833 0.651277C2.3797 0.182647 1.61991 0.182647 1.15128 0.651277C0.682647 1.11991 0.682647 1.8797 1.15128 2.34833L6.30275 7.4998L1.15128 12.6513C0.682647 13.1199 0.682647 13.8797 1.15128 14.3483C1.61991 14.817 2.3797 14.817 2.84833 14.3483L7.99981 9.19686L13.1513 14.3483C13.6199 14.817 14.3797 14.817 14.8483 14.3483C15.317 13.8797 15.317 13.1199 14.8483 12.6513L9.69686 7.4998L14.8483 2.34833Z" fill="black" fill-opacity="0.5"/>
+          </svg>
+          </button>
           </a>
           <a
             v-else
@@ -1224,6 +1330,7 @@ export default {
             <span class="rounded"> Проект</span>
           </a>
         </Popper>
+        <!--Всплывающее окно Цвета-->
         <Popper
           arrow
           trigger="hover"
@@ -1239,75 +1346,28 @@ export default {
             class="bottom"
           >
             <div class="popper">
-              <div class="text-white opacity-1 font-semibold title-popover-main">
-                <div
-                  class="dissmiss_popover"
-                  @click="close"
-                >
-                  <svg
-                    viewBox="0 0 14 14"
-                    width="14"
-                    height="14"
-                    class="inline-block"
-                  ><path
-                    fill="currentColor"
-                    fill-rule="evenodd"
-                    clip-rule="evenodd"
-                    d="M13.7071 1.70711C14.0976 1.31658 14.0976 0.683417 13.7071 0.292893C13.3166 -0.0976311 12.6834 -0.0976311 12.2929 0.292893L7 5.58579L1.70711 0.292893C1.31658 -0.0976311 0.683417 -0.0976311 0.292893 0.292893C-0.0976311 0.683417 -0.0976311 1.31658 0.292893 1.70711L5.58579 7L0.292893 12.2929C-0.0976311 12.6834 -0.0976311 13.3166 0.292893 13.7071C0.683417 14.0976 1.31658 14.0976 1.70711 13.7071L7 8.41421L12.2929 13.7071C12.6834 14.0976 13.3166 14.0976 13.7071 13.7071C14.0976 13.3166 14.0976 12.6834 13.7071 12.2929L8.41421 7L13.7071 1.70711Z"
-                  /></svg>
-                  Отменить
-                </div>
-                <div class="title-project-custom">
-                  <span
-                    class="title-z-popover"
-                    @click="close"
-                  >Сохранить</span>
-                </div>
-              </div>
+              <div @click="close"></div>
               <div class="text-white body-popover-custom">
-                <div class="input-group">
-                  <label class="title-label-search">Цвет</label>
-                  <span class="input-group-addon input-group-custom"><svg
-                    width="16"
-                    height="16"
-                    viewBox="0 0 82 83"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M81.0655 76.0627L64.1173 59.1145C69.4264 52.6824 72.3872 44.5146 72.3872 36.1426C72.3872 16.2335 56.1537 0 36.1425 0C16.2335 0 0 16.2335 0 36.1426C0 56.1537 16.2335 72.3872 36.1425 72.3872C44.5145 72.3872 52.6824 69.4264 59.1145 64.1173L76.0627 81.0655C76.7774 81.7802 77.5942 82.0865 78.513 82.0865C79.4319 82.0865 80.3508 81.6781 80.9634 81.0655C81.6781 80.3508 81.9844 79.534 81.9844 78.6152C82.0865 77.5942 81.6781 76.7774 81.0655 76.0627ZM36.1425 65.3425C20.1132 65.3425 7.04473 52.274 7.04473 36.1426C7.04473 20.0111 20.1132 7.04473 36.1425 7.04473C52.1719 7.04473 65.3425 20.1132 65.3425 36.1426C65.3425 52.1719 52.274 65.3425 36.1425 65.3425Z"
-                      fill="#757575"
-                    />
-                  </svg>
-                  </span>
-                  <input
-                    type="search"
-                    value=""
-                    placeholder="Найти цвет..."
-                    class="form-control form-control-custom"
-                  >
-                </div>
                 <div class="container-color-popover">
                   <div
                     v-for="(key,value) in colors"
                     :key="value"
+                    class="list-color-access"
+                    :class="{active:isActive=key.uid===selectedTask.uid_marker}"
+                    @click="changeColors(selectedTask.uid, key.uid)"
+                    :style="{'background-color': key.back_color, 'border:1px solid ': key.back_color}"
                   >
-                    <div class="color_container">
-                      <label
-                        class="list-color-access"
-                        :style="{'background-color': key.back_color, 'border:1px solid ': key.back_color}"
-                      >
                         <span
                           v-if="uppercase===1"
-                          style="text-transform:uppercase"
+                          style="text-transform:uppercase; display: none;"
                           :style="{'color': key.force_color}"
                         >{{ key.name }}</span>
                         <span
-                          v-else
+                          v-else style="display: none;"
                           :style="{'color': key.force_color}"
                         >{{ key.name }}</span>
-                      </label>
-                      <input
+                    <span class="inline-flex justify-center items-center checkcolor"><svg viewBox="0 0 26 20" width="15" height="15" class="inline-block"><path fill="currentColor" fill-rule="evenodd" clip-rule="evenodd" d="M24.4107 1.30299C25.2766 2.02718 25.3681 3.2892 24.6148 4.1218L11.8142 18.2718C10.8103 19.3815 9.06094 19.4991 7.9062 18.5344L0.902667 12.6839C0.0362917 11.9601 -0.0558157 10.6982 0.69694 9.86518C1.44969 9.0322 2.76226 8.94364 3.62864 9.66738L9.58691 14.6447L21.4789 1.49931C22.2321 0.666707 23.5447 0.578813 24.4107 1.30299Z"></path></svg><!--v-if--></span>
+                      <input style="display: none;"
                         type="radio"
                         name="check_colors"
                         :value="key.uid"
@@ -1315,7 +1375,6 @@ export default {
                         :checked="key.uid===selectedTask.uid_marker"
                         @change="changeColors(selectedTask.uid, key.uid)"
                       >
-                    </div>
                   </div>
                 </div>
               </div>
@@ -1323,7 +1382,7 @@ export default {
           </template>
           <a
             ref="btnRefColor"
-            class="mt-3 tags-custom"
+            class="mt-3 tags-custom project-hover-close"
           >
             <span v-if="selectedTask.uid_marker !== '00000000-0000-0000-0000-000000000000'">
               <svg
@@ -1345,6 +1404,10 @@ export default {
                 />
               </svg>
               <span class="rounded"> {{ colors[selectedTask.uid_marker].name }}</span>
+               <button @click="resetColor" class="btn-close-popover"><svg width="5" height="5" viewBox="0 0 16 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M14.8483 2.34833C15.317 1.8797 15.317 1.11991 14.8483 0.651277C14.3797 0.182647 13.6199 0.182647 13.1513 0.651277L7.99981 5.80275L2.84833 0.651277C2.3797 0.182647 1.61991 0.182647 1.15128 0.651277C0.682647 1.11991 0.682647 1.8797 1.15128 2.34833L6.30275 7.4998L1.15128 12.6513C0.682647 13.1199 0.682647 13.8797 1.15128 14.3483C1.61991 14.817 2.3797 14.817 2.84833 14.3483L7.99981 9.19686L13.1513 14.3483C13.6199 14.817 14.3797 14.817 14.8483 14.3483C15.317 13.8797 15.317 13.1199 14.8483 12.6513L9.69686 7.4998L14.8483 2.34833Z" fill="black" fill-opacity="0.5"/>
+          </svg>
+          </button>
             </span>
             <span v-else>
               <svg
@@ -1369,6 +1432,7 @@ export default {
             </span>
           </a>
         </Popper>
+        <!--Всплывающее окно Метки-->
         <Popper
           arrow
           trigger="hover"
@@ -1384,54 +1448,10 @@ export default {
             class="bottom"
           >
             <div class="popper">
-              <div class="text-white opacity-1 font-semibold title-popover-main">
-                <div
-                  class="dissmiss_popover"
-                  @click="close"
-                >
-                  <svg
-                    viewBox="0 0 14 14"
-                    width="14"
-                    height="14"
-                    class="inline-block"
-                  ><path
-                    fill="currentColor"
-                    fill-rule="evenodd"
-                    clip-rule="evenodd"
-                    d="M13.7071 1.70711C14.0976 1.31658 14.0976 0.683417 13.7071 0.292893C13.3166 -0.0976311 12.6834 -0.0976311 12.2929 0.292893L7 5.58579L1.70711 0.292893C1.31658 -0.0976311 0.683417 -0.0976311 0.292893 0.292893C-0.0976311 0.683417 -0.0976311 1.31658 0.292893 1.70711L5.58579 7L0.292893 12.2929C-0.0976311 12.6834 -0.0976311 13.3166 0.292893 13.7071C0.683417 14.0976 1.31658 14.0976 1.70711 13.7071L7 8.41421L12.2929 13.7071C12.6834 14.0976 13.3166 14.0976 13.7071 13.7071C14.0976 13.3166 14.0976 12.6834 13.7071 12.2929L8.41421 7L13.7071 1.70711Z"
-                  /></svg>
-                  Отменить
-                </div>
-                <div class="title-project-custom">
-                  <span
-                    class="title-z-popover"
-                    @click="close"
-                  >Сохранить</span>
-                </div>
+              <div @click="close">
+                <button @click="ClickTagsChange" class="btn-save-popover">Применить</button>
               </div>
               <div class="text-white body-popover-custom">
-                <div class="input-group">
-                  <label class="title-label-search">Метки</label>
-                  <span class="input-group-addon input-group-custom"><svg
-                    width="16"
-                    height="16"
-                    viewBox="0 0 82 83"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M81.0655 76.0627L64.1173 59.1145C69.4264 52.6824 72.3872 44.5146 72.3872 36.1426C72.3872 16.2335 56.1537 0 36.1425 0C16.2335 0 0 16.2335 0 36.1426C0 56.1537 16.2335 72.3872 36.1425 72.3872C44.5145 72.3872 52.6824 69.4264 59.1145 64.1173L76.0627 81.0655C76.7774 81.7802 77.5942 82.0865 78.513 82.0865C79.4319 82.0865 80.3508 81.6781 80.9634 81.0655C81.6781 80.3508 81.9844 79.534 81.9844 78.6152C82.0865 77.5942 81.6781 76.7774 81.0655 76.0627ZM36.1425 65.3425C20.1132 65.3425 7.04473 52.274 7.04473 36.1426C7.04473 20.0111 20.1132 7.04473 36.1425 7.04473C52.1719 7.04473 65.3425 20.1132 65.3425 36.1426C65.3425 52.1719 52.274 65.3425 36.1425 65.3425Z"
-                      fill="#757575"
-                    />
-                  </svg>
-                  </span>
-                  <input
-                    type="search"
-                    value=""
-                    placeholder="Найти метку..."
-                    class="form-control form-control-custom"
-                  >
-                </div>
                 <div class="container-tags-popover">
                   <form
                     id="formdatatags"
@@ -1484,7 +1504,7 @@ export default {
             <a
               v-for="(key, value) in selectedTask.tags"
               :key="value"
-              class="mt-3 tags-custom"
+              class="mt-3 tags-custom project-hover-close"
             >
               <svg
                 v-if="tags[key].back_color!==-129876 && tags[key].back_color!==-6268231 && tags[key].back_color!==-12169111 && tags[key].back_color!==-2160377 && tags[key].back_color!==-16741998 && tags[key].back_color!==-11075513 && tags[key].back_color!==-12366748"
@@ -1525,6 +1545,10 @@ export default {
                 />
               </svg>
               <span class="rounded custom-method">{{ tags[key].name }}</span>
+                <button @click="resetTags(key)" class="btn-close-popover"><svg width="5" height="5" viewBox="0 0 16 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M14.8483 2.34833C15.317 1.8797 15.317 1.11991 14.8483 0.651277C14.3797 0.182647 13.6199 0.182647 13.1513 0.651277L7.99981 5.80275L2.84833 0.651277C2.3797 0.182647 1.61991 0.182647 1.15128 0.651277C0.682647 1.11991 0.682647 1.8797 1.15128 2.34833L6.30275 7.4998L1.15128 12.6513C0.682647 13.1199 0.682647 13.8797 1.15128 14.3483C1.61991 14.817 2.3797 14.817 2.84833 14.3483L7.99981 9.19686L13.1513 14.3483C13.6199 14.817 14.3797 14.817 14.8483 14.3483C15.317 13.8797 15.317 13.1199 14.8483 12.6513L9.69686 7.4998L14.8483 2.34833Z" fill="black" fill-opacity="0.5"/>
+          </svg>
+          </button>
             </a>
           </span>
           <a
@@ -1553,6 +1577,7 @@ export default {
             <span class="rounded custom-method">Метки</span>
           </a>
         </Popper>
+        <!-- Чек лист -->
         <div
           v-if="!selectedTask.checklist"
           class="mt-3 tags-custom"
@@ -1592,7 +1617,7 @@ export default {
           </svg>
           <span class="rounded"> Чек-лист</span>
         </div>
-
+        <!-- Фокус -->
         <div
           v-if="selectedTask.focus===1"
           class="mt-3 tags-custom"
@@ -1635,7 +1660,7 @@ export default {
           </svg>
           <span class="rounded"> В фокус</span>
         </div>
-
+        <!-- Три точки -->
         <div
           class="mt-3 tags-custom any-list-custom relative"
           @click="anymenuShow = !anymenuShow"
@@ -1796,7 +1821,6 @@ export default {
                 class="mt-1 file-custom_attach-left"
                 style="background-color:#EDF7ED;"
               >
-                {{ key.file_name.split('.').pop() }}
                 <a :href="'https://web.leadertask.com/User/Files/GetFile?uid='+key.uid">
                   <svg
                     width="22"
@@ -1846,19 +1870,14 @@ export default {
                 class="mt-1 file-custom_attach-right"
                 style="background-color:#FCEAEA;"
               >
-                {{ key.file_name.split('.').pop() }}
-                <a
-                  v-if="key.file_name.split('.').pop()==='jpg' || key.file_name.split('.').pop()==='png' || key.file_name.split('.').pop()==='jpeg' || key.file_name.split('.').pop()==='gif'"
-                  :href="'https://web.leadertask.com/User/Files/GetFile?uid='+key.uid"
-                >
-                  <img :src="'https://web.leadertask.com/User/Files/GetFile?uid='+key.uid">
-                  <div style="color:black"><strong>{{ new Date(key.date_create).toLocaleDateString() }} {{ new Date(key.date_create).toLocaleTimeString() }}</strong></div>
-                  <div style="color:#3E3D3B;">{{ formatBytes(key.file_size) }}</div>
+                <span v-if="key.file_name.split('.').pop()==='jpg' || key.file_name.split('.').pop()==='png' || key.file_name.split('.').pop()==='jpeg' || key.file_name.split('.').pop()==='gif'">
+                  <a
+                    :href="'https://web.leadertask.com/User/Files/GetFile?uid='+key.uid"
+                    >
+                  <img v-bind:src="getImgUrl('https://web.leadertask.com/User/Files/GetFile?uid='+key.uid)">
                 </a>
-                <a
-                  v-else-if="key.file_name.split('.').pop()==='mov' && key.file_name.split('.').pop()==='mp4' && key.file_name.split('.').pop()==='m4a'"
-                  :href="'https://web.leadertask.com/User/Files/GetFile?uid='+key.uid"
-                >
+                </span>
+                <span v-else-if="key.file_name.split('.').pop()==='mov' && key.file_name.split('.').pop()==='mp4'">
                   <svg
                     width="22"
                     height="27"
@@ -1873,13 +1892,13 @@ export default {
                       fill="#757575"
                     />
                   </svg>
-                  <div style="color:black"><strong>{{ new Date(key.date_create).toLocaleDateString() }} {{ new Date(key.date_create).toLocaleTimeString() }}</strong></div>
-                  <div style="color:#3E3D3B;">{{ formatBytes(key.file_size) }}</div>
-                </a>
-                <a
-                  v-else-if="key.file_name.split('.').pop()==='doc' && key.file_name.split('.').pop()==='xls' && key.file_name.split('.').pop()==='xlsx' && key.file_name.split('.').pop()==='txt'"
-                  :href="'https://web.leadertask.com/User/Files/GetFile?uid='+key.uid"
-                >
+                </span>
+                <span v-else-if="key.file_name.split('.').pop()==='doc' && key.file_name.split('.').pop()==='xls' && key.file_name.split('.').pop()==='xlsx' && key.file_name.split('.').pop()==='txt'">
+<a
+
+  :href="'https://web.leadertask.com/User/Files/GetFile?uid='+key.uid"
+>
+
                   <svg
                     width="22"
                     height="27"
@@ -1894,30 +1913,20 @@ export default {
                       fill="#757575"
                     />
                   </svg>
-                  <div style="color:black"><strong>{{ new Date(key.date_create).toLocaleDateString() }} {{ new Date(key.date_create).toLocaleTimeString() }}</strong></div>
-                  <div style="color:#3E3D3B;">{{ formatBytes(key.file_size) }}</div>
                 </a>
-                <a
-                  v-else
-                  :href="'https://web.leadertask.com/User/Files/GetFile?uid='+key.uid"
-                >
-                  <svg
-                    width="22"
-                    height="27"
-                    viewBox="0 0 22 27"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
+                </span>
+                <span v-else-if="key.file_name.split('.').pop()==='mp3' || key.file_name.split('.').pop()==='wav' || key.file_name.split('.').pop()==='m4a'">
+                  <audio
+                    :src="'https://web.leadertask.com/User/Files/GetFile?uid='+key.uid"
+                    ref="audioPlayer"
+                    controls
                   >
-                    <path
-                      fill-rule="evenodd"
-                      clip-rule="evenodd"
-                      d="M21.6459 8.28333C21.675 8.3125 21.7042 8.37083 21.7334 8.42917C21.7625 8.51667 21.7917 8.63333 21.7917 8.75V24.7917C21.7917 25.9292 20.8875 26.8333 19.75 26.8333H2.25004C1.11254 26.8333 0.208374 25.9292 0.208374 24.7917V2.91667C0.208374 1.77917 1.11254 0.875 2.25004 0.875H13.9167C14.0334 0.875 14.15 0.904167 14.2084 0.933333H14.2375C14.2667 0.947917 14.2886 0.9625 14.3105 0.977083C14.3323 0.991667 14.3542 1.00625 14.3834 1.02083C14.4417 1.05 14.5 1.10833 14.5292 1.1375L21.5292 8.1375L21.5292 8.13751C21.5875 8.19584 21.6167 8.225 21.6459 8.28333ZM2.25004 2.625C2.07504 2.625 1.95837 2.74167 1.95837 2.91667V24.7917C1.95837 24.9667 2.07504 25.0833 2.25004 25.0833H19.75C19.925 25.0833 20.0417 24.9667 20.0417 24.7917V9.625H15.0834C13.9459 9.625 13.0417 8.72083 13.0417 7.58333V2.625H2.25004ZM14.7917 7.58333C14.7917 7.75833 14.9084 7.875 15.0834 7.875H18.8167L14.7917 3.85V7.58333ZM5.22504 11.375C4.70957 11.375 4.29171 11.7929 4.29171 12.3083C4.29171 12.8238 4.70957 13.2417 5.22504 13.2417H16.4834C16.9988 13.2417 17.4167 12.8238 17.4167 12.3083C17.4167 11.7929 16.9988 11.375 16.4834 11.375H5.22504ZM4.29171 9.1C4.29171 8.58453 4.70957 8.16667 5.22504 8.16667H10.65C11.1655 8.16667 11.5834 8.58453 11.5834 9.1C11.5834 9.61547 11.1655 10.0333 10.65 10.0333H5.22504C4.70957 10.0333 4.29171 9.61547 4.29171 9.1ZM5.22504 14.5833C4.70957 14.5833 4.29171 15.0012 4.29171 15.5167C4.29171 16.0321 4.70957 16.45 5.22504 16.45H16.4834C16.9988 16.45 17.4167 16.0321 17.4167 15.5167C17.4167 15.0012 16.9988 14.5833 16.4834 14.5833H5.22504ZM4.29171 18.725C4.29171 18.2095 4.70957 17.7917 5.22504 17.7917H16.4834C16.9988 17.7917 17.4167 18.2095 17.4167 18.725C17.4167 19.2405 16.9988 19.6583 16.4834 19.6583H5.22504C4.70957 19.6583 4.29171 19.2405 4.29171 18.725ZM5.22504 21C4.70957 21 4.29171 21.4179 4.29171 21.9333C4.29171 22.4488 4.70957 22.8667 5.22504 22.8667H16.4834C16.9988 22.8667 17.4167 22.4488 17.4167 21.9333C17.4167 21.4179 16.9988 21 16.4834 21H5.22504Z"
-                      fill="#757575"
-                    />
-                  </svg>
-                  <div style="color:black"><strong>{{ new Date(key.date_create).toLocaleDateString() }} {{ new Date(key.date_create).toLocaleTimeString() }}</strong></div>
-                  <div style="color:#3E3D3B;">{{ formatBytes(key.file_size) }}</div>
-                </a>
+                    Your browser does not support the
+                    <code>audio</code> element.
+                  </audio>
+                </span>
+                <div style="color:black"><strong>{{ new Date(key.date_create).toLocaleDateString() }} {{ new Date(key.date_create).toLocaleTimeString() }}</strong></div>
+                <div style="color:#3E3D3B;">{{ formatBytes(key.file_size) }}</div>
               </div>
             </div>
           </div>
@@ -2060,430 +2069,6 @@ export default {
 
           </button>
         </span>
-      </div>
-    </div>
-  </div>
-  <!--Всплывающее окно Метки-->
-  <!--Всплывающее окно Цвета-->
-  <!--Всплывающее окно Проекты-->
-  <!-- Всплывающее окно сотрудник -->
-  <!-- Всплывающее окно доступ -->
-  <div
-    id="tooltip"
-    ref="popoverRef"
-    :class="{'hidden': !popoverShowAccess, 'block': popoverShowAccess}"
-    class="border-1 mt-3 block z-50 font-normal leading-normal text-sm max-w-xs text-left no-underline break-words rounded-lg popover-custom-access"
-  >
-    <div class="popover-padding-custom">
-      <div class="text-white opacity-75 font-semibold p-3 mb-0 border-b border-solid border-blueGray-100 uppercase rounded-t-lg title-popover-main">
-        <div
-          class="dissmiss_popover"
-          @click="togglePopover_access()"
-        >
-          <svg
-            width="16"
-            height="16"
-            viewBox="0 0 24 24"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              fill-rule="evenodd"
-              clip-rule="evenodd"
-              d="M7.34299 4.0429C7.73351 3.65238 8.36668 3.65238 8.7572 4.0429C9.14773 4.43343 9.14773 5.06659 8.7572 5.45711L3.46412 10.7502H21.25C21.8023 10.7502 22.25 11.1979 22.25 11.7502C22.25 12.3025 21.8023 12.7502 21.25 12.7502H3.46449L8.7572 18.0429C9.14773 18.4334 9.14773 19.0666 8.7572 19.4571C8.36668 19.8476 7.73351 19.8476 7.34299 19.4571L0.357063 12.4712C0.167788 12.2892 0.0499954 12.0335 0.0499954 11.7502C0.0499954 11.5167 0.130016 11.3019 0.26413 11.1317C0.288507 11.1007 0.314819 11.0711 0.342983 11.0429L7.34299 4.0429Z"
-              fill="black"
-              fill-opacity="0.5"
-            />
-          </svg>
-          Назад
-        </div>
-        <div class="title-project-custom">
-          <span
-            class="title-z-popover"
-            @click="ClickAccessEmail"
-          >Готово</span>
-        </div>
-      </div>
-      <div class="text-white p-3 body-popover-custom">
-        <div class="input-group">
-          <label class="title-label-search">Доступ</label>
-          <span class="input-group-addon input-group-custom"><svg
-            width="16"
-            height="16"
-            viewBox="0 0 82 83"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M81.0655 76.0627L64.1173 59.1145C69.4264 52.6824 72.3872 44.5146 72.3872 36.1426C72.3872 16.2335 56.1537 0 36.1425 0C16.2335 0 0 16.2335 0 36.1426C0 56.1537 16.2335 72.3872 36.1425 72.3872C44.5145 72.3872 52.6824 69.4264 59.1145 64.1173L76.0627 81.0655C76.7774 81.7802 77.5942 82.0865 78.513 82.0865C79.4319 82.0865 80.3508 81.6781 80.9634 81.0655C81.6781 80.3508 81.9844 79.534 81.9844 78.6152C82.0865 77.5942 81.6781 76.7774 81.0655 76.0627ZM36.1425 65.3425C20.1132 65.3425 7.04473 52.274 7.04473 36.1426C7.04473 20.0111 20.1132 7.04473 36.1425 7.04473C52.1719 7.04473 65.3425 20.1132 65.3425 36.1426C65.3425 52.1719 52.274 65.3425 36.1425 65.3425Z"
-              fill="#757575"
-            />
-          </svg>
-          </span>
-          <input
-            type="search"
-            value=""
-            placeholder="Поиск"
-            class="form-control form-control-custom"
-          >
-        </div>
-        <div class="container-employee-popover">
-          <form>
-            <div
-              v-for="(key,value, index) in employees"
-              :key="index"
-            >
-              <div class="list-employee-access">
-                <img
-                  :src="key.fotolink"
-                  class="mr-1 border-fotolink border-solid border-2 border-sky-500"
-                  width="30"
-                  height="30"
-                >
-                <label class="employee-name-custom">
-
-                  <div class="popover-employee-email"><div style="color: black;">{{ key.name }}</div>{{ key.email }}</div>
-                </label>
-                <input
-                  v-model="checkEmail"
-                  type="checkbox"
-                  name="check_access_employee"
-                  :value="key.email"
-                  class="check-custom-empployee"
-                  :checked="selectedTask.emails.split('..').filter(email=>email===key.email)[0]===key.email"
-                >
-              </div>
-            </div>
-          </form>
-        </div>
-      </div>
-      <div
-        id="arrow"
-        data-popper-arrow
-      />
-    </div>
-  </div>
-  <!--Всплывающее окно Повтор-->
-  <div
-    ref="popoverRefRepeat"
-    :class="{'hidden': !popoverShowRepeat, 'block': popoverShowRepeat}"
-    class="border-1 mt-3 block z-50 font-normal leading-normal text-sm max-w-xs text-left no-underline break-words rounded-lg popover-custom-access"
-  >
-    <div class="popover-padding-custom">
-      <div class="text-white opacity-1 font-semibold p-3 mb-0 border-b border-solid border-blueGray-100 rounded-t-lg title-popover-main">
-        <div
-          class="dissmiss_popover title-active-head"
-          @click="togglePopover_repeat()"
-        >
-          Отменить
-        </div>
-        <div class="title-repeat-custom">
-          <span class="title-repeat-head-center title-active-head text-center">Срок</span>
-          <span class="title-repeat-head-right title-active-head text-center">Готово</span>
-        </div>
-      </div>
-      <div class="text-white p-3 body-popover-custom body-repeat-custom rounded-b-lg">
-        <button
-          ref="tabnorepeat"
-          class="btn-width-custom"
-          :class="selectedTask.SeriesType===0 ? {active:true} : {active:isActive==='#tabnorepeat'}"
-          type="button"
-          value="0"
-          @click="tabfunction('#tabnorepeat')"
-        >
-          Не повторять
-        </button>
-        <button
-          ref="tabeveryday"
-          class="btn-width-custom"
-          :class="selectedTask.SeriesType===1 ? {active:true} : {active:isActive==='#tabeveryday'}"
-          type="button"
-          value="1"
-          @click="tabfunction('#tabeveryday')"
-        >
-          Ежедневно
-        </button>
-        <button
-          ref="tabeveryweek"
-          class="btn-width-custom"
-          :class="selectedTask.SeriesType===2 ? {active:true} : {active:isActive==='#tabeveryweek'}"
-          type="button"
-          value="2"
-          @click="tabfunction('#tabeveryweek')"
-        >
-          Еженедельно
-        </button>
-        <button
-          ref="tabverymonth"
-          class="btn-width-custom"
-          :class="selectedTask.SeriesType===3 ? {active:true} : {active:isActive==='#tabverymonth'}"
-          type="button"
-          value="3"
-          @click="tabfunction('#tabeverymonth')"
-        >
-          Ежемесячно
-        </button>
-        <button
-          ref="tabeveryyear"
-          class="btn-width-custom"
-          :class="selectedTask.SeriesType===4 ? {active:true} : {active:isActive==='#tabeveryyear'}"
-          type="button"
-          value="4"
-          @click="tabfunction('#tabeveryyear')"
-        >
-          Ежегодно
-        </button>
-      </div>
-      <div class="tab-content">
-        <div
-          id="tabnorepeat"
-          class="tab-content-repeat"
-          :class="selectedTask.SeriesType===0 ? {active:true} : {active:isActive==='#tabnorepeat'}"
-        />
-        <div
-          id="tabeveryday"
-          class="tab-content-repeat"
-          :class="selectedTask.SeriesType===1 ? {active:true} : {active:isActive==='#tabeveryday'}"
-        >
-          <div class="every-content flex">
-            <label>Каждый </label>
-            <div class="form-group">
-              <select
-                class="form-control form-control-select"
-                name=""
-              >
-                <option
-                  v-for="item in 365"
-                  :key="item"
-                  selected="{{selectedTask.SeriesAfterCount===item ? true :false}}"
-                >
-                  {{ item }}
-                </option>
-              </select>
-            </div>
-            <div class="form-group">
-              <select class="form-control form-control-select">
-                <option value="1">
-                  День
-                </option>
-                <option value="2">
-                  Неделю
-                </option>
-                <option value="3">
-                  Месяц
-                </option>
-                <option value="4">
-                  Год
-                </option>
-              </select>
-            </div>
-          </div>
-        </div>
-        <div
-          id="tabeveryweek"
-          class="tab-content-repeat"
-          :class="selectedTask.SeriesType===2 ? {active:true} : {active:isActive==='#tabeveryweek'}"
-        >
-          <div class="everyweek-content">
-            <div class="flex">
-              <label>Каждую </label>
-              <div class="form-group">
-                <select
-                  class="form-control form-control-select"
-                  name=""
-                >
-                  <option
-                    v-for="item in 365"
-                    :key="item"
-                  >
-                    {{ item }} неделю
-                  </option>
-                </select>
-              </div>
-            </div>
-            <div class="form-group">
-              <div class="form-everyweek-container">
-                <button class="btn-day-week">
-                  Вт.
-                </button>
-                <button class="btn-day-week">
-                  Ср.
-                </button>
-                <button class="btn-day-week">
-                  Чт.
-                </button>
-                <button class="btn-day-week">
-                  Пт.
-                </button>
-                <button class="btn-day-week">
-                  Сб.
-                </button>
-                <button class="btn-day-week">
-                  Вск.
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div
-          id="tabeverymonth"
-          class="tab-content-repeat"
-          :class="selectedTask.SeriesType===3 ? {active:true} : {active:isActive==='#tabeverymonth'}"
-        >
-          <div class="everymonth-content">
-            <div class="flex">
-              <label>Повтор </label>
-              <div class="form-group">
-                <select
-                  class="form-control form-control-select"
-                  name=""
-                >
-                  <option>Каждый</option>
-                  <option>Первый</option>
-                  <option>Второй</option>
-                  <option>Третий</option>
-                  <option>Четвертый</option>
-                  <option>Последний</option>
-                </select>
-              </div>
-              <div class="form-group">
-                <select
-                  class="form-control form-control-select"
-                  name=""
-                >
-                  <option
-                    v-for="item in 365"
-                    :key="item"
-                  >
-                    {{ item }} месяц
-                  </option>
-                </select>
-              </div>
-            </div>
-            <div class="form-group">
-              <div class="form-everymonth-container">
-                <button
-                  v-for="day in 31"
-                  :key="day"
-                  class="btn-day-month"
-                >
-                  {{ day }}
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div
-          id="tabeveryyear"
-          class="tab-content-repeat"
-          :class="selectedTask.SeriesType===4 ? {active:true} : {active:isActive==='#tabeveryyear'}"
-        >
-          <div class="everyyear-content">
-            <div class="flex">
-              <label>Повтор </label>
-              <div
-                class="form-group"
-                aria-valuemax="SeriesYearType"
-              >
-                <select
-                  class="form-control form-control-select"
-                  name="SeriesYearWeekType"
-                >
-                  <option value="1">
-                    Каждый
-                  </option>
-                  <option>Первый</option>
-                  <option>Второй</option>
-                  <option>Третий</option>
-                  <option>Четвертый</option>
-                  <option>Последний</option>
-                </select>
-              </div>
-              <div class="form-group">
-                <select
-                  class="form-control form-control-select"
-                  name=""
-                >
-                  <option
-                    v-for="item in months"
-                    :key="item"
-                  >
-                    {{ item }}
-                  </option>
-                </select>
-              </div>
-            </div>
-            <div class="form-group">
-              <div class="form-everyyear-container">
-                <button
-                  v-for="day in 31"
-                  :key="day"
-                  class="btn-day-year"
-                >
-                  {{ day }}
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="form-group-button">
-          <div class="form-group">
-            <button class="btn-save">
-              Сохранить
-            </button>
-          </div>
-          <div class="form-group">
-            <button
-              class="btn-cancel"
-              @click="togglePopover_repeat()"
-            >
-              Отменить
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <!--Всплывающее окно Напоминание-->
-  <div
-    ref="popoverRefReminder"
-    :class="{'hidden': !popoverShowReminder, 'block': popoverShowReminder}"
-    class="border-1 mt-3 block z-50 font-normal leading-normal text-sm max-w-xs text-left no-underline break-words rounded-lg popover-custom-access"
-  >
-    <div class="popover-padding-custom">
-      <div class="text-white opacity-1 font-semibold p-3 mb-0 border-b border-solid border-blueGray-100 uppercase rounded-t-lg title-popover-main">
-        <div class="title-popover-custom">
-          <span class="title-z-popover text-center">Напоминание</span>
-        </div>
-        <div
-          class="dissmiss_popover"
-          @click="togglePopover_reminder()"
-        >
-          <svg
-            style="width:24px;height:24px"
-            viewBox="0 0 24 24"
-          >
-            <path
-              fill="currentColor"
-              d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z"
-            />
-          </svg>
-        </div>
-      </div>
-      <div class="text-white p-3 body-popover-custom">
-        <DatePicker
-          v-model="remi"
-          mode="dateTime"
-          locale="ru"
-        />
-      </div>
-      <div class="popover-container-button">
-        <input
-          type="button"
-          name="ok"
-          value="ОК"
-          class="btn btn-orange"
-        >
       </div>
     </div>
   </div>

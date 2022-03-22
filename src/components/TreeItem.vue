@@ -49,7 +49,6 @@ export default {
 </script>
 <template>
   <li
-    class="item-element-class"
     @click="changeProject(selectedTask.uid, model.uid)"
   >
     <div
@@ -112,7 +111,7 @@ export default {
           fill-opacity="1"
         />
       </svg>
-      <label class="break-words">{{ model.name }}</label>
+      <label class="break-words">{{ model.name.substring(0, 15) }}</label>
       <input
         v-model="selecteProject[model.uid]"
         type="radio"

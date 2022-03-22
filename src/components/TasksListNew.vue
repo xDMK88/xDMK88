@@ -102,13 +102,7 @@
         <!-- Hover task options -->
         <Transition>
           <div
-            class="absolute right-2 top-2 bg-gray-200 rounded-lg items-cetner justify-center py-0.5 px-3"
-            :class="{
-              'flex': isTaskHoverPopperActive && lastSelectedTaskUid == props.node.id,
-              'hidden': isTaskHoverPopperActive && lastSelectedTaskUid != props.node.id,
-              'group-hover:flex': !isTaskHoverPopperActive
-              }
-            "
+            class="absolute hidden group-hover:flex right-2 top-2 bg-gray-200 rounded-lg items-cetner justify-center py-0.5 px-3"
             :style="{ backgroundColor: colors[props.node.info.uid_marker] ? colors[props.node.info.uid_marker].back_color : '' }"
           >
             <Icon

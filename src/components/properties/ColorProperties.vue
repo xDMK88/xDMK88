@@ -50,12 +50,14 @@ const removeColor = (color) => {
   <modal-box-confirm
     v-model="showConfirm"
     button="warning"
-    hasButton
-    hasCancel
-    buttonLabel="Delete"
+    has-button
+    has-cancel
+    button-label="Delete"
     @confirm="removeColor(selectedColor)"
   >
-    <p class="text-center">Do you really wanna delete "<strong>{{ selectedColor.name }}</strong>" color?</p>
+    <p class="text-center">
+      Do you really wanna delete "<strong>{{ selectedColor.name }}</strong>" color?
+    </p>
   </modal-box-confirm>
   <div>
     <div>
@@ -74,20 +76,20 @@ const removeColor = (color) => {
         class="mt-2 p-3 rounded-xl bg-gray-100 font-bold text-gray-700 w-full border-none ring-0 outline-none"
       >
       <div
-         class="mt-8"
+        class="mt-8"
       >
         <ColorPicker
-          :label="'Цвет букв'"
           v-model="selectedColor.fore_color"
+          :label="'Цвет букв'"
           :icon="characters"
         />
       </div>
       <div
-         class="mt-8"
+        class="mt-8"
       >
         <ColorPicker
-          :label="'Цвет фона'"
           v-model="selectedColor.back_color"
+          :label="'Цвет фона'"
         />
       </div>
       <div
@@ -97,7 +99,9 @@ const removeColor = (color) => {
           type="checkbox"
           class="mr-1 bg-gray-100 border border-gray-300 rounded"
         >
-        <p class="text-sm">Все прописные</p>
+        <p class="text-sm">
+          Все прописные
+        </p>
       </div>
       <hr class="my-6">
       <p class="text-sm text-gray-500 dark:text-gray-200">
@@ -114,15 +118,15 @@ const removeColor = (color) => {
         </p>
       </div>
       <button
-        @click="createOrUpdateColor(selectedColor)"
         class="w-full bg-gray-100 rounded-xl mt-4 p-3 text-gray-700 font-bold hover:bg-gray-200"
+        @click="createOrUpdateColor(selectedColor)"
       >
         {{ selectedColor.uid ? 'Сохранить' : 'Создать' }}
       </button>
       <button
-        @click="showConfirm = true"
         v-if="selectedColor.uid"
         class="w-full bg-red-600 rounded-xl mt-4 p-3 text-white font-bold hover:bg-red-800"
+        @click="showConfirm = true"
       >
         Удалить
       </button>

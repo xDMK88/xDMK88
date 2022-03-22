@@ -49,12 +49,14 @@ const removeDepartment = (department) => {
   <modal-box-confirm
     v-model="showConfirm"
     button="warning"
-    hasButton
-    hasCancel
-    buttonLabel="Delete"
+    has-button
+    has-cancel
+    button-label="Delete"
     @confirm="removeDepartment(selectedDepartment)"
   >
-    <p class="text-center">Do you really wanna delete "<strong>{{ selectedDepartment.name }}</strong>" departemnt?</p>
+    <p class="text-center">
+      Do you really wanna delete "<strong>{{ selectedDepartment.name }}</strong>" departemnt?
+    </p>
   </modal-box-confirm>
   <div>
     <div>
@@ -79,15 +81,15 @@ const removeDepartment = (department) => {
       >
       <button
         v-if="employees[user.current_user_uid].type != 3"
-        @click="createOrUpdateDepartment(selectedDepartment)"
         class="w-full bg-gray-100 rounded-xl mt-8 p-3 text-gray-700 font-bold hover:bg-gray-200"
+        @click="createOrUpdateDepartment(selectedDepartment)"
       >
         {{ selectedDepartment.uid ? 'Сохранить' : 'Создать' }}
       </button>
       <button
-        @click="showConfirm = true"
         v-if="selectedDepartment.uid && employees[user.current_user_uid].type != 3 && selectedDepartment.type != 1"
         class="w-full bg-red-600 rounded-xl mt-4 p-3 text-white font-bold hover:bg-red-800"
+        @click="showConfirm = true"
       >
         Удалить
       </button>

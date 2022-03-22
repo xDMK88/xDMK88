@@ -53,12 +53,14 @@ const removeTag = (tag) => {
   <modal-box-confirm
     v-model="showConfirm"
     button="warning"
-    hasButton
-    hasCancel
-    buttonLabel="Delete"
+    has-button
+    has-cancel
+    button-label="Delete"
     @confirm="removeTag(selectedTag)"
   >
-    <p class="text-center">Do you really wanna delete "<strong>{{ selectedTag.name }}</strong>" tag?</p>
+    <p class="text-center">
+      Do you really wanna delete "<strong>{{ selectedTag.name }}</strong>" tag?
+    </p>
   </modal-box-confirm>
   <div>
     <div>
@@ -77,23 +79,23 @@ const removeTag = (tag) => {
         class="mt-2 p-3 rounded-xl bg-gray-100 font-bold text-gray-700 w-full border-none ring-0 outline-none"
       >
       <div
-         class="mt-8"
+        class="mt-8"
       >
         <ColorPicker
-          :label="'Цвет метки'"
           v-model="selectedTag.back_color"
+          :label="'Цвет метки'"
         />
       </div>
       <button
-        @click="createOrUpdateTag(selectedTag)"
         class="w-full bg-gray-100 rounded-xl mt-4 p-3 text-gray-700 font-bold hover:bg-gray-200"
+        @click="createOrUpdateTag(selectedTag)"
       >
         {{ selectedTag.uid ? 'Сохранить' : 'Создать' }}
       </button>
       <button
-        @click="showConfirm = true"
-        class="w-full bg-red-600 rounded-xl mt-4 p-3 text-white font-bold hover:bg-red-800"
         v-if="selectedTag.uid"
+        class="w-full bg-red-600 rounded-xl mt-4 p-3 text-white font-bold hover:bg-red-800"
+        @click="showConfirm = true"
       >
         Удалить
       </button>

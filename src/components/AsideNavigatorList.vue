@@ -20,7 +20,12 @@ const menuClick = (event, item) => {
 </script>
 
 <template>
-  <p class="p-3 text-xs uppercase text-gray-400" v-if="menu.name">{{ menu.name }}</p>
+  <p
+    v-if="menu.name"
+    class="p-3 text-xs uppercase text-gray-400"
+  >
+    {{ menu.name }}
+  </p>
   <ul>
     <aside-navigator-item
       v-for="item in menu.items"

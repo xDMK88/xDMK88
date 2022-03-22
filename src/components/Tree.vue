@@ -1,7 +1,10 @@
 <template>
   <div class="tree">
     <ul class="tree-list">
-      <node-tree :node="treeData" @click="toggle"></node-tree>
+      <node-tree
+        :node="treeData"
+        @click="toggle"
+      />
     </ul>
   </div>
 </template>
@@ -10,11 +13,11 @@
 import NodeTree from '@/components/NodeTree.vue'
 
 export default {
-  props: {
-    treeData: Object
-  },
   components: {
     NodeTree
+  },
+  props: {
+    treeData: Object
   }
 }
 </script>

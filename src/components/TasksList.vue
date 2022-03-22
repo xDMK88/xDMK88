@@ -4,7 +4,7 @@
     :fields="storeTasks"
     :allow-drag-and-drop="true"
     :allow-multi-selection="true"
-    :nodeTemplate="Template"
+    :node-template="Template"
     css-class="custom"
     @nodeExpanding="nodeExpanding"
     @nodeSelected="nodeSelected"
@@ -22,13 +22,13 @@ import { FILES_REQUEST, REFRESH_FILES } from '@/store/actions/taskfiles'
 
 const app = createApp({})
 
-var Template = app.component('Template', {
-  template: '<div>{{ data.name }}</div>',
+const Template = app.component('Template', {
   data () {
     return {
       data: {}
     }
-  }
+  },
+  template: '<div>{{ data.name }}</div>'
 })
 
 export default {

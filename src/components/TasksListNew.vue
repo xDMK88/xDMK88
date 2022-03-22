@@ -2,12 +2,14 @@
   <modal-box-confirm
     v-model="showConfirm"
     button="warning"
-    hasButton
-    hasCancel
-    buttonLabel="Delete"
+    has-button
+    has-cancel
+    button-label="Delete"
     @confirm="removeTask(lastSelectedTaskUid)"
   >
-    <p class="text-center">Do you really wanna delete this task?</p>
+    <p class="text-center">
+      Do you really wanna delete this task?
+    </p>
   </modal-box-confirm>
   <div
     v-if="!DONT_SHOW_TASK_INPUT_UIDS[taskListSource.uid]"
@@ -18,18 +20,29 @@
       class="flex items-center bg-gray-600 dark:bg-gray-700  opacity-70 rounded-xl pl-4"
     >
       <div class="flex items-center">
-       <svg width="16" height="16" viewBox="0 0 16 16" fill="white" xmlns="http://www.w3.org/2000/svg">
-         <path d="M8.00011 2.3457V8.4034M8.00011 8.4034V14.4611M8.00011 8.4034H14.4617M8.00011 8.4034H1.53857" stroke="#FFF" stroke-width="3" stroke-linecap="round"/>
-       </svg>
+        <svg
+          width="16"
+          height="16"
+          viewBox="0 0 16 16"
+          fill="white"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M8.00011 2.3457V8.4034M8.00011 8.4034V14.4611M8.00011 8.4034H14.4617M8.00011 8.4034H1.53857"
+            stroke="#FFF"
+            stroke-width="3"
+            stroke-linecap="round"
+          />
+        </svg>
       </div>
       <control
         ref="root"
         v-model="createTaskText"
-        @keyup.enter="createTask"
         class="w-full text-white"
         :placeholder="'Enter task name'"
         borderless
         transparent
+        @keyup.enter="createTask"
       />
     </div>
   </div>
@@ -40,21 +53,28 @@
     :class="newConfig.listHasChildren ? 'pl-8' : 'pl-0'"
   >
     <div class="flex-col w-full">
-      <div class="animate-pulse h-20 dark:bg-slate-900 bg-white my-1 border border-gray-300 dark:border-gray-700 rounded-xl"></div>
-      <div class="animate-pulse h-20 dark:bg-slate-900 bg-white my-1 border border-gray-300 dark:border-gray-700 rounded-xl"></div>
-      <div class="animate-pulse h-10 dark:bg-slate-900 bg-white my-1 border border-gray-300 dark:border-gray-700 rounded-xl"></div>
-      <div class="animate-pulse h-20 dark:bg-slate-900 bg-white my-1 border border-gray-300 dark:border-gray-700 rounded-xl"></div>
-      <div class="animate-pulse h-40 dark:bg-slate-900 bg-white my-1 border border-gray-300 dark:border-gray-700 rounded-xl"></div>
-      <div class="animate-pulse h-20 dark:bg-slate-900 bg-white my-1 border border-gray-300 dark:border-gray-700 rounded-xl"></div>
-      <div class="animate-pulse h-20 dark:bg-slate-900 bg-white my-1 border border-gray-300 dark:border-gray-700 rounded-xl"></div>
-      <div class="animate-pulse h-20 dark:bg-slate-900 bg-white my-1 border border-gray-300 dark:border-gray-700 rounded-xl"></div>
-      <div class="animate-pulse h-10 dark:bg-slate-900 bg-white my-1 border border-gray-300 dark:border-gray-700 rounded-xl"></div>
-      <div class="animate-pulse h-10 dark:bg-slate-900 bg-white my-1 border border-gray-300 dark:border-gray-700 rounded-xl"></div>
+      <div class="animate-pulse h-20 dark:bg-slate-900 bg-white my-1 border border-gray-300 dark:border-gray-700 rounded-xl" />
+      <div class="animate-pulse h-20 dark:bg-slate-900 bg-white my-1 border border-gray-300 dark:border-gray-700 rounded-xl" />
+      <div class="animate-pulse h-10 dark:bg-slate-900 bg-white my-1 border border-gray-300 dark:border-gray-700 rounded-xl" />
+      <div class="animate-pulse h-20 dark:bg-slate-900 bg-white my-1 border border-gray-300 dark:border-gray-700 rounded-xl" />
+      <div class="animate-pulse h-40 dark:bg-slate-900 bg-white my-1 border border-gray-300 dark:border-gray-700 rounded-xl" />
+      <div class="animate-pulse h-20 dark:bg-slate-900 bg-white my-1 border border-gray-300 dark:border-gray-700 rounded-xl" />
+      <div class="animate-pulse h-20 dark:bg-slate-900 bg-white my-1 border border-gray-300 dark:border-gray-700 rounded-xl" />
+      <div class="animate-pulse h-20 dark:bg-slate-900 bg-white my-1 border border-gray-300 dark:border-gray-700 rounded-xl" />
+      <div class="animate-pulse h-10 dark:bg-slate-900 bg-white my-1 border border-gray-300 dark:border-gray-700 rounded-xl" />
+      <div class="animate-pulse h-10 dark:bg-slate-900 bg-white my-1 border border-gray-300 dark:border-gray-700 rounded-xl" />
     </div>
   </div>
 
   <!-- vue3-treeview -->
-  <tree :nodes="storeTasks" :config="newConfig" @nodeOpened="nodeExpanding" @nodeFocus="nodeSelected" v-if="status == 'success'" class="mt-0.5">
+  <tree
+    v-if="status == 'success'"
+    :nodes="storeTasks"
+    :config="newConfig"
+    class="mt-0.5"
+    @nodeOpened="nodeExpanding"
+    @nodeFocus="nodeSelected"
+  >
     <template #before-input="props">
       <div
         :id="props.node.info.uid"
@@ -76,12 +96,12 @@
           >
             <Icon
               :path="subtask.path"
-              @click="addSubtask(props.node.info.uid); focusTaskByUid(props.node.info.uid);"
               class="text-gray-600 dark:text-white mr-3 cursor-pointer"
               :box="subtask.viewBox"
               :width="subtask.width"
               :style="{ color: colors[props.node.info.uid_marker] ? colors[props.node.info.uid_marker].fore_color : '' }"
               :height="subtask.height"
+              @click="addSubtask(props.node.info.uid); focusTaskByUid(props.node.info.uid);"
             />
             <!-- Task action popper -->
             <Popper
@@ -93,80 +113,80 @@
             >
               <template #content="{ close }">
                 <div class="flex flex-col w-40">
-                    <!-- Set task for tomorrow -->
-                    <div
-                      class="flex cursor-pointer items-center hover:bg-gray-100 py-0.5 px-1.5 rounded-xl"
-                      @click="moveTaskTomorrow(props.node.info)"
-                    >
-                      <Icon
-                        :path="fortomorrow.path"
-                        class="text-gray-600 dark:text-white mr-3 cursor-pointer"
-                        :box="fortomorrow.viewBox"
-                        :width="fortomorrow.width"
-                        :height="fortomorrow.height"
-                      />
-                      <p>{{ localization.Tomorrow }}</p>
-                    </div>
-                    <!-- Copy task name -->
-                    <div
-                      class="flex cursor-pointer items-center hover:bg-gray-100 py-0.5 px-1.5 rounded-xl"
-                      @click="copyTaskName(props.node.info); close();"
-                    >
-                      <Icon
-                        :path="copy.path"
-                        class="text-gray-600 dark:text-white mr-3 cursor-pointer"
-                        :box="copy.viewBox"
-                        :width="copy.width"
-                        :height="copy.height"
-                      />
-                      <p>{{ props.node.info.taskNameCopied ? 'Copied!' : localization.copy_taskname }}</p>
-                    </div>
-                    <!-- Copy task -->
-                    <div
-                      class="flex cursor-pointer items-center hover:bg-gray-100 py-0.5 px-1.5 rounded-xl"
-                      v-if="props.node.info.type == 1"
-                      @click="close"
-                    >
-                      <Icon
-                        :path="copy.path"
-                        class="text-gray-600 dark:text-white mr-3 cursor-pointer"
-                        :box="copy.viewBox"
-                        :width="copy.width"
-                        :height="copy.height"
-                      />
-                      <p>Copy</p>
-                    </div>
-                    <!-- Cut task -->
-                    <div
-                      class="flex cursor-pointer items-center hover:bg-gray-100 py-0.5 px-1.5 rounded-xl"
-                      v-if="props.node.info.type == 1"
-                      @click="close"
-                    >
-                      <Icon
-                        :path="cut.path"
-                        class="text-gray-600 dark:text-white mr-3 cursor-pointer"
-                        :box="cut.viewBox"
-                        :width="cut.width"
-                        :height="cut.height"
-                      />
-                      <p>Cut</p>
-                    </div>
-                    <!-- Delete task -->
-                    <div
-                      class="flex cursor-pointer items-center hover:bg-gray-100 py-0.5 px-1.5 rounded-xl"
-                      v-if="props.node.info.type == 1"
-                      @click="showConfirm = true;"
-                    >
-                      <Icon
-                        :path="bin.path"
-                        class="text-gray-600 dark:text-white mr-3 cursor-pointer"
-                        :box="bin.viewBox"
-                        :width="bin.width"
-                        :height="bin.height"
-                      />
-                      <p>{{ localization.remove }}</p>
-                    </div>
-                 </div>
+                  <!-- Set task for tomorrow -->
+                  <div
+                    class="flex cursor-pointer items-center hover:bg-gray-100 py-0.5 px-1.5 rounded-xl"
+                    @click="moveTaskTomorrow(props.node.info)"
+                  >
+                    <Icon
+                      :path="fortomorrow.path"
+                      class="text-gray-600 dark:text-white mr-3 cursor-pointer"
+                      :box="fortomorrow.viewBox"
+                      :width="fortomorrow.width"
+                      :height="fortomorrow.height"
+                    />
+                    <p>{{ localization.Tomorrow }}</p>
+                  </div>
+                  <!-- Copy task name -->
+                  <div
+                    class="flex cursor-pointer items-center hover:bg-gray-100 py-0.5 px-1.5 rounded-xl"
+                    @click="copyTaskName(props.node.info); close();"
+                  >
+                    <Icon
+                      :path="copy.path"
+                      class="text-gray-600 dark:text-white mr-3 cursor-pointer"
+                      :box="copy.viewBox"
+                      :width="copy.width"
+                      :height="copy.height"
+                    />
+                    <p>{{ props.node.info.taskNameCopied ? 'Copied!' : localization.copy_taskname }}</p>
+                  </div>
+                  <!-- Copy task -->
+                  <div
+                    v-if="props.node.info.type == 1"
+                    class="flex cursor-pointer items-center hover:bg-gray-100 py-0.5 px-1.5 rounded-xl"
+                    @click="close"
+                  >
+                    <Icon
+                      :path="copy.path"
+                      class="text-gray-600 dark:text-white mr-3 cursor-pointer"
+                      :box="copy.viewBox"
+                      :width="copy.width"
+                      :height="copy.height"
+                    />
+                    <p>Copy</p>
+                  </div>
+                  <!-- Cut task -->
+                  <div
+                    v-if="props.node.info.type == 1"
+                    class="flex cursor-pointer items-center hover:bg-gray-100 py-0.5 px-1.5 rounded-xl"
+                    @click="close"
+                  >
+                    <Icon
+                      :path="cut.path"
+                      class="text-gray-600 dark:text-white mr-3 cursor-pointer"
+                      :box="cut.viewBox"
+                      :width="cut.width"
+                      :height="cut.height"
+                    />
+                    <p>Cut</p>
+                  </div>
+                  <!-- Delete task -->
+                  <div
+                    v-if="props.node.info.type == 1"
+                    class="flex cursor-pointer items-center hover:bg-gray-100 py-0.5 px-1.5 rounded-xl"
+                    @click="showConfirm = true;"
+                  >
+                    <Icon
+                      :path="bin.path"
+                      class="text-gray-600 dark:text-white mr-3 cursor-pointer"
+                      :box="bin.viewBox"
+                      :width="bin.width"
+                      :height="bin.height"
+                    />
+                    <p>{{ localization.remove }}</p>
+                  </div>
+                </div>
               </template>
               <Icon
                 :path="taskoptions.path"
@@ -198,13 +218,13 @@
                 <div class="flex flex-col">
                   <div
                     v-for="status in 10"
-                    @click="close"
                     :key="status"
+                    @click="close"
                   >
                     <div
+                      v-if="showStatusOrNot(props.node.info.type, status - 1) && props.node.info.status != status - 1"
                       class="flex cursor-pointer items-center hover:bg-gray-100 py-0.5 px-1.5 rounded-xl"
                       @click="changeTaskStatus(props.node.info.uid, status - 1)"
-                      v-if="showStatusOrNot(props.node.info.type, status - 1) && props.node.info.status != status - 1"
                     >
                       <div
                         class="border-2 border-gray-300 rounded-md mr-1 flex items-center justify-center"
@@ -219,7 +239,7 @@
                           :height="statuses[status-1].height"
                         />
                       </div>
-                    {{ localization[statusesLabels[status-1]] }}
+                      {{ localization[statusesLabels[status-1]] }}
                     </div>
                   </div>
                 </div>
@@ -250,9 +270,9 @@
             </Popper>
             <p
               v-if="!props.node.info._isEditing"
-              @click="props.node.info.type == 1 ? props.node.info._isEditing = true : props.node.info._isEditing == false"
               :class="{ 'text-gray-500': props.node.info.status == 1 || props.node.info.status == 7, 'line-through': props.node.info.status == 1 || props.node.info.status == 7, 'font-extrabold': props.node.info.readed == 0 }"
               :style="{ color: colors[props.node.info.uid_marker] ? colors[props.node.info.uid_marker].fore_color : '' }"
+              @click="props.node.info.type == 1 ? props.node.info._isEditing = true : props.node.info._isEditing == false"
             >
               {{ props.node.info.name }}
             </p>
@@ -261,10 +281,10 @@
               v-model="props.node.info.name"
               class="bg-transparent"
               :class="{ 'text-gray-500': props.node.info.status == 1 || props.node.info.status == 7, 'line-through': props.node.info.status == 1 || props.node.info.status == 7, 'font-extrabold': props.node.info.readed == 0 }"
-              @blur="updateTask(props.node.info)"
               :style="{ color: colors[props.node.info.uid_marker] ? colors[props.node.info.uid_marker].fore_color : '' }"
               :placeholder="'Enter task name'"
-            />
+              @blur="updateTask(props.node.info)"
+            >
           </div>
           <Icon
             v-if="props.node.info.focus == '1'"
@@ -317,9 +337,13 @@
             Просрочено
           </div>
           <div
-            v-for="(tag, index) in props.node.info.tags" :key="index"
+            v-for="(tag, index) in props.node.info.tags"
+            :key="index"
           >
-            <div class="p-1 px-2 text-xs text-white rounded-lg mr-1" :style="{ backgroundColor: tags[tag].back_color }">
+            <div
+              class="p-1 px-2 text-xs text-white rounded-lg mr-1"
+              :style="{ backgroundColor: tags[tag].back_color }"
+            >
               {{ tags[tag].name }}
             </div>
           </div>
@@ -370,8 +394,8 @@
             />
           </div>
           <span
-            class="mr-1 mt-1.5 text-sm text-gray-600 dark:text-white self-center"
             v-if="props.node.info.checklist"
+            class="mr-1 mt-1.5 text-sm text-gray-600 dark:text-white self-center"
           >
             {{ countChecklist(props.node.info.checklist).done }} / {{ countChecklist(props.node.info.checklist).undone }}
           </span>

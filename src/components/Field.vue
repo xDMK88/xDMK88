@@ -62,8 +62,7 @@ const wrapperClass = computed(() => {
         :key="n"
         class="border w-full mx-0.5 border-gray-300 rounded-full"
         :class="{ 'border-lime-500': (actualCount+1) > n }"
-      >
-      </div>
+      />
     </div>
   </div>
 </template>

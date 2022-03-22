@@ -49,7 +49,7 @@ const cancel = () => confirmCancel('cancel')
   >
     <card-component
       v-show="value"
-      hasTable
+      has-table
       :title="title"
       class="shadow-xl border border-gray-300 w-50 max-h-modal md:w-2/5 lg:w-1/5 z-50 p-5 rounded-2xl"
       @header-icon-click="cancel"
@@ -63,8 +63,8 @@ const cancel = () => confirmCancel('cancel')
         class="flex items-stretch justify-between mt-5"
       >
         <jb-button
-          class="w-full mr-5"
           v-if="hasCancel"
+          class="w-full mr-5"
           label="Cancel"
           :color="button"
           outline

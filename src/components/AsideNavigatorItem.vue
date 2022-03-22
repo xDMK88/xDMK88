@@ -60,7 +60,7 @@ const styleInactive = 'text-dark-500'
         :src="item.fotolink"
         width="30"
         height="30"
-      />
+      >
       <span
         class="grow"
         :class="[vSlot && vSlot.isExactActive ? styleActive : styleInactive]"

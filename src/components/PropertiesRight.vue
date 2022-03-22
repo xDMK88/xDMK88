@@ -47,36 +47,30 @@ export default {
     :class="[ isPropertiesMobileExpanded ? 'right-0' : '-right-96', isPropertiesMobileExpanded ? 'block' : 'hidden']"
   >
     <Icon
-      @click="closeProperties"
       :path="close.path"
       class="text-gray-600 dark:text-white float-right mt-0.5 cursor-pointer"
       :box="close.viewBox"
       :width="close.width"
       :height="close.height"
+      @click="closeProperties"
     />
     <TaskProperties
       v-if="propertiesState == 'task'"
-    >
-    </TaskProperties>
+    />
     <ProjectProperties
       v-if="propertiesState == 'project'"
-    >
-    </ProjectProperties>
+    />
     <ColorProperties
       v-if="propertiesState == 'color'"
-    >
-    </ColorProperties>
+    />
     <TagProperties
       v-if="propertiesState == 'tag'"
-    >
-    </TagProperties>
+    />
     <EmployeeProperties
       v-if="propertiesState == 'employee'"
-    >
-    </EmployeeProperties>
+    />
     <DepartmentProperties
       v-if="propertiesState == 'department'"
-    >
-    </DepartmentProperties>
+    />
   </aside>
 </template>

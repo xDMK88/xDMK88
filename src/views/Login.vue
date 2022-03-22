@@ -15,6 +15,13 @@ import JbButton from '@/components/JbButton.vue'
 import { AUTH_REQUEST, AUTH_REGISTER } from '@/store/actions/auth'
 
 const localization = computed(() => store.state.localization.localization)
+const getLang = () => {
+  if (navigator.language.includes('ru')) {
+    return 'ru'
+  } else {
+    return 'en'
+  }
+}
 
 const form = reactive({
   email: '',
@@ -244,8 +251,9 @@ const checkEmailExistense = () => {
             :label="localization.EnterSystem"
           />
           <a
-            href=""
+            :href="getLang() == ru ? 'https://www.leadertask.ru/user?t=passrecovery' : 'https://www.leadertask.com/user?t=passrecovery'"
             class="text-xs mt-5 text-blue-500 underline decoration-1"
+            target="_blank"
           >
             {{ localization.forgot_pass }}
           </a>

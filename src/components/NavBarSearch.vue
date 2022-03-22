@@ -28,8 +28,8 @@ const props = defineProps({
     ref="root"
     v-model="form.text"
     :placeholder="props.placeholder"
-    @keyup.enter="sendSearchRequest"
     borderless
     transparent
+    @keyup.enter="sendSearchRequest"
   />
 </template>

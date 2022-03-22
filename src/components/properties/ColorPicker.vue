@@ -56,8 +56,7 @@ const colors = [
       :width="props.icon.width"
       :height="props.icon.height"
       class="mr-2 text-gray-500"
-    >
-    </Icon>
+    />
     <p>
       {{ props.label }}
     </p>

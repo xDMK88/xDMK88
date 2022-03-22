@@ -56,7 +56,7 @@ const cancel = () => confirmCancel('cancel')
   >
     <card-component
       v-show="value"
-      hasTable
+      has-table
       :title="title"
       class="shadow-lg w-full max-h-modal md:w-3/5 lg:w-2/5 z-50"
       @header-icon-click="cancel"
@@ -66,8 +66,7 @@ const cancel = () => confirmCancel('cancel')
         <h1
           v-if="largeTitle"
           class="text-2xl"
-        >
-        </h1>
+        />
         {{ largeTitle }}
         <slot />
       </div>

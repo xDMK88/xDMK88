@@ -85,12 +85,14 @@ const quiet = ref(!selectedProject.value.quiet)
   <modal-box-confirm
     v-model="showConfirm"
     button="warning"
-    hasButton
-    hasCancel
-    buttonLabel="Delete"
+    has-button
+    has-cancel
+    button-label="Delete"
     @confirm="removeProject(selectedProject)"
   >
-    <p class="text-center">Do you really wanna delete "<strong>{{ selectedProject.name }}</strong>" project?</p>
+    <p class="text-center">
+      Do you really wanna delete "<strong>{{ selectedProject.name }}</strong>" project?
+    </p>
   </modal-box-confirm>
   <div>
     <div>
@@ -110,11 +112,11 @@ const quiet = ref(!selectedProject.value.quiet)
         :disabled="selectedProject.email_creator != user.current_user_email"
       >
       <div
-         class="mt-8"
+        class="mt-8"
       >
         <ColorPicker
-          :label="'Цвет проекта'"
           v-model="selectedProject.color"
+          :label="'Цвет проекта'"
           :disabled="selectedProject.email_creator != user.current_user_email"
         />
       </div>
@@ -122,11 +124,13 @@ const quiet = ref(!selectedProject.value.quiet)
         class="flex items-center mt-3"
       >
         <input
-          type="checkbox"
           v-model="quiet"
+          type="checkbox"
           class="mr-1 bg-gray-100 border border-gray-300 rounded"
         >
-        <p class="text-sm">Не следить за изменениями</p>
+        <p class="text-sm">
+          Не следить за изменениями
+        </p>
       </div>
       <hr class="my-6">
       <!-- <pre class="text-xs">{{ selectedProject }}</pre> -->
@@ -135,13 +139,16 @@ const quiet = ref(!selectedProject.value.quiet)
       </p>
       <Popper
         arrow
-        :zIndex="999999999999999999"
+        :z-index="999999999999999999"
         class="z-auto"
         :class="isDark ? 'dark' : 'light'"
         placement="top"
       >
         <template #content>
-          <div style="max-height: 15rem;" class="overflow-scroll">
+          <div
+            style="max-height: 15rem;"
+            class="overflow-scroll"
+          >
             <div
               v-for="(email, index) in employeesByEmail"
               :key="index"
@@ -157,11 +164,11 @@ const quiet = ref(!selectedProject.value.quiet)
                 <p>{{ email.name }}</p>
               </div>
               <input
-                class="ml-2 bg-gray-300 rounded border border-gray-100"
-                @change="addRemoveMember(email)"
                 v-model="email.included"
+                class="ml-2 bg-gray-300 rounded border border-gray-100"
                 :checked="selectedProject.members.includes(email.email)"
                 type="checkbox"
+                @change="addRemoveMember(email)"
               >
             </div>
           </div>
@@ -177,55 +184,68 @@ const quiet = ref(!selectedProject.value.quiet)
             :height="add.height"
             class="text-gray-500 mx-3"
           />
-          <p class="text-gray-600">Добавить участника проекта</p>
+          <p class="text-gray-600">
+            Добавить участника проекта
+          </p>
         </div>
       </Popper>
       <div
         class="grid grid-cols-1 mt-3"
       >
-        <template v-for="(employee, pindex) in selectedProject.members" :key="pindex">
+        <template
+          v-for="(employee, pindex) in selectedProject.members"
+          :key="pindex"
+        >
           <div
             class="flex items-center bg-white dark:bg-gray-700 rounded-xl shadow h-30 px-3 py-5 mt-1"
           >
-            <img v-if="employeesByEmail[employee].fotolink" :src="employeesByEmail[employee].fotolink" class="rounded-lg mx-2 my-auto" width="38" height="38">
+            <img
+              v-if="employeesByEmail[employee].fotolink"
+              :src="employeesByEmail[employee].fotolink"
+              class="rounded-lg mx-2 my-auto"
+              width="38"
+              height="38"
+            >
             <div class="w-full">
               <div class="flex items-start justify-between">
-                  <p
-                    class="font-normal cursor-pointer"
-                  >
-                    {{ employeesByEmail[employee].name }}
-                  </p>
-                  <icon
-                    :path="properties.path"
-                    :width="properties.width"
-                    :height="properties.height"
-                    :box="properties.viewBox"
-                    class="text-gray-400 cursor-pointer hover:text-gray-800"
-                  />
+                <p
+                  class="font-normal cursor-pointer"
+                >
+                  {{ employeesByEmail[employee].name }}
+                </p>
+                <icon
+                  :path="properties.path"
+                  :width="properties.width"
+                  :height="properties.height"
+                  :box="properties.viewBox"
+                  class="text-gray-400 cursor-pointer hover:text-gray-800"
+                />
               </div>
-              <p class="font-light text-xs break-all">{{ employeesByEmail[employee].email }}</p>
-             </div>
+              <p class="font-light text-xs break-all">
+                {{ employeesByEmail[employee].email }}
+              </p>
+            </div>
           </div>
         </template>
       </div>
       <button
-        @click="createOrUpdateProject(selectedProject)"
         v-if="selectedProject.email_creator == user.current_user_email"
         class="w-full bg-gray-100 rounded-xl mt-4 p-3 text-gray-700 font-bold hover:bg-gray-200"
+        @click="createOrUpdateProject(selectedProject)"
       >
         {{ selectedProject.uid ? 'Сохранить' : 'Создать' }}
       </button>
       <button
-        @click="showConfirm = true"
         v-if="selectedProject.email_creator == user.current_user_email && selectedProject.uid"
         class="w-full bg-red-600 rounded-xl mt-4 p-3 text-white font-bold hover:bg-red-800"
+        @click="showConfirm = true"
       >
         Удалить
       </button>
       <button
         v-if="selectedProject.email_creator !== user.current_user_email"
-        @click="quitProject(selectedProject)"
         class="w-full bg-gray-100 rounded-xl mt-4 p-3 text-gray-700 font-bold hover:bg-gray-200"
+        @click="quitProject(selectedProject)"
       >
         Выйти из проекта
       </button>

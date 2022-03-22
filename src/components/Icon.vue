@@ -57,9 +57,9 @@ const spanClass = computed(() => `inline-flex justify-center items-center ${prop
     >
       <path
         v-for="(value, index) in path"
+        :key="index"
         fill-rule="evenodd"
         clip-rule="evenodd"
-        :key="index"
         fill="currentColor"
         :d="value"
       />

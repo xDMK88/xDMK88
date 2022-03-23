@@ -20,12 +20,12 @@
     :class="newConfig.listHasChildren ? 'pl-8' : 'pl-0'"
   >
     <div
-      class="flex items-center bg-gray-600 dark:bg-gray-700 opacity-70 rounded-xl"
+      class="flex items-center bg-gray-600 dark:bg-gray-700 bg-opacity-70 rounded-xl"
     >
       <div
         class="flex items-center pl-3"
         :class="{ 'bg-gray-500 p-3 rounded-l-xl cursor-pointer': Object.keys(copiedTasks).length }"
-        @click="pasteCopiedTasks"
+        @click="pasteCopiedTasks('00000000-0000-0000-0000-000000000000')"
       >
         <svg
           :class="{ 'mr-2': Object.keys(copiedTasks).length }"
@@ -91,6 +91,9 @@
     class="mt-0.5"
     @nodeOpened="nodeExpanding"
     @nodeFocus="nodeSelected"
+    @nodeDragstart="nodeDragstart"
+    @nodeDragenter="nodeDragenter"
+    @nodeDragend="nodeDragend"
   >
     <template #before-input="props">
       <div
@@ -99,6 +102,11 @@
         :style="{ backgroundColor: colors[props.node.info.uid_marker] ? colors[props.node.info.uid_marker].back_color : '' }"
         :class="{ 'bg-gray-200 dark:bg-gray-900': (props.node.info.status == 1 || props.node.info.status == 7) && props.node.info.uid_marker == '00000000-0000-0000-0000-000000000000' }"
       >
+        <!--
+        order_new: <strong>{{ props.node.info.order_new }}</strong>
+        <br>
+        uid: <strong>{{ props.node.id }}</strong>
+        -->
         <!-- Hover task options -->
         <Transition>
           <div
@@ -118,16 +126,16 @@
             <!-- Task action popper -->
             <Popper
               arrow
+              :class="isDark ? 'dark' : 'light'"
               @open:popper="toggleTaskHoverPopper(true)"
               @close:popper="toggleTaskHoverPopper(false)"
-              :class="isDark ? 'dark' : 'light'"
-              :disabled="props.node.info.type == 4"
             >
               <template #content="{ close }">
                 <div class="flex flex-col w-40">
                   <!-- Set task for tomorrow -->
                   <div
                     class="flex cursor-pointer items-center hover:bg-gray-100 py-0.5 px-1.5 rounded-xl"
+                    v-if="props.node.info.type == 1"
                     @click="moveTaskTomorrow(props.node.info)"
                   >
                     <Icon
@@ -157,11 +165,9 @@
 
                   <!-- Copy task -->
                   <div
-                    v-if="props.node.info.type == 1"
                     class="flex items-center py-0.5 px-1.5 rounded-xl"
                     :class="{ 'cursor-pointer': !copiedTasks[props.node.info.uid], 'hover:bg-gray-100': !copiedTasks[props.node.info.uid], 'text-gray-200': copiedTasks[props.node.info.uid] }"
-                    @click="copyTask(props.node.info)"
-                  >
+                    @click="copyTask(props.node.info)" >
                     <Icon
                       :path="copy.path"
                       class="text-gray-600 dark:text-white mr-3 cursor-pointer"
@@ -171,6 +177,22 @@
                       :height="copy.height"
                     />
                     <p>{{ copiedTasks[props.node.info.uid] ? 'Copied' : 'Copy' }}</p>
+                  </div>
+
+                  <!-- Paste task -->
+                  <div
+                    v-if="Object.keys(copiedTasks).length"
+                    class="flex cursor-pointer items-center py-0.5 px-1.5 rounded-xl"
+                    @click="pasteCopiedTasks(props.node.id)"
+                  >
+                    <Icon
+                      :path="copy.path"
+                      class="text-gray-600 dark:text-white mr-3 cursor-pointer"
+                      :box="copy.viewBox"
+                      :width="copy.width"
+                      :height="copy.height"
+                    />
+                    <p>Paste</p>
                   </div>
 
                   <!-- Cut task -->
@@ -298,7 +320,7 @@
             <input
               v-if="props.node.info._isEditing && props.node.info.type == 1"
               v-model="props.node.info.name"
-              class="bg-transparent"
+              class="bg-transparent w-full"
               :class="{ 'text-gray-500': props.node.info.status == 1 || props.node.info.status == 7, 'line-through': props.node.info.status == 1 || props.node.info.status == 7, 'font-extrabold': props.node.info.readed == 0 }"
               :style="{ color: colors[props.node.info.uid_marker] ? colors[props.node.info.uid_marker].fore_color : '' }"
               :placeholder="'Enter task name'"
@@ -613,11 +635,20 @@ export default {
       }
     }
 
-    const handleTaskSource = (taskData) => {
+    const handleTaskSource = (taskData, uidParent) => {
       let data
       if (taskData) {
         data = taskData
         data.uid = uuidv4()
+        data.status = 0
+        data.uid_parent = uidParent
+        data.uid_customer = user.value.current_user_uid
+        data.email_performer = ''
+        data.tags = []
+        data.uid_marker = ''
+        data.has_files = false
+        data.has_msgs = false
+        data.type = 1
       } else {
         data = {
           uid: uuidv4(),
@@ -659,15 +690,16 @@ export default {
       return data
     }
 
-    const pasteCopiedTasks = () => {
+    const pasteCopiedTasks = (uidParent) => {
       if (!copiedTasks.value) {
         return
       }
 
       for (const uid in copiedTasks.value) {
-        const data = handleTaskSource(copiedTasks.value[uid])
+        const data = handleTaskSource(copiedTasks.value[uid], uidParent)
         store.dispatch(TASK.CREATE_TASK, data)
       }
+
       store.commit(TASK.RESET_COPY_TASK)
     }
 
@@ -734,7 +766,7 @@ export default {
         _justCreated: true
       }
       // TODO: focus on just created task
-      // returns promise -> use .then({ ... })
+      // returns promise
       store.dispatch(TASK.ADD_SUBTASK, newSubtask)
     }
 
@@ -770,7 +802,36 @@ export default {
       }
     }
 
+    const nodeDragstart = (node) => {
+      // console.log('dragged', node.dragged)
+      // console.log('target', node.target)
+    }
+
+    const nodeDragenter = (node) => {
+      // console.log('dragged', node.dragged)
+      // console.log('target', node.target)
+    }
+
+    const nodeDragend = (node) => {
+      console.log(node)
+      console.log('NEW PARENT ', node.dragged.parentId)
+      console.log('OLD PARENT ', node.dragged.node.info.uid_parent)
+      if (node.dragged.parentId && node.dragged.parentId !== node.dragged.node.info.uid_parent) {
+        store.dispatch(
+          TASK.CHANGE_TASK_PARENT_AND_ORDER,
+          {
+            uid: node.dragged.node.id,
+            parent: node.dragged.parentId,
+            order: node.dragged.node.info.order_new
+          }
+        )
+      }
+    }
+
     return {
+      nodeDragstart,
+      nodeDragenter,
+      nodeDragend,
       isDark,
       status,
       tags: computed(() => store.state.tasks.tags),

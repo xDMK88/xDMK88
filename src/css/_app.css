@@ -238,7 +238,6 @@ input:focus {outline: 0;}
   border-bottom-left-radius: 10px;
   padding: 5px;
   line-height: 18px;
-  height: 50px;
   min-width: 200px;
   display: table-cell;
 
@@ -260,10 +259,10 @@ input:focus {outline: 0;}
   border-bottom-left-radius:10px ;
   padding: 5px;
   line-height: 18px;
-  height: 50px;
   min-width: 200px;
   display: table-cell;
   float: right;
+  text-align: right;
 
 }
 .file-custom_attach-right svg
@@ -1493,6 +1492,12 @@ label
 {
  background-color: #444444 !important;
 }
+.vc-dots
+{
+  position: relative;
+  top: -2px;
+
+}
 .is-not-in-month
 {
   color: rgba(0, 0, 0, 0.5);
@@ -1565,4 +1570,41 @@ label
   position: absolute;
   top: 40%;
   left: 45%;
+}
+.display-none
+{
+  display: none;
+}
+.popper-employees .popper
+{
+  top: 5% !important;
+}
+.popper-access .popper
+{
+  top: 5% !important;
+}
+.popper-calendar .popper
+{
+  top: 5% !important;
+}
+.popper-repeat .popper
+{
+  top: 12% !important;
+  left: -24% !important;
+}
+.popper-reminder .popper
+{
+  top: 12% !important;
+}
+.popper-project .popper
+{
+  top: 12% !important;
+}
+.popper-color .popper
+{
+  top: 12% !important;
+}
+.popper-tags .popper
+{
+  top: 17% !important;
 }

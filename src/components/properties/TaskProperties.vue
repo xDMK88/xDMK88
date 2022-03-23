@@ -7,7 +7,7 @@ import TreeItem from '@/components/TreeItem.vue'
 import close from '@/icons/close.js'
 import TreeTagsItem from '@/components/TreeTagsItem.vue'
 import { CREATE_MESSAGE_REQUEST } from '@/store/actions/taskmessages'
-import { CREATE_FILES_REQUEST } from '@/store/actions/taskfiles'
+import { CREATE_FILES_REQUEST, GETFILES } from '@/store/actions/taskfiles'
 import * as TASK from '@/store/actions/tasks'
 export default {
   components: {
@@ -33,6 +33,7 @@ export default {
     const tasks = computed(() => store.state.tasks.newtasks)
     const employeesByEmail = computed(() => store.state.employees.employeesByEmail)
     const isDark = computed(() => store.state.darkMode)
+    const getfiles = computed(() => store.state.taskfiles.file)
     //  const test2 = toRef(this.props, 'selectTags')
     const closeProperties = () => {
       store.dispatch('asidePropertiesToggle', false)
@@ -90,6 +91,7 @@ export default {
       )
     }
     const changeFocus = (uid, value) => {
+      selectedTask.value.focus = value
       store.dispatch(TASK.CHANGE_TASK_FOCUS, { uid: uid, value: value }).then(
         resp => {
           selectedTask.value.focus = value
@@ -216,8 +218,54 @@ export default {
           selectedTask.value.customer_date_end = new Date(this.range.end)
         })
     }
-    const getImgUrl = (image) => {
-      return `${image}`
+    const getImgUrl = (uid, extension, filename) => {
+      store.dispatch(GETFILES, uid).then(resp => {
+        const fileURL = window.URL.createObjectURL(new Blob([resp.data]))
+        var myImage = new Image()
+        myImage.src = fileURL
+        document.getElementById(uid).appendChild(myImage)
+        document.getElementById(uid).setAttribute('href', fileURL)
+        document.getElementById(uid).setAttribute('download', filename + '.' + extension)
+        return myImage
+      })
+    }
+    const getAudioUrl = (uid, extension, filename) => {
+      store.dispatch(GETFILES, uid).then(resp => {
+        const fileURL = window.URL.createObjectURL(new Blob([resp.data], { type: 'text/plain' }))
+        var myAudio = new Audio()
+        myAudio.src = fileURL
+        document.getElementById(uid).appendChild(myAudio)
+        document.getElementById(uid).setAttribute('src', fileURL)
+        document.getElementById(uid).setAttribute('download', filename + '.' + extension)
+        return myAudio
+      })
+    }
+    const getDocUrl = (uid, extension, filename) => {
+      store.dispatch(GETFILES, uid).then(resp => {
+        const fileURL = window.URL.createObjectURL(new Blob([resp.data], { type: 'text/plain' }))
+        var myDoc = new Document()
+        myDoc.src = fileURL
+        document.getElementById(uid).appendChild(myDoc)
+        document.getElementById(uid).setAttribute('href', fileURL)
+        document.getElementById(uid).setAttribute('download', filename + '.' + extension)
+        return myDoc
+      })
+    }
+    const getMovUrl = (uid, extension, filename) => {
+      store.dispatch(GETFILES, uid).then(resp => {
+        const fileURL = window.URL.createObjectURL(new Blob([resp.data], { type: 'text/plain' }))
+        document.getElementById(uid).setAttribute('href', fileURL)
+        document.getElementById(uid).setAttribute('download', filename + '.' + extension)
+        return fileURL
+      })
+    }
+    const getAnyUrl = (uid, extension, filename) => {
+      store.dispatch(GETFILES, uid).then(resp => {
+        const fileURL = window.URL.createObjectURL(new Blob([resp.data], { type: 'text/plain' }))
+        document.getElementById(uid).setAttribute('href', fileURL)
+        document.getElementById(uid).setAttribute('download', filename + '.' + extension)
+        return fileURL
+      })
     }
     const handleInput = () => {
       console.log(new Date(this.range.start).toLocaleDateString())
@@ -236,7 +284,33 @@ export default {
           selectedTask.value.customer_date_end = new Date(this.range.end)
         })
     }
+    const createChecklist = () => {
+    }
+    const showHide = () => {
+      for (var i = 0; i < taskMessages.value.length; i++) {
+        document.getElementById('hidden_' + i).style.display = 'block'
+      }
+      for (var n = 0; n < taskFiles.value.length; n++) {
+        document.getElementById('hidden_' + n).style.display = 'block'
+      }
+      document.getElementById('showall').style.display = 'none'
+    }
+    const hide = () => {
+      for (var i = taskMessages.value.length; i > 1; i--) {
+        document.getElementById('hidden_' + i).style.display = 'none'
+      }
+      for (var n = taskFiles.value.length; n > 1; n--) {
+        document.getElementById('hidden_' + n).style.display = 'none'
+      }
+    }
     return {
+      hide,
+      getAnyUrl,
+      getAudioUrl,
+      getMovUrl,
+      getDocUrl,
+      createChecklist,
+      showHide,
       isDark,
       unchecked,
       changeName,
@@ -260,6 +334,7 @@ export default {
       resetEmployes,
       resetCalendar,
       getImgUrl,
+      getfiles: getfiles,
       checkEmail: selectedTask.value.emails.split('..'),
       close,
       file: '',
@@ -329,6 +404,7 @@ export default {
   mounted () {
     this.$refs.comment.style.minHeight = this.$refs.comment.scrollHeight + 'px'
     this.$refs.nameTask.style.minHeight = this.$refs.nameTask.scrollHeight + 'px'
+    this.hide()
   },
   methods: {
     activate (tab) {
@@ -415,25 +491,6 @@ export default {
           @keyup.enter="changeName($refs.nameTask.value, $event)"
           @input="textareaResize"
         /></strong>
-        <div
-          v-if="selectedTask.focus===1"
-          class="infocus-task"
-        >
-          <svg
-            width="18"
-            height="18"
-            viewBox="0 0 44 60"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              fill-rule="evenodd"
-              clip-rule="evenodd"
-              d="M2.47887 0H41.5211C42.8845 0 44 1.1195 44 2.48777V57.0416C44 58.0782 43.339 59.0318 42.3681 59.3843C42.0995 59.4879 41.8103 59.5294 41.5211 59.5294C40.7775 59.5294 40.0958 59.1977 39.6207 58.638L22 41.1088L4.37934 58.638C3.90423 59.1977 3.20188 59.5294 2.47887 59.5294C2.18967 59.5294 1.90047 59.4879 1.63192 59.3843C0.661033 59.0111 0 58.0782 0 57.0416V2.48777C0 1.1195 1.11549 0 2.47887 0ZM21.5922 11.4076C19.5672 11.4076 17.9255 13.0492 17.9255 15.0743C17.9255 17.0993 19.5672 18.7409 21.5922 18.7409C23.6173 18.7409 25.2589 17.0993 25.2589 15.0743C25.2589 13.0492 23.6173 11.4076 21.5922 11.4076Z"
-              fill="#F2543F"
-            />
-          </svg>
-        </div>
       </div>
       <!--   <p class="mt-3"><strong>{{ localization.task_created }}:</strong> {{ selectedTask.date_create }}</p>
       <p><strong>Исполнитель:</strong> {{ selectedTask.email_performer }}</p>-->
@@ -449,10 +506,10 @@ export default {
       >
         <!-- Всплывающее окно сотрудник -->
         <Popper
-          class="w-full"
+          class="popper-employees"
           arrow
           :class="isDark ? 'dark' : 'light'"
-          placement="bottom-start"
+          placement="bottom"
         >
             <span v-if="selectedTask.status!==3">
             <!-- <p class="text-center">{{ localization.Labels }}</p>-->
@@ -478,7 +535,7 @@ export default {
                 class="rounded"
               >Поручить</span>
             </button>
-            <a
+            <button
               v-else-if="selectedTask.type===2"
               ref="btnRefEmployee"
               class="mt-3 tags-custom"
@@ -497,8 +554,8 @@ export default {
                 />
               </svg>
               <span>{{ selectedTask.email_performer }}</span>
-            </a>
-            <a
+            </button>
+            <button
               v-else-if="selectedTask.type===3"
               ref="btnRefEmployee"
               class="mt-3 tags-custom active"
@@ -520,8 +577,8 @@ export default {
               <span
                 class="rounded"
               >Перепоручить</span>
-            </a>
-            <a
+            </button>
+            <button
               v-else-if="selectedTask.type===4"
               ref="btnRefEmployee"
               class="mt-3 tags-custom active"
@@ -543,14 +600,15 @@ export default {
               <span
                 class="rounded"
               >Взять на исполнение</span>
-            </a>
+            </button>
           </span>
           <template
-            #content
+            #content="{ employee }"
             class="bottom"
           >
+
             <div class="popper">
-              <div @click="close"></div>
+              <button @click="employee"></button>
               <div class="text-white body-popover-custom">
                 <div class="container-employee-popover">
                   <form>
@@ -590,6 +648,7 @@ export default {
         </Popper>
         <!-- Всплывающее окно доступ -->
         <Popper
+          class="popper-access"
           arrow
           trigger="hover"
           :class="isDark ? 'dark' : 'light'"
@@ -702,6 +761,7 @@ export default {
         </Popper>
         <!-- Всплывающее окно Календарь -->
         <Popper
+          class="popper-calendar"
           arrow
           append-to-body="true"
           trigger="hover"
@@ -712,8 +772,8 @@ export default {
             #content="{ close }"
             class="bottom"
           >
+            <button @click="close"></button>
             <div class="popper">
-              <div @click="close"></div>
               <DatePicker
                 ref="calendar"
                 v-model="range"
@@ -793,6 +853,7 @@ export default {
         </Popper>
         <!-- Повтор -->
         <Popper
+          class="popper-repeat"
           arrow
           trigger="hover"
           :class="isDark ? 'dark' : 'light'"
@@ -1160,6 +1221,7 @@ export default {
         </Popper>
         <!-- Всплывающее окно Напоминание -->
         <Popper
+          class="popper-reminder"
           arrow
           trigger="hover"
           :class="isDark ? 'dark' : 'light'"
@@ -1185,7 +1247,6 @@ export default {
             v-if="selectedTask.date_reminder!==''"
             ref="btnRefReminder"
             class="mt-3 tags-custom"
-            @click="togglePopover_reminder()"
           >
             <svg
               width="24"
@@ -1216,7 +1277,6 @@ export default {
             v-else
             ref="btnRefReminder"
             class="mt-3 tags-custom"
-            @click="togglePopover_reminder()"
           >
             <svg
               width="24"
@@ -1246,6 +1306,7 @@ export default {
         </Popper>
         <!--Всплывающее окно Проекты-->
         <Popper
+          class="popper-project"
           arrow
           trigger="hover"
           :class="isDark ? 'dark' : 'light'"
@@ -1332,6 +1393,7 @@ export default {
         </Popper>
         <!--Всплывающее окно Цвета-->
         <Popper
+          class="popper-color"
           arrow
           trigger="hover"
           :class="isDark ? 'dark' : 'light'"
@@ -1434,6 +1496,7 @@ export default {
         </Popper>
         <!--Всплывающее окно Метки-->
         <Popper
+          class="popper-tags"
           arrow
           trigger="hover"
           :class="isDark ? 'dark' : 'light'"
@@ -1581,6 +1644,7 @@ export default {
         <div
           v-if="!selectedTask.checklist"
           class="mt-3 tags-custom"
+          @click="createChecklist"
         >
           <svg
             width="24"
@@ -1771,25 +1835,27 @@ export default {
         </div>
       </div>
       <div class="mt-3 description-content">
-        <textarea
+        <textarea v-html="selectedTask.comment"
           ref="comment"
           :value="selectedTask.comment"
           rows="10"
           cols="40"
           style="height: 100%"
           class="form-control comment-custom"
-          @keyup.enter="changeComment($refs.comment.value, $event)"
+          @keyup="changeComment($refs.comment.value, $event)"
           @input="textareaResize"
         />
       </div>
+      <div class="messages-and-files-custom">
+        <div style="display: inline-block;width: 100%" id="showall"><p class="text-center date-messages-chat divider uppercase" @click="showHide">Показать все</p></div>
       <div
         v-if="taskFiles.length>0"
         class="mt-3 list-files-custom"
       >
         <div
-          v-for="(key, value) in taskFiles"
+          v-for="(key, value) in taskFiles.sort()"
           :key="value"
-          class="mt-3 list-files-custom-item"
+          class="mt-3 list-files-custom-item" :id="'hidden_'+value"
         >
           <div v-if="key.uid_creator!==cusers.current_user_uid">
             <div
@@ -1819,9 +1885,29 @@ export default {
             <div class="mt-1 chat-main">
               <div
                 class="mt-1 file-custom_attach-left"
-                style="background-color:#EDF7ED;"
+                :style="(key.file_name.split('.').pop()==='doc' || key.file_name.split('.').pop()==='xls' || key.file_name.split('.').pop()==='xlsx' || key.file_name.split('.').pop()==='txt' || key.file_name.split('.').pop()==='pdf' || key.file_name.split('.').pop()==='mov' || key.file_name.split('.').pop()==='mp4') ? 'background-color:#EDF7ED' : ''"
               >
-                <a :href="'https://web.leadertask.com/User/Files/GetFile?uid='+key.uid">
+                  <span v-if="key.file_name.split('.').pop()==='jpg' || key.file_name.split('.').pop()==='png' || key.file_name.split('.').pop()==='jpeg' || key.file_name.split('.').pop()==='gif' || key.file_name.split('.').pop()==='bmp'">
+                  <a
+                    :href="'https://web.leadertask.com/User/Files/GetFile?uid='+key.uid"
+                    :id="key.uid">
+                    {{getImgUrl(key.uid,key.file_name.split('.').pop(),key.file_name)}}
+                </a>
+                <div style="color:black"><strong>{{ new Date(key.date_create).toLocaleDateString() }} {{ new Date(key.date_create).toLocaleTimeString() }}</strong></div>
+                <div style="color:#3E3D3B;">{{ formatBytes(key.file_size) }}</div>
+                </span>
+                <span v-else-if="key.file_name.split('.').pop()==='mov' || key.file_name.split('.').pop()==='mp4'">
+                  <a :href="'https://web.leadertask.com/User/Files/GetFile?uid='+key.uid" :id="key.uid">{{ key.file_name }}
+                  {{getMovUrl(key.uid,key.file_name.split('.').pop(),key.file_name)}}
+                  </a>
+                  <div style="color:black"><strong>{{ new Date(key.date_create).toLocaleDateString() }} {{ new Date(key.date_create).toLocaleTimeString() }}</strong></div>
+                <div style="color:#3E3D3B;">{{ formatBytes(key.file_size) }}</div>
+                </span>
+                <span v-else-if="key.file_name.split('.').pop()==='doc' || key.file_name.split('.').pop()==='xls' || key.file_name.split('.').pop()==='xlsx' || key.file_name.split('.').pop()==='txt' || key.file_name.split('.').pop()==='pdf'">
+<a :id="key.uid"
+  :href="'https://web.leadertask.com/User/Files/GetFile?uid='+key.uid"
+>
+  {{getDocUrl(key.uid,key.file_name.split('.').pop(),key.file_name)}}
                   <svg
                     width="22"
                     height="27"
@@ -1836,9 +1922,31 @@ export default {
                       fill="#757575"
                     />
                   </svg>
-                  <div style="color:black"><strong>{{ new Date(key.date_create).toLocaleDateString() }} {{ new Date(key.date_create).toLocaleTimeString() }}</strong></div>
-                  <div style="color:#3E3D3B;">{{ formatBytes(key.file_size) }}</div>
+  {{ key.file_name }}
                 </a>
+                  <div style="color:black"><strong>{{ new Date(key.date_create).toLocaleDateString() }} {{ new Date(key.date_create).toLocaleTimeString() }}</strong></div>
+                <div style="color:#3E3D3B;">{{ formatBytes(key.file_size) }}</div>
+                </span>
+                <span v-else-if="key.file_name.split('.').pop()==='mp3' || key.file_name.split('.').pop()==='wav' || key.file_name.split('.').pop()==='m4a'">
+                 {{getAudioUrl(key.uid,key.file_name.split('.').pop(),key.file_name)}}
+                  <audio :id="key.uid"
+                         :src="'https://web.leadertask.com/User/Files/GetFile?uid='+key.uid"
+                         ref="audioPlayer"
+                         controls
+                  >
+                    Your browser does not support the
+                    <code>audio</code> element.
+                  </audio>
+                  <div style="color:black"><strong>{{ new Date(key.date_create).toLocaleDateString() }} {{ new Date(key.date_create).toLocaleTimeString() }}</strong></div>
+                <div style="color:#3E3D3B;">{{ formatBytes(key.file_size) }}</div>
+                </span>
+                <span v-else-if="key.file_name.split('.').pop()!=='app'">
+                   <a :id="key.uid" :href="'https://web.leadertask.com/User/Files/GetFile?uid='+key.uid">{{ key.file_name }}
+                            {{getAnyUrl(key.uid,key.file_name.split('.').pop(),key.file_name)}}
+                  </a>
+                     <div style="color:black"><strong>{{ new Date(key.date_create).toLocaleDateString() }} {{ new Date(key.date_create).toLocaleTimeString() }}</strong></div>
+                <div style="color:#3E3D3B;">{{ formatBytes(key.file_size) }}</div>
+                </span>
               </div>
             </div>
           </div>
@@ -1847,7 +1955,7 @@ export default {
           >
             <div class="date-section">
               <p
-                class="text-center date-messages-chat divider "
+                class="text-center date-messages-chat "
               >
                 {{ days[new Date(key.date_create.split('T')[0]).getDay()] }}, {{ new Date(key.date_create.split('T')[0]).getDate() }} {{ months[new Date(key.date_create).getMonth()] }}
               </p>
@@ -1868,37 +1976,30 @@ export default {
             <div class="mt-1 chat-main">
               <div
                 class="mt-1 file-custom_attach-right"
-                style="background-color:#FCEAEA;"
-              >
-                <span v-if="key.file_name.split('.').pop()==='jpg' || key.file_name.split('.').pop()==='png' || key.file_name.split('.').pop()==='jpeg' || key.file_name.split('.').pop()==='gif'">
+              :style="(key.file_name.split('.').pop()==='doc' || key.file_name.split('.').pop()==='xls' || key.file_name.split('.').pop()==='xlsx' || key.file_name.split('.').pop()==='txt' || key.file_name.split('.').pop()==='pdf' || key.file_name.split('.').pop()==='mov' || key.file_name.split('.').pop()==='mp4') ? 'background-color:#FCEAEA;' : ''">
+                <span v-if="key.file_name.split('.').pop()==='jpg' || key.file_name.split('.').pop()==='png' || key.file_name.split('.').pop()==='jpeg' || key.file_name.split('.').pop()==='gif' || key.file_name.split('.').pop()==='bmp'">
                   <a
                     :href="'https://web.leadertask.com/User/Files/GetFile?uid='+key.uid"
-                    >
-                  <img v-bind:src="getImgUrl('https://web.leadertask.com/User/Files/GetFile?uid='+key.uid)">
+                    :id="key.uid">
+                    {{getImgUrl(key.uid,key.file_name.split('.').pop(),key.file_name)}}
                 </a>
+                <div style="color:black"><strong>{{ new Date(key.date_create).toLocaleDateString() }} {{ new Date(key.date_create).toLocaleTimeString() }}</strong></div>
+                <div style="color:#3E3D3B;">{{ formatBytes(key.file_size) }}</div>
                 </span>
-                <span v-else-if="key.file_name.split('.').pop()==='mov' && key.file_name.split('.').pop()==='mp4'">
-                  <svg
-                    width="22"
-                    height="27"
-                    viewBox="0 0 22 27"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      fill-rule="evenodd"
-                      clip-rule="evenodd"
-                      d="M21.6459 8.28333C21.675 8.3125 21.7042 8.37083 21.7334 8.42917C21.7625 8.51667 21.7917 8.63333 21.7917 8.75V24.7917C21.7917 25.9292 20.8875 26.8333 19.75 26.8333H2.25004C1.11254 26.8333 0.208374 25.9292 0.208374 24.7917V2.91667C0.208374 1.77917 1.11254 0.875 2.25004 0.875H13.9167C14.0334 0.875 14.15 0.904167 14.2084 0.933333H14.2375C14.2667 0.947917 14.2886 0.9625 14.3105 0.977083C14.3323 0.991667 14.3542 1.00625 14.3834 1.02083C14.4417 1.05 14.5 1.10833 14.5292 1.1375L21.5292 8.1375L21.5292 8.13751C21.5875 8.19584 21.6167 8.225 21.6459 8.28333ZM2.25004 2.625C2.07504 2.625 1.95837 2.74167 1.95837 2.91667V24.7917C1.95837 24.9667 2.07504 25.0833 2.25004 25.0833H19.75C19.925 25.0833 20.0417 24.9667 20.0417 24.7917V9.625H15.0834C13.9459 9.625 13.0417 8.72083 13.0417 7.58333V2.625H2.25004ZM14.7917 7.58333C14.7917 7.75833 14.9084 7.875 15.0834 7.875H18.8167L14.7917 3.85V7.58333ZM5.22504 11.375C4.70957 11.375 4.29171 11.7929 4.29171 12.3083C4.29171 12.8238 4.70957 13.2417 5.22504 13.2417H16.4834C16.9988 13.2417 17.4167 12.8238 17.4167 12.3083C17.4167 11.7929 16.9988 11.375 16.4834 11.375H5.22504ZM4.29171 9.1C4.29171 8.58453 4.70957 8.16667 5.22504 8.16667H10.65C11.1655 8.16667 11.5834 8.58453 11.5834 9.1C11.5834 9.61547 11.1655 10.0333 10.65 10.0333H5.22504C4.70957 10.0333 4.29171 9.61547 4.29171 9.1ZM5.22504 14.5833C4.70957 14.5833 4.29171 15.0012 4.29171 15.5167C4.29171 16.0321 4.70957 16.45 5.22504 16.45H16.4834C16.9988 16.45 17.4167 16.0321 17.4167 15.5167C17.4167 15.0012 16.9988 14.5833 16.4834 14.5833H5.22504ZM4.29171 18.725C4.29171 18.2095 4.70957 17.7917 5.22504 17.7917H16.4834C16.9988 17.7917 17.4167 18.2095 17.4167 18.725C17.4167 19.2405 16.9988 19.6583 16.4834 19.6583H5.22504C4.70957 19.6583 4.29171 19.2405 4.29171 18.725ZM5.22504 21C4.70957 21 4.29171 21.4179 4.29171 21.9333C4.29171 22.4488 4.70957 22.8667 5.22504 22.8667H16.4834C16.9988 22.8667 17.4167 22.4488 17.4167 21.9333C17.4167 21.4179 16.9988 21 16.4834 21H5.22504Z"
-                      fill="#757575"
-                    />
-                  </svg>
+                <span v-else-if="key.file_name.split('.').pop()==='mov' || key.file_name.split('.').pop()==='mp4'">
+                  <a :href="'https://web.leadertask.com/User/Files/GetFile?uid='+key.uid" :id="key.uid" >
+                         {{getMovUrl(key.uid,key.file_name.split('.').pop(),key.file_name)}}{{ key.file_name }}
+                  </a>
+
+                  <div style="color:black"><strong>{{ new Date(key.date_create).toLocaleDateString() }} {{ new Date(key.date_create).toLocaleTimeString() }}</strong></div>
+                <div style="color:#3E3D3B;">{{ formatBytes(key.file_size) }}</div>
                 </span>
-                <span v-else-if="key.file_name.split('.').pop()==='doc' && key.file_name.split('.').pop()==='xls' && key.file_name.split('.').pop()==='xlsx' && key.file_name.split('.').pop()==='txt'">
-<a
+                <span v-else-if="key.file_name.split('.').pop()==='doc' || key.file_name.split('.').pop()==='xls' || key.file_name.split('.').pop()==='xlsx' || key.file_name.split('.').pop()==='txt' || key.file_name.split('.').pop()==='pdf'">
+<a :id="key.uid"
 
   :href="'https://web.leadertask.com/User/Files/GetFile?uid='+key.uid"
 >
-
+        {{getDocUrl(key.uid,key.file_name.split('.').pop(),key.file_name)}}
                   <svg
                     width="22"
                     height="27"
@@ -1913,10 +2014,14 @@ export default {
                       fill="#757575"
                     />
                   </svg>
+  {{ key.file_name }}
                 </a>
+                  <div style="color:black"><strong>{{ new Date(key.date_create).toLocaleDateString() }} {{ new Date(key.date_create).toLocaleTimeString() }}</strong></div>
+                <div style="color:#3E3D3B;">{{ formatBytes(key.file_size) }}</div>
                 </span>
                 <span v-else-if="key.file_name.split('.').pop()==='mp3' || key.file_name.split('.').pop()==='wav' || key.file_name.split('.').pop()==='m4a'">
-                  <audio
+                 {{getAudioUrl(key.uid,key.file_name.split('.').pop(),key.file_name)}}
+                  <audio :id="key.uid"
                     :src="'https://web.leadertask.com/User/Files/GetFile?uid='+key.uid"
                     ref="audioPlayer"
                     controls
@@ -1924,9 +2029,16 @@ export default {
                     Your browser does not support the
                     <code>audio</code> element.
                   </audio>
-                </span>
-                <div style="color:black"><strong>{{ new Date(key.date_create).toLocaleDateString() }} {{ new Date(key.date_create).toLocaleTimeString() }}</strong></div>
+                  <div style="color:black"><strong>{{ new Date(key.date_create).toLocaleDateString() }} {{ new Date(key.date_create).toLocaleTimeString() }}</strong></div>
                 <div style="color:#3E3D3B;">{{ formatBytes(key.file_size) }}</div>
+                </span>
+                <span  v-else-if="key.file_name.split('.').pop()!=='app'">
+                  <a :id="key.uid" :href="'https://web.leadertask.com/User/Files/GetFile?uid='+key.uid">{{ key.file_name }}
+                            {{getAnyUrl(key.uid,key.file_name.split('.').pop(),key.file_name)}}
+                  </a>
+                     <div style="color:black"><strong>{{ new Date(key.date_create).toLocaleDateString() }} {{ new Date(key.date_create).toLocaleTimeString() }}</strong></div>
+                <div style="color:#3E3D3B;">{{ formatBytes(key.file_size) }}</div>
+                </span>
               </div>
             </div>
           </div>
@@ -1936,15 +2048,16 @@ export default {
         v-if="taskMessages"
         class="mt-3 chat-custom"
       >
+
         <div
-          v-for="(key,value) in taskMessages"
+          v-for="(key,value) in taskMessages.sort()"
           :key="value"
-          class="mt-3"
+          class="mt-3 display-none" @input.self="hide" :id="'hidden_'+value"
         >
           <div v-if="key.uid_creator!==cusers.current_user_uid">
             <div class="date-section">
               <p
-                class="text-center date-messages-chat divider "
+                class="text-center date-messages-chat"
               >
                 {{ days[new Date(key.date_create.split('T')[0]).getDay()] }}, {{ new Date(key.date_create.split('T')[0]).getDate() }} {{ months[new Date(key.date_create).getMonth()] }}
               </p>
@@ -1978,7 +2091,7 @@ export default {
           <div v-else>
             <div class="date-section">
               <p
-                class="text-center date-messages-chat divider "
+                class="text-center date-messages-chat"
               >
                 {{ days[new Date(key.date_create.split('T')[0]).getDay()] }}, {{ new Date(key.date_create.split('T')[0]).getDate() }} {{ months[new Date(key.date_create).getMonth()] }}
               </p>
@@ -2011,6 +2124,7 @@ export default {
             </div>
           </div>
         </div>
+      </div>
       </div>
     </div>
     <div class="form-send-message">

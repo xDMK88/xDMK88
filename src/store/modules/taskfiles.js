@@ -4,6 +4,8 @@ import {
   FILES_SUCCESS,
   REFRESH_FILES,
   MYFILES,
+  GETFILES,
+  FILE_SUCCESS,
   CREATE_FILES_REQUEST
 } from '../actions/taskfiles'
 import { AUTH_LOGOUT } from '../actions/auth'
@@ -13,6 +15,7 @@ import axios from 'axios'
 
 const state = {
   files: [],
+  file: '',
   status: '',
   hasLoadedOnce: false,
   myfiles: {}
@@ -44,6 +47,28 @@ const actions = {
         })
     })
   },
+  [GETFILES]: ({ commit, dispatch }, uid) => {
+    return new Promise((resolve, reject) => {
+      commit(GETFILES)
+      const url = 'https://web.leadertask.com/api/v1/tasksfiles/file?uid=' + uid
+      axios({ url: url, method: 'GET', responseType: 'blob' })
+        .then(resp => {
+          commit(FILE_SUCCESS, resp)
+          console.log(resp)
+          resolve(resp)
+        }).catch(err => {
+          commit(FILES_ERROR, err)
+          notify({
+            group: 'api',
+            title: 'REST API Error, please make screenshot',
+            action: GETFILES,
+            text: err.response.data
+          }, 15000)
+          dispatch(AUTH_LOGOUT)
+          reject(err)
+        })
+    })
+  },
   [CREATE_FILES_REQUEST]: ({ commit, dispatch }, data) => {
     return new Promise((resolve, reject) => {
       const formData = new FormData()
@@ -52,7 +77,7 @@ const actions = {
       axios({
         url: url,
         method: 'POST',
-        formData,
+        data: formData,
         headers: {
           'Content-Type': 'multipart/form-data'
         }
@@ -74,6 +99,11 @@ const mutations = {
   [FILES_SUCCESS]: (state, resp) => {
     state.status = 'success'
     state.files = resp.data.files
+    state.hasLoadedOnce = true
+  },
+  [FILE_SUCCESS]: (state, resp) => {
+    state.status = 'success'
+    state.file = resp.data.files
     state.hasLoadedOnce = true
   },
   [MYFILES]: (state, myfiles) => {

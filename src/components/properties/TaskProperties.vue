@@ -284,8 +284,6 @@ export default {
           selectedTask.value.customer_date_end = new Date(this.range.end)
         })
     }
-    const createChecklist = () => {
-    }
     const showHide = () => {
       for (var i = 0; i < taskMessages.value.length; i++) {
         document.getElementById('hidden_' + i).style.display = 'block'
@@ -309,7 +307,6 @@ export default {
       getAudioUrl,
       getMovUrl,
       getDocUrl,
-      createChecklist,
       showHide,
       isDark,
       unchecked,

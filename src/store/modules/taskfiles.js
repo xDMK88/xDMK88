@@ -47,6 +47,7 @@ const actions = {
         })
     })
   },
+  //  GetFiles
   [GETFILES]: ({ commit, dispatch }, uid) => {
     return new Promise((resolve, reject) => {
       commit(GETFILES)

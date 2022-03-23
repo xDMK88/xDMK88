@@ -652,6 +652,7 @@ const actions = {
     })
   },
   [TASK.CHANGE_TASK_TAGS]: ({ commit, dispatch }, data) => {
+    // tags
     return new Promise((resolve, reject) => {
       commit(TASK.TAG_TASKS_REQUEST)
       const url = 'https://web.leadertask.com/api/v1/task/tags'

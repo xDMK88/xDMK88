@@ -1571,6 +1571,11 @@ label
   top: 40%;
   left: 45%;
 }
+.bottom1 {
+  position: absolute;
+  top: 40%;
+  left: 45%;
+}
 .display-none
 {
   display: none;

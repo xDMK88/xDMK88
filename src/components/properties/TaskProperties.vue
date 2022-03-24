@@ -142,6 +142,12 @@ export default {
     const unchecked = () => {
 
     }
+    const delTask = () => {
+      const data = {
+        uid: selectedTask.value.uid
+      }
+      store.dispatch(TASK.REMOVE_TASK, data.uid)
+    }
     const createTaskMsg = () => {
       const data = {
         uid_task: selectedTask.value.uid,
@@ -303,6 +309,7 @@ export default {
     }
     return {
       hide,
+      delTask,
       getAnyUrl,
       getAudioUrl,
       getMovUrl,
@@ -437,7 +444,6 @@ export default {
 }
 </script>
 <template>
-  {{selectedTask.uid}}
   <div class="break-words">
     <div class="column-resize">
       <div />
@@ -1786,12 +1792,12 @@ export default {
             </router-link>-->
               <router-link
                 to="/"
+                @click="delTask"
                 class="
             block
             px-4
             py-2
             text-sm
-
           "
               >
                 Удалить

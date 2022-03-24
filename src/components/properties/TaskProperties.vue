@@ -307,8 +307,15 @@ export default {
         document.getElementById('hidden_' + n).style.display = 'none'
       }
     }
+    const copyurl = (url) => {
+      var Url = url
+      console.log(Url.innerHTML)
+      Url.select()
+      document.execCommand('copy')
+    }
     return {
       hide,
+      copyurl,
       delTask,
       getAnyUrl,
       getAudioUrl,
@@ -612,7 +619,7 @@ export default {
           >
 
             <div class="popper">
-              <button @click="employee"></button>
+              <div @click="employee"></div>
               <div class="text-white body-popover-custom">
                 <div class="container-employee-popover">
                   <form>
@@ -634,13 +641,19 @@ export default {
                           {{ key.name }}
                           <div class="popover-employee-email">{{ key.email }}</div>
                         </label>
+                        <span class="inline-flex justify-center items-center" data-v-5784ed69-s="" v-if="selectedTask.email_performer!=='' && selectedTask.email_performer===key.email">
+                          <svg viewBox="0 0 26 20" width="10" height="10" class="inline-block" data-v-5784ed69-s="">
+                            <path fill="currentColor" fill-rule="evenodd" clip-rule="evenodd" d="M24.4107 1.30299C25.2766 2.02718 25.3681 3.2892 24.6148 4.1218L11.8142 18.2718C10.8103 19.3815 9.06094 19.4991 7.9062 18.5344L0.902667 12.6839C0.0362917 11.9601 -0.0558157 10.6982 0.69694 9.86518C1.44969 9.0322 2.76226 8.94364 3.62864 9.66738L9.58691 14.6447L21.4789 1.49931C22.2321 0.666707 23.5447 0.578813 24.4107 1.30299Z" data-v-5784ed69-s="">
+                            </path>
+                          </svg><!--v-if-->
+                        </span>
                         <input
                           type="radio"
                           name="check_so_employee"
                           class="check-custom-empployee"
                           :checked="selectedTask.email_performer!=='' && selectedTask.email_performer===key.email"
                           @click="unchecked"
-                          @change="changeEmployee(selectedTask.uid, key.email)"
+                          @change="changeEmployee(selectedTask.uid, key.email)" style="display: none"
                         >
                       </div>
                     </div>
@@ -663,7 +676,7 @@ export default {
             class="bottom"
           >
             <div class="popper">
-              <div class="text-white opacity-75 font-semibold title-popover-main">
+              <div class="opacity-75 font-semibold title-popover-main">
                 <div @click="close"></div>
                 <button
                   class="btn-clear-popover"
@@ -678,7 +691,7 @@ export default {
                   >Применить</span>
                 </button>
               </div>
-              <div class="text-white">
+              <div>
                 <div class="container-employee-popover">
                   <form>
                     <div
@@ -701,7 +714,7 @@ export default {
                           type="checkbox"
                           name="check_access_employee"
                           :value="key.email"
-                          class="check-custom-empployee"
+                          class="check-custom-empployee checkbox-border"
                           :checked="selectedTask.emails.split('..').filter(email=>email===key.email)[0]===key.email"
                         >
                       </div>
@@ -1769,6 +1782,8 @@ export default {
             </router-link>-->
               <router-link
                 to="/"
+                @click="copyurl('lt://planning?{'+ selectedTask.uid.toUpperCase() +'}')"
+                ref="targetcopy"
                 class="
             block
             px-4

@@ -100,7 +100,7 @@
         :id="props.node.info.uid"
         class="group task-node flex-col items-center w-full bg-white p-2 rounded-xl dark:bg-gray-900 dark:border-gray-700 border border-gray-300 my-0.5 focus:border-orange-300 focus:border-2 relative"
         :style="{ backgroundColor: colors[props.node.info.uid_marker] ? colors[props.node.info.uid_marker].back_color : '' }"
-        :class="{ 'bg-gray-200 dark:bg-gray-900': (props.node.info.status == 1 || props.node.info.status == 7) && props.node.info.uid_marker == '00000000-0000-0000-0000-000000000000', 'ring-2 ring-orange-400 border border-orange-400': props.node.id === lastSelectedTaskUid }"
+        :class="{ 'bg-gray-200 dark:bg-gray-900': (props.node.info.status == 1 || props.node.info.status == 7) && props.node.info.uid_marker == '00000000-0000-0000-0000-000000000000' }"
       >
         <!--
         order_new: <strong>{{ props.node.info.order_new }}</strong>
@@ -300,7 +300,7 @@
                   :height="statuses[props.node.info.status].height"
                 />
                 <Icon
-                  v-if="props.node.info.SeriesType == 1"
+                  v-if="props.node.info.SeriesType != 0"
                   :path="repeat.path"
                   class="text-blue-500 bg-white absolute -bottom-1.5 -right-1.5 p-0.5 rounded-full"
                   :box="repeat.viewBox"
@@ -309,23 +309,20 @@
                 />
               </div>
             </Popper>
-            <p
-              v-if="!props.node.info._isEditing"
-              :class="{ 'text-gray-500': props.node.info.status == 1 || props.node.info.status == 7, 'line-through': props.node.info.status == 1 || props.node.info.status == 7, 'font-extrabold': props.node.info.readed == 0 }"
-              :style="{ color: colors[props.node.info.uid_marker] ? colors[props.node.info.uid_marker].fore_color : '' }"
-              @click="props.node.info.type == 1 ? props.node.info._isEditing = true : props.node.info._isEditing == false"
-            >
-              {{ props.node.info.name }}
-            </p>
-            <input
-              v-if="props.node.info._isEditing && props.node.info.type == 1"
+            <!-- Editable name -->
+
+            <contenteditable
+              tag="div"
+              :contenteditable="props.node.info.type == 1 || props.node.info.type == 0"
               v-model="props.node.info.name"
-              class="bg-transparent w-full"
-              :class="{ 'text-gray-500': props.node.info.status == 1 || props.node.info.status == 7, 'line-through': props.node.info.status == 1 || props.node.info.status == 7, 'font-extrabold': props.node.info.readed == 0 }"
+              placeholder="Enter task name"
+              :noNL="true"
+              :noHTML="true"
+              :class="{ 'text-gray-500': props.node.info.status == 1 || props.node.info.status == 7, 'line-through': props.node.info.status == 1 || props.node.info.status == 7, 'font-extrabold': props.node.info.readed == 0, 'text-gray-300': props.node.info._justCreated }"
               :style="{ color: colors[props.node.info.uid_marker] ? colors[props.node.info.uid_marker].fore_color : '' }"
-              :placeholder="'Enter task name'"
+              @returned="updateTask(props.node.info)"
               @blur="updateTask(props.node.info)"
-            >
+            />
           </div>
           <Icon
             v-if="props.node.info.focus == '1'"
@@ -350,7 +347,7 @@
             {{ employees[props.node.info.uid_customer].name }}
           </div>
           <div
-            v-if="props.node.info.email_performer && employeesByEmail[props.node.info.email_performer] && user.current_user_email != props.node.info.email_performer && employees[props.node.info.uid_customer].email != props.node.info.email_performer"
+            v-if="props.node.info.email_performer && employeesByEmail[props.node.info.email_performer] && employees[props.node.info.uid] && user.current_user_email != props.node.info.email_performer && employees[props.node.info.uid_customer].email != props.node.info.email_performer"
             class="p-1 px-2 text-xs text-white rounded-lg mr-1 flex items-center"
             :class="{ 'bg-gray-400': user.current_user_email != props.node.info.email_performer }"
           >
@@ -495,6 +492,7 @@ import Icon from '@/components/Icon.vue'
 import Control from '@/components/Control.vue'
 import Popper from 'vue3-popper'
 import ModalBoxConfirm from '@/components/modals/ModalBoxConfirm.vue'
+import contenteditable from 'vue-contenteditable'
 
 import * as TASK from '@/store/actions/tasks'
 import { MESSAGES_REQUEST, REFRESH_MESSAGES } from '@/store/actions/taskmessages'
@@ -529,7 +527,8 @@ export default {
     Icon,
     Control,
     Popper,
-    ModalBoxConfirm
+    ModalBoxConfirm,
+    contenteditable
   },
   props: {
     storeTasks: {
@@ -638,17 +637,17 @@ export default {
     const handleTaskSource = (taskData, uidParent) => {
       let data
       if (taskData) {
+        taskData.uid = uuidv4()
+        taskData.status = 0
+        taskData.uid_parent = uidParent
+        taskData.uid_customer = user.value.current_user_uid
+        taskData.email_performer = ''
+        taskData.tags = []
+        taskData.uid_marker = ''
+        taskData.has_files = false
+        taskData.has_msgs = false
+        taskData.type = 1
         data = taskData
-        data.uid = uuidv4()
-        data.status = 0
-        data.uid_parent = uidParent
-        data.uid_customer = user.value.current_user_uid
-        data.email_performer = ''
-        data.tags = []
-        data.uid_marker = ''
-        data.has_files = false
-        data.has_msgs = false
-        data.type = 1
       } else {
         data = {
           uid: uuidv4(),
@@ -710,7 +709,7 @@ export default {
     }
 
     const updateTask = (task) => {
-      if (task.name) {
+      if (task.name.length > 1) {
         if (task._justCreated) {
           store.dispatch(TASK.CREATE_TASK, task)
         } else {
@@ -759,10 +758,11 @@ export default {
       const newSubtask = {
         uid: uuidv4(),
         uid_customer: user.value.current_user_uid,
-        name: '',
+        name: 'Sample',
         status: 0,
         uid_parent: uidParent,
         type: 1,
+        SeriesType: 0,
         _isEditing: true,
         _justCreated: true
       }

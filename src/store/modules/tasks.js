@@ -503,7 +503,6 @@ const actions = {
       })
         .then(resp => {
           resp.data._justCreated = data._justCreated
-          console.log('created task return ', resp.data)
           if (resp.data.uid_parent !== '00000000-0000-0000-0000-000000000000' && !data._justCreated) {
             commit(TASK.ADD_SUBTASK, resp.data)
           } else {
@@ -898,7 +897,7 @@ const mutations = {
     state.hasLoadedOnce = true
 
     Object.assign(state.newtasks, {})
-    Object.assign(state.newConfig, { roots: [], leaves: [], listHasChildren: false, dragAndDrop: true })
+    Object.assign(state.newConfig, { roots: [], leaves: [], listHasChildren: false, dragAndDrop: false })
 
     const nodes = {}
     for (const node of resp.data.tasks) {
@@ -915,7 +914,7 @@ const mutations = {
         info: node,
         children: node.has_children ? ['fake-uid'] : [],
         state: {
-          draggable: node.type === 1
+          draggable: false
         }
       }
     }
@@ -966,8 +965,8 @@ const mutations = {
   [TASK.ADD_TASK]: (state, task) => {
     if (!task._justCreated) {
       state.newConfig.roots.push(task.uid)
-      task._justCreated = false
     }
+    task._justCreated = false
     state.newConfig.leaves.push(task.uid)
     task.type = 1
     state.newtasks[task.uid] = {
@@ -975,7 +974,7 @@ const mutations = {
       // even if copy, we would copy without children
       children: [],
       state: {
-        draggable: true,
+        draggable: false,
         disabled: false,
         checked: false
       }
@@ -1015,9 +1014,8 @@ const mutations = {
       info: task,
       children: [],
       state: {
-        checked: false,
         disabled: false,
-        draggable: true
+        draggable: false
       }
     }
     if (state.newtasks[task.uid_parent].children && state.newtasks[task.uid_parent].children.length) {

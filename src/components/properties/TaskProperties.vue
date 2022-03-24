@@ -1424,12 +1424,6 @@ export default {
                     :style="{'background-color': key.back_color, 'border:1px solid ': key.back_color}"
                   >
                         <span
-                          v-if="uppercase===1"
-                          style="text-transform:uppercase; display: none;"
-                          :style="{'color': key.force_color}"
-                        >{{ key.name }}</span>
-                        <span
-                          v-else style="display: none;"
                           :style="{'color': key.force_color}"
                         >{{ key.name }}</span>
                     <span class="inline-flex justify-center items-center checkcolor"><svg viewBox="0 0 26 20" width="15" height="15" class="inline-block"><path fill="currentColor" fill-rule="evenodd" clip-rule="evenodd" d="M24.4107 1.30299C25.2766 2.02718 25.3681 3.2892 24.6148 4.1218L11.8142 18.2718C10.8103 19.3815 9.06094 19.4991 7.9062 18.5344L0.902667 12.6839C0.0362917 11.9601 -0.0558157 10.6982 0.69694 9.86518C1.44969 9.0322 2.76226 8.94364 3.62864 9.66738L9.58691 14.6447L21.4789 1.49931C22.2321 0.666707 23.5447 0.578813 24.4107 1.30299Z"></path></svg><!--v-if--></span>

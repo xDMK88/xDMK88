@@ -1504,8 +1504,8 @@ label
 {
   background-color: transparent !important;
   border: 2px solid #747474;
-  height: 2px;
-  width: 2px;
+  height: 3px;
+  width: 3px;
   position: relative;
   top: 10px;
 }
@@ -1659,7 +1659,7 @@ label
 {
   top: 17% !important;
 }
-.weekday-position-6 .vc-day-content.vc-focusable, .weekday-position-7 .vc-day-content.vc-focusable
+.weekday-position-6:not(.is-not-in-month) .vc-day-content.vc-focusable, .weekday-position-7:not(.is-not-in-month) .vc-day-content.vc-focusable
 {
   color: #E23300 !important;
 }

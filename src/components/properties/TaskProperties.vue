@@ -437,6 +437,7 @@ export default {
 }
 </script>
 <template>
+  {{selectedTask.uid}}
   <div class="break-words">
     <div class="column-resize">
       <div />
@@ -1839,7 +1840,7 @@ export default {
           cols="40"
           style="height: 100%"
           class="form-control comment-custom"
-          @keyup="changeComment($refs.comment.value, $event)"
+          @keyup.enter="changeComment($refs.comment.value, $event)"
           @input="textareaResize"
         />
       </div>
@@ -1887,14 +1888,14 @@ export default {
                   <span v-if="key.file_name.split('.').pop()==='jpg' || key.file_name.split('.').pop()==='png' || key.file_name.split('.').pop()==='jpeg' || key.file_name.split('.').pop()==='gif' || key.file_name.split('.').pop()==='bmp'">
                   <a
                     :href="'https://web.leadertask.com/User/Files/GetFile?uid='+key.uid"
-                    :id="key.uid">
+                    :id="key.uid"  target="_blank">
                     {{getImgUrl(key.uid,key.file_name.split('.').pop(),key.file_name)}}
                 </a>
                 <div style="color:black"><strong>{{ new Date(key.date_create).toLocaleDateString() }} {{ new Date(key.date_create).toLocaleTimeString() }}</strong></div>
                 <div style="color:#3E3D3B;">{{ formatBytes(key.file_size) }}</div>
                 </span>
                 <span v-else-if="key.file_name.split('.').pop()==='mov' || key.file_name.split('.').pop()==='mp4'">
-                  <a :href="'https://web.leadertask.com/User/Files/GetFile?uid='+key.uid" :id="key.uid">{{ key.file_name }}
+                  <a :href="'https://web.leadertask.com/User/Files/GetFile?uid='+key.uid" :id="key.uid" target="_blank">{{ key.file_name }}
                   {{getMovUrl(key.uid,key.file_name.split('.').pop(),key.file_name)}}
                   </a>
                   <div style="color:black"><strong>{{ new Date(key.date_create).toLocaleDateString() }} {{ new Date(key.date_create).toLocaleTimeString() }}</strong></div>
@@ -1902,7 +1903,7 @@ export default {
                 </span>
                 <span v-else-if="key.file_name.split('.').pop()==='doc' || key.file_name.split('.').pop()==='xls' || key.file_name.split('.').pop()==='xlsx' || key.file_name.split('.').pop()==='txt' || key.file_name.split('.').pop()==='pdf'">
 <a :id="key.uid"
-  :href="'https://web.leadertask.com/User/Files/GetFile?uid='+key.uid"
+  :href="'https://web.leadertask.com/User/Files/GetFile?uid='+key.uid" target="_blank"
 >
   {{getDocUrl(key.uid,key.file_name.split('.').pop(),key.file_name)}}
                   <svg
@@ -1937,8 +1938,8 @@ export default {
                   <div style="color:black"><strong>{{ new Date(key.date_create).toLocaleDateString() }} {{ new Date(key.date_create).toLocaleTimeString() }}</strong></div>
                 <div style="color:#3E3D3B;">{{ formatBytes(key.file_size) }}</div>
                 </span>
-                <span v-else-if="key.file_name.split('.').pop()!=='app'">
-                   <a :id="key.uid" :href="'https://web.leadertask.com/User/Files/GetFile?uid='+key.uid">{{ key.file_name }}
+                <span v-else>
+                   <a :id="key.uid" :href="'https://web.leadertask.com/User/Files/GetFile?uid='+key.uid"  target="_blank">{{ key.file_name }}
                             {{getAnyUrl(key.uid,key.file_name.split('.').pop(),key.file_name)}}
                   </a>
                      <div style="color:black"><strong>{{ new Date(key.date_create).toLocaleDateString() }} {{ new Date(key.date_create).toLocaleTimeString() }}</strong></div>
@@ -1977,14 +1978,14 @@ export default {
                 <span v-if="key.file_name.split('.').pop()==='jpg' || key.file_name.split('.').pop()==='png' || key.file_name.split('.').pop()==='jpeg' || key.file_name.split('.').pop()==='gif' || key.file_name.split('.').pop()==='bmp'">
                   <a
                     :href="'https://web.leadertask.com/User/Files/GetFile?uid='+key.uid"
-                    :id="key.uid">
+                    :id="key.uid" target="_blank">
                     {{getImgUrl(key.uid,key.file_name.split('.').pop(),key.file_name)}}
                 </a>
                 <div style="color:black"><strong>{{ new Date(key.date_create).toLocaleDateString() }} {{ new Date(key.date_create).toLocaleTimeString() }}</strong></div>
                 <div style="color:#3E3D3B;">{{ formatBytes(key.file_size) }}</div>
                 </span>
                 <span v-else-if="key.file_name.split('.').pop()==='mov' || key.file_name.split('.').pop()==='mp4'">
-                  <a :href="'https://web.leadertask.com/User/Files/GetFile?uid='+key.uid" :id="key.uid" >
+                  <a :href="'https://web.leadertask.com/User/Files/GetFile?uid='+key.uid" :id="key.uid" target="_blank">
                          {{getMovUrl(key.uid,key.file_name.split('.').pop(),key.file_name)}}{{ key.file_name }}
                   </a>
 
@@ -1994,7 +1995,7 @@ export default {
                 <span v-else-if="key.file_name.split('.').pop()==='doc' || key.file_name.split('.').pop()==='xls' || key.file_name.split('.').pop()==='xlsx' || key.file_name.split('.').pop()==='txt' || key.file_name.split('.').pop()==='pdf'">
 <a :id="key.uid"
 
-  :href="'https://web.leadertask.com/User/Files/GetFile?uid='+key.uid"
+  :href="'https://web.leadertask.com/User/Files/GetFile?uid='+key.uid" target="_blank"
 >
         {{getDocUrl(key.uid,key.file_name.split('.').pop(),key.file_name)}}
                   <svg
@@ -2029,8 +2030,8 @@ export default {
                   <div style="color:black"><strong>{{ new Date(key.date_create).toLocaleDateString() }} {{ new Date(key.date_create).toLocaleTimeString() }}</strong></div>
                 <div style="color:#3E3D3B;">{{ formatBytes(key.file_size) }}</div>
                 </span>
-                <span  v-else-if="key.file_name.split('.').pop()!=='app'">
-                  <a :id="key.uid" :href="'https://web.leadertask.com/User/Files/GetFile?uid='+key.uid">{{ key.file_name }}
+                <span  v-else>
+                  <a :id="key.uid" :href="'https://web.leadertask.com/User/Files/GetFile?uid='+key.uid" target="_blank">{{ key.file_name }}
                             {{getAnyUrl(key.uid,key.file_name.split('.').pop(),key.file_name)}}
                   </a>
                      <div style="color:black"><strong>{{ new Date(key.date_create).toLocaleDateString() }} {{ new Date(key.date_create).toLocaleTimeString() }}</strong></div>

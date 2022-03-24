@@ -100,7 +100,7 @@
         :id="props.node.info.uid"
         class="group task-node flex-col items-center w-full bg-white p-2 rounded-xl dark:bg-gray-900 dark:border-gray-700 border border-gray-300 my-0.5 focus:border-orange-300 focus:border-2 relative"
         :style="{ backgroundColor: colors[props.node.info.uid_marker] ? colors[props.node.info.uid_marker].back_color : '' }"
-        :class="{ 'bg-gray-200 dark:bg-gray-900': (props.node.info.status == 1 || props.node.info.status == 7) && props.node.info.uid_marker == '00000000-0000-0000-0000-000000000000' }"
+        :class="{ 'bg-gray-200 dark:bg-gray-900': (props.node.info.status == 1 || props.node.info.status == 7) && props.node.info.uid_marker == '00000000-0000-0000-0000-000000000000', 'ring-2 ring-orange-400 border border-orange-400': props.node.id === lastSelectedTaskUid }"
       >
         <!--
         order_new: <strong>{{ props.node.info.order_new }}</strong>

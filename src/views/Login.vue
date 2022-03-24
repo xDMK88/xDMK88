@@ -251,7 +251,7 @@ const checkEmailExistense = () => {
             :label="localization.EnterSystem"
           />
           <a
-            :href="getLang() == ru ? 'https://www.leadertask.ru/user?t=passrecovery' : 'https://www.leadertask.com/user?t=passrecovery'"
+            :href="getLang() == 'ru' ? 'https://www.leadertask.ru/user?t=passrecovery' : 'https://www.leadertask.com/user?t=passrecovery'"
             class="text-xs mt-5 text-blue-500 underline decoration-1"
             target="_blank"
           >

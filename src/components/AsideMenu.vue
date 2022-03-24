@@ -79,7 +79,6 @@ const navigatorMenu = reactive({
     dayNotInMonth: 'not-in-month'
   }
 })
-
 const logout = () => {
   modalOneActive = false
   store.dispatch(AUTH_LOGOUT)
@@ -280,22 +279,30 @@ const menuClick = (event, item) => {
     </div>
     <nav-bar-item class="rounded-b-3xl pt-0 mt-0">
       <DatePicker
+        dot="true"
         id="Maincalendar"
         v-model="navigatorMenu.currentDate"
         class="border-none text-xs px-3 calendar-custom"
         style="border: none!important;"
         :style="{ backgroundColor: datePickerBG }"
-        show-weeknumbers
+        show-weeknumbers="left"
+        days="-1"
         color="gray"
-        :from-page="fromPage"
-        :to-page="toPage"
+        ref="calendarclass"
+        weekFromEnd="6"
+        from-page="fromPage"
+        to-page="toPage"
         is-expanded
         :locale="navigatorMenu.lang"
         :masks="{ weekdays: 'WW' }"
         :attributes="attrs"
-        :nav-visibility="visible"
-        :class="{ 'is-not-in-month':false }"
         :is-dark="isDark"
+        mode="single"
+        is-inline
+        inNextMonth="true"
+        inMonth="true"
+        inPrevMonth="true"
+        select-attribute="dates"
       />
     </nav-bar-item>
     <div class="my-5">
@@ -362,8 +369,33 @@ const menuClick = (event, item) => {
     padding-left: 0;
     padding-right: 0;
   }
+  .vc-container .dots-back
+  {
+    @apply bg-transparent;
+  }
+  .vc-container .vc-highlight {
+  }
+  .vc-container .vc-highlights .vc-day-box-center-center:nth-child(2) .vc-highlight {
+    @apply bg-gray-300 !important;
+  }
+  .vc-container .vc-highlight {
+    @apply bg-gray-300;
+  }
+  .vc-day-content .vc-focusable
+  {
+    @apply text-black
+  }
+  .vc-container .is-today .vc-day-content  {
+    @apply bg-white
+  }
+  .vc-container .is-today:hover .vc-day-content {
+    @apply bg-orange-400
+  }
+  .vc-container .is-today .vc-day-content:hover {
+    @apply bg-orange-400
+  }
   .vc-container .vc-day-content:hover:not(.is-disabled) {
-    @apply bg-gray-400 text-black;
+    @apply bg-transparent text-black;
   }
   .vc-container .vc-day-content.is-disabled {
     @apply pointer-events-none;
@@ -375,7 +407,7 @@ const menuClick = (event, item) => {
     @apply opacity-100 text-gray-500 pointer-events-auto;
   }
   .vc-day.is-not-in-month .is-disabled  {
-    @apply opacity-100 text-gray-400 pointer-events-none;
+    @apply opacity-100 text-gray-400;
   }
   .vc-day.weekday-7 {
     @apply text-red-500;

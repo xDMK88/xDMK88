@@ -130,7 +130,7 @@ export default {
           fill-opacity="1"
         />
       </svg>
-      <label class="break-words">{{ model.name }}</label>
+      <label class="break-words">{{ model.name.substring(0, 15) }}</label>
       <input
         ref="check_tags"
         v-model="selectTags[model.uid]"

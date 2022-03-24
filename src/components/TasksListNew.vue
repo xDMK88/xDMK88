@@ -755,6 +755,7 @@ export default {
     }
 
     const addSubtask = (uidParent) => {
+      lastSelectedTaskUid.value = ''
       const newSubtask = {
         uid: uuidv4(),
         uid_customer: user.value.current_user_uid,

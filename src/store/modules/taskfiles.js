@@ -8,7 +8,7 @@ import {
   FILE_SUCCESS,
   CREATE_FILES_REQUEST
 } from '../actions/taskfiles'
-import { AUTH_LOGOUT } from '../actions/auth'
+// import { AUTH_LOGOUT } from '../actions/auth'
 import { notify } from 'notiwind'
 
 import axios from 'axios'
@@ -42,7 +42,8 @@ const actions = {
             action: FILES_REQUEST,
             text: err.response.data
           }, 15000)
-          dispatch(AUTH_LOGOUT)
+          // We don't want to logout on this error
+          // dispatch(AUTH_LOGOUT)
           reject(err)
         })
     })
@@ -65,7 +66,8 @@ const actions = {
             action: GETFILES,
             text: err.response.data
           }, 15000)
-          dispatch(AUTH_LOGOUT)
+          // Don't log out
+          // dispatch(AUTH_LOGOUT)
           reject(err)
         })
     })

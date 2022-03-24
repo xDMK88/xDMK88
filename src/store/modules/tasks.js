@@ -504,7 +504,7 @@ const actions = {
         .then(resp => {
           resp.data._justCreated = data._justCreated
           console.log('created task return ', resp.data)
-          if (resp.data.uid_parent !== '00000000-0000-0000-0000-000000000000') {
+          if (resp.data.uid_parent !== '00000000-0000-0000-0000-000000000000' && !data._justCreated) {
             commit(TASK.ADD_SUBTASK, resp.data)
           } else {
             commit(TASK.ADD_TASK, resp.data)

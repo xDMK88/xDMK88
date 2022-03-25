@@ -18,11 +18,13 @@ const UID_TO_ACTION = {
 }
 const isPropertiesMobileExpanded = computed(() => store.state.isPropertiesMobileExpanded)
 const isGridView = ref(true)
+const focusedColor = ref('')
 
 const openProperties = (color) => {
   if (!isPropertiesMobileExpanded.value) {
     store.dispatch('asidePropertiesToggle', true)
   }
+  focusedColor.value = color.uid
   store.commit('basic', { key: 'propertiesState', value: 'color' })
   if (!color) {
     color = {
@@ -65,6 +67,7 @@ const clickOnGridCard = (value) => {
     >
       <div
         class="flex items-center bg-white dark:bg-gray-700 rounded-xl shadow hover:shadow-md cursor-pointer h-30 px-3 py-5"
+        :class="{ 'ring-4 ring-orange-400': focusedColor == color.uid }"
       >
         <div class="w-full">
           <div class="flex items-center justify-between">

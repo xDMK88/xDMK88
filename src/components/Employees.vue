@@ -22,6 +22,7 @@ const UID_TO_ACTION = {
 }
 
 const isGridView = ref(true)
+const focusedEmployee = ref('')
 const isPropertiesMobileExpanded = computed(() => store.state.isPropertiesMobileExpanded)
 const storeEmployees = computed(() => store.state.employees.employees)
 const user = computed(() => store.state.user.user)
@@ -49,6 +50,7 @@ const openEmployeeProperties = (employee) => {
   if (!isPropertiesMobileExpanded.value) {
     store.dispatch('asidePropertiesToggle', true)
   }
+  focusedEmployee.value = employee.uid
   if (!employee) {
     employee = {
       email: '',
@@ -168,6 +170,7 @@ const clickOnGridCard = (value) => {
       >
         <div
           class="flex items-center bg-white dark:bg-gray-700 rounded-xl shadow hover:shadow-md cursor-pointer h-30 px-3 py-5"
+          :class="{ 'ring-4 ring-orange-400': focusedEmployee == employee.uid }"
         >
           <span
             v-if="employee.type == 1"

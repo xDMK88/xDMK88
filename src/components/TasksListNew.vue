@@ -58,7 +58,7 @@
         :placeholder="'Enter task name'"
         borderless
         transparent
-        @keyup.enter="createTask"
+        @keyup.enter="createTask(); this.focus()"
       />
     </div>
   </div>
@@ -97,17 +97,13 @@
   >
     <template #before-input="props">
       <div
+        @click.shift="clickAndShift(props.node)"
+        @click.exact="selectedTasks = {}"
         :id="props.node.info.uid"
-        class="group task-node flex-col items-center w-full bg-white p-2 rounded-xl dark:bg-gray-900 dark:border-gray-700 border border-gray-300 my-0.5 focus:border-orange-300 focus:border-2 relative"
+        class="group task-node flex-col items-center w-full bg-white p-2 rounded-xl dark:bg-gray-900 dark:border-gray-700 border border-gray-300 my-0.5 relative"
         :style="{ backgroundColor: colors[props.node.info.uid_marker] ? colors[props.node.info.uid_marker].back_color : '' }"
-        :class="{ 'bg-gray-200 dark:bg-gray-900': (props.node.info.status == 1 || props.node.info.status == 7) && props.node.info.uid_marker == '00000000-0000-0000-0000-000000000000' }"
+        :class="{ 'bg-gray-200 dark:bg-gray-900': (props.node.info.status == 1 || props.node.info.status == 7) && props.node.info.uid_marker == '00000000-0000-0000-0000-000000000000', 'ring-2 ring-orange-400 border border-orange-400': props.node.id === lastSelectedTaskUid || selectedTasks[props.node.id]}"
       >
-        <!--
-        order_new: <strong>{{ props.node.info.order_new }}</strong>
-        <br>
-        uid: <strong>{{ props.node.id }}</strong>
-        -->
-        <!-- Hover task options -->
         <Transition>
           <div
             class="absolute hidden group-hover:flex right-2 top-2 bg-gray-200 rounded-lg items-cetner justify-center py-0.5 px-3"
@@ -246,7 +242,7 @@
           :class="props.node.info.focus ? 'justify-between' : ''"
         >
           <div
-            class="flex items-start"
+            class="flex items-center"
           >
             <!-- Status popper -->
             <Popper
@@ -313,6 +309,7 @@
 
             <contenteditable
               tag="div"
+              class="taskName"
               :contenteditable="props.node.info.type == 1 || props.node.info.type == 0"
               v-model="props.node.info.name"
               placeholder="Enter task name"
@@ -495,8 +492,6 @@ import ModalBoxConfirm from '@/components/modals/ModalBoxConfirm.vue'
 import contenteditable from 'vue-contenteditable'
 
 import * as TASK from '@/store/actions/tasks'
-import { MESSAGES_REQUEST, REFRESH_MESSAGES } from '@/store/actions/taskmessages'
-import { FILES_REQUEST, REFRESH_FILES } from '@/store/actions/taskfiles'
 
 import file from '@/icons/file.js'
 import msgs from '@/icons/msgs.js'
@@ -555,7 +550,12 @@ export default {
     const isPropertiesMobileExpanded = computed(() => store.state.isPropertiesMobileExpanded)
     const copiedTasks = computed(() => store.state.tasks.copiedTasks)
     const lastSelectedTaskUid = ref('')
+    const selectedTasks = ref({})
     const isTaskHoverPopperActive = ref(false)
+
+    const clickAndShift = (arg) => {
+      selectedTasks.value[arg.id] = arg.info
+    }
 
     const SHOW_TASK_INPUT_UIDS = {
       '901841d9-0016-491d-ad66-8ee42d2b496b': TASK.TASKS_REQUEST, // get today's day
@@ -705,6 +705,10 @@ export default {
     const createTask = () => {
       const data = handleTaskSource()
       store.dispatch(TASK.CREATE_TASK, data)
+        .then(() => {
+          // gotoNode(data.uid)
+          lastSelectedTaskUid.value = data.uid
+        })
       createTaskText.value = ''
     }
 
@@ -753,12 +757,25 @@ export default {
       store.dispatch(TASK.CHANGE_TASK_STATUS, { uid: uid, value: status })
     }
 
+    const gotoNode = (uid) => {
+      document.getElementById(uid).parentElement.focus({ preventScroll: false })
+      const taskName = document.getElementById(uid).querySelector('.taskName')
+      const range = document.createRange()
+      const sel = document.getSelection()
+      taskName.click({ preventScroll: false })
+      range.setStart(taskName, 1)
+      range.collapse(true)
+      sel.removeAllRanges()
+      sel.addRange(range)
+      lastSelectedTaskUid.value = uid
+    }
+
     const addSubtask = (uidParent) => {
       lastSelectedTaskUid.value = ''
       const newSubtask = {
         uid: uuidv4(),
         uid_customer: user.value.current_user_uid,
-        name: 'Sample',
+        name: 'Task name',
         status: 0,
         uid_parent: uidParent,
         type: 1,
@@ -766,9 +783,12 @@ export default {
         _isEditing: true,
         _justCreated: true
       }
-      // TODO: focus on just created task
-      // returns promise
       store.dispatch(TASK.ADD_SUBTASK, newSubtask)
+        .then(() => {
+          // TODO: somehow refactor it later
+          // awful, but I can't find event when subtask node has been pushed into the DOM
+          setTimeout(() => { gotoNode(newSubtask.uid) }, 0)
+        })
     }
 
     const copyTask = (task) => {
@@ -782,22 +802,10 @@ export default {
 
     const nodeSelected = (arg) => {
       store.commit('basic', { key: 'propertiesState', value: 'task' })
-      if (lastSelectedTaskUid.value === arg.info.uid) {
-        return
-      }
+
       lastSelectedTaskUid.value = arg.info.uid
-      if (arg.info.readed === 0) {
-        store.dispatch(TASK.CHANGE_TASK_READ, arg.info.uid)
-      }
-      store.commit(REFRESH_FILES)
-      store.commit(REFRESH_MESSAGES)
-      store.commit(TASK.SELECT_TASK, arg.info)
-      if (arg.info.has_msgs) {
-        store.dispatch(MESSAGES_REQUEST, arg.info.uid)
-      }
-      if (arg.info.has_files) {
-        store.dispatch(FILES_REQUEST, arg.info.uid)
-      }
+      store.dispatch(TASK.SELECT_TASK, arg.info)
+
       if (!isPropertiesMobileExpanded.value) {
         store.dispatch('asidePropertiesToggle', true)
       }
@@ -830,6 +838,8 @@ export default {
     }
 
     return {
+      selectedTasks,
+      clickAndShift,
       nodeDragstart,
       nodeDragenter,
       nodeDragend,
@@ -966,33 +976,8 @@ export default {
   outline: none
 }
 
-.node-wrapper:focus-within .task-node{
+.node-wrapper:focus-within .task-node {
   @apply ring-2 ring-orange-400 border border-orange-400
-}
-
-.checkbox-wrapper {
-  width: 1.25em;
-  height: 1.25em
-}
-
-. checkbox-wrapper {
-  position: relative;
-  margin-left: .3em;
-  overflow: hidden
-}
-
-.checkbox-wrapper {
-  background: #fff;
-  border: 2px solid rgba(0, 0, 0, .54);
-  border-radius: .125em;
-  cursor: pointer;
-  transition: background .3s
-}
-
-.checkbox-wrapper.checked,
-.checkbox-wrapper.indeterminate {
-  background: #3f51b5;
-  border: 2px solid #3f51b5
 }
 
 .node-wrapper.disabled .checkbox-wrapper.checked {

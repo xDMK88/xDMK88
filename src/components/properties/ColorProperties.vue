@@ -22,6 +22,10 @@ function uuidv4 () {
 const createOrUpdateColor = (color) => {
   if (!color.uid) {
     color.uid = uuidv4()
+
+    // colors action uid
+    // shoudn't be hard coded TODO: create consts with all actions in uids
+    color.parentID = 'ed8039ae-f3de-4369-8f32-829d401056e9'
     store.dispatch(CREATE_COLOR_REQUEST, color)
       .then(() => {
         store.dispatch('asidePropertiesToggle', false)

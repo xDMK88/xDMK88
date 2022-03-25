@@ -64,7 +64,7 @@ const actions = {
   },
   [PROJECT.QUIT_PROJECT_REQUEST]: ({ commit, dispatch }, data) => {
     return new Promise((resolve, reject) => {
-      const url = 'https://web.leadertask.com/api/v1/projects/exit?uid' + data.uid + '&email=' + data.value
+      const url = 'https://web.leadertask.com/api/v1/projects/exit?uid=' + data.uid + '&email=' + data.value
       axios({ url: url, method: 'POST' })
         .then(resp => {
           resolve(resp)

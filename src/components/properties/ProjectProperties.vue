@@ -47,6 +47,8 @@ function uuidv4 () {
 
 const createOrUpdateProject = (project) => {
   project.quiet = quiet.value ? 1 : 0
+  // TODO: should not be hardcoded
+  project.global_property_uid = '431a3531-a77a-45c1-8035-f0bf75c32641'
   if (!project.uid) {
     project.uid = uuidv4()
     store.dispatch(CREATE_PROJECT_REQUEST, project)
@@ -67,6 +69,7 @@ const quitProject = (project) => {
   store.dispatch(QUIT_PROJECT_REQUEST, { uid: project.uid, value: user.value.current_user_email })
     .then(() => {
       store.dispatch('asidePropertiesToggle', false)
+      store.commit(NAVIGATOR_REMOVE_PROJECT, project)
     })
 }
 

@@ -25,6 +25,8 @@ function uuidv4 () {
 const createOrUpdateTag = (tag) => {
   if (!tag.uid) {
     tag.uid = uuidv4()
+    // TODO: should not be hardcoded
+    tag.global_property_uid = '00a5b3de-9474-404d-b3ba-83f488ac6d30'
     store.dispatch(CREATE_TAG_REQUEST, tag)
       .then(() => {
         store.dispatch('asidePropertiesToggle', false)

@@ -418,6 +418,9 @@ export default {
     this.hide()
   },
   methods: {
+    gotoParentNode (uid) {
+      document.getElementById(uid).parentNode.click({ preventScroll: false })
+    },
     activate (tab) {
       this.activeTab = tab.name
       this.$emit('activateTab', tab.name)
@@ -455,7 +458,7 @@ export default {
     <div class="column-resize">
       <div />
       <div
-        v-if="selectedTask.uid_parent!=='00000000-0000-0000-0000-000000000000' && selectedTask.has_children===false"
+        v-if="selectedTask.uid_parent !== '00000000-0000-0000-0000-000000000000'"
         class="user_customer_custom"
       >
         <svg
@@ -471,9 +474,11 @@ export default {
           />
         </svg>
         <a
-          href="#"
-          class="parent-name"
-        >{{ tasks[selectedTask.uid_parent].info.name }}</a>
+          class="parent-name cursor-pointer"
+          @click="gotoParentNode(selectedTask.uid_parent)"
+        >
+          {{ tasks[selectedTask.uid_parent].info.name }}
+        </a>
         <div
           v-if="selectedTask.focus===1"
           class="infocus-task"

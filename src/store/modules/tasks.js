@@ -4,6 +4,9 @@ import { PUSH_COLOR } from '../actions/colors'
 import axios from 'axios'
 import { notify } from 'notiwind'
 
+import { MESSAGES_REQUEST, REFRESH_MESSAGES } from '@/store/actions/taskmessages'
+import { FILES_REQUEST, REFRESH_FILES } from '@/store/actions/taskfiles'
+
 function arrayRemove (arr, value) {
   return arr.filter(function (ele) {
     return ele !== value
@@ -116,7 +119,7 @@ const actions = {
             text: err.response.data
           }, 15000)
           commit(TASK.TASKS_ERROR, err)
-          dispatch(AUTH_LOGOUT)
+          // dispatch(AUTH_LOGOUT)
           reject(err)
         })
     })
@@ -520,6 +523,20 @@ const actions = {
         })
     })
   },
+  [TASK.SELECT_TASK]: ({ commit, dispatch }, data) => {
+    if (data.readed === 0) {
+      dispatch(TASK.CHANGE_TASK_READ, data.uid)
+    }
+    commit(REFRESH_FILES)
+    commit(REFRESH_MESSAGES)
+    commit(TASK.SELECT_TASK, data)
+    if (data.has_msgs) {
+      dispatch(MESSAGES_REQUEST, data.uid)
+    }
+    if (data.has_files) {
+      dispatch(FILES_REQUEST, data.uid)
+    }
+  },
   [TASK.CHANGE_TASK_READ]: ({ commit, dispatch }, uid) => {
     return new Promise((resolve, reject) => {
       const url = 'https://web.leadertask.com/api/v1/task/readed?uid=' + uid + '&value=1'
@@ -604,7 +621,7 @@ const actions = {
     })
   },
   [TASK.ADD_SUBTASK]: ({ commit }, task) => {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       commit(TASK.ADD_SUBTASK, task)
       resolve()
     })
@@ -897,7 +914,7 @@ const mutations = {
     state.hasLoadedOnce = true
 
     Object.assign(state.newtasks, {})
-    Object.assign(state.newConfig, { roots: [], leaves: [], listHasChildren: false, dragAndDrop: false })
+    Object.assign(state.newConfig, { roots: [], leaves: [], listHasChildren: false, dragAndDrop: false, keyboardNavigation: true })
 
     const nodes = {}
     for (const node of resp.data.tasks) {
@@ -964,7 +981,7 @@ const mutations = {
   },
   [TASK.ADD_TASK]: (state, task) => {
     if (!task._justCreated) {
-      state.newConfig.roots.push(task.uid)
+      state.newConfig.roots.unshift(task.uid)
     }
     task._justCreated = false
     state.newConfig.leaves.push(task.uid)

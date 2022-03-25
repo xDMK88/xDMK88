@@ -450,7 +450,11 @@ const mutations = {
     }
   },
   [NAVIGATOR_REMOVE_COLOR]: (state, color) => {
-    state.navigator.colors.items = arrayRemove(state.navigator.colors, color)
+    for (let i = 0; i < state.navigator.colors.items.length; i++) {
+      if (state.navigator.colors.items[i].uid === color.uid) {
+        state.navigator.colors.items.splice(i, 1)
+      }
+    }
   },
   [NAVIGATOR_ERROR]: state => {
     state.status = 'error'

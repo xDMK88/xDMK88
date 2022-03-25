@@ -7,9 +7,9 @@ import { DatePicker } from 'v-calendar'
 import { mdiMenu } from '@mdi/js'
 import NavBarItem from '@/components/NavBarItem.vue'
 import Icon from '@/components/Icon.vue'
-import AsideMenuList from '@/components/AsideMenuList.vue'
 import AccModal from '@/components/AccModal.vue'
 import AccTarif from '@/components/AccTarif.vue'
+import AsideMenuList from '@/components/AsideMenuList.vue'
 
 import * as TASK from '@/store/actions/tasks'
 import { AUTH_LOGOUT } from '@/store/actions/auth'
@@ -85,6 +85,7 @@ const logout = () => {
   router.push('/login')
   if (isPropertiesMobileExpanded.value) { store.dispatch('asidePropertiesToggle', false) }
 }
+
 function dateToLabelFormat (calendarDate) {
   const day = calendarDate.getDate()
   const month = calendarDate.toLocaleString('default', { month: 'short' })
@@ -101,6 +102,7 @@ const menuClick = (event, item) => {
   if (isPropertiesMobileExpanded.value) {
     store.dispatch('asidePropertiesToggle', false)
   }
+
   // Tasks list source
   if (UID_TO_ACTION[item.uid] && item.type === 'uid') {
     store.dispatch(UID_TO_ACTION[item.uid])
@@ -218,20 +220,31 @@ const tarifS = () => {
     </div>
     <nav-bar-item class="rounded-b-3xl pt-0 mt-0">
       <DatePicker
+        dot="true"
+        id="Maincalendar"
         v-model="navigatorMenu.currentDate"
-        class="border-none text-xs px-3"
+        class="border-none text-xs px-3 calendar-custom"
         style="border: none!important;"
         :style="{ backgroundColor: datePickerBG }"
-        id="Maincalendar"
-        show-weeknumbers
-        color="yellow"
+        show-weeknumbers="left"
+        days="-1"
+        color="gray"
+        ref="calendarclass"
+        weekFromEnd="6"
+        from-page="fromPage"
+        to-page="toPage"
         is-expanded
         :locale="navigatorMenu.lang"
         :masks="{ weekdays: 'WW' }"
         :attributes="attrs"
-        :nav-visibility="visible"
         :is-dark="isDark"
-       />
+        mode="single"
+        is-inline
+        inNextMonth="true"
+        inMonth="true"
+        inPrevMonth="true"
+        select-attribute="dates"
+      />
     </nav-bar-item>
     <div class="my-5">
       <template v-for="(menuGroup, index) in menu">
@@ -297,8 +310,33 @@ const tarifS = () => {
     padding-left: 0;
     padding-right: 0;
   }
+  .vc-container .dots-back
+  {
+    @apply bg-transparent;
+  }
+  .vc-container .vc-highlight {
+  }
+  .vc-container .vc-highlights .vc-day-box-center-center:nth-child(2) .vc-highlight {
+    @apply bg-gray-300 !important;
+  }
+  .vc-container .vc-highlight {
+    @apply bg-gray-300;
+  }
+  .vc-day-content .vc-focusable
+  {
+    @apply text-black
+  }
+  .vc-container .is-today .vc-day-content  {
+    @apply bg-white
+  }
+  .vc-container .is-today:hover .vc-day-content {
+    @apply bg-orange-400
+  }
+  .vc-container .is-today .vc-day-content:hover {
+    @apply bg-orange-400
+  }
   .vc-container .vc-day-content:hover:not(.is-disabled) {
-    @apply bg-gray-400 text-white;
+    @apply bg-transparent text-black;
   }
   .vc-container .vc-day-content.is-disabled {
     @apply pointer-events-none;
@@ -310,7 +348,7 @@ const tarifS = () => {
     @apply opacity-100 text-gray-500 pointer-events-auto;
   }
   .vc-day.is-not-in-month .is-disabled  {
-    @apply opacity-100 text-gray-400 pointer-events-none;
+    @apply opacity-100 text-gray-400;
   }
   .vc-day.weekday-7 {
     @apply text-red-500;

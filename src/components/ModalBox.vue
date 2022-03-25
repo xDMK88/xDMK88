@@ -31,7 +31,7 @@ const props = defineProps({
   hasButton: Boolean
 })
 
-const emit = defineEmits(['update:modelValue', 'cancel', 'acc', 'tarif', 'confirm'])
+const emit = defineEmits(['update:modelValue', 'cancel', 'acc', 'tarif', 'logout', 'confirm'])
 
 const value = computed({
   get: () => props.modelValue,
@@ -39,10 +39,13 @@ const value = computed({
 })
 const accSelect = value => { emit(value) }
 const tarifSelect = value => { emit(value) }
+const logoutAcc = value => { emit(value) }
 const confirmCancel = mode => {
   value.value = false
   emit(mode)
 }
+
+const logout = () => logoutAcc('logout')
 const confirm = () => confirmCancel('confirm')
 const cancel = () => confirmCancel('cancel')
 const acc = () => accSelect('acc')
@@ -56,10 +59,11 @@ const tarif = () => tarifSelect('tarif')
   >
     <card-component
       v-show="value"
-      hasTable
+      has-table
       :title="title"
       class="shadow-lg w-full md:w-3/5 lg:w-3/5 z-50  h-4/5"
       @header-icon-click="cancel"
+      @header-icon2-click="logout"
       @acc="acc"
       @tarif="tarif"
     >
@@ -67,14 +71,15 @@ const tarif = () => tarifSelect('tarif')
         <h1
           v-if="largeTitle"
           class="text-2xl"
-        >
-        </h1>
+        />
         {{ largeTitle }}
         <slot />
       </div>
+
       <divider
         v-if="hasButton"
       />
+
       <jb-buttons>
         <jb-button
           v-if="hasButton"

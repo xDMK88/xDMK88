@@ -130,17 +130,18 @@ export default {
           fill-opacity="1"
         />
       </svg>
-      <label class="break-words">{{ model.name.substring(0, 15) }}</label>
       <input
         ref="check_tags"
         v-model="selectTags[model.uid]"
         type="checkbox"
         name="check_tags"
-        class="check-custom-project"
+        class="check-custom-empployee custom-checkbox"
         :value="model.uid"
+        :id="model.uid"
         :checked="selectedTask.tags.filter(tag=>tag===model.uid)[0]===model.uid"
         @click="changetags(model.uid)"
       >
+      <label class="break-words" :for="model.uid">{{ model.name.substring(0, 15) }}</label>
     </div>
     <ul
       v-show="isOpen"

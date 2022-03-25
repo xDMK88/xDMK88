@@ -386,7 +386,6 @@ const menuClick = (event, item) => {
     @apply text-black
   }
   .vc-container .is-today .vc-day-content  {
-    @apply bg-white
   }
   .vc-container .is-today:hover .vc-day-content {
     @apply bg-orange-400

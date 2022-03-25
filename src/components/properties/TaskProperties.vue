@@ -9,6 +9,7 @@ import TreeTagsItem from '@/components/TreeTagsItem.vue'
 import { CREATE_MESSAGE_REQUEST } from '@/store/actions/taskmessages'
 import { CREATE_FILES_REQUEST, GETFILES } from '@/store/actions/taskfiles'
 import * as TASK from '@/store/actions/tasks'
+import { copyText } from 'vue3-clipboard'
 export default {
   components: {
     DatePicker,
@@ -81,7 +82,8 @@ export default {
           selectedTask.value.emails = emails
         }
       )
-      this.popoverShowAccess = false
+    }
+    const ClickAccessCheck = () => {
     }
     const changeColors = (uid, marker) => {
       store.dispatch(TASK.CHANGE_TASK_COLOR, { uid: uid, value: marker }).then(
@@ -108,13 +110,6 @@ export default {
       const data = {
         uid: selectedTask.value.uid,
         tags: selectedTask.value.tags
-      }
-      store.dispatch(TASK.CHANGE_TASK_TAGS, data)
-    }
-    const changetags = (uid, tags) => {
-      const data = {
-        uid: uid,
-        tags: tags
       }
       store.dispatch(TASK.CHANGE_TASK_TAGS, data)
     }
@@ -157,7 +152,11 @@ export default {
         text: taskMsg.value,
         msg: taskMsg.value
       }
-      store.dispatch(CREATE_MESSAGE_REQUEST, data)
+
+      store.dispatch(CREATE_MESSAGE_REQUEST, data).then(
+        resp => {
+          selectedTask.value.msg = data.msg
+        })
       taskMsg.value = ''
     }
     const changeName = (name, event) => {
@@ -307,16 +306,22 @@ export default {
         document.getElementById('hidden_' + n).style.display = 'none'
       }
     }
-    const copyurl = (url) => {
-      var Url = url
-      console.log(Url.innerHTML)
-      Url.select()
-      document.execCommand('copy')
+    const copyurl = (e) => {
+      copyText('lt://planning?{' + selectedTask.value.uid.toUpperCase() + '}', undefined, (error, event) => {
+        if (error) {
+          alert('Can not copy')
+          console.log(error)
+        } else {
+          alert('Copied')
+          console.log(event)
+        }
+      })
     }
     return {
       hide,
       copyurl,
       delTask,
+      ClickAccessCheck,
       getAnyUrl,
       getAudioUrl,
       getMovUrl,
@@ -329,7 +334,6 @@ export default {
       createTaskFile,
       closeProperties,
       ClickAccessEmail,
-      changetags,
       ClickTagsChange,
       emailtomass,
       changeColors,
@@ -501,7 +505,7 @@ export default {
       </div>
       <div class="user_child_customer_custom">
         <strong><textarea
-          ref="nameTask"
+          ref="nameTask" style="font-weight: bold; font-size: 18px"
           :value="selectedTask.name"
           class="form-control taskName-custom"
           @keyup.enter="changeName($refs.nameTask.value, $event)"
@@ -685,14 +689,13 @@ export default {
                 <div @click="close"></div>
                 <button
                   class="btn-clear-popover"
-                  @change="resetAccess"
+                  @click="resetAccess"
                 >
                   Отменить
                 </button>
-                <button class="btn-save-popover">
+                <button class="btn-save-popover" @click="ClickAccessEmail">
                   <span
                     class="title-z-popover"
-                    @click="ClickAccessEmail"
                   >Применить</span>
                 </button>
               </div>
@@ -703,25 +706,26 @@ export default {
                       v-for="(key,value, index) in employees"
                       :key="index"
                     >
-                      <div class="list-employee-access">
+                      <div class="list-employee-access" @click="ClickAccessCheck">
                         <img
                           :src="key.fotolink"
                           class="mr-1 border-fotolink border-solid border-2 border-sky-500"
                           width="30"
                           height="30"
                         >
-                        <label class="employee-name-custom">
-
-                          <div class="popover-employee-email"><div style="color: black;">{{ key.name }}</div>{{ key.email }}</div>
-                        </label>
                         <input
                           v-model="checkEmail"
                           type="checkbox"
                           name="check_access_employee"
                           :value="key.email"
-                          class="check-custom-empployee checkbox-border"
+                          :id="key.uid"
+                          class="check-custom-empployee custom-checkbox"
                           :checked="selectedTask.emails.split('..').filter(email=>email===key.email)[0]===key.email"
                         >
+                        <label class="employee-name-custom " :for="key.uid">
+
+                          <div class="popover-employee-email"><div style="color: black;">{{ key.name }}</div>{{ key.email }}</div>
+                        </label>
                       </div>
                     </div>
                   </form>
@@ -869,7 +873,7 @@ export default {
                       fill-opacity="0.5"
                     />
                   </svg>
-                </button><span><span ref="dateval">Дата</span></span>
+                </button><span><span ref="dateval">Выбрать дату</span></span>
               </span>
             </a>
         </Popper>
@@ -1242,7 +1246,7 @@ export default {
           </div>
         </Popper>
         <!-- Всплывающее окно Напоминание -->
-        <Popper
+       <!-- <Popper
           class="popper-reminder"
           arrow
           trigger="hover"
@@ -1325,7 +1329,7 @@ export default {
             </svg>
             <span class="rounded"> Напоминание</span>
           </a>
-        </Popper>
+        </Popper>-->
         <!--Всплывающее окно Проекты-->
         <Popper
           class="popper-project"
@@ -1443,8 +1447,8 @@ export default {
                   >
                         <span
                           :style="{'color': key.force_color}"
-                        >{{ key.name }}</span>
-                    <span class="inline-flex justify-center items-center checkcolor"><svg viewBox="0 0 26 20" width="15" height="15" class="inline-block"><path fill="currentColor" fill-rule="evenodd" clip-rule="evenodd" d="M24.4107 1.30299C25.2766 2.02718 25.3681 3.2892 24.6148 4.1218L11.8142 18.2718C10.8103 19.3815 9.06094 19.4991 7.9062 18.5344L0.902667 12.6839C0.0362917 11.9601 -0.0558157 10.6982 0.69694 9.86518C1.44969 9.0322 2.76226 8.94364 3.62864 9.66738L9.58691 14.6447L21.4789 1.49931C22.2321 0.666707 23.5447 0.578813 24.4107 1.30299Z"></path></svg><!--v-if--></span>
+                        ></span>
+                    <span class="inline-flex justify-center items-center checkcolor" :alt="key.name" :title="key.name"><svg viewBox="0 0 26 20" width="15" height="15" class="inline-block"><path fill="currentColor" fill-rule="evenodd" clip-rule="evenodd" d="M24.4107 1.30299C25.2766 2.02718 25.3681 3.2892 24.6148 4.1218L11.8142 18.2718C10.8103 19.3815 9.06094 19.4991 7.9062 18.5344L0.902667 12.6839C0.0362917 11.9601 -0.0558157 10.6982 0.69694 9.86518C1.44969 9.0322 2.76226 8.94364 3.62864 9.66738L9.58691 14.6447L21.4789 1.49931C22.2321 0.666707 23.5447 0.578813 24.4107 1.30299Z"></path></svg><!--v-if--></span>
                       <input style="display: none;"
                         type="radio"
                         name="check_colors"
@@ -1781,7 +1785,7 @@ export default {
             </router-link>-->
               <router-link
                 to="/"
-                @click="copyurl('lt://planning?{'+ selectedTask.uid.toUpperCase() +'}')"
+                @click="copyurl"
                 ref="targetcopy"
                 class="
             block
@@ -1858,6 +1862,7 @@ export default {
           :value="selectedTask.comment"
           rows="10"
           cols="40"
+          placeholder="Оставить запись"
           style="height: 100%"
           class="form-control comment-custom"
           @keyup.enter="changeComment($refs.comment.value, $event)"
@@ -1865,7 +1870,9 @@ export default {
         />
       </div>
       <div class="messages-and-files-custom">
-        <div style="display: inline-block;width: 100%" id="showall"><p class="text-center date-messages-chat divider uppercase" @click="showHide">Показать все</p></div>
+        <div style="display: inline-block;width: 100%" id="showall" v-if="taskMessages.length>0 || taskFiles.length>0">
+          <p class="text-center date-messages-chat divider uppercase" @click="showHide">Показать все</p>
+        </div>
       <div
         v-if="taskFiles.length>0"
         class="mt-3 list-files-custom"
@@ -1903,36 +1910,46 @@ export default {
             <div class="mt-1 chat-main">
               <div
                 class="mt-1 file-custom_attach-left"
-                :style="(key.file_name.split('.').pop()==='doc' || key.file_name.split('.').pop()==='xls' || key.file_name.split('.').pop()==='xlsx' || key.file_name.split('.').pop()==='txt' || key.file_name.split('.').pop()==='pdf' || key.file_name.split('.').pop()==='mov' || key.file_name.split('.').pop()==='mp4') ? 'background-color:#EDF7ED' : ''"
+                :style="(key.file_name.split('.').pop()==='doc' || key.file_name.split('.').pop()==='xls' || key.file_name.split('.').pop()==='xlsx' || key.file_name.split('.').pop()==='txt' || key.file_name.split('.').pop()==='pdf' || key.file_name.split('.').pop()==='mov' || key.file_name.split('.').pop()==='mp4' || key.file_name.split('.').pop()==='zip' || key.file_name.split('.').pop()==='rar') ? 'background-color:#EDF7ED' : ''"
               >
-                  <span v-if="key.file_name.split('.').pop()==='jpg' || key.file_name.split('.').pop()==='png' || key.file_name.split('.').pop()==='jpeg' || key.file_name.split('.').pop()==='gif' || key.file_name.split('.').pop()==='bmp'">
+                 <span v-if="key.file_name.split('.').pop()==='jpg' || key.file_name.split('.').pop()==='png' || key.file_name.split('.').pop()==='jpeg' || key.file_name.split('.').pop()==='gif' || key.file_name.split('.').pop()==='bmp'">
                   <a
                     :href="'https://web.leadertask.com/User/Files/GetFile?uid='+key.uid"
-                    :id="key.uid"  target="_blank">
+                    :id="key.uid" target="_blank">
                     {{getImgUrl(key.uid,key.file_name.split('.').pop(),key.file_name)}}
                 </a>
                 <div style="color:black"><strong>{{ new Date(key.date_create).toLocaleDateString() }} {{ new Date(key.date_create).toLocaleTimeString() }}</strong></div>
                 <div style="color:#3E3D3B;">{{ formatBytes(key.file_size) }}</div>
                 </span>
                 <span v-else-if="key.file_name.split('.').pop()==='mov' || key.file_name.split('.').pop()==='mp4'">
-                  <a :href="'https://web.leadertask.com/User/Files/GetFile?uid='+key.uid" :id="key.uid" target="_blank">{{ key.file_name }}
-                  {{getMovUrl(key.uid,key.file_name.split('.').pop(),key.file_name)}}
+                  <a :href="'https://web.leadertask.com/User/Files/GetFile?uid='+key.uid" :id="key.uid" target="_blank">
+                         {{getMovUrl(key.uid,key.file_name.split('.').pop(),key.file_name)}}{{ key.file_name }}
                   </a>
+<svg width="74" height="89" viewBox="0 0 74 89" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path fill-rule="evenodd" clip-rule="evenodd" d="M73.5 25.4C73.6 25.5 73.7 25.7 73.8 25.9C73.9 26.2 74 26.6 74 27V82C74 85.9 70.9 89 67 89H7C3.1 89 0 85.9 0 82V7C0 3.1 3.1 0 7 0H47C47.4 0 47.8 0.1 48 0.2H48.1C48.2 0.25 48.275 0.3 48.35 0.35C48.425 0.4 48.5 0.45 48.6 0.5C48.8 0.6 49 0.8 49.1 0.9L73.1 24.9L73.1001 24.9001C73.3 25.1 73.4 25.2 73.5 25.4ZM7 6C6.4 6 6 6.4 6 7V82C6 82.6 6.4 83 7 83H67C67.6 83 68 82.6 68 82V30H51C47.1 30 44 26.9 44 23V6H7ZM50 23C50 23.6 50.4 24 51 24H63.8L50 10.2V23ZM46.4104 41.044H52.3538C55.4245 41.044 58 43.5165 58 46.6813V66.3626C58 69.6264 54.7311 72 51.8585 72H21.6462C18.5755 72 16 69.5275 16 66.3626V46.6813C16 43.5165 18.5755 41.044 21.6462 40.9451H27.1934L28.184 39.1648C29.0755 37.2857 31.0566 36 33.2358 36H40.6651C42.8443 36 44.8255 37.3846 45.816 39.5604L46.4104 41.044ZM51.8585 67.3516C52.6509 67.3516 53.2453 66.6593 53.2453 66.3626V46.7802C53.2453 46.2857 52.9481 45.7912 52.3538 45.7912H44.8255C44.033 45.7912 43.1415 45.1978 42.7453 44.3077L41.4575 41.3407C41.3585 40.9451 41.0613 40.7473 40.6651 40.7473H33.2358C32.8396 40.7473 32.6415 40.9451 32.3443 41.2418L30.7594 44.4066C30.4623 45.1978 29.5708 45.6923 28.6792 45.6923H21.6462C21.25 45.6923 20.7547 46.0879 20.7547 46.6813V66.3626C20.7547 66.8571 21.0519 67.3516 21.6462 67.3516H51.8585ZM26.7972 55.5824C26.7972 49.9451 31.3538 45.3956 37 45.3956C42.6462 45.3956 47.2028 49.9451 47.2028 55.5824C47.2028 61.2198 42.6462 65.7692 37 65.7692C31.2547 65.7692 26.7972 61.3187 26.7972 55.5824ZM31.5519 55.5824C31.5519 58.6483 34.0283 61.1209 37 61.1209C39.9717 61.1209 42.4481 58.6483 42.4481 55.5824C42.4481 52.5165 39.9717 50.044 37 50.044C34.0283 50.044 31.5519 52.5165 31.5519 55.5824Z" fill="#757575"/>
+</svg>
+
                   <div style="color:black"><strong>{{ new Date(key.date_create).toLocaleDateString() }} {{ new Date(key.date_create).toLocaleTimeString() }}</strong></div>
                 <div style="color:#3E3D3B;">{{ formatBytes(key.file_size) }}</div>
                 </span>
                 <span v-else-if="key.file_name.split('.').pop()==='doc' || key.file_name.split('.').pop()==='xls' || key.file_name.split('.').pop()==='xlsx' || key.file_name.split('.').pop()==='txt' || key.file_name.split('.').pop()==='pdf'">
 <a :id="key.uid"
-  :href="'https://web.leadertask.com/User/Files/GetFile?uid='+key.uid" target="_blank"
+
+   :href="'https://web.leadertask.com/User/Files/GetFile?uid='+key.uid" target="_blank"
 >
-  {{getDocUrl(key.uid,key.file_name.split('.').pop(),key.file_name)}}
-                  <svg
-                    width="22"
-                    height="27"
-                    viewBox="0 0 22 27"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
+        {{getDocUrl(key.uid,key.file_name.split('.').pop(),key.file_name)}}
+
+ <svg v-if="key.file_name.split('.').pop()==='pdf'" width="74" height="89" viewBox="0 0 74 89" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path fill-rule="evenodd" clip-rule="evenodd" d="M73.5 25.4C73.6 25.5 73.7 25.7 73.8 25.9C73.9 26.2 74 26.6 74 27V82C74 85.9 70.9 89 67 89H7C3.1 89 0 85.9 0 82V7C0 3.1 3.1 0 7 0H47C47.4 0 47.8 0.1 48 0.2H48.1C48.2 0.25 48.275 0.3 48.35 0.35C48.425 0.4 48.5 0.45 48.6 0.5C48.8 0.6 49 0.8 49.1 0.9L73.1 24.9L73.1001 24.9001C73.3 25.1 73.4 25.2 73.5 25.4ZM7 6C6.4 6 6 6.4 6 7V82C6 82.6 6.4 83 7 83H67C67.6 83 68 82.6 68 82V30H51C47.1 30 44 26.9 44 23V6H7ZM50 23C50 23.6 50.4 24 51 24H63.8L50 10.2V23ZM45.3787 51.6342C47.6615 51.2192 49.3217 51.0636 49.9442 51.0636C52.0195 51.0636 56.9481 51.0636 57 55.4734C57 57.2374 56.2737 60.2464 51.6044 60.2464C50.2555 60.2464 47.8171 58.8975 44.2892 56.1997C41.799 56.6667 37.3372 57.6005 33.6537 59.0532C30.4371 65.4864 25.8716 69.9481 22.3956 69.9481C19.8016 69.9481 17 68.2879 17 65.642C17 62.1161 20.5239 60.4558 25.9143 57.9161L25.9235 57.9118H25.9754C27.1167 57.393 28.31 56.8223 29.5551 56.1997L30.489 55.7328C30.9559 54.7471 31.3709 53.6576 31.7341 52.5681L32.1492 51.2711C32.2014 51.1099 32.2533 50.9498 32.3049 50.7909C32.8672 49.0567 33.386 47.4569 33.8612 46.0311C31.2672 42.607 29.9702 39.6498 29.9702 37.1595C29.9702 30.9339 33.3424 30 35.3658 30C39.2049 30 40.7613 32.0233 40.7613 37.0039C40.7613 38.249 40.2425 40.3243 38.6861 45.1492C39.5681 46.2387 40.6057 47.3281 41.7471 48.4695C42.5772 49.2996 43.8742 50.441 45.3787 51.6342ZM50.8199 55.4797C51.2764 55.7296 51.5781 55.8948 51.7601 55.9403C52.3332 55.9403 52.551 55.8757 52.6429 55.8485C52.6674 55.8412 52.683 55.8366 52.6939 55.8366V55.6291C52.5383 55.5253 52.0713 55.4215 50.6187 55.3697C50.6889 55.4079 50.7559 55.4447 50.8199 55.4797ZM36.4553 37.0558C36.4553 34.3061 36.2477 34.3061 35.3658 34.3061C34.9507 34.3061 34.2763 34.3061 34.2244 37.2114C34.2244 38.1453 34.6913 39.3904 35.5214 40.8431C35.9364 39.546 36.4553 37.6783 36.4553 37.0558ZM35.8327 53.7613C37.1297 53.3982 38.5305 53.035 40.035 52.6719C39.3606 52.1012 38.8936 51.6861 38.738 51.4786C38.4459 51.1864 38.1673 50.8943 37.8954 50.6091C37.6361 50.3372 37.3829 50.0716 37.1297 49.8184C36.8184 50.8041 35.8327 53.7613 35.8327 53.7613ZM21.358 65.4864C21.5655 65.5901 21.9287 65.6939 22.3956 65.6939C22.9144 65.6939 24.5746 64.7082 26.4423 62.4254C24.3671 63.463 21.8249 64.7601 21.358 65.4864Z" fill="#757575"/>
+</svg>
+
+   <svg v-else
+        width="22"
+        height="27"
+        viewBox="0 0 22 27"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+   >
                     <path
                       fill-rule="evenodd"
                       clip-rule="evenodd"
@@ -1958,10 +1975,14 @@ export default {
                   <div style="color:black"><strong>{{ new Date(key.date_create).toLocaleDateString() }} {{ new Date(key.date_create).toLocaleTimeString() }}</strong></div>
                 <div style="color:#3E3D3B;">{{ formatBytes(key.file_size) }}</div>
                 </span>
-                <span v-else>
-                   <a :id="key.uid" :href="'https://web.leadertask.com/User/Files/GetFile?uid='+key.uid"  target="_blank">{{ key.file_name }}
+                <span  v-else>
+                  <a :id="key.uid" :href="'https://web.leadertask.com/User/Files/GetFile?uid='+key.uid" target="_blank">{{ key.file_name }}
                             {{getAnyUrl(key.uid,key.file_name.split('.').pop(),key.file_name)}}
                   </a>
+                  <svg width="22" height="27" viewBox="0 0 74 89" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path fill-rule="evenodd" clip-rule="evenodd" d="M73.5 25.4C73.6 25.5 73.7 25.7 73.8 25.9C73.9 26.2 74 26.6 74 27V82C74 85.9 70.9 89 67 89H7C3.1 89 0 85.9 0 82V7C0 3.1 3.1 0 7 0H47C47.4 0 47.8 0.1 48 0.2H48.1C48.2 0.25 48.275 0.3 48.35 0.35C48.425 0.4 48.5 0.45 48.6 0.5C48.8 0.6 49 0.8 49.1 0.9L73.1 24.9L73.1001 24.9001C73.3 25.1 73.4 25.2 73.5 25.4ZM7 6C6.4 6 6 6.4 6 7V82C6 82.6 6.4 83 7 83H67C67.6 83 68 82.6 68 82V30H51C47.1 30 44 26.9 44 23V6H7ZM50 23C50 23.6 50.4 24 51 24H63.8L50 10.2V23ZM37 21.2804C37 22.1302 36.2927 22.8642 35.389 22.8642H29.2593V29.5861H35.389C36.2534 29.5861 37 30.2815 37 31.17V34.6854C37 35.5353 36.2927 36.2693 35.389 36.2693H29.2593V42.9525H35.3497C36.2141 42.9525 36.9607 43.6479 36.9607 44.5364V48.0519C36.9607 48.9018 36.2534 49.6358 35.3497 49.6358H26.3517C25.4872 49.6358 24.7407 48.9404 24.7407 48.0519V42.9525H18.611C17.7466 42.9525 17 42.2572 17 41.3687V37.8532C17 36.9647 17.7466 36.2693 18.611 36.2693H24.7407V29.5088H18.611C17.7466 29.5088 17 28.8135 17 27.9249V24.4095C17 23.5596 17.7073 22.8256 18.611 22.8256H24.7407V16.1038H18.611C17.7466 16.1038 17 15.4084 17 14.5199V10H29.2593V16.181H35.389C36.2534 16.181 37 16.8764 37 17.7649V21.2804ZM30.9097 55.7395V63.9294L33.4244 71.192C34.1317 73.2395 33.778 75.4801 32.5207 77.2185C31.2633 78.957 29.1808 80 27.0197 80C24.8586 80 22.7761 78.957 21.5187 77.2185C20.2613 75.4801 19.9077 73.2009 20.615 71.192L23.1297 63.9294V55.7395C23.1297 54.8896 23.837 54.1556 24.7407 54.1556H29.2987C30.1631 54.1556 30.9097 54.851 30.9097 55.7395ZM24.1906 75.3256C25.4873 77.1027 28.5521 77.1027 29.8488 75.3256C30.5167 74.4371 30.6739 73.2782 30.281 72.2351L29.4558 69.8013H24.5442L23.7191 72.2351C23.3655 73.2782 23.5226 74.4371 24.1906 75.3256Z" fill="#757575"/>
+</svg>
+
                      <div style="color:black"><strong>{{ new Date(key.date_create).toLocaleDateString() }} {{ new Date(key.date_create).toLocaleTimeString() }}</strong></div>
                 <div style="color:#3E3D3B;">{{ formatBytes(key.file_size) }}</div>
                 </span>
@@ -1994,7 +2015,7 @@ export default {
             <div class="mt-1 chat-main">
               <div
                 class="mt-1 file-custom_attach-right"
-              :style="(key.file_name.split('.').pop()==='doc' || key.file_name.split('.').pop()==='xls' || key.file_name.split('.').pop()==='xlsx' || key.file_name.split('.').pop()==='txt' || key.file_name.split('.').pop()==='pdf' || key.file_name.split('.').pop()==='mov' || key.file_name.split('.').pop()==='mp4') ? 'background-color:#FCEAEA;' : ''">
+              :style="(key.file_name.split('.').pop()==='doc' || key.file_name.split('.').pop()==='xls' || key.file_name.split('.').pop()==='xlsx' || key.file_name.split('.').pop()==='txt' || key.file_name.split('.').pop()==='pdf' || key.file_name.split('.').pop()==='mov' || key.file_name.split('.').pop()==='mp4' || key.file_name.split('.').pop()==='zip' || key.file_name.split('.').pop()==='rar') ? 'background-color:#FCEAEA;' : ''">
                 <span v-if="key.file_name.split('.').pop()==='jpg' || key.file_name.split('.').pop()==='png' || key.file_name.split('.').pop()==='jpeg' || key.file_name.split('.').pop()==='gif' || key.file_name.split('.').pop()==='bmp'">
                   <a
                     :href="'https://web.leadertask.com/User/Files/GetFile?uid='+key.uid"
@@ -2008,6 +2029,9 @@ export default {
                   <a :href="'https://web.leadertask.com/User/Files/GetFile?uid='+key.uid" :id="key.uid" target="_blank">
                          {{getMovUrl(key.uid,key.file_name.split('.').pop(),key.file_name)}}{{ key.file_name }}
                   </a>
+<svg width="74" height="89" viewBox="0 0 74 89" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path fill-rule="evenodd" clip-rule="evenodd" d="M73.5 25.4C73.6 25.5 73.7 25.7 73.8 25.9C73.9 26.2 74 26.6 74 27V82C74 85.9 70.9 89 67 89H7C3.1 89 0 85.9 0 82V7C0 3.1 3.1 0 7 0H47C47.4 0 47.8 0.1 48 0.2H48.1C48.2 0.25 48.275 0.3 48.35 0.35C48.425 0.4 48.5 0.45 48.6 0.5C48.8 0.6 49 0.8 49.1 0.9L73.1 24.9L73.1001 24.9001C73.3 25.1 73.4 25.2 73.5 25.4ZM7 6C6.4 6 6 6.4 6 7V82C6 82.6 6.4 83 7 83H67C67.6 83 68 82.6 68 82V30H51C47.1 30 44 26.9 44 23V6H7ZM50 23C50 23.6 50.4 24 51 24H63.8L50 10.2V23ZM46.4104 41.044H52.3538C55.4245 41.044 58 43.5165 58 46.6813V66.3626C58 69.6264 54.7311 72 51.8585 72H21.6462C18.5755 72 16 69.5275 16 66.3626V46.6813C16 43.5165 18.5755 41.044 21.6462 40.9451H27.1934L28.184 39.1648C29.0755 37.2857 31.0566 36 33.2358 36H40.6651C42.8443 36 44.8255 37.3846 45.816 39.5604L46.4104 41.044ZM51.8585 67.3516C52.6509 67.3516 53.2453 66.6593 53.2453 66.3626V46.7802C53.2453 46.2857 52.9481 45.7912 52.3538 45.7912H44.8255C44.033 45.7912 43.1415 45.1978 42.7453 44.3077L41.4575 41.3407C41.3585 40.9451 41.0613 40.7473 40.6651 40.7473H33.2358C32.8396 40.7473 32.6415 40.9451 32.3443 41.2418L30.7594 44.4066C30.4623 45.1978 29.5708 45.6923 28.6792 45.6923H21.6462C21.25 45.6923 20.7547 46.0879 20.7547 46.6813V66.3626C20.7547 66.8571 21.0519 67.3516 21.6462 67.3516H51.8585ZM26.7972 55.5824C26.7972 49.9451 31.3538 45.3956 37 45.3956C42.6462 45.3956 47.2028 49.9451 47.2028 55.5824C47.2028 61.2198 42.6462 65.7692 37 65.7692C31.2547 65.7692 26.7972 61.3187 26.7972 55.5824ZM31.5519 55.5824C31.5519 58.6483 34.0283 61.1209 37 61.1209C39.9717 61.1209 42.4481 58.6483 42.4481 55.5824C42.4481 52.5165 39.9717 50.044 37 50.044C34.0283 50.044 31.5519 52.5165 31.5519 55.5824Z" fill="#757575"/>
+</svg>
 
                   <div style="color:black"><strong>{{ new Date(key.date_create).toLocaleDateString() }} {{ new Date(key.date_create).toLocaleTimeString() }}</strong></div>
                 <div style="color:#3E3D3B;">{{ formatBytes(key.file_size) }}</div>
@@ -2018,13 +2042,18 @@ export default {
   :href="'https://web.leadertask.com/User/Files/GetFile?uid='+key.uid" target="_blank"
 >
         {{getDocUrl(key.uid,key.file_name.split('.').pop(),key.file_name)}}
-                  <svg
-                    width="22"
-                    height="27"
-                    viewBox="0 0 22 27"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
+
+ <svg v-if="key.file_name.split('.').pop()==='pdf'" width="74" height="89" viewBox="0 0 74 89" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path fill-rule="evenodd" clip-rule="evenodd" d="M73.5 25.4C73.6 25.5 73.7 25.7 73.8 25.9C73.9 26.2 74 26.6 74 27V82C74 85.9 70.9 89 67 89H7C3.1 89 0 85.9 0 82V7C0 3.1 3.1 0 7 0H47C47.4 0 47.8 0.1 48 0.2H48.1C48.2 0.25 48.275 0.3 48.35 0.35C48.425 0.4 48.5 0.45 48.6 0.5C48.8 0.6 49 0.8 49.1 0.9L73.1 24.9L73.1001 24.9001C73.3 25.1 73.4 25.2 73.5 25.4ZM7 6C6.4 6 6 6.4 6 7V82C6 82.6 6.4 83 7 83H67C67.6 83 68 82.6 68 82V30H51C47.1 30 44 26.9 44 23V6H7ZM50 23C50 23.6 50.4 24 51 24H63.8L50 10.2V23ZM45.3787 51.6342C47.6615 51.2192 49.3217 51.0636 49.9442 51.0636C52.0195 51.0636 56.9481 51.0636 57 55.4734C57 57.2374 56.2737 60.2464 51.6044 60.2464C50.2555 60.2464 47.8171 58.8975 44.2892 56.1997C41.799 56.6667 37.3372 57.6005 33.6537 59.0532C30.4371 65.4864 25.8716 69.9481 22.3956 69.9481C19.8016 69.9481 17 68.2879 17 65.642C17 62.1161 20.5239 60.4558 25.9143 57.9161L25.9235 57.9118H25.9754C27.1167 57.393 28.31 56.8223 29.5551 56.1997L30.489 55.7328C30.9559 54.7471 31.3709 53.6576 31.7341 52.5681L32.1492 51.2711C32.2014 51.1099 32.2533 50.9498 32.3049 50.7909C32.8672 49.0567 33.386 47.4569 33.8612 46.0311C31.2672 42.607 29.9702 39.6498 29.9702 37.1595C29.9702 30.9339 33.3424 30 35.3658 30C39.2049 30 40.7613 32.0233 40.7613 37.0039C40.7613 38.249 40.2425 40.3243 38.6861 45.1492C39.5681 46.2387 40.6057 47.3281 41.7471 48.4695C42.5772 49.2996 43.8742 50.441 45.3787 51.6342ZM50.8199 55.4797C51.2764 55.7296 51.5781 55.8948 51.7601 55.9403C52.3332 55.9403 52.551 55.8757 52.6429 55.8485C52.6674 55.8412 52.683 55.8366 52.6939 55.8366V55.6291C52.5383 55.5253 52.0713 55.4215 50.6187 55.3697C50.6889 55.4079 50.7559 55.4447 50.8199 55.4797ZM36.4553 37.0558C36.4553 34.3061 36.2477 34.3061 35.3658 34.3061C34.9507 34.3061 34.2763 34.3061 34.2244 37.2114C34.2244 38.1453 34.6913 39.3904 35.5214 40.8431C35.9364 39.546 36.4553 37.6783 36.4553 37.0558ZM35.8327 53.7613C37.1297 53.3982 38.5305 53.035 40.035 52.6719C39.3606 52.1012 38.8936 51.6861 38.738 51.4786C38.4459 51.1864 38.1673 50.8943 37.8954 50.6091C37.6361 50.3372 37.3829 50.0716 37.1297 49.8184C36.8184 50.8041 35.8327 53.7613 35.8327 53.7613ZM21.358 65.4864C21.5655 65.5901 21.9287 65.6939 22.3956 65.6939C22.9144 65.6939 24.5746 64.7082 26.4423 62.4254C24.3671 63.463 21.8249 64.7601 21.358 65.4864Z" fill="#757575"/>
+</svg>
+
+   <svg v-else
+        width="22"
+        height="27"
+        viewBox="0 0 22 27"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+   >
                     <path
                       fill-rule="evenodd"
                       clip-rule="evenodd"
@@ -2054,6 +2083,10 @@ export default {
                   <a :id="key.uid" :href="'https://web.leadertask.com/User/Files/GetFile?uid='+key.uid" target="_blank">{{ key.file_name }}
                             {{getAnyUrl(key.uid,key.file_name.split('.').pop(),key.file_name)}}
                   </a>
+                  <svg width="22" height="27" viewBox="0 0 74 89" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path fill-rule="evenodd" clip-rule="evenodd" d="M73.5 25.4C73.6 25.5 73.7 25.7 73.8 25.9C73.9 26.2 74 26.6 74 27V82C74 85.9 70.9 89 67 89H7C3.1 89 0 85.9 0 82V7C0 3.1 3.1 0 7 0H47C47.4 0 47.8 0.1 48 0.2H48.1C48.2 0.25 48.275 0.3 48.35 0.35C48.425 0.4 48.5 0.45 48.6 0.5C48.8 0.6 49 0.8 49.1 0.9L73.1 24.9L73.1001 24.9001C73.3 25.1 73.4 25.2 73.5 25.4ZM7 6C6.4 6 6 6.4 6 7V82C6 82.6 6.4 83 7 83H67C67.6 83 68 82.6 68 82V30H51C47.1 30 44 26.9 44 23V6H7ZM50 23C50 23.6 50.4 24 51 24H63.8L50 10.2V23ZM37 21.2804C37 22.1302 36.2927 22.8642 35.389 22.8642H29.2593V29.5861H35.389C36.2534 29.5861 37 30.2815 37 31.17V34.6854C37 35.5353 36.2927 36.2693 35.389 36.2693H29.2593V42.9525H35.3497C36.2141 42.9525 36.9607 43.6479 36.9607 44.5364V48.0519C36.9607 48.9018 36.2534 49.6358 35.3497 49.6358H26.3517C25.4872 49.6358 24.7407 48.9404 24.7407 48.0519V42.9525H18.611C17.7466 42.9525 17 42.2572 17 41.3687V37.8532C17 36.9647 17.7466 36.2693 18.611 36.2693H24.7407V29.5088H18.611C17.7466 29.5088 17 28.8135 17 27.9249V24.4095C17 23.5596 17.7073 22.8256 18.611 22.8256H24.7407V16.1038H18.611C17.7466 16.1038 17 15.4084 17 14.5199V10H29.2593V16.181H35.389C36.2534 16.181 37 16.8764 37 17.7649V21.2804ZM30.9097 55.7395V63.9294L33.4244 71.192C34.1317 73.2395 33.778 75.4801 32.5207 77.2185C31.2633 78.957 29.1808 80 27.0197 80C24.8586 80 22.7761 78.957 21.5187 77.2185C20.2613 75.4801 19.9077 73.2009 20.615 71.192L23.1297 63.9294V55.7395C23.1297 54.8896 23.837 54.1556 24.7407 54.1556H29.2987C30.1631 54.1556 30.9097 54.851 30.9097 55.7395ZM24.1906 75.3256C25.4873 77.1027 28.5521 77.1027 29.8488 75.3256C30.5167 74.4371 30.6739 73.2782 30.281 72.2351L29.4558 69.8013H24.5442L23.7191 72.2351C23.3655 73.2782 23.5226 74.4371 24.1906 75.3256Z" fill="#757575"/>
+</svg>
+
                      <div style="color:black"><strong>{{ new Date(key.date_create).toLocaleDateString() }} {{ new Date(key.date_create).toLocaleTimeString() }}</strong></div>
                 <div style="color:#3E3D3B;">{{ formatBytes(key.file_size) }}</div>
                 </span>
@@ -2176,7 +2209,7 @@ export default {
           v-model="taskMsg"
           type="text"
           class="form-control text-group-design"
-          placeholder="Введите сообщение"
+          placeholder="Введите описание"
           @keyup.enter="createTaskMsg"
         >
         <span class="input-group-addon input-group-btn-send">

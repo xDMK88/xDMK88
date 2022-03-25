@@ -23,6 +23,7 @@ export default createStore({
     greedPath: null,
     greedSource: null,
     taskListSource: null,
+    navig: 0,
 
     /* Properties state: (project, task, color, tag, empmloyee) */
     propertiesState: null,

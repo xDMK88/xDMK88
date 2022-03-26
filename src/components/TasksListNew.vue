@@ -104,7 +104,6 @@
         :style="{ backgroundColor: colors[props.node.info.uid_marker] ? colors[props.node.info.uid_marker].back_color : '' }"
         :class="{ 'bg-gray-200 dark:bg-gray-900': (props.node.info.status == 1 || props.node.info.status == 7) && props.node.info.uid_marker == '00000000-0000-0000-0000-000000000000', 'ring-2 ring-orange-400 border border-orange-400': props.node.id === lastSelectedTaskUid || selectedTasks[props.node.id]}"
       >
-        <pre class="text-xs leading-none">{{ props.node.info }}</pre>
         <Transition>
           <div
             class="absolute hidden group-hover:flex right-2 top-2 bg-gray-200 rounded-lg items-cetner justify-center py-0.5 px-3"

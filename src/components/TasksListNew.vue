@@ -130,8 +130,8 @@
                 <div class="flex flex-col w-40">
                   <!-- Set task for tomorrow -->
                   <div
+                    v-if="props.node.info.uid_customer == user.current_user_uid"
                     class="flex cursor-pointer items-center hover:bg-gray-100 py-0.5 px-1.5 rounded-xl"
-                    v-if="props.node.info.type == 1"
                     @click="moveTaskTomorrow(props.node.info)"
                   >
                     <Icon
@@ -193,7 +193,7 @@
 
                   <!-- Cut task -->
                   <div
-                    v-if="props.node.info.type == 1"
+                    v-if="props.node.info.uid_customer == user.current_user_uid"
                     class="flex cursor-pointer items-center hover:bg-gray-100 py-0.5 px-1.5 rounded-xl"
                     @click="cutTask(props.node.info); close();"
                   >
@@ -209,7 +209,7 @@
 
                   <!-- Delete task -->
                   <div
-                    v-if="props.node.info.type == 1"
+                    v-if="props.node.info.uid_customer == user.current_user_uid"
                     class="flex cursor-pointer items-center hover:bg-gray-100 py-0.5 px-1.5 rounded-xl"
                     @click="showConfirm = true;"
                   >

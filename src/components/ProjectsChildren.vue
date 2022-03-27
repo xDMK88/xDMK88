@@ -82,6 +82,7 @@ const goToChildren = (value) => {
     const navElem = {
       name: value.name,
       key: 'greedSource',
+      greedPath: 'projects_children',
       value: value.children
     }
     store.commit('pushIntoNavStack', navElem)
@@ -186,7 +187,7 @@ const goToChildren = (value) => {
       </div>
     </template>
     <div
-      v-if="allProjects[projects[0].uid_parent].email_creator === user.current_user_email"
+      v-if="allProjects[projects[0].uid_parent] && allProjects[projects[0].uid_parent].email_creator === user.current_user_email"
       class="flex items-center justify-center bg-gray-50 dark:bg-gray-700 rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-500 cursor-pointer px-5 py-7"
       @click="openProperties(false)"
     >

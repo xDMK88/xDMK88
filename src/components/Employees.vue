@@ -82,7 +82,7 @@ const clickOnGridCard = (value) => {
 <template class="w-full">
   <!-- Add employee and department -->
   <div
-    v-if="storeEmployees[user.current_user_uid].type == 1 || storeEmployees[user.current_user_uid].type == 2"
+    v-if="storeEmployees[user.current_user_uid] && (storeEmployees[user.current_user_uid].type == 1 || storeEmployees[user.current_user_uid].type == 2)"
     class="grid gap-4 mb-4"
     :class="{ 'md:grid-cols-2 lg:grid-cols-4': isGridView, 'grid-cols-1': !isGridView, 'grid-cols-1': isPropertiesMobileExpanded && !isGridView, 'lg:grid-cols-2': isPropertiesMobileExpanded && isGridView }"
   >

@@ -131,6 +131,7 @@ const menuClick = (event, item) => {
       const navElem = {
         name: item.label,
         key: 'greedSource',
+        greedPath: item.path,
         value: storeNavigator.value[item.path].items
       }
       store.commit('updateStackWithInitValue', navElem)
@@ -288,74 +289,210 @@ const tarifS = () => {
   .navigator-tree .e-level-2 > .e-text-content {
     padding-left: 0px;
   }
-  .vc-weeks {
-    padding: 0;
+
+.vc-weeks {
+padding: 0;
+}
+.vc-arrow {
+@apply bg-white text-gray-800 rounded-xl dark:bg-gray-800 dark:text-white
+}
+.vc-weeknumber-content {
+@apply bg-white dark:bg-gray-800 rounded-lg text-violet-600 dark:text-white;
+}
+.vc-title {
+color: #2A2927 !important;
+}
+.vc-weekday {
+color: #2A2927!important;
+}
+.vc-header {
+margin-bottom: 10px !important;
+}
+.vc-arrows-container {
+padding-left: 0 !important;
+padding-right: 0 !important;
+}
+.vc-container .vc-highlights .vc-day-box-center-center:nth-child(2) .vc-highlight {
+@apply bg-gray-300 !important;
+}
+.vc-container .vc-highlight {
+@apply bg-gray-300 !important;
+}
+.vc-day-content .vc-focusable
+{
+@apply text-black !important;
+}
+.vc-container .is-today .vc-day-content  {
+}
+.vc-container .is-today:hover .vc-day-content {
+@apply bg-orange-400
+}
+.vc-container .is-today .vc-day-content:hover {
+@apply bg-orange-400
+}
+.vc-container .vc-day-content:hover:not(.is-disabled) {
+@apply bg-transparent text-black !important;
+}
+.vc-container .vc-day-content.is-disabled {
+@apply pointer-events-none;
+}
+.vc-container .vc-day-content.is-disabled:hover {
+@apply bg-transparent;
+}
+.vc-day.is-not-in-month *:not(.is-disabled) {
+@apply opacity-100 text-gray-500 pointer-events-auto;
+}
+.vc-day.is-not-in-month .is-disabled  {
+@apply opacity-100 text-gray-400;
+}
+.vc-day.weekday-7 {
+@apply text-red-500;
+}
+.vc-day.weekday-1 {
+@apply text-red-500;
+}
+.vc-weekday:nth-last-of-type(-n+2) {
+@apply text-red-500;
+}
+.vc-weeknumber-content
+{
+  font-style: normal!important;
+}
+.is-today .vc-day-content.vc-focusable
+{
+  border: 2px solid #FF9123 !important;
+  border-radius: 7px !important;
+  color: black !important;
+
+  font-weight: normal !important;
+}
+.is-today .vc-day-content.vc-focusable:hover, .is-today .vc-day-content.vc-focusable:focus
+{
+  border: 2px solid #FF9123;
+  border-radius: 7px;
+  background-color: #FF9123;
+  color:black !important;
+
+}
+.today:focus
+{
+
+}
+.vc-arrow
+{
+  border-radius: 7px !important;
+}
+.vc-title {
+  /* html code => Html Code */
+  text-transform: capitalize !important;
+  font-size: 15px !important;
+}
+.vc-weekday
+{
+  text-transform: capitalize !important;
+}
+.vc-day-content.vc-focusable
+{
+  color:black !important;
+  font-weight: normal !important;
+  border-radius: 7px !important;
+}
+.vc-day-content.vc-focusable:hover
+{
+  font-weight: normal !important;
+  border-radius: 7px !important;
+}
+.vc-highlight
+{
+  background-color: #FF9123 !important;
+  border-radius: 7px !important;
+}
+.vc-highlights .vc-highlight, .vc-highlights .vc-highlight:hover
+{
+  border-radius: 7px !important;
+  color:black !important;
+}
+.vc-highlights>.vc-day-box-center-center:nth-child(1) .vc-highlight
+{
+  border-radius: 7px !important;
+  color: black !important;
+  border-color: transparent !important;
+}
+.vc-highlights>.vc-day-box-center-center:nth-child(2) .vc-highlight
+{
+  border-radius: 7px !important;
+  color: black !important;
+  opacity: 1 !important;
+}
+.dots-back
+{
+  background-color: #747474 !important;
+border-radius: 100% !important;
+  height: 3px !important;
+  width: 3px !important;
+  position: relative !important;
+  top: 10px !important;
+}
+.today
+{
+  background-color:white !important;
+}
+.is-today>.vc-highlights>.vc-day-box-center-center:nth-child(1) .vc-highlight
+{
+  opacity: 1 !important;
+}
+.is-today>.vc-highlights>.vc-day-box-center-center:nth-child(2) .vc-highlight
+{
+  background-color: #FF9123 !important;
+  opacity: 1 !important;
+}
+.back-hover
+{
+  background-color:#E4E3E5 !important;
+}
+.vc-weekday:nth-child(7), .vc-weekday:nth-child(8)
+{
+  color: #E23300 !important;
+}
+.vc-container .vc-day-content:hover:not(.is-disabled)
+{
+  border-radius: 7px !important;
+}
+.dotclass
+{
+  background-color: #444444 !important;
+  position: relative !important;
+  top: -3px !important;
+}
+.is-not-in-month
+{
+  color: rgba(0, 0, 0, 0.5) !important;
+}
+.weekday-position-6:not(.is-not-in-month) .vc-day-content.vc-focusable, .weekday-position-7:not(.is-not-in-month) .vc-day-content.vc-focusable
+{
+  color: #E23300 !important;
+}
+
+&, & * {
+    box-sizing: border-box;
+&:focus {
+   outline: none !important;
+ }
+}
+& button,
+& [role='button'] {
+    cursor: pointer !important;
   }
-  .vc-arrow {
-    @apply bg-white text-gray-800 rounded-xl dark:bg-gray-800 dark:text-white
+&.vc-is-expanded {
+   min-width: 100% !important;
+ }
+/* Hides double border within popovers */
+& .vc-container {
+    border: none !important;
   }
-  .vc-weeknumber-content {
-    @apply bg-white dark:bg-gray-800 rounded-lg text-violet-600 dark:text-white;
-  }
-  .vc-title {
-    color: #2A2927;
-  }
-  .vc-weekday {
-    color: #2A2927;
-  }
-  .vc-header {
-    margin-bottom: 10px;
-  }
-  .vc-arrows-container {
-    padding-left: 0;
-    padding-right: 0;
-  }
-  .vc-container .dots-back
-  {
-    @apply bg-transparent;
-  }
-  .vc-container .vc-highlight {
-  }
-  .vc-container .vc-highlights .vc-day-box-center-center:nth-child(2) .vc-highlight {
-    @apply bg-gray-300 !important;
-  }
-  .vc-container .vc-highlight {
-    @apply bg-gray-300;
-  }
-  .vc-day-content .vc-focusable
-  {
-    @apply text-black
-  }
-  .vc-container .is-today .vc-day-content  {
-  }
-  .vc-container .is-today:hover .vc-day-content {
-    @apply bg-orange-400
-  }
-  .vc-container .is-today .vc-day-content:hover {
-    @apply bg-orange-400
-  }
-  .vc-container .vc-day-content:hover:not(.is-disabled) {
-    @apply bg-transparent text-black;
-  }
-  .vc-container .vc-day-content.is-disabled {
-    @apply pointer-events-none;
-  }
-  .vc-container .vc-day-content.is-disabled:hover {
-    @apply bg-transparent;
-  }
-  .vc-day.is-not-in-month *:not(.is-disabled) {
-    @apply opacity-100 text-gray-500 pointer-events-auto;
-  }
-  .vc-day.is-not-in-month .is-disabled  {
-    @apply opacity-100 text-gray-400;
-  }
-  .vc-day.weekday-7 {
-    @apply text-red-500;
-  }
-  .vc-day.weekday-1 {
-    @apply text-red-500;
-  }
-  .vc-weekday:nth-last-of-type(-n+2) {
-    @apply text-red-500;
-  }
+&.vc-is-dark {
+   color: var(--gray-100) !important;
+   background-color: var(--gray-900) !important;
+   border-color: var(--gray-700) !important;
+}
 </style>

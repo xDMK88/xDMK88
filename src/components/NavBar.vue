@@ -76,7 +76,6 @@ const clickOnGridCard = (item, index) => {
     return
   }
   store.commit('removeAllFromStackAfterIndex', index)
-  console.log(item)
   if ('greedPath' in item) {
     store.commit('basic', { key: 'greedPath', value: item.greedPath })
   }

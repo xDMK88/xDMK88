@@ -5,6 +5,9 @@ import { useStore } from 'vuex'
 import * as TASK from '@/store/actions/tasks'
 import { SELECT_COLOR } from '@/store/actions/colors'
 import properties from '@/icons/properties.js'
+import gridView from '@/icons/grid-view.js'
+import listView from '@/icons/list-view.js'
+
 defineProps({
   colors: {
     type: Array,
@@ -18,13 +21,11 @@ const UID_TO_ACTION = {
 }
 const isPropertiesMobileExpanded = computed(() => store.state.isPropertiesMobileExpanded)
 const isGridView = ref(true)
-const focusedColor = ref('')
 
 const openProperties = (color) => {
   if (!isPropertiesMobileExpanded.value) {
     store.dispatch('asidePropertiesToggle', true)
   }
-  focusedColor.value = color.uid
   store.commit('basic', { key: 'propertiesState', value: 'color' })
   if (!color) {
     color = {
@@ -58,7 +59,36 @@ const clickOnGridCard = (value) => {
 
 <template class="w-full">
   <div
-    class="grid gap-4"
+    class="flex items-center w-full justify-between mt-3"
+  >
+    <p class="text-2xl text-gray-800 font-bold second dark:text-gray-100">
+      Цвета
+    </p>
+    <div
+      class="flex"
+    >
+      <icon
+        :path="listView.path"
+        :width="listView.width"
+        :height="listView.height"
+        :box="listView.viewBox"
+        class="cursor-pointer hover:text-gray-800 mr-2 mt-0.5"
+        :class="{ 'text-gray-800': !isGridView, 'text-gray-400': isGridView }"
+        @click="isGridView = false"
+      />
+      <icon
+        :path="gridView.path"
+        :width="gridView.width"
+        :height="gridView.height"
+        :box="gridView.viewBox"
+        class="cursor-pointer hover:text-gray-800 mr-2 mt-0.5"
+        :class="{ 'text-gray-800': isGridView, 'text-gray-400': !isGridView }"
+        @click="isGridView = true"
+      />
+    </div>
+  </div>
+  <div
+    class="grid gap-4 mt-3"
     :class="{ 'md:grid-cols-2 lg:grid-cols-4': isGridView, 'grid-cols-1': !isGridView, 'grid-cols-1': isPropertiesMobileExpanded && !isGridView, 'lg:grid-cols-2': isPropertiesMobileExpanded && isGridView }"
   >
     <template
@@ -67,7 +97,6 @@ const clickOnGridCard = (value) => {
     >
       <div
         class="flex items-center bg-white dark:bg-gray-700 rounded-xl shadow hover:shadow-md cursor-pointer h-30 px-3 py-5"
-        :class="{ 'ring-4 ring-orange-400': focusedColor == color.uid }"
       >
         <div class="w-full">
           <div class="flex items-center justify-between">

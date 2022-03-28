@@ -109,6 +109,10 @@ const mutations = {
     state.file = resp.data.files
     state.hasLoadedOnce = true
   },
+  [CREATE_FILES_REQUEST]: (state, resp) => {
+    state.status = 'success'
+    state.hasLoadedOnce = true
+  },
   [MYFILES]: (state, myfiles) => {
     state.status = 'success'
     for (const taskfile of myfiles) {

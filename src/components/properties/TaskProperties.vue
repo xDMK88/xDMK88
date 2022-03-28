@@ -7,15 +7,18 @@ import TreeItem from '@/components/TreeItem.vue'
 import close from '@/icons/close.js'
 import TreeTagsItem from '@/components/TreeTagsItem.vue'
 import { CREATE_MESSAGE_REQUEST } from '@/store/actions/taskmessages'
-import { CREATE_FILES_REQUEST, GETFILES } from '@/store/actions/taskfiles'
+import { CREATE_FILES_REQUEST, GETFILES, FILES_REQUEST } from '@/store/actions/taskfiles'
 import * as TASK from '@/store/actions/tasks'
 import { copyText } from 'vue3-clipboard'
+import contenteditable from 'vue-contenteditable'
+import sanitizeHtml from 'sanitize-html'
 export default {
   components: {
     DatePicker,
     TreeItem,
     TreeTagsItem,
-    Popper
+    Popper,
+    contenteditable
   },
   filters: {
     shorten: (val, words = 2) => val.split(' ').slice(0, words).join(' ')
@@ -67,6 +70,9 @@ export default {
       emails += '..' + emails
       console.log(emails)
       return emails
+    }
+    const htmltext = (text) => {
+      return sanitizeHtml(text)
     }
     const changeEmployee = (uid, email) => {
       store.dispatch(TASK.CHANGE_TASK_PERFORMER, { uid: uid, value: email }).then(
@@ -120,6 +126,7 @@ export default {
       }
       store.dispatch(CREATE_FILES_REQUEST, data).then(
         resp => {
+          store.commit(FILES_REQUEST)
           taskFiles.value.uid = data.uid_task
         })
     }
@@ -132,7 +139,7 @@ export default {
         resp => {
           selectedTask.value.comment = comment
         })
-      event.target.value = comment
+      this.$refs.comment.value = 'Оставить запись'
     }
     const unchecked = () => {
 
@@ -152,10 +159,9 @@ export default {
         text: taskMsg.value,
         msg: taskMsg.value
       }
-
       store.dispatch(CREATE_MESSAGE_REQUEST, data).then(
         resp => {
-          selectedTask.value.msg = data.msg
+          selectedTask.value.msg = taskMsg.value
         })
       taskMsg.value = ''
     }
@@ -186,11 +192,11 @@ export default {
     }
     const resetTags = (key) => {
       selectedTask.value.tags.push(key)
-      store.dispatch(TASK.CHANGE_TASK_TAGS, { uid: selectedTask.value.uid, value: selectedTask.value.tags }).then(
-        resp => {
-          selectedTask.value.tags = key
-        }
-      )
+      const data = {
+        uid: selectedTask.value.uid,
+        tags: selectedTask.value.tags
+      }
+      store.dispatch(TASK.CHANGE_TASK_TAGS, data)
     }
     const resetAccess = () => {
       store.dispatch(TASK.CHANGE_TASK_ACCESS, { uid: selectedTask.value.uid, value: '' }).then(
@@ -248,12 +254,9 @@ export default {
     const getDocUrl = (uid, extension, filename) => {
       store.dispatch(GETFILES, uid).then(resp => {
         const fileURL = window.URL.createObjectURL(new Blob([resp.data], { type: 'text/plain' }))
-        var myDoc = new Document()
-        myDoc.src = fileURL
-        document.getElementById(uid).appendChild(myDoc)
         document.getElementById(uid).setAttribute('href', fileURL)
         document.getElementById(uid).setAttribute('download', filename + '.' + extension)
-        return myDoc
+        return fileURL
       })
     }
     const getMovUrl = (uid, extension, filename) => {
@@ -290,7 +293,9 @@ export default {
         })
     }
     const showHide = () => {
+      console.log(taskMessages.value.length)
       for (var i = 0; i < taskMessages.value.length; i++) {
+        console.log(i)
         document.getElementById('hidden_' + i).style.display = 'block'
       }
       for (var n = 0; n < taskFiles.value.length; n++) {
@@ -299,12 +304,6 @@ export default {
       document.getElementById('showall').style.display = 'none'
     }
     const hide = () => {
-      for (var i = taskMessages.value.length; i > 1; i--) {
-        document.getElementById('hidden_' + i).style.display = 'none'
-      }
-      for (var n = taskFiles.value.length; n > 1; n--) {
-        document.getElementById('hidden_' + n).style.display = 'none'
-      }
     }
     const copyurl = (e) => {
       copyText('lt://planning?{' + selectedTask.value.uid.toUpperCase() + '}', undefined, (error, event) => {
@@ -317,8 +316,25 @@ export default {
         }
       })
     }
+    const tabfunction = (tab) => {
+      if (selectedTask.value.SeriesType === 0) {
+        this.isActive = tab === '#tabnorepeat'
+      } else if (selectedTask.value.SeriesType === 1) {
+        this.isActive = tab
+      } else if (selectedTask.value.SeriesType === 2) {
+        this.isActive = tab
+      } else if (selectedTask.value.SeriesType === 3) {
+        this.isActive = tab
+      } else if (selectedTask.value.SeriesType === 4) {
+        this.isActive = tab
+      } else {
+        this.isActive = tab
+      }
+    }
     return {
+      htmltext,
       hide,
+      tabfunction,
       copyurl,
       delTask,
       ClickAccessCheck,
@@ -390,6 +406,7 @@ export default {
         'status_reject',
         'status_refine'
       ],
+      isEditable: true,
       remi: {
         date: new Date(),
         timezone: 'Europe/Moscow'
@@ -413,7 +430,37 @@ export default {
       isOpen: false,
       activeTab: '',
       tabs: [],
-      isActive: false
+      isActive: false,
+      allowedTags: [
+        'address', 'article', 'aside', 'footer', 'header', 'h1', 'h2', 'h3', 'h4',
+        'h5', 'h6', 'hgroup', 'main', 'nav', 'section', 'blockquote', 'dd', 'div',
+        'dl', 'dt', 'figcaption', 'figure', 'hr', 'li', 'main', 'ol', 'p', 'pre',
+        'ul', 'a', 'abbr', 'b', 'bdi', 'bdo', 'br', 'cite', 'code', 'data', 'dfn',
+        'em', 'i', 'kbd', 'mark', 'q', 'rb', 'rp', 'rt', 'rtc', 'ruby', 's', 'samp',
+        'small', 'span', 'strong', 'sub', 'sup', 'time', 'u', 'var', 'wbr', 'caption',
+        'col', 'colgroup', 'table', 'tbody', 'td', 'tfoot', 'th', 'thead', 'tr'
+      ],
+      disallowedTagsMode: 'discard',
+      allowedAttributes: {
+        a: [
+          'href', 'name', 'target'
+        ],
+        img: [
+          'src', 'srcset', 'alt', 'title', 'width', 'height', 'loading'
+        ]
+      },
+      selfClosing: [
+        'img', 'br', 'hr', 'area', 'base', 'basefont', 'input', 'link', 'meta'
+      ],
+      allowedSchemes: [
+        'http', 'https', 'ftp', 'mailto', 'tel'
+      ],
+      allowedSchemesByTag: {},
+      allowedSchemesAppliedToAttributes: [
+        'href', 'src', 'cite'
+      ],
+      allowProtocolRelative: true,
+      enforceHtmlBoundary: false
     }
   },
   mounted () {
@@ -436,9 +483,6 @@ export default {
       const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']
       const i = Math.floor(Math.log(bytes) / Math.log(k))
       return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i]
-    },
-    tabfunction: function (tab) {
-      this.isActive = tab
     },
     textareaResize () {
       this.$refs.comment.style.minHeight = this.$refs.comment.scrollHeight + 'px'
@@ -505,12 +549,14 @@ export default {
       </div>
       <div class="user_child_customer_custom">
         <strong><textarea
-          ref="nameTask" style="font-weight: bold; font-size: 18px"
+          ref="nameTask" style="font-weight: bold; font-size: 18px; display: none"
           :value="selectedTask.name"
           class="form-control taskName-custom"
           @keyup.enter="changeName($refs.nameTask.value, $event)"
           @input="textareaResize"
-        /></strong>
+        />
+          <contenteditable class="form-control taskName-custom" style="font-weight: bold; font-size: 18px" tag="p" :contenteditable="isEditable" @focus="changeName($refs.nameTask.value, $event)" @keyup.enter="changeName($refs.nameTask.value, $event)" v-model="selectedTask.name" :noNL="false" :noHTML="true" @returned="changeName($refs.nameTask.value, $event)" />
+        </strong>
       </div>
       <!--   <p class="mt-3"><strong>{{ localization.task_created }}:</strong> {{ selectedTask.date_create }}</p>
       <p><strong>Исполнитель:</strong> {{ selectedTask.email_performer }}</p>-->
@@ -798,7 +844,7 @@ export default {
             #content="{ close }"
             class="bottom"
           >
-            <button @click="close"></button>
+            <div @click="close"></div>
             <div class="popper">
               <DatePicker
                 ref="calendar"
@@ -890,35 +936,11 @@ export default {
             class="bottom"
           >
             <div class="popper">
-              <div class="text-white opacity-75 font-semibold title-popover-main">
-                <div
-                  class="dissmiss_popover"
-                  @click="close"
-                >
-                  <svg
-                    viewBox="0 0 14 14"
-                    width="14"
-                    height="14"
-                    class="inline-block"
-                  ><path
-                    fill="currentColor"
-                    fill-rule="evenodd"
-                    clip-rule="evenodd"
-                    d="M13.7071 1.70711C14.0976 1.31658 14.0976 0.683417 13.7071 0.292893C13.3166 -0.0976311 12.6834 -0.0976311 12.2929 0.292893L7 5.58579L1.70711 0.292893C1.31658 -0.0976311 0.683417 -0.0976311 0.292893 0.292893C-0.0976311 0.683417 -0.0976311 1.31658 0.292893 1.70711L5.58579 7L0.292893 12.2929C-0.0976311 12.6834 -0.0976311 13.3166 0.292893 13.7071C0.683417 14.0976 1.31658 14.0976 1.70711 13.7071L7 8.41421L12.2929 13.7071C12.6834 14.0976 13.3166 14.0976 13.7071 13.7071C14.0976 13.3166 14.0976 12.6834 13.7071 12.2929L8.41421 7L13.7071 1.70711Z"
-                  /></svg>
-                  Отменить
-                </div>
-                <div class="title-project-custom">
-                  <span
-                    class="title-z-popover"
-                  >Применить</span>
-                </div>
-              </div>
-              <div class="text-white p-3 body-popover-custom body-repeat-custom rounded-b-lg">
+              <div class="text-white body-popover-custom body-repeat-custom rounded-b-lg">
                 <button
                   ref="tabnorepeat"
                   class="btn-width-custom"
-                  :class="selectedTask.SeriesType===0 ? {active:true} : {active:isActive==='#tabnorepeat'}"
+                  :class="{active:isActive==='#tabnorepeat'}"
                   type="button"
                   value="0"
                   @click="tabfunction('#tabnorepeat')"
@@ -928,7 +950,7 @@ export default {
                 <button
                   ref="tabeveryday"
                   class="btn-width-custom"
-                  :class="selectedTask.SeriesType===1 ? {active:true} : {active:isActive==='#tabeveryday'}"
+                  :class="{active:isActive==='#tabeveryday'}"
                   type="button"
                   value="1"
                   @click="tabfunction('#tabeveryday')"
@@ -938,7 +960,7 @@ export default {
                 <button
                   ref="tabeveryweek"
                   class="btn-width-custom"
-                  :class="selectedTask.SeriesType===2 ? {active:true} : {active:isActive==='#tabeveryweek'}"
+                  :class="{active:isActive==='#tabeveryweek'}"
                   type="button"
                   value="2"
                   @click="tabfunction('#tabeveryweek')"
@@ -948,7 +970,7 @@ export default {
                 <button
                   ref="tabverymonth"
                   class="btn-width-custom"
-                  :class="selectedTask.SeriesType===3 ? {active:true} : {active:isActive==='#tabverymonth'}"
+                  :class="{active:isActive==='#tabverymonth'}"
                   type="button"
                   value="3"
                   @click="tabfunction('#tabeverymonth')"
@@ -958,7 +980,7 @@ export default {
                 <button
                   ref="tabeveryyear"
                   class="btn-width-custom"
-                  :class="selectedTask.SeriesType===4 ? {active:true} : {active:isActive==='#tabeveryyear'}"
+                  :class="{active:isActive==='#tabeveryyear'}"
                   type="button"
                   value="4"
                   @click="tabfunction('#tabeveryyear')"
@@ -1160,14 +1182,13 @@ export default {
                 </div>
                 <div class="form-group-button">
                   <div class="form-group">
-                    <button class="btn-save">
+                    <button class="btn-save-repeat">
                       Сохранить
                     </button>
                   </div>
                   <div class="form-group">
                     <button
-                      class="btn-cancel"
-                      @click="togglePopover_repeat()"
+                      class="btn-cancel-repeat" @click="close"
                     >
                       Отменить
                     </button>
@@ -1221,7 +1242,6 @@ export default {
           </div>
           <div
             v-else
-            ref="btnRefRepeat"
             class="mt-3 tags-custom"
           >
             <svg
@@ -1515,14 +1535,16 @@ export default {
           </a>
         </Popper>
         <!--Всплывающее окно Метки-->
-        <Popper
+        <span v-if="selectedTask.tags.length>0">
+        <Popper v-for="(key, value) in selectedTask.tags"
+                :key="value"
           class="popper-tags"
           arrow
           trigger="hover"
           :class="isDark ? 'dark' : 'light'"
           placement="bottom"
           :options="{
-            placement: 'top',
+            placement: 'bottom',
             modifiers: { offset: { offset: '0,10px' } }
           }"
         >
@@ -1582,11 +1604,8 @@ export default {
           </template>
           <span
             v-if="selectedTask.tags.length"
-            ref="btnRefTags0"
           >
-            <a
-              v-for="(key, value) in selectedTask.tags"
-              :key="value"
+            <button
               class="mt-3 tags-custom project-hover-close"
             >
               <svg
@@ -1632,11 +1651,10 @@ export default {
             <path d="M14.8483 2.34833C15.317 1.8797 15.317 1.11991 14.8483 0.651277C14.3797 0.182647 13.6199 0.182647 13.1513 0.651277L7.99981 5.80275L2.84833 0.651277C2.3797 0.182647 1.61991 0.182647 1.15128 0.651277C0.682647 1.11991 0.682647 1.8797 1.15128 2.34833L6.30275 7.4998L1.15128 12.6513C0.682647 13.1199 0.682647 13.8797 1.15128 14.3483C1.61991 14.817 2.3797 14.817 2.84833 14.3483L7.99981 9.19686L13.1513 14.3483C13.6199 14.817 14.3797 14.817 14.8483 14.3483C15.317 13.8797 15.317 13.1199 14.8483 12.6513L9.69686 7.4998L14.8483 2.34833Z" fill="black" fill-opacity="0.5"/>
           </svg>
           </button>
-            </a>
+            </button>
           </span>
-          <a
+          <button
             v-else
-            ref="btnRefTags0"
             class="mt-3 tags-custom"
           >
             <svg
@@ -1658,8 +1676,93 @@ export default {
               />
             </svg>
             <span class="rounded custom-method">Метки</span>
-          </a>
+          </button>
         </Popper>
+        </span>
+        <span>
+          <Popper class="popper-tags"
+                  trigger="clickToOpen"
+                  force-show
+                  arrow
+                  :class="isDark ? 'dark' : 'light'"
+                  placement="bottom"
+                  :options="{
+            placement: 'bottom',
+            modifiers: { offset: { offset: '0,10px' } }
+          }">
+
+                  <template
+                    #content="{ close }"
+                    class="bottom"
+                  >
+            <div class="popper">
+              <div @click="close"></div>
+                              <button @click="ClickTagsChange" class="btn-save-popover">Применить</button>
+              <div class="text-white body-popover-custom">
+                <div class="container-tags-popover">
+                    <div
+                      v-for="(value, index) in selectedTask.tags"
+                      :key="index"
+                    />
+                    <!--<div v-for="(value, key, index) in tags" :key="index">
+                        <div>
+                        <div class="list-tags-access active" v-if="selectedTask.tags.filter(tag=>tag===value.uid)[0]===value.uid" >
+                          <svg width="24" height="24" viewBox="0 0 88 88" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M77.9021 0.800003H45.1156C44.4406 0.800003 43.7994 1.07006 43.3269 1.54265L3.52077 41.3417C-0.107182 44.9705 -0.107182 50.8779 3.52077 54.4899L33.5062 84.4826C35.2611 86.2379 37.5897 87.2 40.0871 87.2C42.5845 87.2 44.9131 86.2379 46.668 84.4826L86.4573 44.6836C86.9298 44.211 87.1998 43.5696 87.1998 42.8945V10.0999C87.1998 4.96894 83.0319 0.800003 77.9021 0.800003ZM79.7414 41.983L43.1413 78.5921C42.3989 79.3347 41.4033 79.7567 40.3402 79.7567C39.2771 79.7567 38.2816 79.3516 37.5391 78.6089L9.42673 50.4897C7.8743 48.9369 7.8743 46.422 9.42673 44.8692L46.0268 8.26021H75.776C77.9696 8.26021 79.7414 10.0493 79.7414 12.2266V41.983Z" :fill="value.back_color" fill-opacity="1"></path>
+                            <path d="M61.788 19.8588C60.0885 19.8588 58.4969 20.5197 57.2965 21.7202C56.096 22.9206 55.4351 24.5123 55.4351 26.2118C55.4351 27.9113 56.096 29.5029 57.2965 30.7033C58.4969 31.9038 60.0885 32.5647 61.788 32.5647C63.4875 32.5647 65.0792 31.9038 66.2796 30.7033C67.4801 29.5029 68.141 27.9113 68.141 26.2118C68.141 24.5123 67.4801 22.9206 66.2796 21.7202C65.0792 20.5197 63.4875 19.8588 61.788 19.8588Z" :fill="value.back_color" fill-opacity="1"></path>
+                          </svg>
+                          <label>{{value.name}}</label>
+                          <input type="checkbox" name="check_employee" v-bind:value="value.uid" class="check-custom-project" checked="checked">
+                        </div>
+                        <div class="list-tags-access" v-else >
+                          <svg width="24" height="24" viewBox="0 0 88 88" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M77.9021 0.800003H45.1156C44.4406 0.800003 43.7994 1.07006 43.3269 1.54265L3.52077 41.3417C-0.107182 44.9705 -0.107182 50.8779 3.52077 54.4899L33.5062 84.4826C35.2611 86.2379 37.5897 87.2 40.0871 87.2C42.5845 87.2 44.9131 86.2379 46.668 84.4826L86.4573 44.6836C86.9298 44.211 87.1998 43.5696 87.1998 42.8945V10.0999C87.1998 4.96894 83.0319 0.800003 77.9021 0.800003ZM79.7414 41.983L43.1413 78.5921C42.3989 79.3347 41.4033 79.7567 40.3402 79.7567C39.2771 79.7567 38.2816 79.3516 37.5391 78.6089L9.42673 50.4897C7.8743 48.9369 7.8743 46.422 9.42673 44.8692L46.0268 8.26021H75.776C77.9696 8.26021 79.7414 10.0493 79.7414 12.2266V41.983Z" :fill="value.back_color" fill-opacity="1"></path>
+                            <path d="M61.788 19.8588C60.0885 19.8588 58.4969 20.5197 57.2965 21.7202C56.096 22.9206 55.4351 24.5123 55.4351 26.2118C55.4351 27.9113 56.096 29.5029 57.2965 30.7033C58.4969 31.9038 60.0885 32.5647 61.788 32.5647C63.4875 32.5647 65.0792 31.9038 66.2796 30.7033C67.4801 29.5029 68.141 27.9113 68.141 26.2118C68.141 24.5123 67.4801 22.9206 66.2796 21.7202C65.0792 20.5197 63.4875 19.8588 61.788 19.8588Z" :fill="value.back_color" fill-opacity="1"></path>
+                          </svg>
+                          <label>{{value.name}}</label>
+                          <input type="checkbox" name="check_employee" class="check-custom-project">
+                        </div>
+                      </div>
+                      </div>-->
+                    <ul
+                      v-for="(value,index, ind) in tags"
+                      :key="ind"
+                    >
+                      <TreeTagsItem
+                        v-if="value.uid_parent==='00000000-0000-0000-0000-000000000000'"
+                        class="item"
+                        :model="value"
+                      />
+                    </ul>
+                </div>
+              </div>
+            </div>
+          </template>
+  <button v-if="selectedTask.tags.length===0"
+    class="mt-3 tags-custom"
+  >
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 88 88"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M77.9021 0.800003H45.1156C44.4406 0.800003 43.7994 1.07006 43.3269 1.54265L3.52077 41.3417C-0.107182 44.9705 -0.107182 50.8779 3.52077 54.4899L33.5062 84.4826C35.2611 86.2379 37.5897 87.2 40.0871 87.2C42.5845 87.2 44.9131 86.2379 46.668 84.4826L86.4573 44.6836C86.9298 44.211 87.1998 43.5696 87.1998 42.8945V10.0999C87.1998 4.96894 83.0319 0.800003 77.9021 0.800003ZM79.7414 41.983L43.1413 78.5921C42.3989 79.3347 41.4033 79.7567 40.3402 79.7567C39.2771 79.7567 38.2816 79.3516 37.5391 78.6089L9.42673 50.4897C7.8743 48.9369 7.8743 46.422 9.42673 44.8692L46.0268 8.26021H75.776C77.9696 8.26021 79.7414 10.0493 79.7414 12.2266V41.983Z"
+                fill="black"
+                fill-opacity="0.5"
+              />
+              <path
+                d="M61.788 19.8588C60.0885 19.8588 58.4969 20.5197 57.2965 21.7202C56.096 22.9206 55.4351 24.5123 55.4351 26.2118C55.4351 27.9113 56.096 29.5029 57.2965 30.7033C58.4969 31.9038 60.0885 32.5647 61.788 32.5647C63.4875 32.5647 65.0792 31.9038 66.2796 30.7033C67.4801 29.5029 68.141 27.9113 68.141 26.2118C68.141 24.5123 67.4801 22.9206 66.2796 21.7202C65.0792 20.5197 63.4875 19.8588 61.788 19.8588Z"
+                fill="black"
+                fill-opacity="0.5"
+              />
+            </svg>
+            <span class="rounded custom-method">Метки</span>
+          </button>
+          </Popper>
+        </span>
         <!-- Чек лист -->
         <div
           v-if="!selectedTask.checklist"
@@ -1863,11 +1966,12 @@ export default {
           rows="10"
           cols="40"
           placeholder="Оставить запись"
-          style="height: 100%"
+          style="height: 100%; display: none;"
           class="form-control comment-custom"
           @keyup.enter="changeComment($refs.comment.value, $event)"
           @input="textareaResize"
         />
+        <contenteditable tag="p" :contenteditable="isEditable" placeholder="Оставить запись" @focus="changeComment($refs.comment.value, $event)" @keyup.enter="changeComment($refs.comment.value, $event)" v-model="selectedTask.comment" :noNL="false" :noHTML="false" @returned="selectedTask.comment" aria-placeholder="Оставить запись" />
       </div>
       <div class="messages-and-files-custom">
         <div style="display: inline-block;width: 100%" id="showall" v-if="taskMessages.length>0 || taskFiles.length>0">
@@ -1878,7 +1982,7 @@ export default {
         class="mt-3 list-files-custom"
       >
         <div
-          v-for="(key, value) in taskFiles.sort()"
+          v-for="(key, value) in taskFiles"
           :key="value"
           class="mt-3 list-files-custom-item" :id="'hidden_'+value"
         >
@@ -2101,9 +2205,9 @@ export default {
       >
 
         <div
-          v-for="(key,value) in taskMessages.sort()"
+          v-for="(key,value) in taskMessages"
           :key="value"
-          class="mt-3 display-none" @input.self="hide" :id="'hidden_'+value"
+          class="mt-3" @input.self="hide" :id="'hidden_'+value"
         >
           <div v-if="key.uid_creator!==cusers.current_user_uid">
             <div class="date-section">
@@ -2131,7 +2235,7 @@ export default {
                 class="mt-1 msg-custom-chat-left"
                 style="background-color:#EDF7ED;"
               >
-                {{ key.msg }}
+                {{ htmltext(key.msg) }}
                 <div class="time-chat">
                   {{ key.date_create.split('T')[1].split(":")[0] }}:{{ key.date_create.split('T')[1].split(":")[1] }}
                 </div>
@@ -2167,7 +2271,7 @@ export default {
                 class="mt-1 msg-custom-chat-right"
                 style="background-color:#FCEAEA;"
               >
-                {{ key.msg }}
+                {{ htmltext(key.msg) }}
                 <div class="time-chat">
                   {{ key.date_create.split('T')[1].split(":")[0] }}:{{ key.date_create.split('T')[1].split(":")[1] }}
                 </div>

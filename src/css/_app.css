@@ -193,9 +193,8 @@ input:focus {outline: 0;}
   padding-right: 5px;
 }
 .custom-list-tags .inline-block {
-  border: 0 !important;
-  margin: 0 !important;
-  display: block;
+  margin: 0 0 -6px 0 !important;
+  border: none !important;
 }
 .description-content
 {
@@ -495,6 +494,9 @@ input:focus {outline: 0;}
   height: 25px;
   font-size: 11px;
   color:gray;
+  float: left;
+  margin-right: 5px;
+  border-radius: 7px;
   border:1px solid gray;
 }
 .btn-close-popover
@@ -505,40 +507,57 @@ input:focus {outline: 0;}
   font-size: 11px;
   display: none;
   position: absolute;
-  border: 1px solid gray;
-  border-radius: 25px;
   right: 2px;
   width: 15px;
   height: 15px;
   top: 7px;
-  -webkit-transition: all 0.3s ease;
-  -moz-transition: all 0.3s ease;
-  -o-transition: all 0.3s ease;
-  transition: all 0.3s ease;
+  -webkit-transition: all 0.7s ease;
+  -moz-transition: all 0.7s ease;
+  -o-transition: all 0.7s ease;
+  transition: all 0.7s ease;
   background: #F4F5F7;
+  animation-delay: -2s;
+  opacity: 0;
+  z-index: 9999;
+  animation: ani 2.5s forwards;
 }
 .btn-close-popover svg
 {
-  width: 9px;
-  height: 9px;
+  width: 15px;
+  height: 15px;
   left: 2px;
   top: 0;
+  padding: 2px;
+  border-radius: 25px;
+  border: 1px solid gray;
 }
 .project-hover-close:hover .btn-close-popover
 {
-  -webkit-transition: all 0.3s ease;
-  -moz-transition: all 0.3s ease;
-  -o-transition: all 0.3s ease;
-  transition: all 0.3s ease;
+  -webkit-transition: all 0.7s ease;
+  -moz-transition: all 0.7s ease;
+  -o-transition: all 0.7s ease;
+  transition: all 0.7s ease;
+  animation-delay: -2s;
   display: block;
+  background: white;
+  height: 15px;
+  z-index: 9999;
+  animation: ani 1s forwards;
+  transform: translateX(70%);
+  opacity: 1;
+}
+@keyframes ani {
+  0% {transform: translateX(70%);}
+  100% {transform: translateY(0);}
 }
 .btn-save-popover
 {
   width: 90px;
   height: 25px;
   color:gray;
-  margin-left: 5px;
-  display: table-cell;
+  border-radius: 7px;
+  margin: 0 auto;
+  display: table;
   font-size: 11px;
   border:1px solid gray;
 }
@@ -804,7 +823,9 @@ input:focus {outline: 0;}
   margin-right: 10px;
   margin-top: 10px;
 }
-
+.checkcolor svg {
+  display: block;
+}
 .container-tags-popover
 {
   height: 220px;
@@ -976,10 +997,8 @@ fieldset[disabled] .btn {
 .form-send-message
 {
 
-  width: 100%;
+  width: 95%;
   display: table;
-  margin: 34px auto 10px auto;
-  position: relative;
 }
 input {
   outline: 0;
@@ -1175,7 +1194,8 @@ label
 }
 .body-repeat-custom
 {
-  display: flex;
+  display: table;
+  width: 320px;
 }
 .tab-content
 {
@@ -1187,25 +1207,27 @@ label
 .form-group-button
 {
   position: absolute;
-  bottom:0px;
-  right:15px;
+  bottom: -15px;
+  right: 5px;
 }
-.btn-save
+.btn-save-repeat
 {
-  width:120px;
+  width:80px;
   display: table;
-  height: 35px;
+  height: 30px;
   color:white;
+  font-size: 11px;
   background: #FF9123;
   -webkit-box-shadow: 3px 4px 5px 0px rgba(50, 50, 50, 0.5);
   -moz-box-shadow:    3px 4px 5px 0px rgba(50, 50, 50, 0.5);
   box-shadow:         3px 4px 5px 0px rgba(50, 50, 50, 0.5);
 }
-.btn-cancel
+.btn-cancel-repeat
 {
-  width:120px;
+  font-size: 11px;
+  width:80px;
   display: table;
-  height: 35px;
+  height: 30px;
   color:white;
   background: gray;
   -webkit-box-shadow: 3px 4px 5px 0px rgba(50, 50, 50, 0.5);
@@ -1341,15 +1363,27 @@ label
   vertical-align: middle;
   width: 100%;
 }
+.btn-width-custom:first-child
+{
+  border-bottom-left-radius: 7px;
+  border-top-left-radius:7px
+}
+.btn-width-custom:last-child
+{
+  border-bottom-right-radius: 7px;
+  border-top-right-radius:7px
+}
 .btn-width-custom {
   color: black;
-  border-radius: 10px;
+  border-radius: 0;
   background: #f0f0f0;
-  padding: 5px;
-  margin: 3px;
-  width: 105px;
-  /* line-height: 40px; */
-  height: 40px;
+  padding: 4px;
+  margin: 0;
+  float: left;
+  width: 80px;
+  line-height: 9px;
+  height: 20px;
+  font-size: 11px;
 }
 .btn-width-custom:hover, .btn-width-custom:focus, .btn-width-custom.active
 {
@@ -1446,20 +1480,29 @@ label
 .example-1
 {
   width: 40px;
+  height: 40px;
 }
 .example-1 input[type=file]
 {
   outline:0;
   opacity:0;
+  width: 40px;
+  height: 40px;
   pointer-events: none;
   user-select:none
 }
 .example-1 .label
 {
   width: 40px;
-  position: relative;
   cursor: pointer;
   text-align: center;
+  top: 10px;
+  height: 40px;
+}
+.example-1 .label svg
+{
+  width: 40px;
+  position: relative;
   top: 10px;
 }
 .example-1 .label i
@@ -1500,6 +1543,7 @@ label
   box-shadow: none;
   resize: none; /*remove the resize handle on the bottom right*/
   display: block;
+  height: 100%;
   min-height: 20px;
   padding:0;
 }
@@ -1517,7 +1561,7 @@ label
 {
   display: none;
 }
-.popper-employees .popper
+ .popper-employees .popper
 {
   top: 5% !important;
 }
@@ -1531,24 +1575,23 @@ label
 }
 .popper-repeat .popper
 {
-  top: 12% !important;
-  left: -24% !important;
+  top: 6% !important;
 }
 .popper-reminder .popper
 {
-  top: 12% !important;
+  top: 6% !important;
 }
 .popper-project .popper
 {
-  top: 12% !important;
+  top: 6% !important;
 }
 .popper-color .popper
 {
-  top: 12% !important;
+  top: 6% !important;
 }
 .popper-tags .popper
 {
-  top: 17% !important;
+  top: 6% !important;
 }
 .form-group1 input {
   padding: 0;

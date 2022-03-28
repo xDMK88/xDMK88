@@ -377,9 +377,16 @@
             :key="index"
           >
             <div
-              class="p-1 px-2 text-xs text-white rounded-lg mr-1"
+              class="p-1 px-2 text-xs text-white rounded-lg mr-1 flex items-center"
               :style="{ backgroundColor: tags[tag].back_color }"
             >
+              <Icon
+                :path="tagIcon.path"
+                class="cursor-pointer text-white mr-1"
+                :box="tagIcon.viewBox"
+                :width="13"
+                :height="12"
+              />
               {{ tags[tag].name }}
             </div>
           </div>
@@ -517,6 +524,7 @@ import canceled from '@/icons/canceled.js'
 import pause from '@/icons/pause.js'
 import note from '@/icons/note.js'
 import project from '@/icons/project.js'
+import tagIcon from '@/icons/tag.js'
 import performerRead from '@/icons/performer-read.js'
 import performerNotRead from '@/icons/performer-not-read.js'
 import taskfocus from '@/icons/taskfocus.js'
@@ -939,6 +947,7 @@ export default {
       statuses,
       statusesLabels,
       project,
+      tagIcon,
       performerNotRead,
       performerRead,
       taskfocus,

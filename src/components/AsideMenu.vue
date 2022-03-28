@@ -272,24 +272,23 @@ const tarifS = () => {
 </template>
 
 <style>
-  .navigator-tree .e-list-text {
-    font-size: 16px!important;
-  }
-  .navigator-tree .e-ul, .navigator-tree .e-text-content{
-    padding-left: 4px!important;
-  }
-  .navigator-tree .e-icon-collapsible, .navigator-tree .e-icon-expandable {
-    float: right;
-    margin-right: 20px
-  }
-  .navigator-tree .e-level-1 > .e-text-content .e-list-text {
-    color: gray;
-    padding-left: 0px;
-  }
-  .navigator-tree .e-level-2 > .e-text-content {
-    padding-left: 0px;
-  }
-
+.navigator-tree .e-list-text {
+  font-size: 16px!important;
+}
+.navigator-tree .e-ul, .navigator-tree .e-text-content{
+  padding-left: 4px!important;
+}
+.navigator-tree .e-icon-collapsible, .navigator-tree .e-icon-expandable {
+  float: right;
+  margin-right: 20px
+}
+.navigator-tree .e-level-1 > .e-text-content .e-list-text {
+  color: gray;
+  padding-left: 0px;
+}
+.navigator-tree .e-level-2 > .e-text-content {
+  padding-left: 0px;
+}
 .vc-weeks {
 padding: 0;
 }

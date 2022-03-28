@@ -24,6 +24,7 @@ const user = computed(() => store.state.user.user)
 const employeesByEmail = computed(() => store.state.employees.employeesByEmail)
 const isDark = computed(() => store.state.darkMode)
 const showConfirm = ref(false)
+const showConfirmQuit = ref(false)
 
 function arrayRemove (arr, value) {
   return arr.filter(function (ele) {
@@ -85,6 +86,18 @@ const quiet = ref(!selectedProject.value.quiet)
 </script>
 
 <template>
+  <modal-box-confirm
+    v-model="showConfirmQuit"
+    button="warning"
+    has-button
+    has-cancel
+    button-label="Quit"
+    @confirm="quitProject(selectedProject)"
+  >
+    <p class="text-center">
+      Do you really wanna quit "<strong>{{ selectedProject.name }}</strong>" project?
+    </p>
+  </modal-box-confirm>
   <modal-box-confirm
     v-model="showConfirm"
     button="warning"
@@ -248,7 +261,7 @@ const quiet = ref(!selectedProject.value.quiet)
       <button
         v-if="selectedProject.email_creator !== user.current_user_email"
         class="w-full bg-gray-100 rounded-xl mt-4 p-3 text-gray-700 font-bold hover:bg-gray-200"
-        @click="quitProject(selectedProject)"
+        @click="showConfirmQuit = true"
       >
         Выйти из проекта
       </button>

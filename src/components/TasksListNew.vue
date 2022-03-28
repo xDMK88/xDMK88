@@ -116,7 +116,7 @@
               :width="subtask.width"
               :style="{ color: colors[props.node.info.uid_marker] ? colors[props.node.info.uid_marker].fore_color : '' }"
               :height="subtask.height"
-              @click="addSubtask(props.node.info.uid);"
+              @click="addSubtask(props.node.info);"
             />
 
             <!-- Task action popper -->
@@ -792,14 +792,15 @@ export default {
       lastSelectedTaskUid.value = uid
     }
 
-    const addSubtask = (uidParent) => {
+    const addSubtask = (parent) => {
       lastSelectedTaskUid.value = ''
       const newSubtask = {
         uid: uuidv4(),
         uid_customer: user.value.current_user_uid,
         name: 'Task name',
         status: 0,
-        uid_parent: uidParent,
+        uid_parent: parent.uid,
+        uid_project: parent.uid_project !== '00000000-0000-0000-0000-000000000000' ? parent.uid_project : '00000000-0000-0000-0000-000000000000',
         type: 1,
         SeriesType: 0,
         _isEditing: true,

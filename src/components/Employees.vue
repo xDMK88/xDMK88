@@ -1,11 +1,13 @@
 <script setup>
 import Icon from '@/components/Icon.vue'
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 import properties from '@/icons/properties.js'
 import { useStore } from 'vuex'
 import * as TASK from '@/store/actions/tasks'
 import { SELECT_EMPLOYEE } from '@/store/actions/employees'
 import { SELECT_DEPARTMENT } from '@/store/actions/departments'
+import gridView from '@/icons/grid-view.js'
+import listView from '@/icons/list-view.js'
 
 defineProps({
   employees: {
@@ -21,8 +23,13 @@ const UID_TO_ACTION = {
   'd28e3872-9a23-4158-aea0-246e2874da73': TASK.EMPLOYEE_TASKS_REQUEST
 }
 
-const isGridView = ref(true)
-const focusedEmployee = ref('')
+const isGridView = computed(() => store.state.isGridView)
+
+const updateGridView = (value) => {
+  store.commit('basic', { key: 'isGridView', value: value })
+  localStorage.setItem('isGridView', value)
+}
+
 const isPropertiesMobileExpanded = computed(() => store.state.isPropertiesMobileExpanded)
 const storeEmployees = computed(() => store.state.employees.employees)
 const user = computed(() => store.state.user.user)
@@ -50,7 +57,6 @@ const openEmployeeProperties = (employee) => {
   if (!isPropertiesMobileExpanded.value) {
     store.dispatch('asidePropertiesToggle', true)
   }
-  focusedEmployee.value = employee.uid
   if (!employee) {
     employee = {
       email: '',
@@ -82,8 +88,37 @@ const clickOnGridCard = (value) => {
 <template class="w-full">
   <!-- Add employee and department -->
   <div
+    class="flex items-center w-full justify-between mt-3"
+  >
+    <p class="text-2xl text-gray-800 font-bold second dark:text-gray-100">
+      Сотрудники
+    </p>
+    <div
+      class="flex"
+    >
+      <icon
+        :path="listView.path"
+        :width="listView.width"
+        :height="listView.height"
+        :box="listView.viewBox"
+        class="cursor-pointer hover:text-gray-800 mr-2 mt-0.5"
+        :class="{ 'text-gray-800': !isGridView, 'text-gray-400': isGridView }"
+        @click="updateGridView(false)"
+      />
+      <icon
+        :path="gridView.path"
+        :width="gridView.width"
+        :height="gridView.height"
+        :box="gridView.viewBox"
+        class="cursor-pointer hover:text-gray-800 mr-2 mt-0.5"
+        :class="{ 'text-gray-800': isGridView, 'text-gray-400': !isGridView }"
+        @click="updateGridView(true)"
+      />
+    </div>
+  </div>
+  <div
     v-if="storeEmployees[user.current_user_uid] && (storeEmployees[user.current_user_uid].type == 1 || storeEmployees[user.current_user_uid].type == 2)"
-    class="grid gap-4 mb-4"
+    class="grid gal-4 mb-4 mt-3"
     :class="{ 'md:grid-cols-2 lg:grid-cols-4': isGridView, 'grid-cols-1': !isGridView, 'grid-cols-1': isPropertiesMobileExpanded && !isGridView, 'lg:grid-cols-2': isPropertiesMobileExpanded && isGridView }"
   >
     <div
@@ -170,7 +205,6 @@ const clickOnGridCard = (value) => {
       >
         <div
           class="flex items-center bg-white dark:bg-gray-700 rounded-xl shadow hover:shadow-md cursor-pointer h-30 px-3 py-5"
-          :class="{ 'ring-4 ring-orange-400': focusedEmployee == employee.uid }"
         >
           <span
             v-if="employee.type == 1"

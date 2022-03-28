@@ -380,6 +380,7 @@ padding-right: 0 !important;
 {
 
 }
+
 .vc-arrow
 {
   color: black !important;
@@ -407,7 +408,7 @@ padding-right: 0 !important;
 }
 .vc-highlight
 {
-  background-color: #FF9123 !important;
+  background-color: #FF9123;
   border-radius: 7px !important;
 }
 .vc-highlights .vc-highlight, .vc-highlights .vc-highlight:hover
@@ -429,7 +430,7 @@ padding-right: 0 !important;
 }
 .dots-back
 {
-  border-radius: 100% !important;
+  background-color: black !important;
   height: 3px !important;
   width: 3px !important;
   position: relative !important;

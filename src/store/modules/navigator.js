@@ -60,11 +60,11 @@ function getAllMembersByDepartmentUID (resp, departmentUID) {
   return employeesStuck
 }
 
-function arrayRemove (arr, value) {
-  return arr.filter(function (ele) {
-    return ele.uid !== value.uid
-  })
-}
+// function arrayRemove (arr, value) {
+//   return arr.filter(function (ele) {
+//     return ele.uid !== value.uid
+//   })
+// }
 
 const state = getDefaultState()
 
@@ -414,7 +414,12 @@ const mutations = {
   },
   [NAVIGATOR_REMOVE_PROJECT]: (state, project) => {
     if (!project.uid_parent || project.uid_parent === '00000000-0000-0000-0000-000000000000') {
-      state.navigator.new_private_projects[0].items = arrayRemove(state.navigator.new_private_projects[0].items, project)
+      // state.navigator.new_private_projects[0].items = arrayRemove(state.navigator.new_private_projects[0].items, project)
+      for (let i = 0; i < state.navigator.new_private_projects[1].items.length; i++) {
+        if (state.navigator.new_private_projects[1].items[i].uid === project.uid) {
+          state.navigator.new_private_projects[1].items.splice(i, 1)
+        }
+      }
     } else {
       visitChildren(state.navigator.new_private_projects[0].items, (value, index) => {
         if (value.uid === project.uid_parent) {

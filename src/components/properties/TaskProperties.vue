@@ -28,16 +28,16 @@ export default {
   },
   data () {
     const store = useStore()
-    const taskMessages = computed(() => store.state.taskmessages.messages)
-    const taskFiles = computed(() => store.state.taskfiles.files)
-    const myFiles = computed(() => store.state.taskfiles.files.myFiles)
+    const taskMessages = computed(() => store.state.taskfilesandmessages.messages)
+    const taskFiles = computed(() => store.state.taskfilesandmessages.files)
+    const myFiles = computed(() => store.state.taskfilesandmessages.files.myFiles)
     const selectedTask = computed(() => store.state.tasks.selectedTask)
     const user = computed(() => store.state.user.user)
     const navigator = computed(() => store.state.navigator.navigator)
     const tasks = computed(() => store.state.tasks.newtasks)
     const employeesByEmail = computed(() => store.state.employees.employeesByEmail)
     const isDark = computed(() => store.state.darkMode)
-    const getfiles = computed(() => store.state.taskfiles.file)
+    const getfiles = computed(() => store.state.taskfilesandmessages.file)
     //  const test2 = toRef(this.props, 'selectTags')
     const closeProperties = () => {
       store.dispatch('asidePropertiesToggle', false)
@@ -288,19 +288,7 @@ export default {
           selectedTask.value.customer_date_end = new Date(this.range.end)
         })
     }
-    const showHide = () => {
-      console.log(taskMessages.value.length)
-      for (var i = 0; i < taskMessages.value.length; i++) {
-        console.log(i)
-        document.getElementById('hidden_' + i).style.display = 'block'
-      }
-      for (var n = 0; n < taskFiles.value.length; n++) {
-        document.getElementById('hidden_' + n).style.display = 'block'
-      }
-      document.getElementById('showall').style.display = 'none'
-    }
-    const hide = () => {
-    }
+
     const copyurl = (e) => {
       copyText('lt://planning?{' + selectedTask.value.uid.toUpperCase() + '}', undefined, (error, event) => {
         if (error) {
@@ -329,7 +317,6 @@ export default {
       }
     }
     return {
-      hide,
       tabfunction,
       copyurl,
       delTask,
@@ -338,7 +325,6 @@ export default {
       getAudioUrl,
       getMovUrl,
       getDocUrl,
-      showHide,
       isDark,
       unchecked,
       changeName,
@@ -462,8 +448,8 @@ export default {
   mounted () {
     this.$refs.comment.style.minHeight = this.$refs.comment.scrollHeight + 'px'
     this.$refs.nameTask.style.minHeight = this.$refs.nameTask.scrollHeight + 'px'
-    this.hide()
   },
+
   methods: {
     HtmlRender: function (text) {
       const ur = text.split('lt://').pop()
@@ -2002,12 +1988,11 @@ export default {
         />
         <contenteditable tag="p" :contenteditable="isEditable" placeholder="Оставить запись" @focus="changeComment($refs.comment.value, $event)" @keyup.enter="changeComment($refs.comment.value, $event)" v-model="selectedTask.comment" :noNL="false" :noHTML="false" @returned="selectedTask.comment" aria-placeholder="Оставить запись" />
       </div>
+
       <div class="messages-and-files-custom">
-        <div style="display: inline-block;width: 100%" id="showall" v-if="taskMessages.length>0 || taskFiles.length>0">
-          <p class="text-center date-messages-chat divider uppercase" @click="showHide">Показать все</p>
+        <div style="display: inline-block;width: 100%" id="showall">
         </div>
       <div
-        v-if="taskFiles.length>0"
         class="mt-3 list-files-custom"
       >
         <div
@@ -2015,6 +2000,7 @@ export default {
           :key="value"
           class="mt-3 list-files-custom-item" :id="'hidden_'+value"
         >
+          <pre class="text-xs leading-none">{{ key }}</pre>
           <div v-if="key.uid_creator!==cusers.current_user_uid">
             <div
               v-if="value===0"
@@ -2228,40 +2214,42 @@ export default {
           </div>
         </div>
       </div>
+
       <div
         v-if="taskMessages"
-        class="mt-3 chat-custom"
+        class="mt-3"
       >
-
         <div
           v-for="(key,value) in taskMessages"
           :key="value"
-          class="mt-3" @input.self="hide" :id="'hidden_'+value"
+          @input.self="hide" :id="'hidden_'+value"
         >
+          <div
+            v-if="value == 0 || (taskMessages[value] && new Date(taskMessages[value - 1].date_create).toDateString() != new Date(taskMessages[value].date_create).toDateString())"
+            class="text-center"
+          >
+            <p
+              class="text-xs text-gray-500 my-3"
+            >
+              {{ new Date(taskMessages[value].date_create).toLocaleString('default', { weekday: 'long' }) }},
+              {{ new Date(taskMessages[value].date_create).getDate() }}
+              {{ new Date(taskMessages[value].date_create).toLocaleString('default', { month: 'short' }) }}
+            </p>
+          </div>
           <div v-if="key.uid_creator!==cusers.current_user_uid">
-            <div class="date-section">
-              <p
-                class="text-center date-messages-chat"
-              >
-                {{ days[new Date(key.date_create.split('T')[0]).getDay()] }}, {{ new Date(key.date_create.split('T')[0]).getDate() }} {{ months[new Date(key.date_create).getMonth()] }}
-              </p>
-            </div>
-            <div class="flex">
+            <div
+              v-if="value == 0 || (taskMessages[value - 1] && taskMessages[value - 1].uid_creator != key.uid_creator)"
+              class="flex"
+            >
               <p class="name-chat-custom">
                 {{ employees[key.uid_creator].name }}
               </p>
-              <img
-                :src="employees[key.uid_creator].fotolink"
-                class="mr-1 border-fotolink border-solid border-2 border-sky-500"
-                width="30"
-                height="30"
-              >
             </div>
             <div
               class="chat-main"
             >
               <div
-                class="mt-1 msg-custom-chat-left"
+                class="mt-1 msg-custom-chat-left text-sm"
                 style="background-color:#EDF7ED;"
               >
                 {{ HtmlRender(key.msg) }}
@@ -2273,31 +2261,21 @@ export default {
           </div>
 
           <div v-else>
-            <div class="date-section">
-              <p
-                class="text-center date-messages-chat"
-              >
-                {{ days[new Date(key.date_create.split('T')[0]).getDay()] }}, {{ new Date(key.date_create.split('T')[0]).getDate() }} {{ months[new Date(key.date_create).getMonth()] }}
-              </p>
-            </div>
             <div class="table-cell float-right">
-              <div class="chat-author-custom-right">
+              <div
+                v-if="value == 0 || (taskMessages[value - 1] && taskMessages[value - 1].uid_creator != key.uid_creator)"
+                class="chat-author-custom-right"
+              >
                 <p class="name-chat-custom">
                   {{ employees[key.uid_creator].name }}
                 </p>
-                <img
-                  :src="employees[key.uid_creator].fotolink"
-                  class="mr-1 border-fotolink border-solid border-2 border-sky-500"
-                  width="30"
-                  height="30"
-                >
               </div>
             </div>
             <div
               class="chat-main"
             >
               <div
-                class="mt-1 msg-custom-chat-right"
+                class="mt-1 msg-custom-chat-right text-sm"
                 style="background-color:#FCEAEA;"
               >
                 {{ HtmlRender(key.msg) }}

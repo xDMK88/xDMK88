@@ -527,14 +527,19 @@ const actions = {
     if (data.readed === 0) {
       dispatch(TASK.CHANGE_TASK_READ, data.uid)
     }
+
     commit(REFRESH_FILES)
     commit(REFRESH_MESSAGES)
     commit(TASK.SELECT_TASK, data)
-    if (data.has_msgs) {
+
+    if (data.has_msgs && !data.has_files) {
       dispatch(MESSAGES_REQUEST, data.uid)
     }
-    if (data.has_files) {
+    if (data.has_files && !data.has_msgs) {
       dispatch(FILES_REQUEST, data.uid)
+    }
+    if (data.has_files && data.has_msgs) {
+      dispatch('fetchMessagesAndFiles', data.uid)
     }
   },
   [TASK.CHANGE_TASK_READ]: ({ commit, dispatch }, uid) => {

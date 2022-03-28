@@ -8,8 +8,7 @@ import calendar from './modules/calendar'
 import navbar from './modules/navbar'
 import user from './modules/user'
 import tasks from './modules/tasks'
-import taskmessages from './modules/taskmessages'
-import taskfiles from './modules/taskfiles'
+import taskfilesandmessages from './modules/taskfilesandmessages'
 import employees from './modules/employees'
 import departments from './modules/departments'
 import projects from './modules/projects'
@@ -141,8 +140,7 @@ export default createStore({
     user,
     tasks,
     navbar,
-    taskmessages,
-    taskfiles,
+    taskfilesandmessages,
     employees,
     departments,
     projects,

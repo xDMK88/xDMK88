@@ -1,6 +1,6 @@
 <script setup>
 import Icon from '@/components/Icon.vue'
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 import { useStore } from 'vuex'
 import * as TASK from '@/store/actions/tasks'
 import { SELECT_COLOR } from '@/store/actions/colors'
@@ -20,7 +20,13 @@ const UID_TO_ACTION = {
   'ed8039ae-f3de-4369-8f32-829d401056e9': TASK.COLOR_TASKS_REQUEST
 }
 const isPropertiesMobileExpanded = computed(() => store.state.isPropertiesMobileExpanded)
-const isGridView = ref(true)
+
+const isGridView = computed(() => store.state.isGridView)
+
+const updateGridView = (value) => {
+  store.commit('basic', { key: 'isGridView', value: value })
+  localStorage.setItem('isGridView', value)
+}
 
 const openProperties = (color) => {
   if (!isPropertiesMobileExpanded.value) {
@@ -74,7 +80,7 @@ const clickOnGridCard = (value) => {
         :box="listView.viewBox"
         class="cursor-pointer hover:text-gray-800 mr-2 mt-0.5"
         :class="{ 'text-gray-800': !isGridView, 'text-gray-400': isGridView }"
-        @click="isGridView = false"
+        @click="updateGridView(false)"
       />
       <icon
         :path="gridView.path"
@@ -83,7 +89,7 @@ const clickOnGridCard = (value) => {
         :box="gridView.viewBox"
         class="cursor-pointer hover:text-gray-800 mr-2 mt-0.5"
         :class="{ 'text-gray-800': isGridView, 'text-gray-400': !isGridView }"
-        @click="isGridView = true"
+        @click="updateGridView(true)"
       />
     </div>
   </div>

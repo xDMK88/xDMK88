@@ -21,7 +21,12 @@ const UID_TO_ACTION = {
   '00a5b3de-9474-404d-b3ba-83f488ac6d30': TASK.TAG_TASKS_REQUEST
 }
 
-const isGridView = ref(true)
+const isGridView = computed(() => store.state.isGridView)
+
+const updateGridView = (value) => {
+  store.commit('basic', { key: 'isGridView', value: value })
+  localStorage.setItem('isGridView', value)
+}
 
 const isPropertiesMobileExpanded = computed(() => store.state.isPropertiesMobileExpanded)
 const focusedTag = ref('')
@@ -102,7 +107,7 @@ const goToChildren = (value) => {
             :box="listView.viewBox"
             class="cursor-pointer hover:text-gray-800 mr-2 mt-0.5"
             :class="{ 'text-gray-800': !isGridView, 'text-gray-400': isGridView }"
-            @click="isGridView = false"
+            @click="updateGridView(false)"
           />
           <icon
             :path="gridView.path"
@@ -111,7 +116,7 @@ const goToChildren = (value) => {
             :box="gridView.viewBox"
             class="cursor-pointer hover:text-gray-800 mr-2 mt-0.5"
             :class="{ 'text-gray-800': isGridView, 'text-gray-400': !isGridView }"
-            @click="isGridView = true"
+            @click="updateGridView(true)"
           />
         </div>
       </div>

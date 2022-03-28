@@ -18,12 +18,13 @@ import localization from './modules/localization'
 
 export default createStore({
   state: {
-    /* Main section state (tasks, greed) */
+    /* Main section state. Possible values: 'tasks', 'greed' */
     mainSectionState: 'tasks',
     greedPath: null,
     greedSource: null,
     taskListSource: null,
     navig: 0,
+    isGridView: true,
 
     /* Properties state: (project, task, color, tag, empmloyee) */
     propertiesState: null,

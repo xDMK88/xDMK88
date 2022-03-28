@@ -10,6 +10,7 @@ import './css/main.css'
 
 const token = localStorage.getItem('user-token')
 const navStack = JSON.parse(localStorage.getItem('navStack'))
+const isGridView = JSON.parse(localStorage.getItem('isGridView'))
 
 function pad2 (n) {
   return (n < 10 ? '0' : '') + n
@@ -25,6 +26,8 @@ axios.defaults.headers.common.LocalDate = formattedDate
 if (token) {
   axios.defaults.headers.common.Authorization = token
 }
+
+store.commit('basic', { key: 'isGridView', value: isGridView })
 
 if (navStack) {
   for (const navElem of navStack) {

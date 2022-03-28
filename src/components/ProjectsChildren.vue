@@ -17,7 +17,9 @@ const props = defineProps({
     default: () => []
   }
 })
-const isGridView = ref(true)
+
+const isGridView = computed(() => store.state.isGridView)
+
 const isPropertiesMobileExpanded = computed(() => store.state.isPropertiesMobileExpanded)
 const focusedProject = ref('')
 const user = computed(() => store.state.user.user)
@@ -94,7 +96,7 @@ const goToChildren = (value) => {
 
 <template class="w-full">
   <div
-    class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-3"
+    class="grid gap-4 mt-3"
     :class="{ 'md:grid-cols-2 lg:grid-cols-4': isGridView, 'grid-cols-1': !isGridView, 'grid-cols-1': isPropertiesMobileExpanded && !isGridView, 'lg:grid-cols-2': isPropertiesMobileExpanded && isGridView }"
   >
     <template

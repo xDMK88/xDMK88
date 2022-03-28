@@ -1,6 +1,6 @@
 <script setup>
 import Icon from '@/components/Icon.vue'
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 import properties from '@/icons/properties.js'
 import { useStore } from 'vuex'
 import * as TASK from '@/store/actions/tasks'
@@ -23,7 +23,13 @@ const UID_TO_ACTION = {
   'd28e3872-9a23-4158-aea0-246e2874da73': TASK.EMPLOYEE_TASKS_REQUEST
 }
 
-const isGridView = ref(true)
+const isGridView = computed(() => store.state.isGridView)
+
+const updateGridView = (value) => {
+  store.commit('basic', { key: 'isGridView', value: value })
+  localStorage.setItem('isGridView', value)
+}
+
 const isPropertiesMobileExpanded = computed(() => store.state.isPropertiesMobileExpanded)
 const storeEmployees = computed(() => store.state.employees.employees)
 const user = computed(() => store.state.user.user)
@@ -97,7 +103,7 @@ const clickOnGridCard = (value) => {
         :box="listView.viewBox"
         class="cursor-pointer hover:text-gray-800 mr-2 mt-0.5"
         :class="{ 'text-gray-800': !isGridView, 'text-gray-400': isGridView }"
-        @click="isGridView = false"
+        @click="updateGridView(false)"
       />
       <icon
         :path="gridView.path"
@@ -106,13 +112,13 @@ const clickOnGridCard = (value) => {
         :box="gridView.viewBox"
         class="cursor-pointer hover:text-gray-800 mr-2 mt-0.5"
         :class="{ 'text-gray-800': isGridView, 'text-gray-400': !isGridView }"
-        @click="isGridView = true"
+        @click="updateGridView(true)"
       />
     </div>
   </div>
   <div
-    v-if="storeEmployees[user.current_user_uid].type == 1 || storeEmployees[user.current_user_uid].type == 2"
-    class="grid gap-4 mb-4 mt-3"
+    v-if="storeEmployees[user.current_user_uid] && (storeEmployees[user.current_user_uid].type == 1 || storeEmployees[user.current_user_uid].type == 2)"
+    class="grid gal-4 mb-4 mt-3"
     :class="{ 'md:grid-cols-2 lg:grid-cols-4': isGridView, 'grid-cols-1': !isGridView, 'grid-cols-1': isPropertiesMobileExpanded && !isGridView, 'lg:grid-cols-2': isPropertiesMobileExpanded && isGridView }"
   >
     <div

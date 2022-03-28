@@ -9,6 +9,7 @@ import { darkModeKey } from '@/config.js'
 import './css/main.css'
 
 const token = localStorage.getItem('user-token')
+const navStack = JSON.parse(localStorage.getItem('navStack'))
 
 function pad2 (n) {
   return (n < 10 ? '0' : '') + n
@@ -23,6 +24,12 @@ axios.defaults.headers.common.LocalDate = formattedDate
 
 if (token) {
   axios.defaults.headers.common.Authorization = token
+}
+
+if (navStack) {
+  for (const navElem of navStack) {
+    store.commit('pushIntoNavStack', navElem)
+  }
 }
 
 /* Fetch sample data */

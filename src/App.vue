@@ -4,8 +4,8 @@ import { useStore } from 'vuex'
 import NavBar from '@/components/NavBar.vue'
 import AsideMenu from '@/components/AsideMenu.vue'
 import PropertiesRight from '@/components/PropertiesRight.vue'
-// import FooterBar from '@/components/FooterBar.vue'
 import Overlay from '@/components/Overlay.vue'
+
 import { LOCALIZATION_REQUEST } from '@/store/actions/localization'
 
 const store = useStore()
@@ -37,10 +37,10 @@ const overlayClick = () => {
     group="api"
     position="bottom"
   >
-    <div class="fixed inset-x-0 bottom-0 flex items-start justify-end p-6 px-4 py-6 pointer-events-none z-50">
+    <div class="fixed inset-x-0 bottom-0 flex items-start justify-end p-6 px-4 py-6 z-50">
       <div class="w-full max-w-sm">
         <Notification
-          v-slot="{ notifications }"
+          v-slot="{ notifications, close }"
           enter="ease-out duration-300 transition"
           enter-from="translate-y-2 opacity-0 sm:translate-y-0 sm:translate-x-4"
           enter-to="translate-y-0 opacity-100 sm:translate-x-0"
@@ -80,6 +80,27 @@ const overlayClick = () => {
                   {{ notification.text }}
                 </p>
               </div>
+            </div>
+            <div class="flex ml-5 shrink-0">
+              <button
+                class="inline-flex text-gray-400 bg-white rounded-md hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-400 m-2"
+                @click="close(notification.id)"
+              >
+                <span class="sr-only">Close</span>
+                <svg
+                  class="w-5 h-5"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                  aria-hidden="true"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                    clip-rule="evenodd"
+                  />
+                </svg>
+              </button>
             </div>
           </div>
         </Notification>

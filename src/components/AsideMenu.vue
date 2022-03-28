@@ -7,7 +7,8 @@ import { DatePicker } from 'v-calendar'
 import { mdiMenu } from '@mdi/js'
 import NavBarItem from '@/components/NavBarItem.vue'
 import Icon from '@/components/Icon.vue'
-
+import AccModal from '@/components/AccModal.vue'
+import AccTarif from '@/components/AccTarif.vue'
 import AsideMenuList from '@/components/AsideMenuList.vue'
 
 import * as TASK from '@/store/actions/tasks'
@@ -47,11 +48,10 @@ const isDark = computed(() => store.state.darkMode)
 const datePickerBG = computed(() => {
   return isDark.value ? 'rgb(31 41 55)' : 'rgb(243 244 246)'
 })
-const localization = computed(() => store.state.localization.localization)
 const attrs = computed(() => store.state.calendar.calendar)
 const user = computed(() => store.state.user.user)
 const storeNavigator = computed(() => store.state.navigator.navigator)
-
+const navig = computed(() => store.state.navig)
 const getNavigatorLanguage = () => (navigator.languages && navigator.languages.length) ? navigator.languages[0] : navigator.userLanguage || navigator.language || navigator.browserLanguage || 'en'
 
 const currentDate = computed({
@@ -83,6 +83,7 @@ const logout = () => {
   modalOneActive = false
   store.dispatch(AUTH_LOGOUT)
   router.push('/login')
+  if (isPropertiesMobileExpanded.value) { store.dispatch('asidePropertiesToggle', false) }
 }
 
 function dateToLabelFormat (calendarDate) {
@@ -130,6 +131,7 @@ const menuClick = (event, item) => {
       const navElem = {
         name: item.label,
         key: 'greedSource',
+        greedPath: item.path,
         value: storeNavigator.value[item.path].items
       }
       store.commit('updateStackWithInitValue', navElem)
@@ -139,6 +141,16 @@ const menuClick = (event, item) => {
 
   store.commit(TASK.CLEAN_UP_LOADED_TASKS)
 }
+const TitleName = () => {
+  if (navig.value === 0) return ('Аккаунт')
+  else if (navig.value === 1) return ('Тариф')
+}
+const accS = () => {
+  store.commit('basic', { key: 'navig', value: 0 })
+}
+const tarifS = () => {
+  store.commit('basic', { key: 'navig', value: 1 })
+}
 //  document.getElementById('Maincalendar').classList.remove('is-not-in-month')
 </script>
 
@@ -146,89 +158,19 @@ const menuClick = (event, item) => {
   <!-- Profile modal -->
   <modal-box
     v-model="modalOneActive"
-    title="Аккаунт и лицензия"
-    @logout="logout()"
+    :title="TitleName()"
+    @acc="accS()"
+    @tarif="tarifS()"
   >
-    <form
-      class="rounded-b-3xl pb-7 mb-3 text-center"
-      :class="{'bg-[#FFF2E0]': user.license_type == 0, 'bg-[#FFF2E0]': user.license_type == 1, 'bg-[#FFF2E0]': user.license_type == 2, 'bg-[#FFF2E0]': user.license_type == 3}"
-    >
-      <img
-        :src="user.foto_link"
-        width="180"
-        height="180"
-        class="mx-auto rounded-full content-center"
-      >
-      <div>
-        <p>{{ user.current_user_name }}</p>
-        <a>{{ user.current_user_email }}</a>
-      </div>
-      <button
-        type="submit"
-        class="bg-[#403D38] rounded-xl px-10 p-3 text-white mt-4"
-      >
-        Изменить
-      </button>
-    </form>
-    <fieldset class="flex">
-      <form class="mx-12 basis-9/10">
-        <strong>{{ localization.owner_license }}</strong>
-        <br>
-        <span>{{ user.owner_email }}</span>
-        <br>
-        <br>
-        <strong>Тариф</strong>
-        <br>
-        <span
-          id="Lice"
-        >
-          {{ user.date_expired }}({{ user.days_left }})
-        </span>
-        <br>
-        <br>
-        <strong>Количество рабочих мест</strong>
-        <br>
-        <span>18</span>
-        <br>
-        <br>
-        <strong>Занято места на сервере</strong>
-        <br>
-        <span>{{ user.total_mb }} {{ localization.megabytes }} ({{ user.percent_mb }}%)</span>
-        <br>
-        <br>
-        <strong>Последняя синхронизация</strong>
-        <br>
-        <span>синхронизация</span>
-        <br>
-        <br>
-      </form>
-      <form class="mx-12 mt-3 basis-1/10">
-        <svg
-          width="28"
-          height="31"
-          viewBox="0 0 28 31"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M2 0C0.895431 0 0 0.895431 0 2V3.92076C0 7.58112 2.17694 10.868 5.59249 12.2873C5.78016 14.4536 6.79357 16.4332 8.44504 17.8899C9.30831 18.6369 9.87132 19.6454 10.0965 20.7286H7.43164V24.4263H5.59249V29.0204H3.71582V31H24.2467V29.0204H22.4075V24.4263H20.5684V20.7286H17.9035C18.1287 19.6454 18.7292 18.6369 19.555 17.8899C21.2064 16.4706 22.2198 14.4536 22.4075 12.2873C25.7855 10.868 28 7.58112 28 3.92076V2C28 0.895431 27.1046 0 26 0H2ZM25.9357 1.97959V3.92076C25.9357 6.4606 24.5845 8.77634 22.37 10.0463V1.97959H25.9357ZM9.42091 24.4263V22.7455H18.5416V24.4263H9.42091ZM18.2038 16.3959C16.9276 17.5164 16.0643 19.0478 15.8391 20.7286H12.1609C11.9357 19.0478 11.0724 17.5164 9.79625 16.3959C8.40751 15.2007 7.6193 13.4452 7.6193 11.615V1.97959H20.4182V11.5776C20.3807 13.4452 19.555 15.2007 18.2038 16.3959ZM7.54424 29.0204V26.4059H20.3432V29.0204H7.54424ZM5.55496 10.0836C3.37802 8.81369 1.98928 6.4606 1.98928 3.92076V1.97959H5.55496V10.0836Z"
-            fill="#FF9123"
-          />
-        </svg>
-      </form>
-    </fieldset>
-    <form
-      class="text-center"
-      action="https://www.leadertask.ru/market"
-    >
-      <button
-        type="submit"
-        class="bg-[#FF9123] rounded-xl px-10 p-3 text-white"
-      >
-        Продлить лицензию
-      </button>
-    </form>
-    <br>
+  <acc-modal
+  v-if="navig === 0"
+  @AccLogout="logout()"
+  @AccToTarif="tarifS()"
+  class="text-lg"
+  />
+  <acc-tarif
+  v-if="navig === 1"
+  />
   </modal-box>
   <!-- /Profile modal -->
 
@@ -347,74 +289,210 @@ const menuClick = (event, item) => {
   .navigator-tree .e-level-2 > .e-text-content {
     padding-left: 0px;
   }
-  .vc-weeks {
-    padding: 0;
+
+.vc-weeks {
+padding: 0;
+}
+.vc-arrow {
+@apply bg-white text-gray-800 rounded-xl dark:bg-gray-800 dark:text-white
+}
+.vc-weeknumber-content {
+@apply bg-white dark:bg-gray-800 rounded-lg text-violet-600 dark:text-white;
+}
+.vc-title {
+color: #2A2927 !important;
+}
+.vc-weekday {
+color: #2A2927!important;
+}
+.vc-header {
+margin-bottom: 10px !important;
+}
+.vc-arrows-container {
+padding-left: 0 !important;
+padding-right: 0 !important;
+}
+.vc-container .vc-highlights .vc-day-box-center-center:nth-child(2) .vc-highlight {
+@apply bg-gray-300 !important;
+}
+.vc-container .vc-highlight {
+@apply bg-gray-300 !important;
+}
+.vc-day-content .vc-focusable
+{
+@apply text-black !important;
+}
+.vc-container .is-today .vc-day-content  {
+}
+.vc-container .is-today:hover .vc-day-content {
+@apply bg-orange-400
+}
+.vc-container .is-today .vc-day-content:hover {
+@apply bg-orange-400
+}
+.vc-container .vc-day-content:hover:not(.is-disabled) {
+@apply bg-transparent text-black !important;
+}
+.vc-container .vc-day-content.is-disabled {
+@apply pointer-events-none;
+}
+.vc-container .vc-day-content.is-disabled:hover {
+@apply bg-transparent;
+}
+.vc-day.is-not-in-month *:not(.is-disabled) {
+@apply opacity-100 text-gray-500 pointer-events-auto;
+}
+.vc-day.is-not-in-month .is-disabled  {
+@apply opacity-100 text-gray-400;
+}
+.vc-day.weekday-7 {
+@apply text-red-500;
+}
+.vc-day.weekday-1 {
+@apply text-red-500;
+}
+.vc-weekday:nth-last-of-type(-n+2) {
+@apply text-red-500;
+}
+.vc-weeknumber-content
+{
+  font-style: normal!important;
+}
+.is-today .vc-day-content.vc-focusable
+{
+  border: 2px solid #FF9123 !important;
+  border-radius: 7px !important;
+  color: black !important;
+
+  font-weight: normal !important;
+}
+.is-today .vc-day-content.vc-focusable:hover, .is-today .vc-day-content.vc-focusable:focus
+{
+  border: 2px solid #FF9123;
+  border-radius: 7px;
+  background-color: #FF9123;
+  color:black !important;
+
+}
+.today:focus
+{
+
+}
+.vc-arrow
+{
+  border-radius: 7px !important;
+}
+.vc-title {
+  /* html code => Html Code */
+  text-transform: capitalize !important;
+  font-size: 15px !important;
+}
+.vc-weekday
+{
+  text-transform: capitalize !important;
+}
+.vc-day-content.vc-focusable
+{
+  color:black !important;
+  font-weight: normal !important;
+  border-radius: 7px !important;
+}
+.vc-day-content.vc-focusable:hover
+{
+  font-weight: normal !important;
+  border-radius: 7px !important;
+}
+.vc-highlight
+{
+  background-color: #FF9123 !important;
+  border-radius: 7px !important;
+}
+.vc-highlights .vc-highlight, .vc-highlights .vc-highlight:hover
+{
+  border-radius: 7px !important;
+  color:black !important;
+}
+.vc-highlights>.vc-day-box-center-center:nth-child(1) .vc-highlight
+{
+  border-radius: 7px !important;
+  color: black !important;
+  border-color: transparent !important;
+}
+.vc-highlights>.vc-day-box-center-center:nth-child(2) .vc-highlight
+{
+  border-radius: 7px !important;
+  color: black !important;
+  opacity: 1 !important;
+}
+.dots-back
+{
+  background-color: #747474 !important;
+border-radius: 100% !important;
+  height: 3px !important;
+  width: 3px !important;
+  position: relative !important;
+  top: 10px !important;
+}
+.today
+{
+  background-color:white !important;
+}
+.is-today>.vc-highlights>.vc-day-box-center-center:nth-child(1) .vc-highlight
+{
+  opacity: 1 !important;
+}
+.is-today>.vc-highlights>.vc-day-box-center-center:nth-child(2) .vc-highlight
+{
+  background-color: #FF9123 !important;
+  opacity: 1 !important;
+}
+.back-hover
+{
+  background-color:#E4E3E5 !important;
+}
+.vc-weekday:nth-child(7), .vc-weekday:nth-child(8)
+{
+  color: #E23300 !important;
+}
+.vc-container .vc-day-content:hover:not(.is-disabled)
+{
+  border-radius: 7px !important;
+}
+.dotclass
+{
+  background-color: #444444 !important;
+  position: relative !important;
+  top: -3px !important;
+}
+.is-not-in-month
+{
+  color: rgba(0, 0, 0, 0.5) !important;
+}
+.weekday-position-6:not(.is-not-in-month) .vc-day-content.vc-focusable, .weekday-position-7:not(.is-not-in-month) .vc-day-content.vc-focusable
+{
+  color: #E23300 !important;
+}
+
+&, & * {
+    box-sizing: border-box;
+&:focus {
+   outline: none !important;
+ }
+}
+& button,
+& [role='button'] {
+    cursor: pointer !important;
   }
-  .vc-arrow {
-    @apply bg-white text-gray-800 rounded-xl dark:bg-gray-800 dark:text-white
+&.vc-is-expanded {
+   min-width: 100% !important;
+ }
+/* Hides double border within popovers */
+& .vc-container {
+    border: none !important;
   }
-  .vc-weeknumber-content {
-    @apply bg-white dark:bg-gray-800 rounded-lg text-violet-600 dark:text-white;
-  }
-  .vc-title {
-    color: #2A2927;
-  }
-  .vc-weekday {
-    color: #2A2927;
-  }
-  .vc-header {
-    margin-bottom: 10px;
-  }
-  .vc-arrows-container {
-    padding-left: 0;
-    padding-right: 0;
-  }
-  .vc-container .dots-back
-  {
-    @apply bg-transparent;
-  }
-  .vc-container .vc-highlight {
-  }
-  .vc-container .vc-highlights .vc-day-box-center-center:nth-child(2) .vc-highlight {
-    @apply bg-gray-300 !important;
-  }
-  .vc-container .vc-highlight {
-    @apply bg-gray-300;
-  }
-  .vc-day-content .vc-focusable
-  {
-    @apply text-black
-  }
-  .vc-container .is-today .vc-day-content  {
-  }
-  .vc-container .is-today:hover .vc-day-content {
-    @apply bg-orange-400
-  }
-  .vc-container .is-today .vc-day-content:hover {
-    @apply bg-orange-400
-  }
-  .vc-container .vc-day-content:hover:not(.is-disabled) {
-    @apply bg-transparent text-black;
-  }
-  .vc-container .vc-day-content.is-disabled {
-    @apply pointer-events-none;
-  }
-  .vc-container .vc-day-content.is-disabled:hover {
-    @apply bg-transparent;
-  }
-  .vc-day.is-not-in-month *:not(.is-disabled) {
-    @apply opacity-100 text-gray-500 pointer-events-auto;
-  }
-  .vc-day.is-not-in-month .is-disabled  {
-    @apply opacity-100 text-gray-400;
-  }
-  .vc-day.weekday-7 {
-    @apply text-red-500;
-  }
-  .vc-day.weekday-1 {
-    @apply text-red-500;
-  }
-  .vc-weekday:nth-last-of-type(-n+2) {
-    @apply text-red-500;
-  }
+&.vc-is-dark {
+   color: var(--gray-100) !important;
+   background-color: var(--gray-900) !important;
+   border-color: var(--gray-700) !important;
+}
 </style>

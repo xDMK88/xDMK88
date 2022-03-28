@@ -130,8 +130,8 @@
                 <div class="flex flex-col w-40">
                   <!-- Set task for tomorrow -->
                   <div
+                    v-if="props.node.info.uid_customer == user.current_user_uid"
                     class="flex cursor-pointer items-center hover:bg-gray-100 py-0.5 px-1.5 rounded-xl"
-                    v-if="props.node.info.type == 1"
                     @click="moveTaskTomorrow(props.node.info)"
                   >
                     <Icon
@@ -193,7 +193,7 @@
 
                   <!-- Cut task -->
                   <div
-                    v-if="props.node.info.type == 1"
+                    v-if="props.node.info.uid_customer == user.current_user_uid"
                     class="flex cursor-pointer items-center hover:bg-gray-100 py-0.5 px-1.5 rounded-xl"
                     @click="cutTask(props.node.info); close();"
                   >
@@ -209,7 +209,7 @@
 
                   <!-- Delete task -->
                   <div
-                    v-if="props.node.info.type == 1"
+                    v-if="props.node.info.uid_customer == user.current_user_uid"
                     class="flex cursor-pointer items-center hover:bg-gray-100 py-0.5 px-1.5 rounded-xl"
                     @click="showConfirm = true;"
                   >
@@ -305,8 +305,8 @@
                 />
               </div>
             </Popper>
-            <!-- Editable name -->
 
+            <!-- Editable name -->
             <contenteditable
               tag="div"
               class="taskName"
@@ -398,7 +398,7 @@
           </div>
         </div>
 
-        <!-- Icons, Messages, Files, Data, Checklist -->
+        <!-- Icons, Access, Messages, Files, Data, Checklist -->
         <div
           v-if="props.node.info.term_customer || props.node.info.checklist || props.node.info.has_files || props.node.info.has_msgs || props.node.info.comment"
           class="flex"
@@ -436,6 +436,19 @@
           >
             {{ countChecklist(props.node.info.checklist).done }} / {{ countChecklist(props.node.info.checklist).undone }}
           </span>
+          <div
+            v-if="props.node.info.emails"
+            class="bg-gray-200 dark:bg-gray-700 rounded px-1.5 mr-1 mt-1.5 flex items-center justify-center"
+            :style="{ backgroundColor: colors[props.node.info.uid_marker] ? colors[props.node.info.uid_marker].back_color : '' }"
+          >
+            <Icon
+              :path="inaccess.path"
+              class="text-gray-600 dark:text-white"
+              :box="inaccess.viewBox"
+              :width="14"
+              :height="14"
+            />
+          </div>
           <div
             v-if="props.node.info.has_files"
             class="bg-gray-200 dark:bg-gray-700 rounded px-1.5 mr-1 mt-1.5"
@@ -494,6 +507,7 @@ import contenteditable from 'vue-contenteditable'
 import * as TASK from '@/store/actions/tasks'
 
 import file from '@/icons/file.js'
+import inaccess from '@/icons/inaccess.js'
 import msgs from '@/icons/msgs.js'
 import taskcomment from '@/icons/taskcomment.js'
 import checklist from '@/icons/checklist.js'
@@ -871,6 +885,7 @@ export default {
       taskListSource,
       SHOW_TASK_INPUT_UIDS,
       file,
+      inaccess,
       msgs,
       user,
       taskcomment,

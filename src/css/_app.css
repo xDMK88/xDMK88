@@ -1206,9 +1206,8 @@ label
 }
 .form-group-button
 {
-  position: absolute;
-  bottom: -15px;
-  right: 5px;
+  float: right;
+  margin-top: 10px;
 }
 .btn-save-repeat
 {
@@ -1239,8 +1238,9 @@ label
 
 .tab-content-repeat
 {
-  padding: 15px;
+  padding: 1px;
   display: none;
+  margin-top: 10px;
 }
 .tab-content-repeat.active
 {
@@ -1249,7 +1249,6 @@ label
 .every-content
 {
   display: flex;
-  margin-top: 15px;
 
 }
 .every-content label
@@ -1260,8 +1259,6 @@ label
 
 .everyweek-content
 {
-  margin-top: 15px;
-  margin-left: 20px;
 }
 .everyweek-content label
 {
@@ -1281,6 +1278,7 @@ label
   width: 35px;
   border: 1px solid #F0F0F0;
   display: inline;
+  font-size: 13px;
   line-height: 15px;
 }
 .btn-day-week:hover, .btn-day-week.active
@@ -1290,8 +1288,6 @@ label
 
 .everymonth-content
 {
-  margin-top: 15px;
-  margin-left: 20px;
 }
 .everymonth-content label
 {
@@ -1300,7 +1296,6 @@ label
 }
 .form-everymonth-container
 {
-  margin-left: 60px;
   display: inline-block;
   width: 300px;
 }
@@ -1310,6 +1305,7 @@ label
   padding: 5px;
   height: 30px;
   width: 35px;
+  font-size: 13px;
   margin: 1px;
   border: 1px solid #F0F0F0;
   float: left;
@@ -1324,8 +1320,6 @@ label
 
 .everyyear-content
 {
-  margin-top: 15px;
-  margin-left: 20px;
 }
 .everyyear-content label
 {
@@ -1334,7 +1328,6 @@ label
 }
 .form-everyyear-container
 {
-  margin-left: 60px;
   display: inline-block;
   width: 300px;
 }
@@ -1347,6 +1340,7 @@ label
   margin: 1px;
   border: 1px solid #F0F0F0;
   float: left;
+  font-size: 13px;
   line-height: 15px;
 }
 .btn-day-year:hover, .btn-day-year.active
@@ -1380,10 +1374,9 @@ label
   padding: 4px;
   margin: 0;
   float: left;
-  width: 80px;
   line-height: 9px;
   height: 20px;
-  font-size: 11px;
+  font-size: 10px;
 }
 .btn-width-custom:hover, .btn-width-custom:focus, .btn-width-custom.active
 {
@@ -1411,10 +1404,10 @@ label
 }
 .form-control-select
 {
-  width: 150px;
+  width: 80px;
   margin-right: 10px;
-  height: 30px;
-  line-height: 15px;
+  font-size: 13px;
+  padding: 2px;
   border:1px solid gray;
 }
 #tooltip {

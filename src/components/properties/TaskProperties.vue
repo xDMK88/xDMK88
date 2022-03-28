@@ -7,7 +7,7 @@ import TreeItem from '@/components/TreeItem.vue'
 import close from '@/icons/close.js'
 import TreeTagsItem from '@/components/TreeTagsItem.vue'
 import { CREATE_MESSAGE_REQUEST } from '@/store/actions/taskmessages'
-import { CREATE_FILES_REQUEST, GETFILES, FILES_REQUEST } from '@/store/actions/taskfiles'
+import { CREATE_FILES_REQUEST, GETFILES } from '@/store/actions/taskfiles'
 import * as TASK from '@/store/actions/tasks'
 import { copyText } from 'vue3-clipboard'
 import contenteditable from 'vue-contenteditable'
@@ -71,9 +71,6 @@ export default {
       console.log(emails)
       return emails
     }
-    const htmltext = (text) => {
-      return sanitizeHtml(text)
-    }
     const changeEmployee = (uid, email) => {
       store.dispatch(TASK.CHANGE_TASK_PERFORMER, { uid: uid, value: email }).then(
         resp => {
@@ -126,7 +123,6 @@ export default {
       }
       store.dispatch(CREATE_FILES_REQUEST, data).then(
         resp => {
-          store.commit(FILES_REQUEST)
           taskFiles.value.uid = data.uid_task
         })
     }
@@ -157,7 +153,7 @@ export default {
         uid_msg: uuidv4(),
         date_create: getTodaysDate(),
         text: taskMsg.value,
-        msg: taskMsg.value
+        msg: this.HtmlRender(taskMsg.value)
       }
       store.dispatch(CREATE_MESSAGE_REQUEST, data).then(
         resp => {
@@ -317,8 +313,9 @@ export default {
       })
     }
     const tabfunction = (tab) => {
+      this.isActive = tab
       if (selectedTask.value.SeriesType === 0) {
-        this.isActive = tab === '#tabnorepeat'
+        this.isActive = tab
       } else if (selectedTask.value.SeriesType === 1) {
         this.isActive = tab
       } else if (selectedTask.value.SeriesType === 2) {
@@ -332,7 +329,6 @@ export default {
       }
     }
     return {
-      htmltext,
       hide,
       tabfunction,
       copyurl,
@@ -432,7 +428,7 @@ export default {
       tabs: [],
       isActive: false,
       allowedTags: [
-        'address', 'article', 'aside', 'footer', 'header', 'h1', 'h2', 'h3', 'h4',
+        'lt://', 'address', 'article', 'aside', 'footer', 'header', 'h1', 'h2', 'h3', 'h4',
         'h5', 'h6', 'hgroup', 'main', 'nav', 'section', 'blockquote', 'dd', 'div',
         'dl', 'dt', 'figcaption', 'figure', 'hr', 'li', 'main', 'ol', 'p', 'pre',
         'ul', 'a', 'abbr', 'b', 'bdi', 'bdo', 'br', 'cite', 'code', 'data', 'dfn',
@@ -453,7 +449,7 @@ export default {
         'img', 'br', 'hr', 'area', 'base', 'basefont', 'input', 'link', 'meta'
       ],
       allowedSchemes: [
-        'http', 'https', 'ftp', 'mailto', 'tel'
+        'http', 'https', 'ftp', 'mailto', 'tel', 'lt'
       ],
       allowedSchemesByTag: {},
       allowedSchemesAppliedToAttributes: [
@@ -469,6 +465,44 @@ export default {
     this.hide()
   },
   methods: {
+    HtmlRender: function (text) {
+      const ur = text.split('lt://').pop()
+      console.log(ur)
+      const htmlElement = sanitizeHtml(text, {
+        allowedTags: [
+          'address', 'article', 'aside', 'footer', 'header', 'h1', 'h2', 'h3', 'h4',
+          'h5', 'h6', 'hgroup', 'main', 'nav', 'section', 'blockquote', 'dd', 'div',
+          'dl', 'dt', 'figcaption', 'figure', 'hr', 'li', 'main', 'ol', 'p', 'pre',
+          'ul', 'a', 'abbr', 'b', 'bdi', 'bdo', 'br', 'cite', 'code', 'data', 'dfn',
+          'em', 'i', 'kbd', 'mark', 'q', 'rb', 'rp', 'rt', 'rtc', 'ruby', 's', 'samp',
+          'small', 'span', 'strong', 'sub', 'sup', 'time', 'u', 'var', 'wbr', 'caption',
+          'col', 'colgroup', 'table', 'tbody', 'td', 'tfoot', 'th', 'thead', 'tr', 'strong'
+        ],
+        allowedAttributes: {
+          a: [
+            'href', 'name', 'target'
+          ],
+          img: [
+            'src', 'srcset', 'alt', 'title', 'width', 'height', 'loading'
+          ]
+        },
+        selfClosing: [
+          'img', 'br', 'hr', 'area', 'base', 'basefont', 'input', 'link', 'meta'
+        ],
+        allowedSchemes: [
+          'http', 'https', 'ftp', 'mailto', 'tel', 'lt'
+        ],
+        allowedSchemesByTag: {},
+        allowedSchemesAppliedToAttributes: [
+          'href', 'src', 'cite'
+        ],
+        allowProtocolRelative: true,
+        enforceHtmlBoundary: false
+      })
+      const html = '<strong>hello world</strong>'
+      console.log(sanitizeHtml(html))
+      return htmlElement
+    },
     gotoParentNode (uid) {
       document.getElementById(uid).parentNode.click({ preventScroll: false })
     },
@@ -989,11 +1023,6 @@ export default {
                 </button>
               </div>
               <div class="tab-content">
-                <div
-                  id="tabnorepeat"
-                  class="tab-content-repeat"
-                  :class="selectedTask.SeriesType===0 ? {active:true} : {active:isActive==='#tabnorepeat'}"
-                />
                 <div
                   id="tabeveryday"
                   class="tab-content-repeat"
@@ -2235,7 +2264,7 @@ export default {
                 class="mt-1 msg-custom-chat-left"
                 style="background-color:#EDF7ED;"
               >
-                {{ htmltext(key.msg) }}
+                {{ HtmlRender(key.msg) }}
                 <div class="time-chat">
                   {{ key.date_create.split('T')[1].split(":")[0] }}:{{ key.date_create.split('T')[1].split(":")[1] }}
                 </div>
@@ -2271,7 +2300,7 @@ export default {
                 class="mt-1 msg-custom-chat-right"
                 style="background-color:#FCEAEA;"
               >
-                {{ htmltext(key.msg) }}
+                {{ HtmlRender(key.msg) }}
                 <div class="time-chat">
                   {{ key.date_create.split('T')[1].split(":")[0] }}:{{ key.date_create.split('T')[1].split(":")[1] }}
                 </div>

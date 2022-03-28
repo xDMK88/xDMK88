@@ -1588,3 +1588,13 @@ label
   border-width: 0 2px 2px 0;
   transform: rotate(45deg);
 }
+
+/* NavBar */
+.nav-scroll {
+  display: flex;
+  width: 80%;
+  height: auto;
+  margin: auto;
+  overflow: auto;
+  justify-content: flex-start;
+}

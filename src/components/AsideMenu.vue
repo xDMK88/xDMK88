@@ -290,13 +290,16 @@ const tarifS = () => {
   padding-left: 0px;
 }
 .vc-weeks {
-padding: 0;
+padding: 0 !important;
 }
 .vc-arrow {
 @apply bg-white text-gray-800 rounded-xl dark:bg-gray-800 dark:text-white
 }
 .vc-weeknumber-content {
 @apply bg-white dark:bg-gray-800 rounded-lg text-violet-600 dark:text-white;
+}
+.vc-weeknumber-content {
+  color: rgb(124 58 237) !important;
 }
 .vc-title {
 color: #2A2927 !important;
@@ -379,6 +382,7 @@ padding-right: 0 !important;
 }
 .vc-arrow
 {
+  color: black !important;
   border-radius: 7px !important;
 }
 .vc-title {
@@ -425,8 +429,7 @@ padding-right: 0 !important;
 }
 .dots-back
 {
-  background-color: #747474 !important;
-border-radius: 100% !important;
+  border-radius: 100% !important;
   height: 3px !important;
   width: 3px !important;
   position: relative !important;
@@ -434,15 +437,15 @@ border-radius: 100% !important;
 }
 .today
 {
-  background-color:white !important;
+  background-color: white !important;
 }
 .is-today>.vc-highlights>.vc-day-box-center-center:nth-child(1) .vc-highlight
 {
+  background-color: #FFF !important;
   opacity: 1 !important;
 }
 .is-today>.vc-highlights>.vc-day-box-center-center:nth-child(2) .vc-highlight
 {
-  background-color: #FF9123 !important;
   opacity: 1 !important;
 }
 .back-hover

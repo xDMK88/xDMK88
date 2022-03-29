@@ -69,6 +69,9 @@ const actions = {
       if (!chosenDate) {
         chosenDate = new Date()
       }
+      if (typeof chosenDate === 'string') {
+        chosenDate = new Date(chosenDate)
+      }
       const month = pad2(chosenDate.getMonth() + 1)
       const day = pad2(chosenDate.getDate())
       const year = chosenDate.getFullYear()
@@ -1041,7 +1044,7 @@ const mutations = {
       }
     }
     if (state.newtasks[task.uid_parent].children && state.newtasks[task.uid_parent].children.length) {
-      state.newtasks[task.uid_parent].children.push(task.uid)
+      state.newtasks[task.uid_parent].children.unshift(task.uid)
     } else {
       state.newtasks[task.uid_parent].children = [task.uid]
       state.newConfig.leaves = arrayRemove(state.newConfig.leaves, task.uid_parent)

@@ -216,7 +216,7 @@ const mutations = {
             if ((fileDate < messageDate) && (!file._isAdded)) {
               file.msg = file.file_name
               file._isAdded = true
-              state.messages.shift(file)
+              state.messages.unshift(file)
             }
           // at the end
           } else if (i === state.messages.length - 1) {

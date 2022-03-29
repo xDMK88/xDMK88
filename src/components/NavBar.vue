@@ -113,7 +113,7 @@ const clickOnGridCard = (item, index) => {
         />
       </nav-bar-item>
       <nav-bar-item
-        class="bg-gray-50 dark:bg-gray-700 rounded-lg mr-1"
+        class="bg-gray-50 dark:bg-gray-700 rounded-lg mr-1 mt-1"
         @click="clickOnGridCard(navStack[navStack.length - 2], navStack.length - 2)"
       >
         <icon
@@ -123,6 +123,8 @@ const clickOnGridCard = (item, index) => {
           :box="arrowBack.viewBox"
         />
       </nav-bar-item>
+    </div>
+    <div class="nav-scroll">
       <nav-bar-item
         v-for="(navItem, index) in navStack"
         :key="index"

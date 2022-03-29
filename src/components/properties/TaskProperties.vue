@@ -12,13 +12,16 @@ import * as TASK from '@/store/actions/tasks'
 import { copyText } from 'vue3-clipboard'
 import contenteditable from 'vue-contenteditable'
 import sanitizeHtml from 'sanitize-html'
+import { Tabs, Tab } from 'vue3-tabs-component'
 export default {
   components: {
     DatePicker,
     TreeItem,
     TreeTagsItem,
     Popper,
-    contenteditable
+    contenteditable,
+    tabs: Tabs,
+    tab: Tab
   },
   filters: {
     shorten: (val, words = 2) => val.split(' ').slice(0, words).join(' ')
@@ -133,7 +136,7 @@ export default {
       }
       store.dispatch(TASK.CHANGE_TASK_COMMENT, data).then(
         resp => {
-          selectedTask.value.comment = comment
+          //  selectedTask.value.comment = comment
         })
       this.$refs.comment.value = 'Оставить запись'
     }
@@ -300,24 +303,7 @@ export default {
         }
       })
     }
-    const tabfunction = (tab) => {
-      this.isActive = tab
-      if (selectedTask.value.SeriesType === 0) {
-        this.isActive = tab
-      } else if (selectedTask.value.SeriesType === 1) {
-        this.isActive = tab
-      } else if (selectedTask.value.SeriesType === 2) {
-        this.isActive = tab
-      } else if (selectedTask.value.SeriesType === 3) {
-        this.isActive = tab
-      } else if (selectedTask.value.SeriesType === 4) {
-        this.isActive = tab
-      } else {
-        this.isActive = tab
-      }
-    }
     return {
-      tabfunction,
       copyurl,
       delTask,
       ClickAccessCheck,
@@ -408,7 +394,7 @@ export default {
       },
       firstDayOfWeek: 2,
       mode: 'single',
-      selected: {},
+      selectedDays: selectedTask.value.SeriesAfterCount,
       isOpen: false,
       activeTab: '',
       tabs: [],
@@ -957,257 +943,210 @@ export default {
           >
             <div class="popper">
               <div class="text-white body-popover-custom body-repeat-custom rounded-b-lg">
-                <button
-                  ref="tabnorepeat"
-                  class="btn-width-custom"
-                  :class="{active:isActive==='#tabnorepeat'}"
-                  type="button"
-                  value="0"
-                  @click="tabfunction('#tabnorepeat')"
-                >
-                  Не повторять
-                </button>
-                <button
-                  ref="tabeveryday"
-                  class="btn-width-custom"
-                  :class="{active:isActive==='#tabeveryday'}"
-                  type="button"
-                  value="1"
-                  @click="tabfunction('#tabeveryday')"
-                >
-                  Ежедневно
-                </button>
-                <button
-                  ref="tabeveryweek"
-                  class="btn-width-custom"
-                  :class="{active:isActive==='#tabeveryweek'}"
-                  type="button"
-                  value="2"
-                  @click="tabfunction('#tabeveryweek')"
-                >
-                  Еженедельно
-                </button>
-                <button
-                  ref="tabverymonth"
-                  class="btn-width-custom"
-                  :class="{active:isActive==='#tabverymonth'}"
-                  type="button"
-                  value="3"
-                  @click="tabfunction('#tabeverymonth')"
-                >
-                  Ежемесячно
-                </button>
-                <button
-                  ref="tabeveryyear"
-                  class="btn-width-custom"
-                  :class="{active:isActive==='#tabeveryyear'}"
-                  type="button"
-                  value="4"
-                  @click="tabfunction('#tabeveryyear')"
-                >
-                  Ежегодно
-                </button>
-              </div>
-              <div class="tab-content">
-                <div
-                  id="tabeveryday"
-                  class="tab-content-repeat"
-                  :class="selectedTask.SeriesType===1 ? {active:true} : {active:isActive==='#tabeveryday'}"
-                >
-                  <div class="every-content flex">
-                    <label>Каждый </label>
-                    <div class="form-group">
-                      <select
-                        class="form-control form-control-select"
-                        name=""
-                      >
-                        <option
-                          v-for="item in 365"
-                          :key="item"
-                          selected="{{selectedTask.SeriesAfterCount===item ? true :false}}"
-                        >
-                          {{ item }}
-                        </option>
-                      </select>
-                    </div>
-                    <div class="form-group">
-                      <select class="form-control form-control-select">
-                        <option value="1">
-                          День
-                        </option>
-                        <option value="2">
-                          Неделю
-                        </option>
-                        <option value="3">
-                          Месяц
-                        </option>
-                        <option value="4">
-                          Год
-                        </option>
-                      </select>
-                    </div>
-                  </div>
-                </div>
-                <div
-                  id="tabeveryweek"
-                  class="tab-content-repeat"
-                  :class="selectedTask.SeriesType===2 ? {active:true} : {active:isActive==='#tabeveryweek'}"
-                >
-                  <div class="everyweek-content">
-                    <div class="flex">
-                      <label>Каждую </label>
-                      <div class="form-group">
-                        <select
-                          class="form-control form-control-select"
-                          name=""
-                        >
-                          <option
-                            v-for="item in 365"
-                            :key="item"
-                          >
-                            {{ item }} неделю
-                          </option>
-                        </select>
-                      </div>
-                    </div>
-                    <div class="form-group">
-                      <div class="form-everyweek-container">
-                        <button class="btn-day-week">
-                          Вт.
-                        </button>
-                        <button class="btn-day-week">
-                          Ср.
-                        </button>
-                        <button class="btn-day-week">
-                          Чт.
-                        </button>
-                        <button class="btn-day-week">
-                          Пт.
-                        </button>
-                        <button class="btn-day-week">
-                          Сб.
-                        </button>
-                        <button class="btn-day-week">
-                          Вск.
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div
-                  id="tabeverymonth"
-                  class="tab-content-repeat"
-                  :class="selectedTask.SeriesType===3 ? {active:true} : {active:isActive==='#tabeverymonth'}"
-                >
-                  <div class="everymonth-content">
-                    <div class="flex">
-                      <label>Повтор </label>
-                      <div class="form-group">
-                        <select
-                          class="form-control form-control-select"
-                          name=""
-                        >
-                          <option>Каждый</option>
-                          <option>Первый</option>
-                          <option>Второй</option>
-                          <option>Третий</option>
-                          <option>Четвертый</option>
-                          <option>Последний</option>
-                        </select>
-                      </div>
-                      <div class="form-group">
-                        <select
-                          class="form-control form-control-select"
-                          name=""
-                        >
-                          <option
-                            v-for="item in 365"
-                            :key="item"
-                          >
-                            {{ item }} месяц
-                          </option>
-                        </select>
-                      </div>
-                    </div>
-                    <div class="form-group">
-                      <div class="form-everymonth-container">
-                        <button
-                          v-for="day in 31"
-                          :key="day"
-                          class="btn-day-month"
-                        >
-                          {{ day }}
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div
-                  id="tabeveryyear"
-                  class="tab-content-repeat"
-                  :class="selectedTask.SeriesType===4 ? {active:true} : {active:isActive==='#tabeveryyear'}"
-                >
-                  <div class="everyyear-content">
-                    <div class="flex">
-                      <label>Повтор </label>
-                      <div
-                        class="form-group"
-                        aria-valuemax="SeriesYearType"
-                      >
-                        <select
-                          class="form-control form-control-select"
-                          name="SeriesYearWeekType"
-                        >
-                          <option value="1">
-                            Каждый
-                          </option>
-                          <option>Первый</option>
-                          <option>Второй</option>
-                          <option>Третий</option>
-                          <option>Четвертый</option>
-                          <option>Последний</option>
-                        </select>
-                      </div>
-                      <div class="form-group">
-                        <select
-                          class="form-control form-control-select"
-                          name=""
-                        >
-                          <option
-                            v-for="item in months"
-                            :key="item"
-                          >
-                            {{ item }}
-                          </option>
-                        </select>
-                      </div>
-                    </div>
-                    <div class="form-group">
-                      <div class="form-everyyear-container">
-                        <button
-                          v-for="day in 31"
-                          :key="day"
-                          class="btn-day-year"
-                        >
-                          {{ day }}
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div class="form-group-button">
-                  <div class="form-group">
-                    <button class="btn-save-repeat">
-                      Сохранить
-                    </button>
-                  </div>
-                  <div class="form-group">
-                    <button
-                      class="btn-cancel-repeat" @click="close"
+                <tabs :options="{ useUrlFragment: false }">
+                  <tab name="Не повторять">
+                    <div></div>
+                  </tab>
+                  <tab name="Ежедневно">
+                    <div
+                      class="tab-content-repeat"
                     >
-                      Отменить
-                    </button>
-                  </div>
+                      <div class="every-content flex">
+                        <label>Каждый </label>
+                        <div class="form-group">
+                          <select
+                            class="form-control form-control-select" v-model="selected"
+                            name=""
+                          >
+                            <option
+                              v-for="item in 365"
+                              :key="item"
+                              :selected="{selected: selectedTask.SeriesAfterCount===item}"
+                            >
+                              {{ item }}
+                            </option>
+                          </select>
+                        </div>
+                        <div class="form-group">
+                          <select class="form-control form-control-select">
+                            <option value="1">
+                              День
+                            </option>
+                            <option value="2">
+                              Неделю
+                            </option>
+                            <option value="3">
+                              Месяц
+                            </option>
+                            <option value="4">
+                              Год
+                            </option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                  </tab>
+                  <tab name="Еженедельно">
+                    <div
+                      class="tab-content-repeat"
+                    >
+                      <div class="everyweek-content">
+                        <div class="flex">
+                          <label>Каждую </label>
+                          <div class="form-group">
+                            <select
+                              class="form-control form-control-select"
+                              name=""
+                            >
+                              <option
+                                v-for="item in 365"
+                                :key="item"
+                              >
+                                {{ item }} неделю
+                              </option>
+                            </select>
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <div class="form-everyweek-container">
+                            <button class="btn-day-week">
+                              Вт.
+                            </button>
+                            <button class="btn-day-week">
+                              Ср.
+                            </button>
+                            <button class="btn-day-week">
+                              Чт.
+                            </button>
+                            <button class="btn-day-week">
+                              Пт.
+                            </button>
+                            <button class="btn-day-week">
+                              Сб.
+                            </button>
+                            <button class="btn-day-week">
+                              Вск.
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </tab>
+                  <tab name="Ежемесячно">
+                    <div
+                      class="tab-content-repeat"
+                    >
+                      <div class="everymonth-content">
+                        <div class="flex">
+                          <label>Повтор </label>
+                          <div class="form-group">
+                            <select
+                              class="form-control form-control-select"
+                              name=""
+                            >
+                              <option>Каждый</option>
+                              <option>Первый</option>
+                              <option>Второй</option>
+                              <option>Третий</option>
+                              <option>Четвертый</option>
+                              <option>Последний</option>
+                            </select>
+                          </div>
+                          <div class="form-group">
+                            <select
+                              class="form-control form-control-select"
+                              name=""
+                            >
+                              <option
+                                v-for="item in 365"
+                                :key="item"
+                              >
+                                {{ item }} месяц
+                              </option>
+                            </select>
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <div class="form-everymonth-container">
+                            <button
+                              v-for="day in 31"
+                              :key="day"
+                              class="btn-day-month"
+                            >
+                              {{ day }}
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </tab>
+                  <tab name="Ежегодно">
+                    <div
+                      class="tab-content-repeat"
+                    >
+                      <div class="everyyear-content">
+                        <div class="flex">
+                          <label>Повтор </label>
+                          <div
+                            class="form-group"
+                            aria-valuemax="SeriesYearType"
+                          >
+                            <select
+                              class="form-control form-control-select"
+                              name="SeriesYearWeekType"
+                            >
+                              <option value="1">
+                                Каждый
+                              </option>
+                              <option>Первый</option>
+                              <option>Второй</option>
+                              <option>Третий</option>
+                              <option>Четвертый</option>
+                              <option>Последний</option>
+                            </select>
+                          </div>
+                          <div class="form-group">
+                            <select
+                              class="form-control form-control-select"
+                              name=""
+                            >
+                              <option
+                                v-for="item in months"
+                                :key="item"
+                              >
+                                {{ item }}
+                              </option>
+                            </select>
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <div class="form-everyyear-container">
+                            <button
+                              v-for="day in 31"
+                              :key="day"
+                              class="btn-day-year"
+                            >
+                              {{ day }}
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </tab>
+                </tabs>
+              </div>
+              <div class="form-group-button">
+                <div class="form-group">
+                  <button class="btn-save-repeat">
+                    Сохранить
+                  </button>
+                </div>
+                <div class="form-group">
+                  <button
+                    class="btn-cancel-repeat" @click="close"
+                  >
+                    Отменить
+                  </button>
                 </div>
               </div>
             </div>
@@ -1237,8 +1176,8 @@ export default {
                 />
               </svg>
               <span v-if="selectedTask.SeriesType===0">Не повторять</span>
-              <span v-if="selectedTask.SeriesType===1"><span v-if="selectedTask.SeriesAfterType===1"><span v-if="selectedTask.SeriesAfterCount===1">Ежедневно </span><span v-else>Каждый {{ selectedTask.SeriesAfterCount }} день.</span></span><span v-else-if="selectedTask.SeriesAfterType===2"><span v-if="selectedTask.SeriesAfterCount===1">Еженедельно </span><span v-else>Каждый {{ selectedTask.SeriesAfterCount }} неделю.</span></span><span v-else-if="selectedTask.SeriesAfterType===3"><span v-if="selectedTask.SeriesAfterCount===1">Ежемесячно </span><span v-else>Каждый {{ selectedTask.SeriesAfterCount }} месяц.</span></span><span v-else-if="selectedTask.SeriesAfterType===4"><span v-if="selectedTask.SeriesAfterCount===1">Ежегодно </span><span v-else>Каждый {{ selectedTask.SeriesAfterCount }} год.</span></span> </span>
-              <span v-if="selectedTask.SeriesType===2">Каждую {{ selectedTask.SeriesWeekCount }} неделю, по: <span v-if="selectedTask.SeriesWeekMon===1">Пн. </span>
+              <span v-if="selectedTask.SeriesType===1"><span v-if="selectedTask.SeriesAfterType===1"><span v-if="selectedTask.SeriesAfterCount===1">Ежедневно: Каждый 1 день.</span><span v-else>Ежедневно: Каждый {{ selectedTask.SeriesAfterCount }} день.</span></span><span v-else-if="selectedTask.SeriesAfterType===2"><span v-if="selectedTask.SeriesAfterCount===1">Ежедневно:  </span><span v-else>Каждый {{ selectedTask.SeriesAfterCount }} неделю.</span></span><span v-else-if="selectedTask.SeriesAfterType===3"><span v-if="selectedTask.SeriesAfterCount===1">Ежедневно:  </span><span v-else>Каждый {{ selectedTask.SeriesAfterCount }} месяц.</span></span><span v-else-if="selectedTask.SeriesAfterType===4"><span v-if="selectedTask.SeriesAfterCount===1">Ежедневно:  </span><span v-else>Каждый {{ selectedTask.SeriesAfterCount }} год.</span></span> </span>
+              <span v-if="selectedTask.SeriesType===2">Еженедельно: Каждую {{ selectedTask.SeriesWeekCount }} неделю, по: <span v-if="selectedTask.SeriesWeekMon===1">Пн. </span>
               <span v-if="selectedTask.SeriesWeekTue===1">Вт. </span>
               <span v-if="selectedTask.SeriesWeekWed===1">Ср. </span>
               <span v-if="selectedTask.SeriesWeekThu===1">Чт. </span>
@@ -1246,10 +1185,10 @@ export default {
               <span v-if="selectedTask.SeriesWeekSat===1">Сб. </span>
               <span v-if="selectedTask.SeriesWeekSun===1">Вск. </span>
             </span>
-              <span v-if="selectedTask.SeriesType===3"><span v-if="selectedTask.SeriesMonthType===1">Каждый {{ selectedTask.SeriesMonthCount }} месяц {{ selectedTask.SeriesYearMonthDay }} числа</span><span v-else>
+              <span v-if="selectedTask.SeriesType===3"><span v-if="selectedTask.SeriesMonthType===1">Ежемесячно: Каждый {{ selectedTask.SeriesMonthCount }} месяц {{ selectedTask.SeriesYearMonthDay }} числа</span><span v-else>
               {{ firstcount[selectedTask.SeriesMonthWeekType] }} <span>{{ day[selectedTask.SeriesMonthDayOfWeek] }} каждый {{ selectedTask.SeriesMonthCount }} месяц</span>
             </span></span>
-              <span v-if="selectedTask.SeriesType===4"><span v-if="selectedTask.SeriesYearType===1">Каждый год {{ selectedTask.SeriesYearMonthDay }}  {{ months[selectedTask.SeriesYearMonth-1] }}</span><span v-else>
+              <span v-if="selectedTask.SeriesType===4"><span v-if="selectedTask.SeriesYearType===1">Ежегодно: Каждый год {{ selectedTask.SeriesYearMonthDay }}  {{ months[selectedTask.SeriesYearMonth-1] }}</span><span v-else>
               Каждый {{ months[selectedTask.SeriesYearMonth-1] }} {{ firstcount[selectedTask.SeriesYearWeekType] }}
               {{ day[selectedTask.SeriesYearDayOfWeek] }}
             </span></span>
@@ -1475,7 +1414,7 @@ export default {
                   <div
                     v-for="(key,value) in colors"
                     :key="value"
-                    class="list-color-access"
+                    class="list-color-access" :title="key.name"
                     :class="{active:isActive=key.uid===selectedTask.uid_marker}"
                     @click="changeColors(selectedTask.uid, key.uid)"
                     :style="{'background-color': key.back_color, 'border:1px solid ': key.back_color}"

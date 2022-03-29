@@ -1235,12 +1235,7 @@ label
 .tab-content-repeat
 {
   padding: 1px;
-  display: none;
   margin-top: 10px;
-}
-.tab-content-repeat.active
-{
-  display: block;
 }
 .every-content
 {
@@ -1400,7 +1395,7 @@ label
 }
 .form-control-select
 {
-  width: 80px;
+  width: 86px;
   margin-right: 10px;
   font-size: 13px;
   padding: 2px;
@@ -1619,4 +1614,109 @@ label
   border: solid #0079bf;
   border-width: 0 2px 2px 0;
   transform: rotate(45deg);
+}
+.tabs-component {
+}
+
+.tabs-component-tabs {
+  border-bottom-left-radius: 7px;
+  border-top-left-radius: 7px;
+  margin-bottom: 5px;
+}
+
+@media (min-width: 700px) {
+  .tabs-component-tabs {
+    align-items: stretch;
+    display: flex;
+    justify-content: flex-start;
+  }
+}
+
+.tabs-component-tab {
+  color: #999;
+  font-size: 14px;
+  font-weight: 600;
+  margin-right: 0;
+  list-style: none;
+}
+
+.tabs-component-tab:not(:last-child) {
+
+}
+
+.tabs-component-tab:hover {
+  color: #666;
+}
+
+.tabs-component-tab.is-active {
+  color: #000;
+}
+
+.tabs-component-tab.is-disabled * {
+  color: #cdcdcd;
+  cursor: not-allowed !important;
+}
+
+@media (min-width: 700px) {
+  .tabs-component-tab:first-child {
+    color: black;
+    background: #f0f0f0;
+    padding: 4px;
+    margin: 0;
+    float: left;
+    line-height: 9px;
+    height: 20px;
+    border-bottom-left-radius: 7px;
+    border-top-left-radius: 7px;
+    font-size: 10px;
+    transition: transform .3s ease;
+  }
+  .tabs-component-tab:last-child {
+    color: black;
+    background: #f0f0f0;
+    padding: 4px;
+    margin: 0;
+    float: left;
+    line-height: 9px;
+    height: 20px;
+    border-bottom-right-radius: 7px;
+    border-top-right-radius: 7px;
+    font-size: 10px;
+    transition: transform .3s ease;
+  }
+  .tabs-component-tab {
+    color: black;
+    background: #f0f0f0;
+    padding: 4px;
+    margin: 0;
+    float: left;
+    line-height: 9px;
+    height: 20px;
+    font-size: 10px;
+    transition: transform .3s ease;
+  }
+  .tabs-component-tab.is-active {
+    background: #FF9123;
+    color: #ffffff;
+    cursor: pointer;
+    z-index: 2;
+    transform: translateY(0);
+  }
+}
+
+.tabs-component-tab-a {
+  align-items: center;
+  color: inherit;
+  display: flex;
+  font-weight: normal;
+  text-decoration: none;
+}
+
+.tabs-component-panels {
+}
+
+@media (min-width: 700px) {
+  .tabs-component-panels {
+
+  }
 }

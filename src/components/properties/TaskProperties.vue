@@ -12,6 +12,7 @@ import * as TASK from '@/store/actions/tasks'
 import { copyText } from 'vue3-clipboard'
 import contenteditable from 'vue-contenteditable'
 import sanitizeHtml from 'sanitize-html'
+import linkify from 'vue-linkify'
 export default {
   components: {
     DatePicker,
@@ -19,6 +20,9 @@ export default {
     TreeTagsItem,
     Popper,
     contenteditable
+  },
+  directvies: {
+    linkify
   },
   filters: {
     shorten: (val, words = 2) => val.split(' ').slice(0, words).join(' ')
@@ -2000,7 +2004,6 @@ export default {
           :key="value"
           class="mt-3 list-files-custom-item" :id="'hidden_'+value"
         >
-          <pre class="text-xs leading-none">{{ key }}</pre>
           <div v-if="key.uid_creator!==cusers.current_user_uid">
             <div
               v-if="value===0"
@@ -2252,7 +2255,10 @@ export default {
                 class="mt-1 msg-custom-chat-left text-sm"
                 style="background-color:#EDF7ED;"
               >
-                {{ HtmlRender(key.msg) }}
+
+                <div v-linkify>
+                  google.com is the best way
+                </div>
                 <div class="time-chat">
                   {{ key.date_create.split('T')[1].split(":")[0] }}:{{ key.date_create.split('T')[1].split(":")[1] }}
                 </div>
@@ -2278,7 +2284,9 @@ export default {
                 class="mt-1 msg-custom-chat-right text-sm"
                 style="background-color:#FCEAEA;"
               >
-                {{ HtmlRender(key.msg) }}
+                <div v-linkify>
+                  google.com is the best way
+                </div>
                 <div class="time-chat">
                   {{ key.date_create.split('T')[1].split(":")[0] }}:{{ key.date_create.split('T')[1].split(":")[1] }}
                 </div>

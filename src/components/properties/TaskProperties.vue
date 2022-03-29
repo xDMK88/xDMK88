@@ -13,6 +13,7 @@ import { copyText } from 'vue3-clipboard'
 import contenteditable from 'vue-contenteditable'
 import sanitizeHtml from 'sanitize-html'
 import linkify from 'vue-linkify'
+
 export default {
   components: {
     DatePicker,
@@ -21,7 +22,7 @@ export default {
     Popper,
     contenteditable
   },
-  directvies: {
+  directives: {
     linkify
   },
   filters: {
@@ -2255,9 +2256,7 @@ export default {
                 class="mt-1 msg-custom-chat-left text-sm"
                 style="background-color:#EDF7ED;"
               >
-
-                <div v-linkify>
-                  google.com is the best way
+                <div v-html="key.msg" v-linkify:options="{ className: 'text-blue-600' }">
                 </div>
                 <div class="time-chat">
                   {{ key.date_create.split('T')[1].split(":")[0] }}:{{ key.date_create.split('T')[1].split(":")[1] }}
@@ -2283,9 +2282,8 @@ export default {
               <div
                 class="mt-1 msg-custom-chat-right text-sm"
                 style="background-color:#FCEAEA;"
-              >
-                <div v-linkify>
-                  google.com is the best way
+                >
+                <div v-html="key.msg" v-linkify>
                 </div>
                 <div class="time-chat">
                   {{ key.date_create.split('T')[1].split(":")[0] }}:{{ key.date_create.split('T')[1].split(":")[1] }}

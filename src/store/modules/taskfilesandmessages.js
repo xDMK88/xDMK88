@@ -150,12 +150,6 @@ const actions = {
     return Promise.all([messages, files])
       .then(() => {
         commit(MERGE_FILES_WITH_MESSAGES)
-        notify({
-          group: 'api',
-          title: 'Cool',
-          action: 'LOAD MESSAGES AND FILES',
-          text: 'messages and files are loaded!'
-        }, 15000)
       })
   }
 }
@@ -226,7 +220,7 @@ const mutations = {
         if (i === 0) {
           for (const file of state.files) {
             const fileDate = new Date(file.date_create)
-            if (fileDate < messageDate && (!file._isAdded && !state.messages[i].uid_file)) {
+            if ((fileDate < messageDate) && (!file._isAdded)) {
               file.msg = file.file_name
               file._isAdded = true
               state.messages.shift(file)
@@ -236,7 +230,7 @@ const mutations = {
         } else if (i === state.messages.length - 1) {
           for (const file of state.files) {
             const fileDate = new Date(file.date_create)
-            if (fileDate > messageDate && (!file._isAdded && !state.messages[i].uid_file)) {
+            if ((fileDate > messageDate) && (!file._isAdded)) {
               file.msg = file.file_name
               file._isAdded = true
               state.messages.push(file)
@@ -246,7 +240,7 @@ const mutations = {
           const secondMessageDate = new Date(state.messages[i + 1].date_create)
           for (const file of state.files) {
             const fileDate = new Date(file.date_create)
-            if (messageDate < fileDate < secondMessageDate && (!file._isAdded && !state.messages[i].uid_file)) {
+            if ((messageDate < fileDate < secondMessageDate) && (!file._isAdded)) {
               console.log('find place between', messageDate.toString(), secondMessageDate.toString())
               console.log('trying to feet this ', fileDate.toString())
               file.msg = file.file_name

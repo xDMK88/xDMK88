@@ -162,15 +162,15 @@ const tarifS = () => {
     @acc="accS()"
     @tarif="tarifS()"
   >
-  <acc-modal
-  v-if="navig === 0"
-  @AccLogout="logout()"
-  @AccToTarif="tarifS()"
-  class="text-lg"
-  />
-  <acc-tarif
-  v-if="navig === 1"
-  />
+    <acc-modal
+      v-if="navig === 0"
+      class="text-lg"
+      @AccLogout="logout()"
+      @AccToTarif="tarifS()"
+    />
+    <acc-tarif
+      v-if="navig === 1"
+    />
   </modal-box>
   <!-- /Profile modal -->
 

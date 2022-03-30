@@ -63,9 +63,9 @@ const clickOnGridCard = (value) => {
 }
 </script>
 
-<template class="w-full">
+<template class="w-full rowall">
   <div
-    class="flex items-center w-full justify-between mt-3"
+    class="flex items-center w-full justify-between mt-3 order-1"
   >
     <p class="text-2xl text-gray-800 font-bold second dark:text-gray-100">
       Цвета
@@ -94,7 +94,7 @@ const clickOnGridCard = (value) => {
     </div>
   </div>
   <div
-    class="grid gap-4 mt-3"
+    class="grid gap-4 mt-3 order-2"
     :class="{ 'md:grid-cols-2 lg:grid-cols-4': isGridView, 'grid-cols-1': !isGridView, 'grid-cols-1': isPropertiesMobileExpanded && !isGridView, 'lg:grid-cols-2': isPropertiesMobileExpanded && isGridView }"
   >
     <template
@@ -102,7 +102,7 @@ const clickOnGridCard = (value) => {
       :key="pindex"
     >
       <div
-        class="flex items-center bg-white dark:bg-gray-700 rounded-xl shadow hover:shadow-md cursor-pointer h-30 px-3 py-5"
+        class="flex items-center bg-white dark:bg-gray-700 rounded-xl shadow hover:shadow-md cursor-pointer h-30 px-3 py-5 order-4"
       >
         <div class="w-full">
           <div class="flex items-center justify-between">
@@ -134,7 +134,7 @@ const clickOnGridCard = (value) => {
       </div>
     </template>
     <div
-      class="flex items-center justify-center bg-gray-50 dark:bg-gray-700 rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-500 cursor-pointer px-5 py-7"
+      class="flex items-center justify-center bg-gray-50 dark:bg-gray-700 rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-500 cursor-pointer px-5 py-7 order-3"
       @click="openProperties(false)"
     >
       <div class="flex items-center justify-center w-10 h-10 bg-gray-200 dark:bg-gray-600 rounded-xl">

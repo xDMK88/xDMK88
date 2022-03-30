@@ -1,6 +1,6 @@
 <script>
 import Popper from 'vue3-popper'
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { DatePicker } from 'v-calendar'
 import { useStore } from 'vuex'
 import TreeItem from '@/components/TreeItem.vue'
@@ -8,7 +8,7 @@ import FileMessage from '@/components/properties/FileMessage.vue'
 import close from '@/icons/close.js'
 import TreeTagsItem from '@/components/TreeTagsItem.vue'
 import { CREATE_MESSAGE_REQUEST } from '@/store/actions/taskmessages'
-import { CREATE_FILES_REQUEST, GETFILES } from '@/store/actions/taskfiles'
+import { CREATE_FILES_REQUEST } from '@/store/actions/taskfiles'
 import * as TASK from '@/store/actions/tasks'
 import { copyText } from 'vue3-clipboard'
 import contenteditable from 'vue-contenteditable'
@@ -34,11 +34,17 @@ export default {
     selectTags: Array
   },
   data () {
+    const showAllMessages = false
     const store = useStore()
     const taskMessages = computed(() => store.state.taskfilesandmessages.messages)
     const taskFiles = computed(() => store.state.taskfilesandmessages.files)
     const myFiles = computed(() => store.state.taskfilesandmessages.files.myFiles)
     const selectedTask = computed(() => store.state.tasks.selectedTask)
+
+    watch(selectedTask, (currentValue, oldValue) => {
+      this.showAllMessages = false
+    })
+
     const user = computed(() => store.state.user.user)
     const navigator = computed(() => store.state.navigator.navigator)
     const tasks = computed(() => store.state.tasks.newtasks)
@@ -232,52 +238,6 @@ export default {
           selectedTask.value.customer_date_end = new Date(this.range.end)
         })
     }
-    const getImgUrl = (uid, extension, filename) => {
-      store.dispatch(GETFILES, uid).then(resp => {
-        const fileURL = window.URL.createObjectURL(new Blob([resp.data]))
-        var myImage = new Image()
-        myImage.src = fileURL
-        document.getElementById(uid).appendChild(myImage)
-        document.getElementById(uid).setAttribute('href', fileURL)
-        document.getElementById(uid).setAttribute('download', filename + '.' + extension)
-        return myImage
-      })
-    }
-    const getAudioUrl = (uid, extension, filename) => {
-      store.dispatch(GETFILES, uid).then(resp => {
-        const fileURL = window.URL.createObjectURL(new Blob([resp.data], { type: 'text/plain' }))
-        var myAudio = new Audio()
-        myAudio.src = fileURL
-        document.getElementById(uid).appendChild(myAudio)
-        document.getElementById(uid).setAttribute('src', fileURL)
-        document.getElementById(uid).setAttribute('download', filename + '.' + extension)
-        return myAudio
-      })
-    }
-    const getDocUrl = (uid, extension, filename) => {
-      store.dispatch(GETFILES, uid).then(resp => {
-        const fileURL = window.URL.createObjectURL(new Blob([resp.data], { type: 'text/plain' }))
-        document.getElementById(uid).setAttribute('href', fileURL)
-        document.getElementById(uid).setAttribute('download', filename + '.' + extension)
-        return fileURL
-      })
-    }
-    const getMovUrl = (uid, extension, filename) => {
-      store.dispatch(GETFILES, uid).then(resp => {
-        const fileURL = window.URL.createObjectURL(new Blob([resp.data], { type: 'text/plain' }))
-        document.getElementById(uid).setAttribute('href', fileURL)
-        document.getElementById(uid).setAttribute('download', filename + '.' + extension)
-        return fileURL
-      })
-    }
-    const getAnyUrl = (uid, extension, filename) => {
-      store.dispatch(GETFILES, uid).then(resp => {
-        const fileURL = window.URL.createObjectURL(new Blob([resp.data], { type: 'text/plain' }))
-        document.getElementById(uid).setAttribute('href', fileURL)
-        document.getElementById(uid).setAttribute('download', filename + '.' + extension)
-        return fileURL
-      })
-    }
     const handleInput = () => {
       console.log(new Date(this.range.start).toLocaleDateString())
       console.log(new Date(this.range.start).toLocaleTimeString() + '-' + new Date(this.range.end).toLocaleTimeString())
@@ -324,14 +284,11 @@ export default {
       }
     }
     return {
+      showAllMessages,
       tabfunction,
       copyurl,
       delTask,
       ClickAccessCheck,
-      getAnyUrl,
-      getAudioUrl,
-      getMovUrl,
-      getDocUrl,
       isDark,
       unchecked,
       changeName,
@@ -353,7 +310,6 @@ export default {
       resetAccess,
       resetEmployes,
       resetCalendar,
-      getImgUrl,
       getfiles: getfiles,
       checkEmail: selectedTask.value.emails.split('..'),
       close,
@@ -1993,8 +1949,30 @@ export default {
           @keyup.enter="changeComment($refs.comment.value, $event)"
           @input="textareaResize"
         />
-        <contenteditable tag="p" :contenteditable="isEditable" placeholder="Оставить запись" @focus="changeComment($refs.comment.value, $event)" @keyup.enter="changeComment($refs.comment.value, $event)" v-model="selectedTask.comment" :noNL="false" :noHTML="false" @returned="selectedTask.comment" aria-placeholder="Оставить запись" />
+        <contenteditable
+          tag="p"
+          :contenteditable="isEditable"
+          placeholder="Оставить запись"
+          @focus="changeComment($refs.comment.value, $event)"
+          @keyup.enter="changeComment($refs.comment.value, $event)"
+          v-model="selectedTask.comment"
+          :noNL="false"
+          :noHTML="false"
+          @returned="selectedTask.comment"
+          aria-placeholder="Оставить запись"
+        />
       </div>
+
+      <!-- Show all -->
+      <p
+        v-if="taskMessages.length > 2 && !showAllMessages"
+        class="text-gray-500 text-sm text-center cursor-pointer underline decoration-dashed"
+        @click="showAllMessages = true"
+      >
+        Show all messages
+      </p>
+      <!-- /Show all -->
+
       <div
         v-if="taskMessages"
         class="mt-3"
@@ -2002,8 +1980,10 @@ export default {
         <div
           v-for="(key,value) in taskMessages"
           :key="value"
-          @input.self="hide" :id="'hidden_'+value"
         >
+          <div
+            v-if="(value == taskMessages.length - 1 || value == taskMessages.length - 2) || showAllMessages"
+          >
           <div
             v-if="value == 0 || (taskMessages[value] && new Date(taskMessages[value - 1].date_create).toDateString() != new Date(taskMessages[value].date_create).toDateString())"
             class="text-center"
@@ -2164,6 +2144,7 @@ export default {
                 </div>
               </div>
             </div>
+            </div>
           </div>
 
         </div>
@@ -2250,5 +2231,9 @@ export default {
   --popper-theme-border-radius: 0.75rem;
   --popper-theme-padding: 10px;
   --popper-theme-box-shadow: 0 6px 30px -6px rgba(0, 0, 0, 0.25);
+}
+
+.linkified {
+  @apply text-blue-600;
 }
 </style>

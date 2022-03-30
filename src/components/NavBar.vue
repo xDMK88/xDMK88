@@ -1,5 +1,5 @@
 <script setup>
-import { computed } from 'vue'
+import { computed, watch } from 'vue'
 import { useStore } from 'vuex'
 import {
   mdiForwardburger,
@@ -30,8 +30,14 @@ defineProps({
 })
 
 const localization = computed(() => store.state.localization.localization)
-const navigator = computed(() => store.state.navigator.navigator)
+const settings = computed(() => {
+  return store.state.navigator.navigator.settings
+})
 
+watch(settings, () => {
+  console.log('computed!')
+  settings.value.show_completed_tasks = !!settings.value.show_completed_tasks
+})
 const isNavBarVisible = computed(() => !store.state.isFullScreen)
 
 const isAsideMobileExpanded = computed(() => store.state.isAsideMobileExpanded)
@@ -52,21 +58,21 @@ const updateSettings = () => {
   store.dispatch(
     PATCH_SETTINGS,
     {
-      show_completed_tasks: navigator.value.settings.show_completed_tasks ? 1 : 0,
-      add_task_to_begin: navigator.value.settings.add_task_to_begin,
-      cal_number_of_first_week: navigator.value.settings.cal_number_of_first_week,
-      cal_show_week_number: navigator.value.settings.cal_show_week_number,
-      nav_show_tags: navigator.value.settings.nav_show_tags,
-      nav_show_overdue: navigator.value.settings.nav_show_overdue,
-      nav_show_summary: navigator.value.settings.nav_show_summary,
-      nav_show_emps: navigator.value.settings.nav_show_emps,
-      nav_show_markers: navigator.value.settings.nav_show_markers,
-      language: navigator.value.settings.language,
-      stopwatch: navigator.value.settings.stopwatch,
-      cal_work_time: navigator.value.settings.cal_work_time,
-      reminders_in_n_minutes: navigator.value.settings.reminders_in_n_minutes,
-      cal_work_week: navigator.value.settings.cal_work_week,
-      compact_mode: navigator.value.settings.compact_mode
+      show_completed_tasks: settings.value.show_completed_tasks ? 1 : 0,
+      add_task_to_begin: settings.value.add_task_to_begin,
+      cal_number_of_first_week: settings.value.cal_number_of_first_week,
+      cal_show_week_number: settings.value.cal_show_week_number,
+      nav_show_tags: settings.value.nav_show_tags,
+      nav_show_overdue: settings.value.nav_show_overdue,
+      nav_show_summary: settings.value.nav_show_summary,
+      nav_show_emps: settings.value.nav_show_emps,
+      nav_show_markers: settings.value.nav_show_markers,
+      language: settings.value.language,
+      stopwatch: settings.value.stopwatch,
+      cal_work_time: settings.value.cal_work_time,
+      reminders_in_n_minutes: settings.value.reminders_in_n_minutes,
+      cal_work_week: settings.value.cal_work_week,
+      compact_mode: settings.value.compact_mode
     }
   )
 }
@@ -154,8 +160,10 @@ const clickOnGridCard = (item, index) => {
               <div class="flex items-center justify-between">
                 <p class="text-sm font-semibold mr-1">{{ localization.show_completed_tasks }}</p>
                 <input
+                  v-if="settings"
                   class="w-6 h-6"
-                  v-model="navigator.show_completed_tasks" type="checkbox"
+                  v-model="settings.show_completed_tasks"
+                  type="checkbox"
                   @change="updateSettings"
                 >
               </div>

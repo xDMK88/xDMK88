@@ -147,7 +147,7 @@ input:focus {outline: 0;}
   padding: 8px 10px;
   min-height:40px ;
   display: table-cell;
-  max-width: 100%;
+  max-width: 85%;
   min-width: 150px;
   border-top-right-radius:10px ;
   border-bottom-right-radius:10px ;
@@ -159,7 +159,7 @@ input:focus {outline: 0;}
   padding: 8px 10px;
   min-height:40px ;
   display: table-cell;
-  max-width: 100%;
+  max-width: 85%;
   min-width: 150px;
   border-top-left-radius:10px ;
   border-bottom-right-radius:10px ;
@@ -974,7 +974,7 @@ fieldset[disabled] .btn {
 }
 .column-resize
 {
-  height: calc(100vh - 80px);
+  height: calc(98vh - 60px);
   overflow-y: auto;
   position: relative;
 }
@@ -1311,8 +1311,6 @@ label
 {
   border:1px solid gray;
 }
-
-
 
 .everyyear-content
 {

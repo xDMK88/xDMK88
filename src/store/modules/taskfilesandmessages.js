@@ -42,18 +42,10 @@ const actions = {
       axios({ url: url, method: 'GET' })
         .then(resp => {
           commit(FILES_SUCCESS, resp)
-          console.log(resp)
+          commit(MERGE_FILES_WITH_MESSAGES)
           resolve(resp)
         }).catch(err => {
-          commit(FILES_ERROR, err)
-          notify({
-            group: 'api',
-            title: 'REST API Error, please make screenshot',
-            action: FILES_REQUEST,
-            text: err.response.data
-          }, 15000)
-          // We don't want to logout on this error
-          // dispatch(AUTH_LOGOUT)
+          commit(FILES_ERROR)
           reject(err)
         })
     })
@@ -67,7 +59,7 @@ const actions = {
           commit(FILE_SUCCESS, resp)
           resolve(resp)
         }).catch(err => {
-          commit(FILES_ERROR, err)
+          commit(FILES_ERROR)
           notify({
             group: 'api',
             title: 'REST API Error, please make screenshot',
@@ -205,44 +197,39 @@ const mutations = {
     state.files = []
   },
   [MERGE_FILES_WITH_MESSAGES]: state => {
-    console.log('messages length ', state.messages.length)
-    if (!state.messages.length) {
-      for (const file in state.files) {
+    if (state.messages.length === 0) {
+      for (const file of state.files) {
+        file.msg = file.file_name
+        file._isAdded = true
         state.messages.push(file)
       }
     } else {
-      for (let i = 0; i < state.messages.length; i++) {
-        if (state.messages[i].uid_file) {
-          continue
-        }
-        const messageDate = new Date(state.messages[i].date_create)
-        // at the start
-        if (i === 0) {
-          for (const file of state.files) {
-            const fileDate = new Date(file.date_create)
+      for (const file of state.files) {
+        const fileDate = new Date(file.date_create)
+        for (var i = 0; i < state.messages.length; i++) {
+          if (state.messages[i].uid_file) {
+            continue
+          }
+          const messageDate = new Date(state.messages[i].date_create)
+          // at the start
+          if (i === 0) {
             if ((fileDate < messageDate) && (!file._isAdded)) {
               file.msg = file.file_name
               file._isAdded = true
-              state.messages.shift(file)
+              state.messages.unshift(file)
             }
-          }
-        // at the end
-        } else if (i === state.messages.length - 1) {
-          for (const file of state.files) {
+          // at the end
+          } else if (i === state.messages.length - 1) {
             const fileDate = new Date(file.date_create)
             if ((fileDate > messageDate) && (!file._isAdded)) {
               file.msg = file.file_name
               file._isAdded = true
               state.messages.push(file)
             }
-          }
-        } else {
-          const secondMessageDate = new Date(state.messages[i + 1].date_create)
-          for (const file of state.files) {
+          } else {
+            const secondMessageDate = new Date(state.messages[i + 1].date_create)
             const fileDate = new Date(file.date_create)
-            if ((messageDate < fileDate < secondMessageDate) && (!file._isAdded)) {
-              console.log('find place between', messageDate.toString(), secondMessageDate.toString())
-              console.log('trying to feet this ', fileDate.toString())
+            if ((fileDate < secondMessageDate) && (!file._isAdded)) {
               file.msg = file.file_name
               file._isAdded = true
               state.messages.splice(i + 1, 0, file)

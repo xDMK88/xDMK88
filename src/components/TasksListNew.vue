@@ -63,6 +63,21 @@
     </div>
   </div>
 
+  <div
+    class="pointer-events-none"
+    v-if="!Object.keys(storeTasks).length && status != 'loading'"
+  >
+    <img
+      class="mx-auto mt-10"
+      width="300"
+      height="300"
+      src="@/assets/images/emptytask.png"
+      alt="Empty task image"
+    >
+    <p class="text-xl text-center mt-10">There are no tasks yet :(</p>
+    <p class="text-xl text-center text-gray-600 mt-5">Let's create some!</p>
+  </div>
+
   <!-- Skeleton -->
   <div
     v-if="status == 'loading'"
@@ -344,7 +359,7 @@
             {{ employees[props.node.info.uid_customer].name }}
           </div>
           <div
-            v-if="props.node.info.email_performer && employeesByEmail[props.node.info.email_performer] && employees[props.node.info.uid] && user.current_user_email != props.node.info.email_performer && employees[props.node.info.uid_customer].email != props.node.info.email_performer"
+            v-if="props.node.info.email_performer && employeesByEmail[props.node.info.email_performer] && user.current_user_email != props.node.info.email_performer && employees[props.node.info.uid_customer].email != props.node.info.email_performer"
             class="p-1 px-2 text-xs text-white rounded-lg mr-1 flex items-center"
             :class="{ 'bg-gray-400': user.current_user_email != props.node.info.email_performer }"
           >

@@ -361,7 +361,7 @@
           <div
             v-if="props.node.info.email_performer && employeesByEmail[props.node.info.email_performer] && user.current_user_email != props.node.info.email_performer && employees[props.node.info.uid_customer].email != props.node.info.email_performer"
             class="p-1 px-2 text-xs text-white rounded-lg mr-1 flex items-center"
-            :class="{ 'bg-gray-400': user.current_user_email != props.node.info.email_performer }"
+            :class="{ 'bg-gray-400': user.current_user_email != props.node.info.email_performer, 'bg-green-500': user.current_user_uid == props.node.info.uid_customer, 'bg-opacity-50': props.node.info.status == 1 || props.node.info.status == 7 }"
           >
             <Icon
               v-if="!props.node.info.performerreaded"
@@ -408,6 +408,7 @@
           <div
             v-if="props.node.info.uid_project != '00000000-0000-0000-0000-000000000000' && projects[props.node.info.uid_project]"
             class="p-1 px-2 text-xs text-white bg-yellow-400 rounded-lg mr-1 flex items-center"
+            :class="{ 'bg-opacity-50': props.node.info.status == 1 || props.node.info.status == 7 }"
           >
             <Icon
               :path="project.path"

@@ -229,14 +229,14 @@ const tarifS = () => {
         :style="{ backgroundColor: datePickerBG }"
         show-weeknumbers="left"
         days="-1"
-        color="gray"
+        color="#CCC"
         ref="calendarclass"
         weekFromEnd="6"
         from-page="fromPage"
         to-page="toPage"
         is-expanded
         :locale="navigatorMenu.lang"
-        :masks="{ weekdays: 'WW' }"
+        :masks="{ weekdays: 'WWW' }"
         :attributes="attrs"
         :is-dark="isDark"
         mode="single"
@@ -315,10 +315,10 @@ padding-left: 0 !important;
 padding-right: 0 !important;
 }
 .vc-container .vc-highlights .vc-day-box-center-center:nth-child(2) .vc-highlight {
-@apply bg-gray-300 !important;
+@apply bg-gray-300;
 }
 .vc-container .vc-highlight {
-@apply bg-gray-300 !important;
+@apply bg-gray-300;
 }
 .vc-day-content .vc-focusable
 {
@@ -477,10 +477,10 @@ padding-right: 0 !important;
 }
 
 &, & * {
-    box-sizing: border-box;
-&:focus {
+  box-sizing: border-box;
+  &:focus {
    outline: none !important;
- }
+  }
 }
 & button,
 & [role='button'] {

@@ -58,7 +58,7 @@
         :placeholder="'Enter task name'"
         borderless
         transparent
-        @keyup.enter="createTask(); this.focus()"
+        @keyup.enter="createTask"
       />
     </div>
   </div>
@@ -74,7 +74,7 @@
       src="@/assets/images/emptytask.png"
       alt="Empty task image"
     >
-    <p class="text-xl text-center mt-10">There are no tasks yet :(</p>
+    <p class="text-xl text-center mt-10">Create tasks for today or go to another day to stay up to date</p>
     <p class="text-xl text-center text-gray-600 mt-5">Let's create some!</p>
   </div>
 
@@ -662,6 +662,9 @@ export default {
       if (val == null) {
         val = new Date()
       }
+      if (typeof val === 'string') { // parse date from ISO 8601 string
+        val = new Date(val)
+      }
       const month = pad2(val.getMonth() + 1)
       const day = pad2(val.getDate())
       const year = pad2(val.getFullYear())
@@ -788,6 +791,9 @@ export default {
     }
 
     const removeTask = (uid) => {
+      if (isPropertiesMobileExpanded.value) {
+        store.dispatch('asidePropertiesToggle', false)
+      }
       store.dispatch(TASK.REMOVE_TASK, uid)
     }
 

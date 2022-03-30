@@ -63,7 +63,7 @@ const clickOnGridCard = (value) => {
 }
 </script>
 
-<template class="w-full rowall">
+<template class="w-full">
   <div
     class="flex items-center w-full justify-between mt-3 order-1"
   >

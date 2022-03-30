@@ -23,8 +23,7 @@ export default {
     Popper,
     contenteditable,
     tabs: Tabs,
-    tab: Tab
-    contenteditable,
+    tab: Tab,
     FileMessage
   },
   directives: {
@@ -76,11 +75,6 @@ export default {
         (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
       )
     }
-    function emailtomass (emails) {
-      emails += '..' + emails
-      console.log(emails)
-      return emails
-    }
     const changeEmployee = (uid, email) => {
       store.dispatch(TASK.CHANGE_TASK_PERFORMER, { uid: uid, value: email }).then(
         resp => {
@@ -119,7 +113,6 @@ export default {
         })
     }
     const ClickTagsChange = () => {
-      console.log(selectedTask.value.tags)
       const data = {
         uid: selectedTask.value.uid,
         tags: selectedTask.value.tags
@@ -136,16 +129,16 @@ export default {
           taskFiles.value.uid = data.uid_task
         })
     }
-    const changeComment = (comment, event) => {
+    const changeComment = (event) => {
       const data = {
         uid: selectedTask.value.uid,
-        value: comment
+        value: event.target.innerHTML
       }
       store.dispatch(TASK.CHANGE_TASK_COMMENT, data).then(
         resp => {
           //  selectedTask.value.comment = comment
         })
-      this.$refs.comment.value = 'Оставить запись'
+      //  this.$refs.comment.value = 'Оставить запись'
     }
     const unchecked = () => {
 
@@ -171,16 +164,15 @@ export default {
         })
       taskMsg.value = ''
     }
-    const changeName = (name, event) => {
+    const changeName = (event) => {
       const data = {
         uid: selectedTask.value.uid,
-        value: name
+        value: event.target.innerText
       }
       store.dispatch(TASK.CHANGE_TASK_NAME, data).then(
         resp => {
-          selectedTask.value.name = name
+          selectedTask.value.name = event.target.innerText
         })
-      event.target.value = name
     }
     const resetProject = () => {
       store.dispatch(TASK.CHANGE_TASK_PROJECT, { uid: selectedTask.value.uid, value: '00000000-0000-0000-0000-000000000000' }).then(
@@ -286,10 +278,10 @@ export default {
       console.log(new Date(this.range.start).toLocaleTimeString() + '-' + new Date(this.range.end).toLocaleTimeString())
       const data = {
         uid: selectedTask.value.uid,
-        str_date_begin: new Date(this.range.start).toLocaleDateString(),
-        str_date_end: new Date(this.range.end).toLocaleDateString(),
-        str_time_begin: new Date(this.range.start).toLocaleTimeString(),
-        str_time_end: new Date(this.range.end).toLocaleTimeString(),
+        str_date_begin: new Date(2022, 3, 18),
+        str_date_end: new Date(2022, 3, 30),
+        str_time_begin: '00:00',
+        str_time_end: '23:59',
         reset: 0
       }
       store.dispatch(TASK.CHANGE_TASK_DATE, data).then(
@@ -310,8 +302,17 @@ export default {
         }
       })
     }
+    const changeEveryMonthType = (value) => {
+      console.log(value)
+      this.ActiveSelect = value
+    }
+    const changeEveryYearType = (value) => {
+      this.ActiveYartype = value
+    }
     return {
       copyurl,
+      changeEveryYearType,
+      changeEveryMonthType,
       delTask,
       ClickAccessCheck,
       getAnyUrl,
@@ -326,7 +327,6 @@ export default {
       closeProperties,
       ClickAccessEmail,
       ClickTagsChange,
-      emailtomass,
       changeColors,
       changeEmployee,
       changeFocus,
@@ -365,7 +365,7 @@ export default {
       cusers: computed(() => store.state.user.user),
       newArray: taskMessages.value.concat(taskFiles.value),
       months: ['Января', 'Февраля', 'Марта', 'Апреля', 'Мая', 'Июня', 'Июля', 'Августа', 'Сентября', 'Октября', 'Ноября', 'Декабря'],
-      days: ['Воскресенье', 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота', 'Воскресенье'],
+      days: ['', 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота', 'Воскресенье'],
       day: ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'],
       firstcount: ['последний', 'первый', 'второй', 'третий', 'четвертый', 'последний'],
       myday: ['вчера', 'cегодня', 'завтра'],
@@ -390,7 +390,10 @@ export default {
         date: new Date(),
         timezone: 'Europe/Moscow'
       },
-      range: [],
+      range: {
+        start: new Date(selectedTask.value.customer_date_begin),
+        end: new Date(selectedTask.value.customer_date_end)
+      },
       masks: {
         input: 'D MMM',
         weekdays: 'WW'
@@ -420,14 +423,13 @@ export default {
       SeriesYearMonthDay: selectedTask.value.SeriesYearMonthDay,
       SeriesYearWeekType: selectedTask.value.SeriesYearWeekType,
       SeriesYearDayOfWeek: selectedTask.value.SeriesYearDayOfWeek,
-      selectedTaskcomment: ''
+      selectedTaskcomment: selectedTask.value.comment,
+      ActiveSelect: selectedTask.value.SeriesMonthType,
+      ActiveYartype: selectedTask.value.SeriesYearType
     }
   },
   mounted () {
-    this.$refs.comment.style.minHeight = this.$refs.comment.scrollHeight + 'px'
-    this.$refs.nameTask.style.minHeight = this.$refs.nameTask.scrollHeight + 'px'
   },
-
   methods: {
     HtmlRender: function (text) {
       const ur = text.split('lt://').pop()
@@ -482,10 +484,6 @@ export default {
       const i = Math.floor(Math.log(bytes) / Math.log(k))
       return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i]
     },
-    textareaResize () {
-      this.$refs.comment.style.minHeight = this.$refs.comment.scrollHeight + 'px'
-      this.$refs.nameTask.style.minHeight = this.$refs.nameTask.scrollHeight + 'px'
-    },
     extension: function (filename) {
       let ext = 'не определилось'
       const parts = filename.value.split('.')
@@ -500,6 +498,7 @@ export default {
 }
 </script>
 <template>
+  {{selectedTask.type}}
   <div class="break-words">
     <div class="column-resize">
       <div />
@@ -546,14 +545,8 @@ export default {
         </div>
       </div>
       <div class="user_child_customer_custom">
-        <strong><textarea
-          ref="nameTask" style="font-weight: bold; font-size: 18px; display: none"
-          :value="selectedTask.name"
-          class="form-control taskName-custom"
-          @keyup.enter="changeName($refs.nameTask.value, $event)"
-          @input="textareaResize"
-        />
-          <contenteditable class="form-control taskName-custom" style="font-weight: bold; font-size: 18px" tag="p" :contenteditable="isEditable" @focus="changeName($refs.nameTask.value, $event)" @keyup.enter="changeName($refs.nameTask.value, $event)" v-model="selectedTask.name" :noNL="false" :noHTML="true" @returned="changeName($refs.nameTask.value, $event)" />
+        <strong>
+          <contenteditable class="form-control taskName-custom" style="font-weight: bold; font-size: 18px" tag="p" :contenteditable="isEditable" @keyup.enter="changeName($event)" v-model="selectedTask.name" :noNL="false" :noHTML="true" @returned="changeName($event)" />
         </strong>
       </div>
       <!--   <p class="mt-3"><strong>{{ localization.task_created }}:</strong> {{ selectedTask.date_create }}</p>
@@ -577,6 +570,7 @@ export default {
         >
             <span v-if="selectedTask.status!==3">
             <!-- <p class="text-center">{{ localization.Labels }}</p>-->
+              <!-- Поручить (личное сообщение) -->
             <button
               v-if="selectedTask.type===1"
               ref="btnRefEmployee"
@@ -599,6 +593,7 @@ export default {
                 class="rounded"
               >Поручить</span>
             </button>
+              <!-- Поручено на email -->
             <button
               v-else-if="selectedTask.type===2"
               ref="btnRefEmployee"
@@ -619,6 +614,7 @@ export default {
               </svg>
               <span>{{ selectedTask.email_performer }}</span>
             </button>
+              <!-- Перепоручить -->
             <button
               v-else-if="selectedTask.type===3"
               ref="btnRefEmployee"
@@ -642,6 +638,7 @@ export default {
                 class="rounded"
               >Перепоручить</span>
             </button>
+              <!-- Взять на исполнение -->
             <button
               v-else-if="selectedTask.type===4"
               ref="btnRefEmployee"
@@ -884,12 +881,7 @@ export default {
                     />
                   </svg>
                 </button>
-                <span v-if="new Date(selectedTask.customer_date_begin).toLocaleDateString() !== new Date(selectedTask.customer_date_end).toLocaleDateString()">
-                  <span>{{ new Date(selectedTask.customer_date_begin).getDate() }}<span v-if="new Date(selectedTask.customer_date_end).toLocaleString()!==new Date(selectedTask.customer_date_begin).toLocaleString()">-{{ new Date(selectedTask.customer_date_end).getDate() }}</span> {{ months[new Date(selectedTask.customer_date_end).getMonth()] }}</span>
-                </span>
-                <span v-else>
-                  <span>{{ new Date(selectedTask.customer_date_begin).getDate() }} {{ months[new Date(selectedTask.customer_date_end).getMonth()] }}</span>
-                </span>
+                <span>{{selectedTask.term_customer}}</span>
                 <button @click="resetCalendar" class="btn-close-popover"><svg width="5" height="5" viewBox="0 0 16 15" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M14.8483 2.34833C15.317 1.8797 15.317 1.11991 14.8483 0.651277C14.3797 0.182647 13.6199 0.182647 13.1513 0.651277L7.99981 5.80275L2.84833 0.651277C2.3797 0.182647 1.61991 0.182647 1.15128 0.651277C0.682647 1.11991 0.682647 1.8797 1.15128 2.34833L6.30275 7.4998L1.15128 12.6513C0.682647 13.1199 0.682647 13.8797 1.15128 14.3483C1.61991 14.817 2.3797 14.817 2.84833 14.3483L7.99981 9.19686L13.1513 14.3483C13.6199 14.817 14.3797 14.817 14.8483 14.3483C15.317 13.8797 15.317 13.1199 14.8483 12.6513L9.69686 7.4998L14.8483 2.34833Z" fill="black" fill-opacity="0.5"/>
           </svg>
@@ -937,43 +929,73 @@ export default {
               <div class="text-white body-popover-custom body-repeat-custom rounded-b-lg">
                 <tabs :options="{ useUrlFragment: false }">
                   <tab name="Не повторять" v-model="SeriesType">
-                    <div></div>
+                    <div class="top-panel-repeat"></div>
+                    <div class="form-group-button every-month-button">
+                      <div class="form-group">
+                        <button class="btn-save-repeat">
+                          Сохранить
+                        </button>
+                      </div>
+                      <div class="form-group">
+                        <button
+                          class="btn-cancel-repeat" @click="close"
+                        >
+                          Отменить
+                        </button>
+                      </div>
+                    </div>
                   </tab >
                   <tab name="Ежедневно" v-model="SeriesType">
                     <div
                       class="tab-content-repeat"
                     >
-                      <div class="every-content flex">
-                        <label>Каждый </label>
-                        <div class="form-group">
-                          <select
-                            class="form-control form-control-select" v-model="SeriesAfterCount"
-                            name=""
-                          >
-                            <option :value="item"
-                              v-for="item in 365"
-                              :key="item"
+                      <div class="top-panel-repeat">
+                        <div class="every-content flex">
+                          <label>Каждый </label>
+                          <div class="form-group">
+                            <select
+                              class="form-control form-control-select-repeat" v-model="SeriesAfterCount"
+                              name=""
                             >
-                              {{ item }}
-                            </option>
-                          </select>
+                              <option :value="item"
+                                      v-for="item in 365"
+                                      :key="item"
+                              >
+                                {{ item }}
+                              </option>
+                            </select>
+                          </div>
+                          <div class="form-group">
+                            <select class="form-control form-control-select-repeat" v-model="SeriesAfterType">
+                              <option value="1" selected="selected">
+                                День
+                              </option>
+                              <option value="2">
+                                Неделю
+                              </option>
+                              <option value="3">
+                                Месяц
+                              </option>
+                              <option value="4">
+                                Год
+                              </option>
+                            </select>
+                          </div>
                         </div>
-                        <div class="form-group">
-                          <select class="form-control form-control-select" v-model="SeriesAfterType">
-                            <option value="1" selected="selected">
-                              День
-                            </option>
-                            <option value="2">
-                              Неделю
-                            </option>
-                            <option value="3">
-                              Месяц
-                            </option>
-                            <option value="4">
-                              Год
-                            </option>
-                          </select>
-                        </div>
+                      </div>
+                    </div>
+                    <div class="form-group-button">
+                      <div class="form-group">
+                        <button class="btn-save-repeat">
+                          Сохранить
+                        </button>
+                      </div>
+                      <div class="form-group">
+                        <button
+                          class="btn-cancel-repeat" @click="close"
+                        >
+                          Отменить
+                        </button>
                       </div>
                     </div>
                   </tab>
@@ -981,23 +1003,25 @@ export default {
                     <div
                       class="tab-content-repeat"
                     >
-                      <div class="everyweek-content">
-                        <div class="flex">
+                      <div class="top-panel-repeat">
+                        <div class="flex repeat-seleclist">
                           <label>Каждую </label>
                           <div class="form-group">
                             <select
-                              class="form-control form-control-select" v-model="SeriesWeekCount"
+                              class="form-control form-control-select-repeat" v-model="SeriesWeekCount"
                               name=""
                             >
                               <option :value="item"
-                                v-for="item in 365"
-                                :key="item"
+                                      v-for="item in 365"
+                                      :key="item"
                               >
                                 {{ item }} неделю
                               </option>
                             </select>
                           </div>
                         </div>
+                      </div>
+                      <div class="everyweek-content">
                         <div class="form-group">
                           <div class="form-everyweek-container">
                             <button class="btn-day-week active" v-if="selectedTask.SeriesWeekMon===1">
@@ -1046,53 +1070,111 @@ export default {
                         </div>
                       </div>
                     </div>
+                    <div class="form-group-button">
+                      <div class="form-group">
+                        <button class="btn-save-repeat">
+                          Сохранить
+                        </button>
+                      </div>
+                      <div class="form-group">
+                        <button
+                          class="btn-cancel-repeat" @click="close"
+                        >
+                          Отменить
+                        </button>
+                      </div>
+                    </div>
                   </tab>
                   <tab name="Ежемесячно" v-model="SeriesType">
                     <div
                       class="tab-content-repeat"
-                    >
-                      <div class="everymonth-content">
-                        <div class="flex">
-                          <label>Повтор </label>
+                    ><div class="top-panel-repeat">
+                      <div class="flex repeat-seleclist">
+                        <label>Повтор </label>
+                        <div class="form-group">
+                          <select
+                            class="form-control form-control-select-repeat" v-model="SeriesMonthType" @change="changeEveryMonthType(SeriesMonthType)"
+                            name=""
+                          >
+                            <option value="1">Каждый</option>
+                            <option value="2">Первый</option>
+                            <option value="3">Второй</option>
+                            <option value="4">Третий</option>
+                            <option value="5">Четвертый</option>
+                            <option value="6">Последний</option>
+                          </select>
+                        </div>
+                        <div class="everymonthtype" :class="{showselect:ActiveSelect==1}">
                           <div class="form-group">
                             <select
-                              class="form-control form-control-select" v-model="SeriesMonthType"
-                              name=""
-                            >
-                              <option value="1">Каждый</option>
-                              <option value="2">Первый</option>
-                              <option value="3">Второй</option>
-                              <option value="4">Третий</option>
-                              <option value="5">Четвертый</option>
-                              <option value="6">Последний</option>
-                            </select>
-                          </div>
-                          <div class="form-group">
-                            <select
-                              class="form-control form-control-select" v-model="SeriesMonthCount"
+                              class="form-control form-control-select-repeat" v-model="SeriesMonthCount"
                               name=""
                             >
                               <option :value="item"
-                                v-for="item in 365"
-                                :key="item"
+                                      v-for="item in 365"
+                                      :key="item"
                               >
                                 {{ item }} месяц
                               </option>
                             </select>
                           </div>
                         </div>
-                        <div class="form-group">
-                          <div class="form-everymonth-container">
-                            <button
-                              v-for="day in 31"
-                              :key="day"
-                              class="btn-day-month" :class="{active:selectedTask.SeriesMonthDay===day}"
+                        <div class="everymonthtype" :class="{showselect:ActiveSelect>1}">
+                          <div class="form-group">
+                            <select class="form-control form-control-select-repeat" v-model="SeriesMonthDayOfWeek">
+                              <option :value="value"
+                                      v-for="(item, value) in days"
+                                      :key="value>0"
+                              >
+                                {{ item }}
+                              </option>
+                            </select>
+                          </div>
+                          <div class="form-group">
+                            <select
+                              class="form-control form-control-select-repeat" v-model="SeriesMonthCount"
+                              name=""
                             >
-                              <input type="checkbox" v-model="SeriesMonthDay" :value="day" style="display: none">
-                              {{ day }}
-                            </button>
+                              <option :value="item"
+                                      v-for="item in 365"
+                                      :key="item"
+                              >
+                                Каждый {{ item }} месяц
+                              </option>
+                            </select>
                           </div>
                         </div>
+                      </div>
+                    </div>
+                      <div class="everymonth-content">
+                        <div class="everymonthtype" :class="{showselect:ActiveSelect==1}">
+                          <div class="form-group">
+                            <div class="form-everymonth-container">
+                              <button
+                                v-for="day in 31"
+                                :key="day"
+                                class="btn-day-month" :class="{active:selectedTask.SeriesMonthDay===day}"
+                              >
+                                <input type="checkbox" v-model="SeriesMonthDay" :value="day" style="display: none">
+                                {{ day }}
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="form-group-button every-month-button">
+                      <div class="form-group">
+                        <button class="btn-save-repeat">
+                          Сохранить
+                        </button>
+                      </div>
+                      <div class="form-group">
+                        <button
+                          class="btn-cancel-repeat" @click="close"
+                        >
+                          Отменить
+                        </button>
                       </div>
                     </div>
                   </tab>
@@ -1100,15 +1182,15 @@ export default {
                     <div
                       class="tab-content-repeat"
                     >
-                      <div class="everyyear-content">
-                        <div class="flex">
+                      <div class="top-panel-repeat">
+                        <div class="flex repeat-seleclist">
                           <label>Повтор </label>
                           <div
                             class="form-group"
                             aria-valuemax="SeriesYearType"
                           >
                             <select
-                              class="form-control form-control-select" v-model="SeriesYearType"
+                              class="form-control form-control-select-repeat" v-model="SeriesYearType" @change="changeEveryYearType(SeriesYearType)"
                               name="SeriesYearWeekType"
                             >
                               <option value="1">Каждый</option>
@@ -1119,50 +1201,78 @@ export default {
                               <option value="6">Последний</option>
                             </select>
                           </div>
-                          <div class="form-group">
-                            <select
-                              class="form-control form-control-select" v-model="SeriesYearMonth"
-                              name=""
-                            >
-                              <option :value="value+1"
-                                v-for="(item, value) in months"
-                                :key="value"
+                          <div class="everyyeartype" :class="{showselect:ActiveYartype==1}">
+                            <div class="form-group">
+                              <select
+                                class="form-control form-control-select-repeat" v-model="SeriesYearMonth"
+                                name=""
                               >
-                                {{ item }}
-                              </option>
-                            </select>
+                                <option :value="value+1"
+                                        v-for="(item, value) in months"
+                                        :key="value"
+                                >
+                                  {{ item }}
+                                </option>
+                              </select>
+                            </div>
+                          </div>
+                          <div class="everyyeartype" :class="{showselect:ActiveYartype>1}">
+                            <div class="form-group">
+                              <select class="form-control form-control-select-repeat" v-model="SeriesYearDayOfWeek">
+                                <option :value="value"
+                                        v-for="(item, value) in days"
+                                        :key="value"
+                                >
+                                  {{ item }}
+                                </option>
+                              </select>
+                            </div>
                           </div>
                         </div>
-                        <div class="form-group">
-                          <div class="form-everyyear-container" >
-                            <button
-                              v-for="day in 31"
-                              :key="day"
-                              class="btn-day-year" :class="{active:selectedTask.SeriesYearMonthDay===day}"
-                            >
-                              <input type="checkbox" :value="day" v-model="selectedTask.SeriesYearMonthDay" style="display: none">
-                              {{ day }}
-                            </button>
+                      </div>
+                      <div class="everyyear-content">
+                        <div class="everyyeartype" :class="{showselect:ActiveYartype==1}">
+                          <div class="form-group">
+                            <div class="form-everyyear-container" >
+                              <button
+                                v-for="(day,value) in 31"
+                                :key="value"
+                                class="btn-day-year" :class="{active:selectedTask.SeriesYearMonthDay===day}"
+                              >
+                                <input type="checkbox" :value="value" v-model="SeriesYearMonthDay" style="display: none">
+                                {{ day }}
+                              </button>
+                            </div>
                           </div>
                         </div>
+                        <div class="everyyearbuttontype" :class="{showselect:ActiveYartype>1}">
+                          <button
+                            v-for="(month,value) in months"
+                            :key="value"
+                            class="btn-month-year" :class="{active:selectedTask.SeriesYearMonth===value+1}"
+                          >
+                            <input type="checkbox" :value="value+1" v-model="SeriesYearMonth" style="display: none">
+                            {{ month.substr(0,3) }}
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="form-group-button">
+                      <div class="form-group">
+                        <button class="btn-save-repeat">
+                          Сохранить
+                        </button>
+                      </div>
+                      <div class="form-group">
+                        <button
+                          class="btn-cancel-repeat" @click="close"
+                        >
+                          Отменить
+                        </button>
                       </div>
                     </div>
                   </tab>
                 </tabs>
-              </div>
-              <div class="form-group-button">
-                <div class="form-group">
-                  <button class="btn-save-repeat">
-                    Сохранить
-                  </button>
-                </div>
-                <div class="form-group">
-                  <button
-                    class="btn-cancel-repeat" @click="close"
-                  >
-                    Отменить
-                  </button>
-                </div>
               </div>
             </div>
           </template>
@@ -1203,14 +1313,13 @@ export default {
             </span>
               <span v-if="selectedTask.SeriesType===3">
                 <span v-if="selectedTask.SeriesMonthType===1">Ежемесячно: Каждый {{ selectedTask.SeriesMonthCount }} месяц {{ selectedTask.SeriesMonthDay }} числа</span>
-                <span v-else>
-              {{ firstcount[selectedTask.SeriesMonthWeekType] }}
+                <span v-else>Ежемесячно: {{ firstcount[selectedTask.SeriesMonthWeekType] }}
                   <span>{{ day[selectedTask.SeriesMonthDayOfWeek] }} каждый {{ selectedTask.SeriesMonthCount }} месяц</span>
             </span>
               </span>
               <span v-if="selectedTask.SeriesType===4">
                 <span v-if="selectedTask.SeriesYearType===1">Ежегодно: Каждый год {{ selectedTask.SeriesYearMonthDay }}  {{ months[selectedTask.SeriesYearMonth-1] }}</span>
-                <span v-else>
+                <span v-else>Ежегодно:
               Каждый {{ months[selectedTask.SeriesYearMonth-1] }} {{ firstcount[selectedTask.SeriesYearWeekType] }}
               {{ day[selectedTask.SeriesYearDayOfWeek] }}
             </span>
@@ -1937,18 +2046,8 @@ export default {
         </div>
       </div>
       <div class="mt-3 description-content">
-        <textarea v-html="selectedTask.comment"
-          ref="comment"
-          :value="selectedTask.comment"
-          rows="10"
-          cols="40"
-          placeholder="Оставить запись"
-          style="height: 100%; display: none;"
-          class="form-control comment-custom"
-          @keyup.enter="changeComment($refs.comment.value, $event)"
-          @input="textareaResize"
-        />
-        <contenteditable tag="div" :contenteditable="isEditable" placeholder="Оставить запись" @focus="true" data-position="100" v-model="selectedTask.comment" @keyup.enter="changeComment($refs.comment.value, $event)" @returned="changeName($refs.nameTask.value, $event)" :noNL="false" :noHTML="false" v-linkify:options="{ className: 'text-blue-600' }"/>
+        <div v-html="selectedTask.comment" ref="comment" contenteditable="true" v-linkify:options="{ className: 'text-blue-600' }" @keyup.enter="changeComment($event)">
+        </div>
       </div>
       <div
         v-if="taskMessages"
@@ -2182,7 +2281,6 @@ export default {
         </span>
       </div>
     </div>
-  </div>
 </template>
 <style>
 .dark {

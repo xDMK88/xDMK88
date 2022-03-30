@@ -498,7 +498,6 @@ export default {
 }
 </script>
 <template>
-  {{selectedTask.type}}
   <div class="break-words">
     <div class="column-resize">
       <div />

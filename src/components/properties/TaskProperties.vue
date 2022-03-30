@@ -13,7 +13,6 @@ import { copyText } from 'vue3-clipboard'
 import contenteditable from 'vue-contenteditable'
 import sanitizeHtml from 'sanitize-html'
 import linkify from 'vue-linkify'
-
 import { Tabs, Tab } from 'vue3-tabs-component'
 export default {
   components: {
@@ -141,7 +140,7 @@ export default {
       }
       store.dispatch(TASK.CHANGE_TASK_COMMENT, data).then(
         resp => {
-          selectedTask.value.comment = comment
+          //  selectedTask.value.comment = comment
         })
       this.$refs.comment.value = 'Оставить запись'
     }
@@ -399,41 +398,25 @@ export default {
       },
       firstDayOfWeek: 2,
       mode: 'single',
-      selectedDays: selectedTask.value.SeriesAfterCount,
       isOpen: false,
       activeTab: '',
       tabs: [],
       isActive: false,
-      allowedTags: [
-        'lt://', 'address', 'article', 'aside', 'footer', 'header', 'h1', 'h2', 'h3', 'h4',
-        'h5', 'h6', 'hgroup', 'main', 'nav', 'section', 'blockquote', 'dd', 'div',
-        'dl', 'dt', 'figcaption', 'figure', 'hr', 'li', 'main', 'ol', 'p', 'pre',
-        'ul', 'a', 'abbr', 'b', 'bdi', 'bdo', 'br', 'cite', 'code', 'data', 'dfn',
-        'em', 'i', 'kbd', 'mark', 'q', 'rb', 'rp', 'rt', 'rtc', 'ruby', 's', 'samp',
-        'small', 'span', 'strong', 'sub', 'sup', 'time', 'u', 'var', 'wbr', 'caption',
-        'col', 'colgroup', 'table', 'tbody', 'td', 'tfoot', 'th', 'thead', 'tr'
-      ],
-      disallowedTagsMode: 'discard',
-      allowedAttributes: {
-        a: [
-          'href', 'name', 'target'
-        ],
-        img: [
-          'src', 'srcset', 'alt', 'title', 'width', 'height', 'loading'
-        ]
-      },
-      selfClosing: [
-        'img', 'br', 'hr', 'area', 'base', 'basefont', 'input', 'link', 'meta'
-      ],
-      allowedSchemes: [
-        'http', 'https', 'ftp', 'mailto', 'tel', 'lt'
-      ],
-      allowedSchemesByTag: {},
-      allowedSchemesAppliedToAttributes: [
-        'href', 'src', 'cite'
-      ],
-      allowProtocolRelative: true,
-      enforceHtmlBoundary: false
+      SeriesType: selectedTask.value.SeriesType,
+      SeriesAfterCount: selectedTask.value.SeriesAfterCount,
+      SeriesAfterType: selectedTask.value.SeriesAfterType,
+      SeriesWeekCount: selectedTask.value.SeriesWeekCount,
+      SeriesMonthType: selectedTask.value.SeriesMonthType,
+      SeriesMonthCount: selectedTask.value.SeriesMonthCount,
+      SeriesMonthDay: selectedTask.value.SeriesMonthDay,
+      SeriesMonthWeekType: selectedTask.value.SeriesMonthWeekType,
+      SeriesMonthDayOfWeek: selectedTask.value.SeriesMonthDayOfWeek,
+      SeriesYearType: selectedTask.value.SeriesYearType,
+      SeriesYearMonth: selectedTask.value.SeriesYearMonth,
+      SeriesYearMonthDay: selectedTask.value.SeriesYearMonthDay,
+      SeriesYearWeekType: selectedTask.value.SeriesYearWeekType,
+      SeriesYearDayOfWeek: selectedTask.value.SeriesYearDayOfWeek,
+      selectedTaskcomment: ''
     }
   },
   mounted () {
@@ -443,8 +426,6 @@ export default {
 
   methods: {
     HtmlRender: function (text) {
-      const ur = text.split('lt://').pop()
-      console.log(ur)
       const htmlElement = sanitizeHtml(text, {
         allowedTags: [
           'address', 'article', 'aside', 'footer', 'header', 'h1', 'h2', 'h3', 'h4',
@@ -476,8 +457,6 @@ export default {
         allowProtocolRelative: true,
         enforceHtmlBoundary: false
       })
-      const html = '<strong>hello world</strong>'
-      console.log(sanitizeHtml(html))
       return htmlElement
     },
     gotoParentNode (uid) {
@@ -949,10 +928,10 @@ export default {
             <div class="popper">
               <div class="text-white body-popover-custom body-repeat-custom rounded-b-lg">
                 <tabs :options="{ useUrlFragment: false }">
-                  <tab name="Не повторять">
+                  <tab name="Не повторять" v-model="SeriesType">
                     <div></div>
-                  </tab>
-                  <tab name="Ежедневно">
+                  </tab >
+                  <tab name="Ежедневно" v-model="SeriesType">
                     <div
                       class="tab-content-repeat"
                     >
@@ -960,21 +939,20 @@ export default {
                         <label>Каждый </label>
                         <div class="form-group">
                           <select
-                            class="form-control form-control-select" v-model="selected"
+                            class="form-control form-control-select" v-model="SeriesAfterCount"
                             name=""
                           >
-                            <option
+                            <option :value="item"
                               v-for="item in 365"
                               :key="item"
-                              :selected="{selected: selectedTask.SeriesAfterCount===item}"
                             >
                               {{ item }}
                             </option>
                           </select>
                         </div>
                         <div class="form-group">
-                          <select class="form-control form-control-select">
-                            <option value="1">
+                          <select class="form-control form-control-select" v-model="SeriesAfterType">
+                            <option value="1" selected="selected">
                               День
                             </option>
                             <option value="2">
@@ -991,7 +969,7 @@ export default {
                       </div>
                     </div>
                   </tab>
-                  <tab name="Еженедельно">
+                  <tab name="Еженедельно" v-model="SeriesType">
                     <div
                       class="tab-content-repeat"
                     >
@@ -1000,10 +978,10 @@ export default {
                           <label>Каждую </label>
                           <div class="form-group">
                             <select
-                              class="form-control form-control-select"
+                              class="form-control form-control-select" v-model="SeriesWeekCount"
                               name=""
                             >
-                              <option
+                              <option :value="item"
                                 v-for="item in 365"
                                 :key="item"
                               >
@@ -1014,22 +992,46 @@ export default {
                         </div>
                         <div class="form-group">
                           <div class="form-everyweek-container">
-                            <button class="btn-day-week">
+                            <button class="btn-day-week active" v-if="selectedTask.SeriesWeekMon===1">
+                              Пн.
+                            </button>
+                            <button class="btn-day-week" v-else>
+                              Пн.
+                            </button>
+                            <button class="btn-day-week active" v-if="selectedTask.SeriesWeekTue===1">
                               Вт.
                             </button>
-                            <button class="btn-day-week">
+                            <button class="btn-day-week" v-else>
+                              Вт.
+                            </button>
+                            <button class="btn-day-week active" v-if="selectedTask.SeriesWeekWed===1">
                               Ср.
                             </button>
-                            <button class="btn-day-week">
+                            <button class="btn-day-week" v-else>
+                              Ср.
+                            </button>
+                            <button class="btn-day-week active" v-if="selectedTask.SeriesWeekThu===1">
                               Чт.
                             </button>
-                            <button class="btn-day-week">
+                            <button class="btn-day-week" v-else>
+                              Чт.
+                            </button>
+                            <button class="btn-day-week active" v-if="selectedTask.SeriesWeekFri===1">
                               Пт.
                             </button>
-                            <button class="btn-day-week">
+                            <button class="btn-day-week" v-else>
+                              Пт.
+                            </button>
+                            <button class="btn-day-week active" v-if="selectedTask.SeriesWeekSat===1">
                               Сб.
                             </button>
-                            <button class="btn-day-week">
+                            <button class="btn-day-week" v-else>
+                              Сб.
+                            </button>
+                            <button class="btn-day-week active" v-if="selectedTask.SeriesWeekSun===1">
+                              Вск.
+                            </button>
+                            <button class="btn-day-week" v-else>
                               Вск.
                             </button>
                           </div>
@@ -1037,7 +1039,7 @@ export default {
                       </div>
                     </div>
                   </tab>
-                  <tab name="Ежемесячно">
+                  <tab name="Ежемесячно" v-model="SeriesType">
                     <div
                       class="tab-content-repeat"
                     >
@@ -1046,23 +1048,23 @@ export default {
                           <label>Повтор </label>
                           <div class="form-group">
                             <select
-                              class="form-control form-control-select"
+                              class="form-control form-control-select" v-model="SeriesMonthType"
                               name=""
                             >
-                              <option>Каждый</option>
-                              <option>Первый</option>
-                              <option>Второй</option>
-                              <option>Третий</option>
-                              <option>Четвертый</option>
-                              <option>Последний</option>
+                              <option value="1">Каждый</option>
+                              <option value="2">Первый</option>
+                              <option value="3">Второй</option>
+                              <option value="4">Третий</option>
+                              <option value="5">Четвертый</option>
+                              <option value="6">Последний</option>
                             </select>
                           </div>
                           <div class="form-group">
                             <select
-                              class="form-control form-control-select"
+                              class="form-control form-control-select" v-model="SeriesMonthCount"
                               name=""
                             >
-                              <option
+                              <option :value="item"
                                 v-for="item in 365"
                                 :key="item"
                               >
@@ -1076,8 +1078,9 @@ export default {
                             <button
                               v-for="day in 31"
                               :key="day"
-                              class="btn-day-month"
+                              class="btn-day-month" :class="{active:selectedTask.SeriesMonthDay===day}"
                             >
+                              <input type="checkbox" v-model="SeriesMonthDay" :value="day" style="display: none">
                               {{ day }}
                             </button>
                           </div>
@@ -1085,7 +1088,7 @@ export default {
                       </div>
                     </div>
                   </tab>
-                  <tab name="Ежегодно">
+                  <tab name="Ежегодно" v-model="SeriesType">
                     <div
                       class="tab-content-repeat"
                     >
@@ -1097,27 +1100,25 @@ export default {
                             aria-valuemax="SeriesYearType"
                           >
                             <select
-                              class="form-control form-control-select"
+                              class="form-control form-control-select" v-model="SeriesYearType"
                               name="SeriesYearWeekType"
                             >
-                              <option value="1">
-                                Каждый
-                              </option>
-                              <option>Первый</option>
-                              <option>Второй</option>
-                              <option>Третий</option>
-                              <option>Четвертый</option>
-                              <option>Последний</option>
+                              <option value="1">Каждый</option>
+                              <option value="2">Первый</option>
+                              <option value="3">Второй</option>
+                              <option value="4">Третий</option>
+                              <option value="5">Четвертый</option>
+                              <option value="6">Последний</option>
                             </select>
                           </div>
                           <div class="form-group">
                             <select
-                              class="form-control form-control-select"
+                              class="form-control form-control-select" v-model="SeriesYearMonth"
                               name=""
                             >
-                              <option
-                                v-for="item in months"
-                                :key="item"
+                              <option :value="value+1"
+                                v-for="(item, value) in months"
+                                :key="value"
                               >
                                 {{ item }}
                               </option>
@@ -1125,12 +1126,13 @@ export default {
                           </div>
                         </div>
                         <div class="form-group">
-                          <div class="form-everyyear-container">
+                          <div class="form-everyyear-container" >
                             <button
                               v-for="day in 31"
                               :key="day"
-                              class="btn-day-year"
+                              class="btn-day-year" :class="{active:selectedTask.SeriesYearMonthDay===day}"
                             >
+                              <input type="checkbox" :value="day" v-model="selectedTask.SeriesYearMonthDay" style="display: none">
                               {{ day }}
                             </button>
                           </div>
@@ -1156,7 +1158,7 @@ export default {
               </div>
             </div>
           </template>
-          <div v-if="selectedTask.customer_date_begin!=='' && selectedTask.customer_date_end!==''">
+          <div v-if="selectedTask.customer_date_begin!=='' || selectedTask.customer_date_end!==''">
             <a
               v-if="selectedTask.SeriesEnd!==''"
               ref="btnRefRepeat"
@@ -1181,8 +1183,9 @@ export default {
                 />
               </svg>
               <span v-if="selectedTask.SeriesType===0">Не повторять</span>
-              <span v-if="selectedTask.SeriesType===1"><span v-if="selectedTask.SeriesAfterType===1"><span v-if="selectedTask.SeriesAfterCount===1">Ежедневно: Каждый 1 день.</span><span v-else>Ежедневно: Каждый {{ selectedTask.SeriesAfterCount }} день.</span></span><span v-else-if="selectedTask.SeriesAfterType===2"><span v-if="selectedTask.SeriesAfterCount===1">Ежедневно:  </span><span v-else>Каждый {{ selectedTask.SeriesAfterCount }} неделю.</span></span><span v-else-if="selectedTask.SeriesAfterType===3"><span v-if="selectedTask.SeriesAfterCount===1">Ежедневно:  </span><span v-else>Каждый {{ selectedTask.SeriesAfterCount }} месяц.</span></span><span v-else-if="selectedTask.SeriesAfterType===4"><span v-if="selectedTask.SeriesAfterCount===1">Ежедневно:  </span><span v-else>Каждый {{ selectedTask.SeriesAfterCount }} год.</span></span> </span>
-              <span v-if="selectedTask.SeriesType===2">Еженедельно: Каждую {{ selectedTask.SeriesWeekCount }} неделю, по: <span v-if="selectedTask.SeriesWeekMon===1">Пн. </span>
+              <span v-if="selectedTask.SeriesType===1"><span v-if="selectedTask.SeriesAfterType===1"><span v-if="selectedTask.SeriesAfterCount===1">Ежедневно: Каждый 1 день.</span><span v-else>Ежедневно: Каждый {{ selectedTask.SeriesAfterCount }} день.</span></span><span v-else-if="selectedTask.SeriesAfterType===2"><span v-if="selectedTask.SeriesAfterCount===1">Ежедневно:  </span><span v-else>Каждый {{ selectedTask.SeriesAfterCount }} неделю.</span></span><span v-else-if="selectedTask.SeriesAfterType===3"><span v-if="selectedTask.SeriesAfterCount===1">Ежедневно:  </span><span v-else>Ежедневно:  Каждый {{ selectedTask.SeriesAfterCount }} месяц.</span></span><span v-else-if="selectedTask.SeriesAfterType===4"><span v-if="selectedTask.SeriesAfterCount===1">Ежедневно:  </span><span v-else>Каждый {{ selectedTask.SeriesAfterCount }} год.</span></span> </span>
+              <span v-if="selectedTask.SeriesType===2">Еженедельно: Каждую {{ selectedTask.SeriesWeekCount }} неделю, по:
+              <span v-if="selectedTask.SeriesWeekMon===1">Пн. </span>
               <span v-if="selectedTask.SeriesWeekTue===1">Вт. </span>
               <span v-if="selectedTask.SeriesWeekWed===1">Ср. </span>
               <span v-if="selectedTask.SeriesWeekThu===1">Чт. </span>
@@ -1190,13 +1193,20 @@ export default {
               <span v-if="selectedTask.SeriesWeekSat===1">Сб. </span>
               <span v-if="selectedTask.SeriesWeekSun===1">Вск. </span>
             </span>
-              <span v-if="selectedTask.SeriesType===3"><span v-if="selectedTask.SeriesMonthType===1">Ежемесячно: Каждый {{ selectedTask.SeriesMonthCount }} месяц {{ selectedTask.SeriesYearMonthDay }} числа</span><span v-else>
-              {{ firstcount[selectedTask.SeriesMonthWeekType] }} <span>{{ day[selectedTask.SeriesMonthDayOfWeek] }} каждый {{ selectedTask.SeriesMonthCount }} месяц</span>
-            </span></span>
-              <span v-if="selectedTask.SeriesType===4"><span v-if="selectedTask.SeriesYearType===1">Ежегодно: Каждый год {{ selectedTask.SeriesYearMonthDay }}  {{ months[selectedTask.SeriesYearMonth-1] }}</span><span v-else>
+              <span v-if="selectedTask.SeriesType===3">
+                <span v-if="selectedTask.SeriesMonthType===1">Ежемесячно: Каждый {{ selectedTask.SeriesMonthCount }} месяц {{ selectedTask.SeriesMonthDay }} числа</span>
+                <span v-else>
+              {{ firstcount[selectedTask.SeriesMonthWeekType] }}
+                  <span>{{ day[selectedTask.SeriesMonthDayOfWeek] }} каждый {{ selectedTask.SeriesMonthCount }} месяц</span>
+            </span>
+              </span>
+              <span v-if="selectedTask.SeriesType===4">
+                <span v-if="selectedTask.SeriesYearType===1">Ежегодно: Каждый год {{ selectedTask.SeriesYearMonthDay }}  {{ months[selectedTask.SeriesYearMonth-1] }}</span>
+                <span v-else>
               Каждый {{ months[selectedTask.SeriesYearMonth-1] }} {{ firstcount[selectedTask.SeriesYearWeekType] }}
               {{ day[selectedTask.SeriesYearDayOfWeek] }}
-            </span></span>
+            </span>
+              </span>
             </a>
           </div>
           <div
@@ -1930,7 +1940,7 @@ export default {
           @keyup.enter="changeComment($refs.comment.value, $event)"
           @input="textareaResize"
         />
-        <contenteditable tag="p" :contenteditable="isEditable" placeholder="Оставить запись" @focus="changeComment($refs.comment.value, $event)" @keyup.enter="changeComment($refs.comment.value, $event)" v-model="selectedTask.comment" :noNL="false" :noHTML="false" @returned="selectedTask.comment" aria-placeholder="Оставить запись" />
+        <contenteditable tag="div" :contenteditable="isEditable" placeholder="Оставить запись" @focus="true" data-position="100" v-model="selectedTask.comment" @keyup.enter="changeComment($refs.comment.value, $event)" @returned="changeName($refs.nameTask.value, $event)" :noNL="false" :noHTML="false" v-linkify:options="{ className: 'text-blue-600' }"/>
       </div>
 
       <div class="messages-and-files-custom">

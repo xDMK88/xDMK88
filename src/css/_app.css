@@ -978,6 +978,14 @@ fieldset[disabled] .btn {
   overflow-y: auto;
   position: relative;
 }
+.nav-scroll {
+  display: flex;
+  width: 80%;
+  height: auto;
+  margin: auto;
+  overflow: auto;
+  justify-content: flex-start;
+}
 .column-resize::-webkit-scrollbar {
   width: 0px;
 }
@@ -1031,7 +1039,6 @@ input {
   right: 0;
   left: 2px;
   width: 120px;
-  transform: translate(-87px, 7px);
 }
 .custom-dropdown a:hover, .custom-dropdown a:focus, .custom-dropdown a.active
 {
@@ -1203,7 +1210,10 @@ label
 .form-group-button
 {
   float: right;
-  margin-top: 10px;
+}
+.every-month-button
+{
+  float: right;
 }
 .btn-save-repeat
 {
@@ -1229,83 +1239,95 @@ label
   -moz-box-shadow:    3px 4px 5px 0px rgba(50, 50, 50, 0.5);
   box-shadow:         3px 4px 5px 0px rgba(50, 50, 50, 0.5);
 }
-
-
+.top-panel-repeat
+{
+  height: 40px;
+}
+.repeat-seleclist label
+{
+  margin-right: 10px;
+  font-size:13px;
+}
 
 .tab-content-repeat
 {
   padding: 1px;
-  display: none;
   margin-top: 10px;
-}
-.tab-content-repeat.active
-{
-  display: block;
 }
 .every-content
 {
   display: flex;
+  font-size:12px;
+  float: left;
 
 }
 .every-content label
 {
-  margin-right: 10px;
-  margin-top: 2px;
+  margin-right: 5px;
+  margin-top: 0px;
 }
 
 .everyweek-content
 {
+  font-size:12px;
+  float: left;
 }
 .everyweek-content label
 {
-  margin-right: 10px;
-  margin-top: 2px;
+  margin-right: 5px;
+  margin-top: 0px;
 }
 .form-everyweek-container
 {
-  margin-left: 20px;
+  margin-left: 0;
+  width: 225px;
   display: inline-block;
 }
 .btn-day-week
 {
   background: #F0F0F0;
   padding: 5px;
-  height: 30px;
+  height: 20px;
   width: 35px;
   border: 1px solid #F0F0F0;
   display: inline;
-  font-size: 13px;
-  line-height: 15px;
+  color: gray;
+  font-size: 12px;
+  line-height: 8px;
+  margin-right: 2px;
 }
 .btn-day-week:hover, .btn-day-week.active
 {
-  border:1px solid gray;
+  border:1px solid black;
 }
 
 .everymonth-content
 {
+  font-size:12px;
+  float: left;
 }
 .everymonth-content label
 {
-  margin-right: 10px;
-  margin-top: 2px;
+  margin-right: 5px;
+  margin-top: 0;
 }
 .form-everymonth-container
 {
   display: inline-block;
-  width: 300px;
+  width: 225px;
 }
 .btn-day-month
 {
   background: #F0F0F0;
   padding: 5px;
-  height: 30px;
-  width: 35px;
-  font-size: 13px;
-  margin: 1px;
+  height: 20px;
+  width: 30px;
   border: 1px solid #F0F0F0;
-  float: left;
-  line-height: 15px;
+  display: inline;
+  color: gray;
+  font-size: 12px;
+  line-height: 8px;
+  margin-right: 2px;
 }
 .btn-day-month:hover, .btn-day-month.active
 {
@@ -1314,6 +1336,8 @@ label
 
 .everyyear-content
 {
+  font-size:12px;
+  float: left;
 }
 .everyyear-content label
 {
@@ -1323,27 +1347,68 @@ label
 .form-everyyear-container
 {
   display: inline-block;
-  width: 300px;
+  width: 225px;
 }
 .btn-day-year
 {
   background: #F0F0F0;
   padding: 5px;
-  height: 30px;
-  width: 35px;
-  margin: 1px;
+  height: 20px;
+  width: 30px;
   border: 1px solid #F0F0F0;
-  float: left;
-  font-size: 13px;
-  line-height: 15px;
+  display: inline;
+  color: gray;
+  font-size: 12px;
+  line-height: 8px;
+  margin-right: 2px;
 }
 .btn-day-year:hover, .btn-day-year.active
 {
-  border:1px solid gray;
+  border:1px solid black;
 }
-
-
-
+.btn-month-year
+{
+  background: #F0F0F0;
+  padding: 5px;
+  height: 20px;
+  width: 38px;
+  border: 1px solid #F0F0F0;
+  display: inline;
+  color: gray;
+  font-size: 12px;
+  line-height: 8px;
+  margin-right: 2px;
+}
+.btn-month-year:hover, .btn-month-year.active
+{
+  border:1px solid black;
+}
+.everymonthtype
+{
+  display: none;
+}
+.everymonthtype.showselect
+{
+  display: flex;
+}
+.everyyeartype
+{
+  display: none;
+}
+.everyyeartype.showselect
+{
+  display: flex;
+}
+.everyyearbuttontype
+{
+  display: none;
+  width: 225px;
+  float: left;
+}
+.everyyearbuttontype.showselect
+{
+  display: block;
+}
 .title-repeat-custom {
   color: black;
   position: relative;
@@ -1396,13 +1461,15 @@ label
   cursor: pointer;
   color:#007AFF;
 }
-.form-control-select
+.form-control-select-repeat
 {
-  width: 80px;
-  margin-right: 10px;
-  font-size: 13px;
-  padding: 2px;
-  border:1px solid gray;
+  width: 85px;
+  margin-right: 5px;
+  font-size: 12px;
+  padding: 0px;
+  color: black;
+  background-color: #f0f0f0;
+  height: 25px;
 }
 #tooltip {
 
@@ -1618,12 +1685,108 @@ label
   border-width: 0 2px 2px 0;
   transform: rotate(45deg);
 }
+.tabs-component {
+}
 
-.nav-scroll {
-   display: flex;
-   width: 80%;
-   height: auto;
-   margin: auto;
-   overflow: auto;
-   justify-content: flex-start;
+.tabs-component-tabs {
+  border-bottom-left-radius: 7px;
+  border-top-left-radius: 7px;
+  margin-bottom: 5px;
+}
+
+@media (min-width: 700px) {
+  .tabs-component-tabs {
+    align-items: stretch;
+    display: flex;
+    justify-content: flex-start;
+  }
+}
+
+.tabs-component-tab {
+  color: #999;
+  font-size: 14px;
+  font-weight: 600;
+  margin-right: 0;
+  list-style: none;
+}
+
+.tabs-component-tab:not(:last-child) {
+
+}
+
+.tabs-component-tab:hover {
+  color: #666;
+}
+
+.tabs-component-tab.is-active {
+  color: #000;
+}
+
+.tabs-component-tab.is-disabled * {
+  color: #cdcdcd;
+  cursor: not-allowed !important;
+}
+
+@media (min-width: 700px) {
+  .tabs-component-tab:first-child {
+    color: black;
+    background: #f0f0f0;
+    padding: 4px;
+    margin: 0;
+    float: left;
+    line-height: 9px;
+    height: 20px;
+    border-bottom-left-radius: 7px;
+    border-top-left-radius: 7px;
+    font-size: 10px;
+    transition: transform .3s ease;
+  }
+  .tabs-component-tab:last-child {
+    color: black;
+    background: #f0f0f0;
+    padding: 4px;
+    margin: 0;
+    float: left;
+    line-height: 9px;
+    height: 20px;
+    border-bottom-right-radius: 7px;
+    border-top-right-radius: 7px;
+    font-size: 10px;
+    transition: transform .3s ease;
+  }
+  .tabs-component-tab {
+    color: black;
+    background: #f0f0f0;
+    padding: 4px;
+    margin: 0;
+    float: left;
+    line-height: 9px;
+    height: 20px;
+    font-size: 10px;
+    transition: transform .3s ease;
+  }
+  .tabs-component-tab.is-active {
+    background: #FF9123;
+    color: #ffffff;
+    cursor: pointer;
+    z-index: 2;
+    transform: translateY(0);
+  }
+}
+
+.tabs-component-tab-a {
+  align-items: center;
+  color: inherit;
+  display: flex;
+  font-weight: normal;
+  text-decoration: none;
+}
+
+.tabs-component-panels {
+}
+
+@media (min-width: 700px) {
+  .tabs-component-panels {
+
+  }
 }

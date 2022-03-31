@@ -728,7 +728,7 @@ const actions = {
   [TASK.CHANGE_TASK_FOCUS]: ({ commit, dispatch }, data) => {
     return new Promise((resolve, reject) => {
       commit(TASK.IN_FOCUS_TASKS_REQUEST)
-      const url = 'https://web.leadertask.com/api/v1/task/focus?uid=' + data.uid + '&focus=' + data.value
+      const url = 'https://web.leadertask.com/api/v1/task/focus?uid=' + data.uid + '&value=' + data.value
       axios({
         url: url,
         method: 'PATCH'
@@ -771,11 +771,8 @@ const actions = {
   },
   [TASK.CHANGE_TASK_CHEKCLIST]: ({ commit, dispatch }, data) => {
     return new Promise((resolve, reject) => {
-      const url = 'https://web.leadertask.com/api/v1/task/checklist?uid=' + data.uid + '&value=' + data.value
-      axios({
-        url: url,
-        method: 'PATCH'
-      })
+      const url = 'https://web.leadertask.com/api/v1/task/checklist'
+      axios({ url: url, method: 'PATCH', data: data })
         .then(resp => {
           commit(TASK.CHANGE_TASK_CHEKCLIST, data)
           resolve(resp)
@@ -814,17 +811,7 @@ const actions = {
   [TASK.CHANGE_TASK_DATE]: ({ commit, dispatch }, data) => {
     return new Promise((resolve, reject) => {
       const url = 'https://web.leadertask.com/api/v1/task/term'
-      axios({
-        url: url,
-        method: 'PATCH',
-        data: {
-          uid: data.uid,
-          str_date_begin: data.str_date_begin,
-          str_date_end: data.str_date_end,
-          str_time_begin: data.str_time_begin,
-          str_time_end: data.str_time_end
-        }
-      })
+      axios({ url: url, method: 'PATCH', data: data })
         .then(resp => {
           resolve(resp)
           commit(TASK.CHANGE_TASK_DATE, data)
@@ -833,7 +820,7 @@ const actions = {
             group: 'api',
             title: 'REST API Error, please make screenshot',
             action: TASK.CHANGE_TASK_DATE,
-            text: 'Ошибка даты'
+            text: err.response.data
           }, 15000)
           reject(err)
         })

@@ -74,7 +74,6 @@ input:focus {outline: 0;}
   padding: 4px 0px 4px 0px;
   position: relative;
   display: table-cell;
-
 }
 .any-list-custom svg
 {
@@ -527,6 +526,10 @@ input:focus {outline: 0;}
   padding: 2px;
   border-radius: 25px;
   border: 1px solid gray;
+}
+.project-hover-close
+{
+
 }
 .project-hover-close:hover .btn-close-popover
 {
@@ -1094,6 +1097,7 @@ float: right;
 .custom-checkbox+label {
   display: inline-flex;
   align-items: center;
+  position: relative;
   user-select: none;
 }
 .custom-checkbox+label::after {
@@ -1789,4 +1793,8 @@ label
   .tabs-component-panels {
 
   }
+}
+.calendar-properties
+{
+
 }

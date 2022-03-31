@@ -754,15 +754,19 @@ export default {
     }
 
     const updateTask = (task) => {
-      if (task.name.length > 1) {
+      task.name = task.name.replace(/\r?\n|\r/g, '')
+      if (task.name.length > 0) {
         if (task._justCreated) {
           store.dispatch(TASK.CREATE_TASK, task)
         } else {
           store.dispatch(TASK.CHANGE_TASK_NAME, { uid: task.uid, value: task.name })
         }
         task._isEditing = false
-      } else {
+      } else if (task.name.length === 0) {
         if (task._justCreated) {
+          if (isPropertiesMobileExpanded.value) {
+            store.dispatch('asidePropertiesToggle', false)
+          }
           store.commit(TASK.REMOVE_TASK, task.uid)
         } else {
           removeTask(task.uid)

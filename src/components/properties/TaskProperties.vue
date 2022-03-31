@@ -755,8 +755,7 @@ export default {
                   fill-opacity="0.5"
                 />
               </svg>
-              <span class="rounded" v-if="key!=='null'">{{employeesByEmail[key].name}}</span>
-
+              <span class="rounded" v-if="key!=='null' && employeesByEmail[key]">{{employeesByEmail[key].name}}</span>
             </div>
           </a>
           <a
@@ -1577,7 +1576,7 @@ export default {
           </a>
         </Popper>
         <!--Всплывающее окно Метки-->
-        <span v-if="selectedTask.tags.length>0">
+        <span v-if="selectedTask.tags && selectedTask.tags.length > 0">
         <Popper v-for="(key, value) in selectedTask.tags"
                 :key="value"
           class="popper-tags"
@@ -1645,7 +1644,7 @@ export default {
             </div>
           </template>
           <span
-            v-if="selectedTask.tags.length"
+            v-if="selectedTask.tags && selectedTask.tags.length"
           >
             <button
               class="mt-3 tags-custom project-hover-close"
@@ -1780,7 +1779,7 @@ export default {
               </div>
             </div>
           </template>
-  <button v-if="selectedTask.tags.length===0"
+  <button v-if="selectedTask.tags && selectedTask.tags.length === 0"
     class="mt-3 tags-custom"
   >
             <svg

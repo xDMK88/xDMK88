@@ -325,7 +325,7 @@
             <contenteditable
               tag="div"
               class="taskName p-0.5 ring-0 outline-none"
-              :contenteditable="props.node.info.type == 1 || props.node.info.type == 0"
+              :contenteditable="props.node.info.type == 1 || props.node.info.type == 0 || props.node.info.uid_customer == user.current_user_uid"
               v-model="props.node.info.name"
               placeholder="Enter task name"
               :noNL="true"

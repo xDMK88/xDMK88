@@ -166,6 +166,7 @@ export default {
       }
       store.dispatch(CREATE_MESSAGE_REQUEST, data).then(
         resp => {
+          selectedTask.value.has_msgs = true
           selectedTask.value.msg = taskMsg.value
         })
       taskMsg.value = ''

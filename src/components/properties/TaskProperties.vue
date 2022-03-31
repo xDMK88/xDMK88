@@ -458,7 +458,7 @@ export default {
     <div class="column-resize">
       <div />
       <div
-        v-if="selectedTask.uid_parent !== '00000000-0000-0000-0000-000000000000'"
+        v-if="selectedTask.uid_parent !== '00000000-0000-0000-0000-000000000000' && tasks[selectedTask.uid_parent]"
         class="user_customer_custom"
       >
         <svg

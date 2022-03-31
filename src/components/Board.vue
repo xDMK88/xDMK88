@@ -5,9 +5,11 @@
         <div
           v-for="column in columns"
           :key="column.title"
-          class="bg-gray-100 rounded-lg px-3 py-3 column-width rounded mr-4"
+          class="bg-gray-100 rounded-lg px-3 py-3 column-width mr-4"
         >
-          <p class="text-gray-700 font-semibold font-sans tracking-wide text-sm">
+          <p
+            class="text-gray-700 font-semibold font-sans tracking-wide text-sm"
+          >
             {{ column.title }}
           </p>
           <draggable
@@ -16,8 +18,8 @@
             item-key="id"
             group="tasks"
             :animation="200"
-            @start="drag=true"
-            @end="drag=false"
+            @start="drag = true"
+            @end="drag = false"
           >
             <template #item="{ element }">
               <task-card
@@ -170,7 +172,7 @@ export default {
 }
 .ghost-card {
   opacity: 0.5;
-  background: #F7FAFC;
+  background: #f7fafc;
   border: 1px solid #4299e1;
 }
 </style>

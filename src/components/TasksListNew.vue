@@ -324,7 +324,7 @@
             <!-- Editable name -->
             <contenteditable
               tag="div"
-              class="taskName"
+              class="taskName p-0.5 ring-0 outline-none"
               :contenteditable="props.node.info.type == 1 || props.node.info.type == 0"
               v-model="props.node.info.name"
               placeholder="Enter task name"
@@ -392,8 +392,9 @@
             :key="index"
           >
             <div
+              v-if="tags[tag]"
               class="p-1 px-2 text-xs text-white rounded-lg mr-1 flex items-center"
-              :style="{ backgroundColor: tags[tag].back_color }"
+              :style="{ backgroundColor: tags[tag] ? tags[tag].back_color : '' }"
             >
               <Icon
                 :path="tagIcon.path"
@@ -589,6 +590,7 @@ export default {
     const copiedTasks = computed(() => store.state.tasks.copiedTasks)
     const lastSelectedTaskUid = ref('')
     const selectedTasks = ref({})
+    const showConfirm = ref(false)
     const isTaskHoverPopperActive = ref(false)
 
     const clickAndShift = (arg) => {
@@ -769,7 +771,8 @@ export default {
           }
           store.commit(TASK.REMOVE_TASK, task.uid)
         } else {
-          removeTask(task.uid)
+          showConfirm.value = true
+          // removeTask(task.uid)
         }
       }
     }
@@ -855,7 +858,7 @@ export default {
       lastSelectedTaskUid.value = arg.info.uid
       store.dispatch(TASK.SELECT_TASK, arg.info)
 
-      if (!isPropertiesMobileExpanded.value) {
+      if (!isPropertiesMobileExpanded.value && arg.info.name) {
         store.dispatch('asidePropertiesToggle', true)
       }
     }
@@ -887,6 +890,7 @@ export default {
     }
 
     return {
+      showConfirm,
       selectedTasks,
       clickAndShift,
       nodeDragstart,
@@ -970,7 +974,6 @@ export default {
     ]
     return {
       DONT_SHOW_TASK_INPUT_UIDS,
-      showConfirm: false,
       statuses,
       statusesLabels,
       project,

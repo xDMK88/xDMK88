@@ -214,9 +214,9 @@ const quiet = ref(!selectedProject.value.quiet)
         >
           <div
             class="flex items-center bg-white dark:bg-gray-700 rounded-xl shadow h-30 px-3 py-5 mt-1"
+            v-if="employeesByEmail[employee]"
           >
             <img
-              v-if="employeesByEmail[employee].fotolink"
               :src="employeesByEmail[employee].fotolink"
               class="rounded-lg mx-2 my-auto"
               width="38"

@@ -5,7 +5,7 @@ import axios from 'axios'
 import { notify } from 'notiwind'
 
 import { MESSAGES_REQUEST, REFRESH_MESSAGES } from '@/store/actions/taskmessages'
-import { FILES_REQUEST, REFRESH_FILES } from '@/store/actions/taskfiles'
+import { FILES_REQUEST, REFRESH_FILES, MERGE_FILES_WITH_MESSAGES } from '@/store/actions/taskfiles'
 
 function arrayRemove (arr, value) {
   return arr.filter(function (ele) {
@@ -540,6 +540,9 @@ const actions = {
     }
     if (data.has_files && !data.has_msgs) {
       dispatch(FILES_REQUEST, data.uid)
+        .then(() => {
+          commit(MERGE_FILES_WITH_MESSAGES)
+        })
     }
     if (data.has_files && data.has_msgs) {
       dispatch('fetchMessagesAndFiles', data.uid)

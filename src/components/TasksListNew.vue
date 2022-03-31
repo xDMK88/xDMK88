@@ -324,8 +324,8 @@
             <!-- Editable name -->
             <contenteditable
               tag="div"
-              class="taskName"
-              :contenteditable="props.node.info.type == 1 || props.node.info.type == 0"
+              class="taskName p-0.5 ring-0 outline-none"
+              :contenteditable="props.node.info.type == 1 || props.node.info.type == 0 || props.node.info.uid_customer == user.current_user_uid"
               v-model="props.node.info.name"
               placeholder="Enter task name"
               :noNL="true"
@@ -392,8 +392,9 @@
             :key="index"
           >
             <div
+              v-if="tags[tag]"
               class="p-1 px-2 text-xs text-white rounded-lg mr-1 flex items-center"
-              :style="{ backgroundColor: tags[tag].back_color }"
+              :style="{ backgroundColor: tags[tag] ? tags[tag].back_color : '' }"
             >
               <Icon
                 :path="tagIcon.path"
@@ -589,6 +590,7 @@ export default {
     const copiedTasks = computed(() => store.state.tasks.copiedTasks)
     const lastSelectedTaskUid = ref('')
     const selectedTasks = ref({})
+    const showConfirm = ref(false)
     const isTaskHoverPopperActive = ref(false)
 
     const clickAndShift = (arg) => {
@@ -754,18 +756,23 @@ export default {
     }
 
     const updateTask = (task) => {
-      if (task.name.length > 1) {
+      task.name = task.name.replace(/\r?\n|\r/g, '')
+      if (task.name.length > 0) {
         if (task._justCreated) {
           store.dispatch(TASK.CREATE_TASK, task)
         } else {
           store.dispatch(TASK.CHANGE_TASK_NAME, { uid: task.uid, value: task.name })
         }
         task._isEditing = false
-      } else {
+      } else if (task.name.length === 0) {
         if (task._justCreated) {
+          if (isPropertiesMobileExpanded.value) {
+            store.dispatch('asidePropertiesToggle', false)
+          }
           store.commit(TASK.REMOVE_TASK, task.uid)
         } else {
-          removeTask(task.uid)
+          showConfirm.value = true
+          // removeTask(task.uid)
         }
       }
     }
@@ -851,7 +858,7 @@ export default {
       lastSelectedTaskUid.value = arg.info.uid
       store.dispatch(TASK.SELECT_TASK, arg.info)
 
-      if (!isPropertiesMobileExpanded.value) {
+      if (!isPropertiesMobileExpanded.value && arg.info.name) {
         store.dispatch('asidePropertiesToggle', true)
       }
     }
@@ -883,6 +890,7 @@ export default {
     }
 
     return {
+      showConfirm,
       selectedTasks,
       clickAndShift,
       nodeDragstart,
@@ -966,7 +974,6 @@ export default {
     ]
     return {
       DONT_SHOW_TASK_INPUT_UIDS,
-      showConfirm: false,
       statuses,
       statusesLabels,
       project,

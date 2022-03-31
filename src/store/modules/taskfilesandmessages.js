@@ -42,7 +42,6 @@ const actions = {
       axios({ url: url, method: 'GET' })
         .then(resp => {
           commit(FILES_SUCCESS, resp)
-          commit(MERGE_FILES_WITH_MESSAGES)
           resolve(resp)
         }).catch(err => {
           commit(FILES_ERROR)
@@ -197,6 +196,9 @@ const mutations = {
     state.files = []
   },
   [MERGE_FILES_WITH_MESSAGES]: state => {
+    console.log('MERGING FILES AND MESSAGES')
+    console.log('files ', state.files)
+    console.log('messages ', state.messages)
     if (state.messages.length === 0) {
       for (const file of state.files) {
         file.msg = file.file_name

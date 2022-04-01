@@ -731,7 +731,7 @@ const actions = {
   [TASK.CHANGE_TASK_FOCUS]: ({ commit, dispatch }, data) => {
     return new Promise((resolve, reject) => {
       commit(TASK.IN_FOCUS_TASKS_REQUEST)
-      const url = 'https://web.leadertask.com/api/v1/task/focus?uid=' + data.uid + '&focus=' + data.value
+      const url = 'https://web.leadertask.com/api/v1/task/focus?uid=' + data.uid + '&value=' + data.value
       axios({
         url: url,
         method: 'PATCH'

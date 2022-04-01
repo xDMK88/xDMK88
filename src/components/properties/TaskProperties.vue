@@ -91,10 +91,23 @@ export default {
       )
     }
     const ClickAccessEmail = () => {
-      const emails = this.checkEmail.join('..')
-      store.dispatch(TASK.CHANGE_TASK_ACCESS, { uid: selectedTask.value.uid, value: emails }).then(
+      console.log(this.checkEmail)
+      if (this.checkEmail !== '') {
+        const emails = this.checkEmail.join('..')
+        store.dispatch(TASK.CHANGE_TASK_ACCESS, { uid: selectedTask.value.uid, value: emails }).then(
+          resp => {
+            selectedTask.value.emails = emails
+          }
+        )
+      }
+      this.checkEmail = ''
+    }
+    const resetAccess = () => {
+      store.dispatch(TASK.CHANGE_TASK_ACCESS, { uid: selectedTask.value.uid, value: '' }).then(
         resp => {
-          selectedTask.value.emails = emails
+          console.log(resp.data)
+          selectedTask.value.emails = resp.data
+          this.checkEmail = ''
         }
       )
     }
@@ -229,13 +242,6 @@ export default {
         }
       )
     }
-    const resetAccess = () => {
-      store.dispatch(TASK.CHANGE_TASK_ACCESS, { uid: selectedTask.value.uid, value: '' }).then(
-        resp => {
-          selectedTask.value.emails = ''
-        }
-      )
-    }
     const resetEmployes = () => {
       store.dispatch(TASK.CHANGE_TASK_PERFORMER, { uid: selectedTask.value.uid, value: '' }).then(
         resp => {
@@ -263,11 +269,10 @@ export default {
         str_date_end: getTodaysDate(this.range.end),
         reset: 0
       }
-      console.log(data)
-      const datem = selectedTask.value.term_customer
       store.dispatch(TASK.CHANGE_TASK_DATE, data).then(
         resp => {
-          selectedTask.value.term_customer = datem
+          console.log(resp)
+          selectedTask.value.term_customer = resp.data
         })
     }
     const copyurl = (e) => {
@@ -288,11 +293,7 @@ export default {
     const changeEveryYearType = (value) => {
       this.ActiveYartype = value
     }
-    const tabChanged = (value) => {
-      selectedTask.value.seriesType = value
-    }
     return {
-      tabChanged,
       editCheckName,
       createChecklist,
       addCheckName,
@@ -410,6 +411,9 @@ export default {
   mounted () {
   },
   methods: {
+    tabChanged: function (event) {
+      console.log(event.target.name)
+    },
     HtmlRender: function (text) {
       const ur = text.split('lt://').pop()
       console.log(ur)
@@ -765,14 +769,14 @@ export default {
             </div>
           </template>
           <a
-            v-if="selectedTask.emails!=='' && selectedTask.emails!=='null'"
+            v-if="selectedTask.emails!=='' && selectedTask.emails.split('..')[0]!==null"
             ref="btnRef"
             style="position: relative"
           >
             <div
-              v-for="(key,value) in selectedTask.emails.split('..')"
+              v-for="(key,value) in selectedTask.emails.split('..').filter(x=>x.key!==null)"
               :key="value"
-              :class=" key !=='null' ? 'mt-3 tags-custom' : ''"
+              :class="key !==null ? 'mt-3 tags-custom' : ''"
             >
               <svg v-if="key!=='null'"
                    width="24"
@@ -789,8 +793,7 @@ export default {
                   fill-opacity="0.5"
                 />
               </svg>
-              <span class="rounded" v-if="key!=='null'">{{employeesByEmail[key].name}}</span>
-
+              <span class="rounded" v-if="key!==null">{{employeesByEmail[key].name}}</span>
             </div>
           </a>
           <a
@@ -919,8 +922,8 @@ export default {
           >
             <div class="popper">
               <div class="text-white body-popover-custom body-repeat-custom rounded-b-lg">
-                <tabs :options="{ useUrlFragment: false }">
-                  <tab name="Не повторять">
+                <tabs :options="{ useUrlFragment: false, defaultTabHash: selectedTask.SeriesType }">
+                  <tab id="0" name="Не повторять" @click="tabChanged($event)">
                     <div class="top-panel-repeat"></div>
                     <div class="form-group-button every-month-button">
                       <div class="form-group">
@@ -937,7 +940,7 @@ export default {
                       </div>
                     </div>
                   </tab >
-                  <tab name="Ежедневно">
+                  <tab id="1" name="Ежедневно" @click="tabChanged($event)">
                     <div
                       class="tab-content-repeat"
                     >
@@ -991,7 +994,7 @@ export default {
                       </div>
                     </div>
                   </tab>
-                  <tab name="Еженедельно">
+                  <tab id="2" name="Еженедельно" @click="tabChanged($event)">
                     <div
                       class="tab-content-repeat"
                     >
@@ -1077,7 +1080,7 @@ export default {
                       </div>
                     </div>
                   </tab>
-                  <tab name="Ежемесячно">
+                  <tab id="3" name="Ежемесячно" @click="tabChanged($event)">
                     <div
                       class="tab-content-repeat"
                     ><div class="top-panel-repeat">
@@ -1170,7 +1173,7 @@ export default {
                       </div>
                     </div>
                   </tab>
-                  <tab name="Ежегодно">
+                  <tab id="4" name="Ежегодно" @click="tabChanged($event)">
                     <div
                       class="tab-content-repeat"
                     >

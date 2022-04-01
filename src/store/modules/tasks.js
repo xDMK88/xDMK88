@@ -639,9 +639,6 @@ const actions = {
   },
   [TASK.CHANGE_TASK_ACCESS]: ({ commit, dispatch }, data) => {
     return new Promise((resolve, reject) => {
-      if (data.value === '') {
-        data.value = null
-      }
       const url = 'https://web.leadertask.com/api/v1/task/common?uid=' + data.uid + '&value=' + data.value
       axios({
         url: url,

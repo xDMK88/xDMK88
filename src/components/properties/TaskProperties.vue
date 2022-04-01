@@ -100,18 +100,16 @@ export default {
           }
         )
       }
-      this.checkEmail = ''
     }
     const resetAccess = () => {
+      console.log(this.checkEmail)
       store.dispatch(TASK.CHANGE_TASK_ACCESS, { uid: selectedTask.value.uid, value: '' }).then(
         resp => {
-          console.log(resp.data)
           selectedTask.value.emails = resp.data
-          this.checkEmail = ''
+          this.checkEmail = []
+          console.log(resp.data)
         }
       )
-    }
-    const ClickAccessCheck = () => {
     }
     const changeColors = (uid, marker) => {
       store.dispatch(TASK.CHANGE_TASK_COLOR, { uid: uid, value: marker }).then(
@@ -156,6 +154,19 @@ export default {
       }
       store.dispatch(TASK.CHANGE_TASK_TAGS, data)
     }
+    const resetTags = (key) => {
+      selectedTask.value.tags.splice(selectedTask.value.tags.indexOf(key), 1)
+      console.log(selectedTask.value.tags)
+      const data = {
+        uid: selectedTask.value.uid,
+        tags: selectedTask.value.tags
+      }
+      store.dispatch(TASK.CHANGE_TASK_TAGS, data).then(
+        resp => {
+          selectedTask.value.tags.push(resp)
+        }
+      )
+    }
     const createTaskFile = (event) => {
       const data = {
         uid_task: selectedTask.value.uid,
@@ -168,7 +179,6 @@ export default {
     }
     const changeComment = (event) => {
       const message = event.target.innerHTML.replace('</div>', '').replace('<div>', '<br/>')
-      console.log(message)
       const data = {
         uid: selectedTask.value.uid,
         value: message
@@ -229,19 +239,6 @@ export default {
         }
       )
     }
-    const resetTags = (key) => {
-      selectedTask.value.tags.splice(selectedTask.value.tags.indexOf(key), 1)
-      console.log(selectedTask.value.tags)
-      const data = {
-        uid: selectedTask.value.uid,
-        tags: selectedTask.value.tags
-      }
-      store.dispatch(TASK.CHANGE_TASK_TAGS, data).then(
-        resp => {
-          selectedTask.value.tags.push(resp)
-        }
-      )
-    }
     const resetEmployes = () => {
       store.dispatch(TASK.CHANGE_TASK_PERFORMER, { uid: selectedTask.value.uid, value: '' }).then(
         resp => {
@@ -258,11 +255,10 @@ export default {
       }
       store.dispatch(TASK.CHANGE_TASK_DATE, data).then(
         resp => {
-          selectedTask.value.term_customer = this.defaultDate
+          selectedTask.value.term_customer = resp.data.term
         })
     }
     const handleInput = () => {
-      console.log(getTodaysDate(this.range.start))
       const data = {
         uid_task: selectedTask.value.uid,
         str_date_begin: getTodaysDate(this.range.start),
@@ -271,8 +267,7 @@ export default {
       }
       store.dispatch(TASK.CHANGE_TASK_DATE, data).then(
         resp => {
-          console.log(resp)
-          selectedTask.value.term_customer = resp.data
+          selectedTask.value.term_customer = resp.data.term
         })
     }
     const copyurl = (e) => {
@@ -287,7 +282,6 @@ export default {
       })
     }
     const changeEveryMonthType = (value) => {
-      console.log(value)
       this.ActiveSelect = value
     }
     const changeEveryYearType = (value) => {
@@ -302,7 +296,6 @@ export default {
       changeEveryYearType,
       changeEveryMonthType,
       delTask,
-      ClickAccessCheck,
       isDark,
       unchecked,
       changeName,
@@ -606,7 +599,7 @@ export default {
                   fill-opacity="1"
                 />
               </svg>
-              <span>{{ selectedTask.email_performer }}</span>
+              <span>{{employeesByEmail[selectedTask.email_performer].name}}</span>
             </button>
               <!-- Перепоручить -->
             <button
@@ -741,7 +734,7 @@ export default {
                       v-for="(key,value, index) in employees"
                       :key="index"
                     >
-                      <div class="list-employee-access" @click="ClickAccessCheck">
+                      <div class="list-employee-access">
                         <img
                           :src="key.fotolink"
                           class="mr-1 border-fotolink border-solid border-2 border-sky-500"
@@ -758,7 +751,6 @@ export default {
                           :checked="selectedTask.emails.split('..').filter(email=>email===key.email)[0]===key.email"
                         >
                         <label class="employee-name-custom " :for="key.uid">
-
                           <div class="popover-employee-email"><div style="color: black;">{{ key.name }}</div>{{ key.email }}</div>
                         </label>
                       </div>
@@ -768,15 +760,15 @@ export default {
               </div>
             </div>
           </template>
-          <a
-            v-if="selectedTask.emails!=='' && selectedTask.emails.split('..')[0]!==null"
+          <div
+            v-if="selectedTask.emails!==''"
             ref="btnRef"
             style="position: relative"
           >
             <div
-              v-for="(key,value) in selectedTask.emails.split('..').filter(x=>x.key!==null)"
+              v-for="(key,value) in selectedTask.emails.split('..')"
               :key="value"
-              :class="key !==null ? 'mt-3 tags-custom' : ''"
+              class="mt-3 tags-custom"
             >
               <svg v-if="key!=='null'"
                    width="24"
@@ -793,10 +785,10 @@ export default {
                   fill-opacity="0.5"
                 />
               </svg>
-              <span class="rounded" v-if="key!==null">{{employeesByEmail[key].name}}</span>
+              <span class="rounded">{{key}}</span>
             </div>
-          </a>
-          <a
+          </div>
+          <div
             v-else
             ref="btnRef"
             class="mt-3 tags-custom"
@@ -817,7 +809,7 @@ export default {
               />
             </svg>
             <span class="rounded"> Доступ</span>
-          </a>
+          </div>
         </Popper>
         <!-- Всплывающее окно Календарь -->
         <Popper
@@ -854,7 +846,7 @@ export default {
           </template>
           <a class="mt-3 tags-custom any-calendar project-hover-close">
               <span
-                v-if="selectedTask.customer_date_begin!=='0001-01-01T00:00:00' && selectedTask.customer_date_end!=='0001-01-01T00:00:00'"
+                v-if="selectedTask.term_customer!==''"
                 class="flex"
               >
                 <button
@@ -1173,7 +1165,7 @@ export default {
                       </div>
                     </div>
                   </tab>
-                  <tab id="4" name="Ежегодно" @click="tabChanged($event)">
+                  <tab id="4" name="Ежегодно" is-active @click="tabChanged($event)">
                     <div
                       class="tab-content-repeat"
                     >
@@ -1271,7 +1263,7 @@ export default {
               </div>
             </div>
           </template>
-          <div v-if="selectedTask.customer_date_begin!=='' || selectedTask.customer_date_end!==''">
+          <div v-if="selectedTask.term_customer!==''">
             <a
               v-if="selectedTask.SeriesEnd!==''"
               ref="btnRefRepeat"

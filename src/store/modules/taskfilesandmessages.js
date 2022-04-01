@@ -196,9 +196,6 @@ const mutations = {
     state.files = []
   },
   [MERGE_FILES_WITH_MESSAGES]: state => {
-    console.log('MERGING FILES AND MESSAGES')
-    console.log('files ', state.files)
-    console.log('messages ', state.messages)
     if (state.messages.length === 0) {
       for (const file of state.files) {
         file.msg = file.file_name

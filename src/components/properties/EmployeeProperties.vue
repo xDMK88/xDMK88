@@ -25,7 +25,6 @@ const createOrUpdateEmployee = (employee) => {
     store.dispatch(CREATE_EMPLOYEE_REQUEST, employee)
       .then(() => {
         store.dispatch('asidePropertiesToggle', false)
-        // store.commit(PUSH_PROJECT, [project])
         store.commit(NAVIGATOR_PUSH_EMPLOYEE, [employee])
       })
   } else {
@@ -89,7 +88,7 @@ const removeEmployee = (employee) => {
         type="text"
         placeholder="Email"
         class="mt-2 p-3 rounded-xl bg-gray-100 font-bold text-gray-700 w-full border-none ring-0 outline-none"
-        :disabled="employees[user.current_user_uid].type == 3"
+        :disabled="selectedEmployee.uid"
       >
       <div
         v-if="!selectedEmployee.uid"

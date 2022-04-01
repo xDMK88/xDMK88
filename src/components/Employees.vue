@@ -1,6 +1,6 @@
 <script setup>
 import Icon from '@/components/Icon.vue'
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import properties from '@/icons/properties.js'
 import { useStore } from 'vuex'
 import * as TASK from '@/store/actions/tasks'
@@ -33,6 +33,7 @@ const updateGridView = (value) => {
 const isPropertiesMobileExpanded = computed(() => store.state.isPropertiesMobileExpanded)
 const storeEmployees = computed(() => store.state.employees.employees)
 const user = computed(() => store.state.user.user)
+const focusedEmployee = ref('')
 
 const openDepartmentProperties = (department) => {
   if (!isPropertiesMobileExpanded.value) {
@@ -57,6 +58,7 @@ const openEmployeeProperties = (employee) => {
   if (!isPropertiesMobileExpanded.value) {
     store.dispatch('asidePropertiesToggle', true)
   }
+  focusedEmployee.value = employee.email
   if (!employee) {
     employee = {
       email: '',
@@ -118,7 +120,7 @@ const clickOnGridCard = (value) => {
   </div>
   <div
     v-if="storeEmployees[user.current_user_uid] && (storeEmployees[user.current_user_uid].type == 1 || storeEmployees[user.current_user_uid].type == 2)"
-    class="grid gal-4 mb-4 mt-3"
+    class="grid gap-4 mb-4 mt-3"
     :class="{ 'md:grid-cols-2 lg:grid-cols-4': isGridView, 'grid-cols-1': !isGridView, 'grid-cols-1': isPropertiesMobileExpanded && !isGridView, 'lg:grid-cols-2': isPropertiesMobileExpanded && isGridView }"
   >
     <div
@@ -205,6 +207,7 @@ const clickOnGridCard = (value) => {
       >
         <div
           class="flex items-center bg-white dark:bg-gray-700 rounded-xl shadow hover:shadow-md cursor-pointer h-30 px-3 py-5"
+          :class="{ 'ring-4 ring-orange-300': focusedEmployee == employee.email }"
         >
           <span
             v-if="employee.type == 1"

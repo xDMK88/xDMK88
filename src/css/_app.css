@@ -736,7 +736,7 @@ input:focus {outline: 0;}
   margin-bottom: 2px;
   /* margin-left: 5px; */
   line-height: 30px;
- display: inline-flex;
+  display: inline-flex;
   width: 100%;
   font-size: 13px;
 }
@@ -1045,11 +1045,11 @@ input {
 }
 .custom-dropdown a:hover, .custom-dropdown a:focus, .custom-dropdown a.active
 {
- background-color:#F5B049;
+  background-color:#F5B049;
 }
 .check-custom-project
 {
-float: right;
+  float: right;
 }
 .form-control-custom
 {
@@ -1619,7 +1619,7 @@ label
 {
   display: none;
 }
- .popper-employees .popper
+.popper-employees .popper
 {
   top: 5% !important;
 }

@@ -63,20 +63,9 @@
     </div>
   </div>
 
-  <div
-    class="pointer-events-none"
+  <EmptyTasksListPics
     v-if="!Object.keys(storeTasks).length && status != 'loading'"
-  >
-    <img
-      class="mx-auto mt-10"
-      width="300"
-      height="300"
-      src="@/assets/images/emptytask.png"
-      alt="Empty task image"
-    >
-    <p class="text-xl text-center mt-10">Create tasks for today or go to another day to stay up to date</p>
-    <p class="text-xl text-center text-gray-600 mt-5">Let's create some!</p>
-  </div>
+  />
 
   <!-- Skeleton -->
   <div
@@ -524,6 +513,7 @@ import treeview from 'vue3-treeview'
 import { useStore } from 'vuex'
 import Icon from '@/components/Icon.vue'
 import Control from '@/components/Control.vue'
+import EmptyTasksListPics from '@/components/EmptyTasksListPics.vue'
 import Popper from 'vue3-popper'
 import ModalBoxConfirm from '@/components/modals/ModalBoxConfirm.vue'
 import contenteditable from 'vue-contenteditable'
@@ -562,6 +552,7 @@ export default {
     Control,
     Popper,
     ModalBoxConfirm,
+    EmptyTasksListPics,
     contenteditable
   },
   props: {

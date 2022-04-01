@@ -489,7 +489,7 @@
             />
           </div>
           <div
-            v-if="props.node.info.comment"
+            v-if="props.node.info.comment.replace(/\r?\n|\r/g, '')"
             class="bg-gray-200 dark:bg-gray-700 rounded px-1.5 mr-1 mt-1.5"
             :style="{backgroundColor: colors[props.node.info.uid_marker] ? colors[props.node.info.uid_marker].back_color : '' }"
           >

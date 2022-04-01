@@ -38,8 +38,8 @@ const actions = {
   },
   [UPDATE_EMPLOYEE_REQUEST]: ({ commit, dispatch }, data) => {
     return new Promise((resolve, reject) => {
-      const url = 'https://web.leadertask.com/api/v1/emp'
-      axios({ url: url, method: 'PATCH', data: data })
+      const url = 'https://web.leadertask.com/api/v1/emp/title/?email=' + data.email + '&title=' + data.name
+      axios({ url: url, method: 'PATCH' })
         .then(resp => {
           resolve(resp)
         }).catch(err => {

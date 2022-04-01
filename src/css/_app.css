@@ -503,10 +503,11 @@ input:focus {outline: 0;}
   font-size: 11px;
   display: none;
   position: absolute;
-  right: 2px;
+  right: 0px;
   width: 15px;
   height: 15px;
   top: 7px;
+  border-radius: 25px;
   -webkit-transition: all 0.7s ease;
   -moz-transition: all 0.7s ease;
   -o-transition: all 0.7s ease;
@@ -521,7 +522,7 @@ input:focus {outline: 0;}
 {
   width: 15px;
   height: 15px;
-  left: 2px;
+  left: 0px;
   top: 0;
   padding: 2px;
   border-radius: 25px;
@@ -539,7 +540,6 @@ input:focus {outline: 0;}
   transition: all 0.7s ease;
   animation-delay: -2s;
   display: block;
-  background: white;
   height: 15px;
   z-index: 9999;
   animation: ani 1s forwards;
@@ -1121,7 +1121,7 @@ input {
 }
 /* стили для активного состояния чекбокса (при нажатии на него) */
 .custom-checkbox:not(:disabled):active+label::after {
-  background-color: #b3d7ff;
+
   border-color: #b3d7ff;
 }
 /* стили для чекбокса, находящегося в фокусе */

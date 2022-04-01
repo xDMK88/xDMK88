@@ -706,6 +706,9 @@ const actions = {
   },
   [TASK.CHANGE_TASK_PERFORMER]: ({ commit, dispatch }, data) => {
     return new Promise((resolve, reject) => {
+      if (data.value !== '') {
+        data.value = null
+      }
       const url = 'https://web.leadertask.com/api/v1/task/performer?uid=' + data.uid + '&value=' + data.value
       axios({
         url: url,

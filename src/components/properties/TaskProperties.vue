@@ -86,7 +86,17 @@ export default {
     const changeEmployee = (uid, email) => {
       store.dispatch(TASK.CHANGE_TASK_PERFORMER, { uid: uid, value: email }).then(
         resp => {
+          console.log(resp.data)
           selectedTask.value.email_performer = email
+          selectedTask.value.type = 2
+        }
+      )
+    }
+    const resetEmployes = () => {
+      store.dispatch(TASK.CHANGE_TASK_PERFORMER, { uid: selectedTask.value.uid, value: '' }).then(
+        resp => {
+          selectedTask.value.email_performer = ''
+          selectedTask.value.type = 1
         }
       )
     }
@@ -119,7 +129,6 @@ export default {
       )
     }
     const changeFocus = (uid, value) => {
-      selectedTask.value.focus = value
       store.dispatch(TASK.CHANGE_TASK_FOCUS, { uid: uid, value: value }).then(
         resp => {
           selectedTask.value.focus = value
@@ -188,7 +197,7 @@ export default {
           //  selectedTask.value.comment = comment
         })
       if (selectedTask.value.comment === '') {
-        event.target.innerHTML = 'Оставить запись'
+        selectedTask.value.comment = 'Оставить запись'
       }
     }
     const unchecked = () => {
@@ -239,13 +248,6 @@ export default {
         }
       )
     }
-    const resetEmployes = () => {
-      store.dispatch(TASK.CHANGE_TASK_PERFORMER, { uid: selectedTask.value.uid, value: '' }).then(
-        resp => {
-          selectedTask.value.email_performer = ''
-        }
-      )
-    }
     const resetCalendar = () => {
       const data = {
         uid_task: selectedTask.value.uid,
@@ -287,7 +289,11 @@ export default {
     const changeEveryYearType = (value) => {
       this.ActiveYartype = value
     }
+    const addsubmit = () => {
+      this.applybutton = true
+    }
     return {
+      addsubmit,
       editCheckName,
       createChecklist,
       addCheckName,
@@ -321,6 +327,7 @@ export default {
       close,
       file: '',
       taskMsg,
+      applybutton: false,
       anymenuShow: false,
       isFullScreen: computed(() => store.state.isFullScreen),
       isPropertiesMobileExpanded: computed(() => store.state.isPropertiesMobileExpanded),
@@ -441,16 +448,10 @@ export default {
         allowProtocolRelative: true,
         enforceHtmlBoundary: false
       })
-      const html = '<strong>hello world</strong>'
-      console.log(sanitizeHtml(html))
       return htmlElement
     },
     gotoParentNode (uid) {
       document.getElementById(uid).parentNode.click({ preventScroll: false })
-    },
-    activate (tab) {
-      this.activeTab = tab.name
-      this.$emit('activateTab', tab.name)
     },
     formatBytes: function (bytes, decimals = 2) {
       if (bytes === 0) return '0 Bytes'
@@ -511,25 +512,6 @@ export default {
         >
           {{ tasks[selectedTask.uid_parent].info.name }}
         </a>
-        <div
-          v-if="selectedTask.focus===1"
-          class="infocus-task"
-        >
-          <svg
-            width="24"
-            height="24"
-            viewBox="0 0 44 60"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              fill-rule="evenodd"
-              clip-rule="evenodd"
-              d="M2.47887 0H41.5211C42.8845 0 44 1.1195 44 2.48777V57.0416C44 58.0782 43.339 59.0318 42.3681 59.3843C42.0995 59.4879 41.8103 59.5294 41.5211 59.5294C40.7775 59.5294 40.0958 59.1977 39.6207 58.638L22 41.1088L4.37934 58.638C3.90423 59.1977 3.20188 59.5294 2.47887 59.5294C2.18967 59.5294 1.90047 59.4879 1.63192 59.3843C0.661033 59.0111 0 58.0782 0 57.0416V2.48777C0 1.1195 1.11549 0 2.47887 0ZM21.5922 11.4076C19.5672 11.4076 17.9255 13.0492 17.9255 15.0743C17.9255 17.0993 19.5672 18.7409 21.5922 18.7409C23.6173 18.7409 25.2589 17.0993 25.2589 15.0743C25.2589 13.0492 23.6173 11.4076 21.5922 11.4076Z"
-              fill="#F2543F"
-            />
-          </svg>
-        </div>
       </div>
       <div class="user_child_customer_custom">
         <strong>
@@ -558,10 +540,10 @@ export default {
             <span v-if="selectedTask.status!==3">
             <!-- <p class="text-center">{{ localization.Labels }}</p>-->
               <!-- Поручить (личное сообщение) -->
-            <button
+            <div
               v-if="selectedTask.type===1"
               ref="btnRefEmployee"
-              class="mt-3 tags-custom active"
+              class="mt-3 tags-custom active project-hover-close"
             >
               <svg
                 width="24"
@@ -579,12 +561,16 @@ export default {
               <span
                 class="rounded"
               >Поручить</span>
-            </button>
+                <button @click="resetEmployes" class="btn-close-popover"><svg width="5" height="5" viewBox="0 0 16 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M14.8483 2.34833C15.317 1.8797 15.317 1.11991 14.8483 0.651277C14.3797 0.182647 13.6199 0.182647 13.1513 0.651277L7.99981 5.80275L2.84833 0.651277C2.3797 0.182647 1.61991 0.182647 1.15128 0.651277C0.682647 1.11991 0.682647 1.8797 1.15128 2.34833L6.30275 7.4998L1.15128 12.6513C0.682647 13.1199 0.682647 13.8797 1.15128 14.3483C1.61991 14.817 2.3797 14.817 2.84833 14.3483L7.99981 9.19686L13.1513 14.3483C13.6199 14.817 14.3797 14.817 14.8483 14.3483C15.317 13.8797 15.317 13.1199 14.8483 12.6513L9.69686 7.4998L14.8483 2.34833Z" fill="black" fill-opacity="0.5"/>
+              </svg>
+              </button>
+            </div>
               <!-- Поручено на email -->
-            <button
+            <div
               v-else-if="selectedTask.type===2"
               ref="btnRefEmployee"
-              class="mt-3 tags-custom"
+              class="mt-3 tags-custom project-hover-close"
             >
               <svg
                 width="24"
@@ -599,13 +585,17 @@ export default {
                   fill-opacity="1"
                 />
               </svg>
-              <span>{{employeesByEmail[selectedTask.email_performer].name}}</span>
-            </button>
+              <span>{{employeesByEmail[selectedTask.email_performer.toLowerCase()].name}}</span>
+                <button @click="resetEmployes" class="btn-close-popover"><svg width="5" height="5" viewBox="0 0 16 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M14.8483 2.34833C15.317 1.8797 15.317 1.11991 14.8483 0.651277C14.3797 0.182647 13.6199 0.182647 13.1513 0.651277L7.99981 5.80275L2.84833 0.651277C2.3797 0.182647 1.61991 0.182647 1.15128 0.651277C0.682647 1.11991 0.682647 1.8797 1.15128 2.34833L6.30275 7.4998L1.15128 12.6513C0.682647 13.1199 0.682647 13.8797 1.15128 14.3483C1.61991 14.817 2.3797 14.817 2.84833 14.3483L7.99981 9.19686L13.1513 14.3483C13.6199 14.817 14.3797 14.817 14.8483 14.3483C15.317 13.8797 15.317 13.1199 14.8483 12.6513L9.69686 7.4998L14.8483 2.34833Z" fill="black" fill-opacity="0.5"/>
+              </svg>
+              </button>
+            </div>
               <!-- Перепоручить -->
-            <button
+            <div
               v-else-if="selectedTask.type===3"
               ref="btnRefEmployee"
-              class="mt-3 tags-custom active"
+              class="mt-3 tags-custom active project-hover-close"
             >
 
               <svg
@@ -624,12 +614,16 @@ export default {
               <span
                 class="rounded"
               >Перепоручить</span>
-            </button>
+                <button @click="resetEmployes" class="btn-close-popover"><svg width="5" height="5" viewBox="0 0 16 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M14.8483 2.34833C15.317 1.8797 15.317 1.11991 14.8483 0.651277C14.3797 0.182647 13.6199 0.182647 13.1513 0.651277L7.99981 5.80275L2.84833 0.651277C2.3797 0.182647 1.61991 0.182647 1.15128 0.651277C0.682647 1.11991 0.682647 1.8797 1.15128 2.34833L6.30275 7.4998L1.15128 12.6513C0.682647 13.1199 0.682647 13.8797 1.15128 14.3483C1.61991 14.817 2.3797 14.817 2.84833 14.3483L7.99981 9.19686L13.1513 14.3483C13.6199 14.817 14.3797 14.817 14.8483 14.3483C15.317 13.8797 15.317 13.1199 14.8483 12.6513L9.69686 7.4998L14.8483 2.34833Z" fill="black" fill-opacity="0.5"/>
+              </svg>
+              </button>
+            </div>
               <!-- Взять на исполнение -->
-            <button
+            <div
               v-else-if="selectedTask.type===4"
               ref="btnRefEmployee"
-              class="mt-3 tags-custom active"
+              class="mt-3 tags-custom active project-hover-close"
             >
 
               <svg
@@ -648,7 +642,11 @@ export default {
               <span
                 class="rounded"
               >Взять на исполнение</span>
-            </button>
+                <button @click="resetEmployes" class="btn-close-popover"><svg width="5" height="5" viewBox="0 0 16 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M14.8483 2.34833C15.317 1.8797 15.317 1.11991 14.8483 0.651277C14.3797 0.182647 13.6199 0.182647 13.1513 0.651277L7.99981 5.80275L2.84833 0.651277C2.3797 0.182647 1.61991 0.182647 1.15128 0.651277C0.682647 1.11991 0.682647 1.8797 1.15128 2.34833L6.30275 7.4998L1.15128 12.6513C0.682647 13.1199 0.682647 13.8797 1.15128 14.3483C1.61991 14.817 2.3797 14.817 2.84833 14.3483L7.99981 9.19686L13.1513 14.3483C13.6199 14.817 14.3797 14.817 14.8483 14.3483C15.317 13.8797 15.317 13.1199 14.8483 12.6513L9.69686 7.4998L14.8483 2.34833Z" fill="black" fill-opacity="0.5"/>
+              </svg>
+              </button>
+            </div>
           </span>
           <template
             #content="{ employee }"
@@ -717,11 +715,12 @@ export default {
                 <div @click="close"></div>
                 <button
                   class="btn-clear-popover"
+                  :class="{showb:applybutton===true}"
                   @click="resetAccess"
                 >
                   Отменить
                 </button>
-                <button class="btn-save-popover" @click="ClickAccessEmail">
+                <button class="btn-save-popover" :class="{showb:applybutton===true}" @click="ClickAccessEmail">
                   <span
                     class="title-z-popover"
                   >Применить</span>
@@ -734,7 +733,7 @@ export default {
                       v-for="(key,value, index) in employees"
                       :key="index"
                     >
-                      <div class="list-employee-access">
+                      <div class="list-employee-access" @click="addsubmit">
                         <img
                           :src="key.fotolink"
                           class="mr-1 border-fotolink border-solid border-2 border-sky-500"
@@ -768,7 +767,7 @@ export default {
             <div
               v-for="(key,value) in selectedTask.emails.split('..')"
               :key="value"
-              class="mt-3 tags-custom"
+              class="mt-3 tags-custom project-hover-close"
             >
               <svg v-if="key!=='null'"
                    width="24"
@@ -785,7 +784,11 @@ export default {
                   fill-opacity="0.5"
                 />
               </svg>
-              <span class="rounded">{{key}}</span>
+              <span class="rounded">{{employeesByEmail[key.toLowerCase()].name}}</span>
+              <button @click="resetAccess" class="btn-close-popover"><svg width="5" height="5" viewBox="0 0 16 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M14.8483 2.34833C15.317 1.8797 15.317 1.11991 14.8483 0.651277C14.3797 0.182647 13.6199 0.182647 13.1513 0.651277L7.99981 5.80275L2.84833 0.651277C2.3797 0.182647 1.61991 0.182647 1.15128 0.651277C0.682647 1.11991 0.682647 1.8797 1.15128 2.34833L6.30275 7.4998L1.15128 12.6513C0.682647 13.1199 0.682647 13.8797 1.15128 14.3483C1.61991 14.817 2.3797 14.817 2.84833 14.3483L7.99981 9.19686L13.1513 14.3483C13.6199 14.817 14.3797 14.817 14.8483 14.3483C15.317 13.8797 15.317 13.1199 14.8483 12.6513L9.69686 7.4998L14.8483 2.34833Z" fill="black" fill-opacity="0.5"/>
+              </svg>
+              </button>
             </div>
           </div>
           <div
@@ -1264,10 +1267,10 @@ export default {
             </div>
           </template>
           <div v-if="selectedTask.term_customer!==''">
-            <a
+            <div
               v-if="selectedTask.SeriesEnd!==''"
               ref="btnRefRepeat"
-              class="mt-3 tags-custom"
+              class="mt-3 tags-custom project-hover-close"
             >
               <svg
                 width="24"
@@ -1311,7 +1314,11 @@ export default {
               {{ day[selectedTask.SeriesYearDayOfWeek] }}
             </span>
               </span>
-            </a>
+              <button class="btn-close-popover"><svg width="5" height="5" viewBox="0 0 16 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M14.8483 2.34833C15.317 1.8797 15.317 1.11991 14.8483 0.651277C14.3797 0.182647 13.6199 0.182647 13.1513 0.651277L7.99981 5.80275L2.84833 0.651277C2.3797 0.182647 1.61991 0.182647 1.15128 0.651277C0.682647 1.11991 0.682647 1.8797 1.15128 2.34833L6.30275 7.4998L1.15128 12.6513C0.682647 13.1199 0.682647 13.8797 1.15128 14.3483C1.61991 14.817 2.3797 14.817 2.84833 14.3483L7.99981 9.19686L13.1513 14.3483C13.6199 14.817 14.3797 14.817 14.8483 14.3483C15.317 13.8797 15.317 13.1199 14.8483 12.6513L9.69686 7.4998L14.8483 2.34833Z" fill="black" fill-opacity="0.5"/>
+              </svg>
+              </button>
+            </div>
           </div>
           <div
             v-else
@@ -1875,7 +1882,7 @@ export default {
         <!-- Фокус -->
         <div
           v-if="selectedTask.focus===1"
-          class="mt-3 tags-custom"
+          class="mt-3 tags-custom project-hover-close"
           @click="changeFocus(selectedTask.uid, 0)"
         >
           <svg
@@ -1894,10 +1901,14 @@ export default {
           </svg>
 
           <span class="rounded"> В фокусе</span>
+          <button class="btn-close-popover" :id="key"><svg width="5" height="5" viewBox="0 0 16 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M14.8483 2.34833C15.317 1.8797 15.317 1.11991 14.8483 0.651277C14.3797 0.182647 13.6199 0.182647 13.1513 0.651277L7.99981 5.80275L2.84833 0.651277C2.3797 0.182647 1.61991 0.182647 1.15128 0.651277C0.682647 1.11991 0.682647 1.8797 1.15128 2.34833L6.30275 7.4998L1.15128 12.6513C0.682647 13.1199 0.682647 13.8797 1.15128 14.3483C1.61991 14.817 2.3797 14.817 2.84833 14.3483L7.99981 9.19686L13.1513 14.3483C13.6199 14.817 14.3797 14.817 14.8483 14.3483C15.317 13.8797 15.317 13.1199 14.8483 12.6513L9.69686 7.4998L14.8483 2.34833Z" fill="black" fill-opacity="0.5"/>
+          </svg>
+          </button>
         </div>
         <div
           v-else
-          class="mt-3 tags-custom"
+          class="mt-3 tags-custom project-hover-close"
           @click="changeFocus(selectedTask.uid, 1)"
         >
           <svg

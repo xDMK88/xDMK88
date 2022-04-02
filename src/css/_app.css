@@ -43,7 +43,7 @@ input:focus {outline: 0;}
   display: flex;
   background: #F4F5F7;
 }
-.tags-custom.active, .tags-custom.active svg
+.tags-custom.active
 {
   background-color:#977DE3;
   color:white;
@@ -180,26 +180,29 @@ input:focus {outline: 0;}
   font-size:13px;
   color:black;
 }
-.description-content
-{
-
-}
 .custom-list-tags
 {
   width:100%;
   display: inline-block;
   padding-right: 5px;
+  float: left;
 }
 .custom-list-tags .inline-block {
-  margin: 0 0 -6px 0 !important;
+  margin: 0 0 0 0 !important;
   border: none !important;
+  float: left;
 }
 .description-content
 {
   width:100%;
   font-size:14px;
   padding-right: 5px;
+  min-height: 100px;
   display: inline-block;
+}
+.description-content div:empty:before {
+  content:attr(data-placeholder);
+  color:gray
 }
 .list-files-custom
 {
@@ -1221,27 +1224,26 @@ label
 }
 .btn-save-repeat
 {
-  width:80px;
-  display: table;
-  height: 30px;
-  color:white;
+  width: 85px;
+  height: 25px;
   font-size: 11px;
-  background: #FF9123;
-  -webkit-box-shadow: 3px 4px 5px 0px rgba(50, 50, 50, 0.5);
-  -moz-box-shadow:    3px 4px 5px 0px rgba(50, 50, 50, 0.5);
-  box-shadow:         3px 4px 5px 0px rgba(50, 50, 50, 0.5);
+  color: gray;
+  float: left;
+  margin-bottom: 5px;
+  margin-right: 5px;
+  border-radius: 7px;
+  border: 1px solid gray;
 }
 .btn-cancel-repeat
 {
+  width: 85px;
+  height: 25px;
   font-size: 11px;
-  width:80px;
-  display: table;
-  height: 30px;
-  color:white;
-  background: gray;
-  -webkit-box-shadow: 3px 4px 5px 0px rgba(50, 50, 50, 0.5);
-  -moz-box-shadow:    3px 4px 5px 0px rgba(50, 50, 50, 0.5);
-  box-shadow:         3px 4px 5px 0px rgba(50, 50, 50, 0.5);
+  color: gray;
+  float: left;
+  margin-right: 5px;
+  border-radius: 7px;
+  border: 1px solid gray;
 }
 .top-panel-repeat
 {
@@ -1800,4 +1802,28 @@ label
 .calendar-properties
 {
 
+}
+.any-list-custom .custom-dropdown
+{
+  display: none;
+}
+.any-list-custom:hover .custom-dropdown, .any-list-custom.active .custom-dropdown
+{
+  display: block;
+}
+.btn-access-popover
+{
+  display: none;
+}
+.btn-access-popover.showb
+{
+  display: table;
+}
+.btn-access-popover
+{
+  display: none;
+}
+.btn-access-popover.showb
+{
+  display: table;
 }

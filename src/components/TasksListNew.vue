@@ -8,8 +8,12 @@
     button-label="Delete"
     @confirm="removeTask(lastSelectedTaskUid)"
   >
-    <p class="text-center">
-      Do you really wanna delete this task?
+    <p class="text-center" v-if="storeTasks[lastSelectedTaskUid]">
+      Do you really wanna delete <strong>"{{ storeTasks[lastSelectedTaskUid].info.name }}"</strong> task?
+      <span
+        v-if="storeTasks[lastSelectedTaskUid].info.has_children">
+        Children will also be affected!
+      </span>
     </p>
   </modal-box-confirm>
 
@@ -819,6 +823,7 @@ export default {
       const newSubtask = {
         uid: uuidv4(),
         uid_customer: user.value.current_user_uid,
+        email_performer: parent.email_performer,
         name: 'Task name',
         status: 0,
         uid_parent: parent.uid,

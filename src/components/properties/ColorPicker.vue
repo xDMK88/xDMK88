@@ -17,6 +17,9 @@ const props = defineProps({
   disabled: {
     type: Boolean,
     default: false
+  },
+  update: {
+    type: Function
   }
 })
 
@@ -25,6 +28,7 @@ const emit = defineEmits(['update:modelValue'])
 const updateValue = (value) => {
   if (!props.disabled) {
     emit('update:modelValue', value)
+    props.update()
   }
 }
 

@@ -1,5 +1,5 @@
 <script setup>
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useStore } from 'vuex'
 import ColorPicker from '@/components/properties/ColorPicker.vue'
 
@@ -15,12 +15,17 @@ import { NAVIGATOR_PUSH_TAG, NAVIGATOR_REMOVE_TAG } from '@/store/actions/naviga
 const store = useStore()
 const selectedTag = computed(() => store.state.tasks.selectedTag)
 const showConfirm = ref(false)
+const hasChanged = ref(false)
 
 function uuidv4 () {
   return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
     (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
   )
 }
+
+watch(selectedTag, () => {
+  hasChanged.value = false
+})
 
 const createOrUpdateTag = (tag) => {
   if (!tag.uid) {
@@ -29,6 +34,7 @@ const createOrUpdateTag = (tag) => {
     tag.global_property_uid = '00a5b3de-9474-404d-b3ba-83f488ac6d30'
     store.dispatch(CREATE_TAG_REQUEST, tag)
       .then(() => {
+        hasChanged.value = false
         store.dispatch('asidePropertiesToggle', false)
         // store.commit(PUSH_PROJECT, [tag])
         store.commit(NAVIGATOR_PUSH_TAG, [tag])
@@ -36,6 +42,7 @@ const createOrUpdateTag = (tag) => {
   } else {
     store.dispatch(UPDATE_TAG_REQUEST, tag)
       .then(() => {
+        hasChanged.value = false
         store.dispatch('asidePropertiesToggle', false)
       })
   }
@@ -76,6 +83,7 @@ const removeTag = (tag) => {
       </p>
       <input
         v-model="selectedTag.name"
+        @input="hasChanged = true"
         type="text"
         placeholder="Название проекта"
         class="mt-2 p-3 rounded-xl bg-gray-100 font-bold text-gray-700 w-full border-none ring-0 outline-none"
@@ -85,11 +93,13 @@ const removeTag = (tag) => {
       >
         <ColorPicker
           v-model="selectedTag.back_color"
+          :update="() => hasChanged = true "
           :label="'Цвет метки'"
         />
       </div>
       <button
         class="w-full bg-gray-100 rounded-xl mt-4 p-3 text-gray-700 font-bold hover:bg-gray-200"
+        :class="{ 'bg-orange-400 hover:bg-orange-500': hasChanged }"
         @click="createOrUpdateTag(selectedTag)"
       >
         {{ selectedTag.uid ? 'Сохранить' : 'Создать' }}

@@ -141,14 +141,22 @@ const goToChildren = (value) => {
         :key="pindex"
       >
         <div
-          class="flex items-center bg-white dark:bg-gray-700 rounded-xl shadow hover:shadow-md px-5 py-7 relative"
+          class="flex items-center bg-white dark:bg-gray-700 rounded-xl shadow hover:shadow-md px-5 py-7 relative min-h-[100px]"
           :class="{ 'ring-4 ring-orange-300': focusedProject == project.uid }"
         >
+          <icon
+            :path="properties.path"
+            :width="properties.width"
+            :height="properties.height"
+            :box="properties.viewBox"
+            class="text-gray-400 cursor-pointer hover:text-gray-800 absolute top-10 right-5"
+            @click="openProperties(project)"
+          />
           <div
             v-if="project.color != '#A998B6'"
             :style="{ backgroundColor: project.color }"
             style="border-radius: 100% 0 0.75rem 0;"
-            class="w-7 h-7 absolute bottom-0 right-0"
+            class="w-6 h-6 absolute bottom-0 right-0"
           />
           <svg
             width="20"
@@ -177,14 +185,6 @@ const goToChildren = (value) => {
           </svg>
           <div>
             <div class="flex items-start">
-              <icon
-                :path="properties.path"
-                :width="properties.width"
-                :height="properties.height"
-                :box="properties.viewBox"
-                class="text-gray-400 cursor-pointer hover:text-gray-800 mr-2 mt-0.5"
-                @click="openProperties(project)"
-              />
               <icon
                 v-if="project.members && project.members.length == 1"
                 :path="projectIcon.path"

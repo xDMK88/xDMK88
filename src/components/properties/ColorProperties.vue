@@ -1,6 +1,7 @@
 <script setup>
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useStore } from 'vuex'
+import Toggle from '@vueform/toggle'
 import ColorPicker from '@/components/properties/ColorPicker.vue'
 import characters from '@/icons/characters.js'
 
@@ -12,12 +13,17 @@ import { CREATE_COLOR_REQUEST, UPDATE_COLOR_REQUEST, REMOVE_COLOR_REQUEST } from
 const store = useStore()
 const selectedColor = computed(() => store.state.colors.selectedColor)
 const showConfirm = ref(false)
+const hasChanged = ref(false)
 
 function uuidv4 () {
   return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
     (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
   )
 }
+
+watch(selectedColor, () => {
+  selectedColor.value.uppercase = !!selectedColor.value.uppercase
+})
 
 const createOrUpdateColor = (color) => {
   if (!color.uid) {
@@ -26,16 +32,21 @@ const createOrUpdateColor = (color) => {
     // colors action uid
     // shoudn't be hard coded TODO: create consts with all actions in uids
     color.parentID = 'ed8039ae-f3de-4369-8f32-829d401056e9'
+    color.uppercase = color.uppercase ? 1 : 0
     store.dispatch(CREATE_COLOR_REQUEST, color)
       .then(() => {
+        hasChanged.value = false
         store.dispatch('asidePropertiesToggle', false)
-        // store.commit(PUSH_PROJECT, [project])
         store.commit(NAVIGATOR_PUSH_COLOR, [color])
+        color.uppercase = !!color.uppercase
       })
   } else {
+    color.uppercase = color.uppercase ? 1 : 0
     store.dispatch(UPDATE_COLOR_REQUEST, color)
       .then(() => {
+        hasChanged.value = false
         store.dispatch('asidePropertiesToggle', false)
+        color.uppercase = !!color.uppercase
       })
   }
 }
@@ -75,15 +86,18 @@ const removeColor = (color) => {
       </p>
       <input
         v-model="selectedColor.name"
+        @input="hasChanged = true"
         type="text"
         placeholder="Название проекта"
         class="mt-2 p-3 rounded-xl bg-gray-100 font-bold text-gray-700 w-full border-none ring-0 outline-none"
+        :class="{ 'uppercase': selectedColor.uppercase }"
       >
       <div
         class="mt-8"
       >
         <ColorPicker
           v-model="selectedColor.fore_color"
+          :update="() => hasChanged = true "
           :label="'Цвет букв'"
           :icon="characters"
         />
@@ -93,21 +107,24 @@ const removeColor = (color) => {
       >
         <ColorPicker
           v-model="selectedColor.back_color"
+          :update="() => hasChanged = true "
           :label="'Цвет фона'"
         />
       </div>
+      <hr class="my-6">
       <div
-        class="flex items-center mt-3"
+        class="flex items-center mb-6"
       >
-        <input
-          type="checkbox"
-          class="mr-1 bg-gray-100 border border-gray-300 rounded"
-        >
-        <p class="text-sm">
+        <p class="text-sm mr-3">
           Все прописные
         </p>
+        <Toggle
+          v-model="selectedColor.uppercase"
+          @change="hasChanged = true"
+          class="outline-none ring-0"
+          :classes="{ toggleOn: 'bg-blue-400 border-blue-400 justify-start text-white', container: 'focus:ring-0' }"
+        />
       </div>
-      <hr class="my-6">
       <p class="text-sm text-gray-500 dark:text-gray-200">
         Предосмотр задачи
       </p>
@@ -116,6 +133,7 @@ const removeColor = (color) => {
         :style="{ 'background-color': selectedColor.back_color }"
       >
         <p
+          :class="{ 'uppercase': selectedColor.uppercase }"
           :style="{ 'color': selectedColor.fore_color }"
         >
           Название задачи
@@ -123,6 +141,7 @@ const removeColor = (color) => {
       </div>
       <button
         class="w-full bg-gray-100 rounded-xl mt-4 p-3 text-gray-700 font-bold hover:bg-gray-200"
+        :class="{ 'bg-orange-400 hover:bg-orange-500': hasChanged }"
         @click="createOrUpdateColor(selectedColor)"
       >
         {{ selectedColor.uid ? 'Сохранить' : 'Создать' }}
@@ -137,3 +156,4 @@ const removeColor = (color) => {
     </div>
   </div>
 </template>
+<style src="@vueform/toggle/themes/default.css"></style>

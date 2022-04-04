@@ -775,13 +775,15 @@ export default {
       store.dispatch(
         TASK.CHANGE_TASK_DATE,
         {
-          uid: task.uid,
-          str_date_begin: getTodaysDate(tomorrow, false),
-          str_date_end: getTodaysDate(tomorrow, false),
-          str_time_begin: '00:00',
-          str_time_end: '23:59'
+          uid_task: task.uid,
+          str_date_begin: getTodaysDate(tomorrow) + 'T00:00:00',
+          str_date_end: getTodaysDate(tomorrow) + 'T23:59:59',
+          reset: 0
         }
       )
+        .then(() => {
+          store.commit(TASK.REMOVE_TASK, task.uid)
+        })
     }
 
     const copyTaskName = (task) => {

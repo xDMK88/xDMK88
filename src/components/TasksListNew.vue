@@ -400,7 +400,7 @@
             </div>
           </div>
           <div
-            v-if="props.node.info.uid_project != '00000000-0000-0000-0000-000000000000' && projects[props.node.info.uid_project]"
+            v-if="props.node.info.uid_project != '00000000-0000-0000-0000-000000000000' && projects[props.node.info.uid_project] && props.node.info.uid_project !== taskListSource.param"
             class="p-1 px-2 text-xs text-white bg-yellow-400 rounded-lg mr-1 flex items-center"
             :class="{ 'bg-opacity-50': props.node.info.status == 1 || props.node.info.status == 7 }"
           >
@@ -524,6 +524,7 @@ import contenteditable from 'vue-contenteditable'
 
 import * as TASK from '@/store/actions/tasks'
 
+/* Icons */
 import file from '@/icons/file.js'
 import inaccess from '@/icons/inaccess.js'
 import msgs from '@/icons/msgs.js'
@@ -548,6 +549,7 @@ import fortomorrow from '@/icons/for-tomorrow.js'
 import copy from '@/icons/copy.js'
 import cut from '@/icons/cut.js'
 import bin from '@/icons/bin.js'
+/* /Icons */
 
 export default {
   components: {

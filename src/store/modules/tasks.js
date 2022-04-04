@@ -792,10 +792,12 @@ const actions = {
   },
   [TASK.CHANGE_TASK_COMMENT]: ({ commit, dispatch }, data) => {
     return new Promise((resolve, reject) => {
-      const url = 'https://web.leadertask.com/api/v1/task/comment?uid=' + data.uid + '&value=' + data.value
+      console.log(encodeURIComponent(data.value))
+      const url = 'https://web.leadertask.com/api/v1/task/comment?uid=' + data.uid
       axios({
         url: url,
-        method: 'PATCH'
+        method: 'PATCH',
+        data: 'comment= ' + encodeURIComponent(data.value)
       })
         .then(resp => {
           resolve(resp)

@@ -84,7 +84,8 @@ export default {
       )
     }
     const changeEmployee = (uid, email) => {
-      store.dispatch(TASK.CHANGE_TASK_PERFORMER, { uid: uid, value: email }).then(
+      console.log(email)
+      store.dispatch(TASK.CHANGE_TASK_PERFORMER, { uid: uid, value: email.toLowerCase() }).then(
         resp => {
           console.log(resp.data)
           selectedTask.value.email_performer = email
@@ -187,17 +188,19 @@ export default {
         })
     }
     const changeComment = (event) => {
-      const message = event.target.innerHTML.replace('</div>', '').replace('<div>', '<br/>')
+      const message = event.target.innerText
+      console.log(event.target.innerText)
+      setCursorPosition(event.target.id, 0, 100)
       const data = {
         uid: selectedTask.value.uid,
         value: message
       }
       store.dispatch(TASK.CHANGE_TASK_COMMENT, data).then(
         resp => {
-          //  selectedTask.value.comment = comment
+          //  selectedTask.value.comment = message
         })
-      if (selectedTask.value.comment === '') {
-        selectedTask.value.comment = 'Оставить запись'
+      if (message === '') {
+        selectedTask.value.comment = 'Добавить заметку...'
       }
     }
     const unchecked = () => {
@@ -258,6 +261,10 @@ export default {
       store.dispatch(TASK.CHANGE_TASK_DATE, data).then(
         resp => {
           selectedTask.value.term_customer = resp.data.term
+          this.range = {
+            start: '',
+            end: ''
+          }
         })
     }
     const handleInput = () => {
@@ -292,11 +299,33 @@ export default {
     const addsubmit = () => {
       this.applybutton = true
     }
+    const setCursorPosition = (oInput, oStart, oEnd) => {
+      if (oInput.setSelectionRange) {
+        oInput.setSelectionRange(oStart, oEnd)
+      } else if (oInput.createTextRange) {
+        var range = oInput.createTextRange()
+        range.collapse(true)
+        range.moveEnd('character', oEnd)
+        range.moveStart('character', oStart)
+        range.select()
+      }
+    }
+    const editcomment = () => {
+      this.isEditable = true
+    }
+    const removecomment = (event) => {
+      this.isEditable = false
+      const message = event.target.innerText
+      selectedTask.value.comment = message
+    }
     return {
+      removecomment,
+      editcomment,
       addsubmit,
       editCheckName,
       createChecklist,
       addCheckName,
+      setCursorPosition,
       showAllMessages,
       copyurl,
       changeEveryYearType,
@@ -365,7 +394,7 @@ export default {
         'status_reject',
         'status_refine'
       ],
-      isEditable: true,
+      isEditable: false,
       remi: {
         date: new Date(),
         timezone: 'Europe/Moscow'
@@ -471,6 +500,9 @@ export default {
         'Расширение: ' + ext,
         'MIME тип: ' + filename.type
       ].join('<br>')
+    },
+    moveToToday () {
+      this.$refs.calendar.move(new Date())
     }
   }
 }
@@ -488,6 +520,7 @@ export default {
       Do you really wanna delete this task?
     </p>
   </modal-box-confirm>
+  {{selectedTask.type}}
   <div class="break-words">
     <div class="column-resize">
       <div />
@@ -516,7 +549,7 @@ export default {
       </div>
       <div class="user_child_customer_custom">
         <strong>
-          <contenteditable class="form-control taskName-custom" style="font-weight: bold; font-size: 18px" tag="p" :contenteditable="isEditable" @keyup.enter="changeName($event)" v-model="selectedTask.name" :noNL="false" :noHTML="true" @returned="changeName($event)" />
+          <contenteditable class="form-control taskName-custom" style="font-weight: bold; font-size: 18px" tag="p" :contenteditable="isEditable" @keyup.prevent="changeName($event)" v-model="selectedTask.name" :noNL="true" :noHTML="true" @returned="changeName($event)" />
         </strong>
       </div>
       <!--   <p class="mt-3"><strong>{{ localization.task_created }}:</strong> {{ selectedTask.date_create }}</p>
@@ -663,7 +696,7 @@ export default {
                       v-for="(key,value) in employees"
                       :key="value"
                     >
-                      <div
+                      <div v-if="key.uid !== cusers.current_user_uid"
                         class="list-employee-access"
                         @click="changeEmployee(selectedTask.uid, key.email.toLowerCase())"
                       >
@@ -701,7 +734,7 @@ export default {
         </Popper>
         <!-- Всплывающее окно доступ -->
         <Popper
-          class="popper-access"
+          class="popper-access" v-if="selectedTask.type!==4"
           arrow
           trigger="hover"
           :class="isDark ? 'dark' : 'light'"
@@ -733,7 +766,9 @@ export default {
                       v-for="(key,value, index) in employees"
                       :key="index"
                     >
-                      <div class="list-employee-access" @click="addsubmit">
+                      <div v-if="key.uid !== cusers.current_user_uid"
+                           class="list-employee-access"
+                           @click="addsubmit">
                         <img
                           :src="key.fotolink"
                           class="mr-1 border-fotolink border-solid border-2 border-sky-500"
@@ -767,7 +802,7 @@ export default {
           >
             <div v-if="selectedTask.emails.split('..').length>1">
               <div
-                v-for="(key,value) in selectedTask.emails.split('..')"
+                v-for="(key,value) in selectedTask.emails.split('..').filter(n=>n)"
                 :key="value"
                 class="mt-3 tags-custom project-hover-close"
               >
@@ -786,7 +821,7 @@ export default {
                     fill-opacity="0.5"
                   />
                 </svg>
-                <span class="rounded">{{employeesByEmail[key].name}}</span>
+                <span class="rounded">{{employeesByEmail[key.toLowerCase()].name}}</span>
                 <button @click="resetAccess" class="btn-close-popover"><svg width="5" height="5" viewBox="0 0 16 15" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M14.8483 2.34833C15.317 1.8797 15.317 1.11991 14.8483 0.651277C14.3797 0.182647 13.6199 0.182647 13.1513 0.651277L7.99981 5.80275L2.84833 0.651277C2.3797 0.182647 1.61991 0.182647 1.15128 0.651277C0.682647 1.11991 0.682647 1.8797 1.15128 2.34833L6.30275 7.4998L1.15128 12.6513C0.682647 13.1199 0.682647 13.8797 1.15128 14.3483C1.61991 14.817 2.3797 14.817 2.84833 14.3483L7.99981 9.19686L13.1513 14.3483C13.6199 14.817 14.3797 14.817 14.8483 14.3483C15.317 13.8797 15.317 13.1199 14.8483 12.6513L9.69686 7.4998L14.8483 2.34833Z" fill="black" fill-opacity="0.5"/>
                 </svg>
@@ -812,7 +847,7 @@ export default {
                     fill-opacity="0.5"
                   />
                 </svg>
-                <span class="rounded">{{employeesByEmail[selectedTask.toLowerCase()].name}}</span>
+                <span class="rounded">{{employeesByEmail[selectedTask.emails.toLowerCase()].name}}</span>
                 <button @click="resetAccess" class="btn-close-popover"><svg width="5" height="5" viewBox="0 0 16 15" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M14.8483 2.34833C15.317 1.8797 15.317 1.11991 14.8483 0.651277C14.3797 0.182647 13.6199 0.182647 13.1513 0.651277L7.99981 5.80275L2.84833 0.651277C2.3797 0.182647 1.61991 0.182647 1.15128 0.651277C0.682647 1.11991 0.682647 1.8797 1.15128 2.34833L6.30275 7.4998L1.15128 12.6513C0.682647 13.1199 0.682647 13.8797 1.15128 14.3483C1.61991 14.817 2.3797 14.817 2.84833 14.3483L7.99981 9.19686L13.1513 14.3483C13.6199 14.817 14.3797 14.817 14.8483 14.3483C15.317 13.8797 15.317 13.1199 14.8483 12.6513L9.69686 7.4998L14.8483 2.34833Z" fill="black" fill-opacity="0.5"/>
                 </svg>
@@ -845,7 +880,7 @@ export default {
         </Popper>
         <!-- Всплывающее окно Календарь -->
         <Popper
-          class="popper-calendar"
+          class="popper-calendar" v-if="selectedTask.type!==4"
           arrow
           append-to-body="true"
           trigger="hover"
@@ -860,6 +895,7 @@ export default {
             <div class="popper">
               <form class="form-inline" style="width: 0;display: table;" @submit.prevent>
                 <DatePicker
+                  ref="calendar"
                   v-model="range"
                   is-range
                   mode="dateTime"
@@ -871,15 +907,20 @@ export default {
                   title-position="left"
                   :masks="masks"
                   datePicker.updateOnInput="true"
-                />
-                <button @click="handleInput" class="btn-save-popover">Сохранить</button>
+                >
+                  <template v-slot:footer>
+                    <div class="">
+                      <button @click="handleInput" @click.stop="close" class="btn-save-popover">Сохранить</button>
+                    </div>
+                  </template>
+                </DatePicker>
+
               </form>
             </div>
           </template>
           <a class="mt-3 tags-custom any-calendar project-hover-close">
-
             <span
-                v-if="selectedTask.term_customer!==''"
+                v-if="selectedTask.term_customer!=='' && selectedTask.term_customer!=null"
                 class="flex"
               >
                 <button
@@ -930,13 +971,13 @@ export default {
                       fill-opacity="0.5"
                     />
                   </svg>
-                </button><span><span ref="dateval">Выбрать дату</span></span>
+                </button><span><span>Выбрать дату</span></span>
               </span>
           </a>
         </Popper>
         <!-- Повтор -->
         <Popper
-          class="popper-repeat"
+          class="popper-repeat" v-if="selectedTask.term_customer!==''"
           arrow
           trigger="hover"
           :class="isDark ? 'dark' : 'light'"
@@ -1521,7 +1562,7 @@ export default {
                 fill-opacity="0.5"
               />
             </svg>
-            {{ projects[selectedTask.uid_project].name }}
+            {{ projects[selectedTask.uid_project].name.substring(0, 15) }}
             <button @click="resetProject" class="btn-close-popover"><svg width="5" height="5" viewBox="0 0 16 15" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M14.8483 2.34833C15.317 1.8797 15.317 1.11991 14.8483 0.651277C14.3797 0.182647 13.6199 0.182647 13.1513 0.651277L7.99981 5.80275L2.84833 0.651277C2.3797 0.182647 1.61991 0.182647 1.15128 0.651277C0.682647 1.11991 0.682647 1.8797 1.15128 2.34833L6.30275 7.4998L1.15128 12.6513C0.682647 13.1199 0.682647 13.8797 1.15128 14.3483C1.61991 14.817 2.3797 14.817 2.84833 14.3483L7.99981 9.19686L13.1513 14.3483C13.6199 14.817 14.3797 14.817 14.8483 14.3483C15.317 13.8797 15.317 13.1199 14.8483 12.6513L9.69686 7.4998L14.8483 2.34833Z" fill="black" fill-opacity="0.5"/>
             </svg>
@@ -1550,7 +1591,7 @@ export default {
         </Popper>
         <!--Всплывающее окно Цвета-->
         <Popper
-          class="popper-color"
+          class="popper-color" v-if="selectedTask.type!==4"
           arrow
           trigger="hover"
           :class="isDark ? 'dark' : 'light'"
@@ -1646,6 +1687,7 @@ export default {
           </a>
         </Popper>
         <!--Всплывающее окно Метки-->
+        <span v-if="selectedTask.type!==4">
         <span v-if="selectedTask.tags.length>0">
         <Popper v-for="(key, value) in selectedTask.tags"
                 :key="value"
@@ -1869,9 +1911,10 @@ export default {
           </button>
           </Popper>
         </span>
+          </span>
         <!-- Чек лист -->
         <div
-          v-if="!selectedTask.checklist"
+          v-if="!selectedTask.checklist && selectedTask.type!==4 && selectedTask.type!==3"
           class="mt-3 tags-custom"
           @click="createChecklist"
         >
@@ -2069,8 +2112,8 @@ export default {
           </button>
         </div>
       </div>
-      <div class="mt-3 description-content">
-        <div v-html="selectedTask.comment" ref="comment" contenteditable="true" data-placeholder="Оставить описание" v-linkify:options="{ className: 'text-blue-600' }" @keyup.enter="changeComment($event)">
+      <div class="mt-3 description-content" @click="editcomment">
+        <div v-html="selectedTask.comment.replaceAll('\n','<br/>')" id="comment" ref="comment" :contenteditable="isEditable" data-placeholder="Добавить заметку..." v-linkify:options="{ className: 'text-blue-600', tagName: 'a' }"  @blur="changeComment($event)" @keyup="changeComment($event)" @focus="this.$refs.comment.focus()" @focusout="removecomment($event)">
         </div>
       </div>
 

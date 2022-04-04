@@ -506,7 +506,7 @@ input:focus {outline: 0;}
   font-size: 11px;
   display: none;
   position: absolute;
-  right: 0px;
+  right: 0;
   width: 15px;
   height: 15px;
   top: 7px;
@@ -525,7 +525,7 @@ input:focus {outline: 0;}
 {
   width: 15px;
   height: 15px;
-  left: 0px;
+  left: 0;
   top: 0;
   padding: 2px;
   border-radius: 25px;
@@ -545,12 +545,12 @@ input:focus {outline: 0;}
   display: block;
   height: 15px;
   z-index: 9999;
-  animation: ani 1s forwards;
-  transform: translateX(70%);
+  animation: ani 0.4s forwards;
+  transform: translateX(30%);
   opacity: 1;
 }
 @keyframes ani {
-  0% {transform: translateX(70%);}
+  0% {transform: translateX(30%);}
   100% {transform: translateY(0);}
 }
 .btn-save-popover
@@ -1606,9 +1606,6 @@ label
   height: 100%;
   min-height: 20px;
   padding:0;
-  text-overflow: clip;
-  text-overflow: ellipsis ellipsis;
-  text-overflow: ellipsis " [..]";
 }
 .bottom {
   position: absolute;

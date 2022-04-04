@@ -119,6 +119,7 @@ const clickOnGridCard = (value) => {
               />
               <p
                 class="font-normal cursor-pointer self-center"
+                :class="{ 'uppercase': color.uppercase }"
                 @click="clickOnGridCard(color)"
               >
                 {{ color.name }}

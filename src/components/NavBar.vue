@@ -35,7 +35,6 @@ const settings = computed(() => {
 })
 
 watch(settings, () => {
-  console.log('computed!')
   settings.value.show_completed_tasks = !!settings.value.show_completed_tasks
 })
 const isNavBarVisible = computed(() => !store.state.isFullScreen)

@@ -1,5 +1,5 @@
 <script setup>
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useStore } from 'vuex'
 
 import ModalBoxConfirm from '@/components/modals/ModalBoxConfirm.vue'
@@ -11,6 +11,7 @@ const store = useStore()
 const selectedEmployee = computed(() => store.state.employees.selectedEmployee)
 const user = computed(() => store.state.user.user)
 const employees = computed(() => store.state.employees.employees)
+const hasChanged = ref(false)
 const showConfirm = ref(false)
 
 function uuidv4 () {
@@ -19,17 +20,23 @@ function uuidv4 () {
   )
 }
 
+watch(selectedEmployee, () => {
+  hasChanged.value = false
+})
+
 const createOrUpdateEmployee = (employee) => {
   if (!employee.uid) {
     employee.uid = uuidv4()
     store.dispatch(CREATE_EMPLOYEE_REQUEST, employee)
       .then(() => {
+        hasChanged.value = false
         store.dispatch('asidePropertiesToggle', false)
         store.commit(NAVIGATOR_PUSH_EMPLOYEE, [employee])
       })
   } else {
     store.dispatch(UPDATE_EMPLOYEE_REQUEST, employee)
       .then(() => {
+        hasChanged.value = false
         store.dispatch('asidePropertiesToggle', false)
       })
   }
@@ -74,6 +81,7 @@ const removeEmployee = (employee) => {
       </p>
       <input
         v-model="selectedEmployee.name"
+        @input="hasChanged = true"
         type="text"
         placeholder="Имя сотрудника"
         class="mt-2 p-3 rounded-xl bg-gray-100 font-bold text-gray-700 w-full border-none ring-0 outline-none"
@@ -86,6 +94,7 @@ const removeEmployee = (employee) => {
       <input
         v-model="selectedEmployee.email"
         type="text"
+        @input="hasChanged = true"
         placeholder="Email"
         class="mt-2 p-3 rounded-xl bg-gray-100 font-bold text-gray-700 w-full border-none ring-0 outline-none"
         :disabled="selectedEmployee.uid"
@@ -101,6 +110,7 @@ const removeEmployee = (employee) => {
         <input
           v-model="selectedEmployee.password"
           type="text"
+          @input="hasChanged = true"
           placeholder="Пароль"
           class="mt-2 p-3 rounded-xl bg-gray-100 font-bold text-gray-700 w-full border-none ring-0 outline-none"
           :disabled="employees[user.current_user_uid].type == 3"
@@ -109,6 +119,7 @@ const removeEmployee = (employee) => {
       <button
         v-if="employees[user.current_user_uid].type != 3"
         class="w-full bg-gray-100 rounded-xl mt-8 p-3 text-gray-700 font-bold hover:bg-gray-200"
+        :class="{ 'bg-orange-400 hover:bg-orange-500': hasChanged }"
         @click="createOrUpdateEmployee(selectedEmployee)"
       >
         {{ selectedEmployee.uid ? 'Сохранить' : 'Создать' }}

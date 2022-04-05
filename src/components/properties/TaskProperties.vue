@@ -148,6 +148,10 @@ export default {
       const value = '0\r\nЗадача 1\n\n1\nЗадача 2'
       store.dispatch(TASK.CHANGE_TASK_CHEKCLIST, { uid_task: selectedTask.value.uid, value: value }).then(
         resp => {
+          if (selectedTask.value.uid_customer === user.value.current_user_uid) {
+            // to refine
+            selectedTask.value.status = 9
+          }
           selectedTask.value.checklist = value
         })
     }
@@ -161,6 +165,12 @@ export default {
         tags: selectedTask.value.tags
       }
       store.dispatch(TASK.CHANGE_TASK_TAGS, data)
+        .then(() => {
+          if (selectedTask.value.uid_customer === user.value.current_user_uid) {
+            // to refine
+            selectedTask.value.status = 9
+          }
+        })
     }
     const resetTags = (key) => {
       selectedTask.value.tags.splice(selectedTask.value.tags.indexOf(key), 1)
@@ -181,6 +191,10 @@ export default {
       }
       store.dispatch(CREATE_FILES_REQUEST, data).then(
         resp => {
+          if (selectedTask.value.uid_customer === user.value.current_user_uid) {
+            // to refine
+            selectedTask.value.status = 9
+          }
           console.log(resp.data)
         })
       this.infoComplete = true
@@ -214,6 +228,7 @@ export default {
       }
       store.dispatch(TASK.REMOVE_TASK, data.uid)
     }
+
     const createTaskMsg = () => {
       const data = {
         uid_task: selectedTask.value.uid,
@@ -225,6 +240,10 @@ export default {
       }
       store.dispatch(CREATE_MESSAGE_REQUEST, data).then(
         resp => {
+          if (selectedTask.value.uid_customer === user.value.current_user_uid) {
+            // to refine
+            selectedTask.value.status = 9
+          }
           selectedTask.value.msg = taskMsg.value
           this.infoComplete = true
           var elmnt = document.getElementById('content').lastElementChild
@@ -232,6 +251,7 @@ export default {
         })
       taskMsg.value = ''
     }
+
     const changeName = (event) => {
       const data = {
         uid: selectedTask.value.uid,

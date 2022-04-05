@@ -13,7 +13,7 @@ export default {
       if (!selectedTask.value.tags.includes(tags)) {
         selectedTask.value.tags.push(tags)
       } else {
-        selectedTask.value.tags.splice(selectedTask.value.tags.indexOf(tags))
+        selectedTask.value.tags.splice(selectedTask.value.tags.indexOf(tags), 1)
       }
     }
     return {

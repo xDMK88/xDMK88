@@ -688,11 +688,7 @@ const actions = {
     return new Promise((resolve, reject) => {
       commit(TASK.TAG_TASKS_REQUEST)
       const url = 'https://web.leadertask.com/api/v1/task/tags'
-      axios({
-        url: url,
-        method: 'PATCH',
-        data: { uid: data.uid, tags: data.tags }
-      })
+      axios({ url: url, method: 'PATCH', data: data })
         .then(resp => {
           commit(TASK.CHANGE_TASK_TAGS, data)
           resolve(resp)
@@ -795,7 +791,6 @@ const actions = {
   },
   [TASK.CHANGE_TASK_COMMENT]: ({ commit, dispatch }, data) => {
     return new Promise((resolve, reject) => {
-      console.log(encodeURIComponent(data.value))
       const url = 'https://web.leadertask.com/api/v1/task/comment?uid=' + data.uid
       axios({
         url: url,

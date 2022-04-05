@@ -1155,7 +1155,7 @@ label
 }
 .input-group-attach
 {
-  padding: 0 12px;
+  padding: 0 1px;
   height: 36px;
   background: #F4F5F7;
   border-top-left-radius: 100px;
@@ -1178,6 +1178,7 @@ label
 {
   background: #F4F5F7;
   height: 36px;
+  padding: 4px 8px;
   border-top-right-radius: 100px;
   border-bottom-right-radius: 100px;
   border-left: 1px solid #F4F5F7;

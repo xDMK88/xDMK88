@@ -225,7 +225,7 @@ const tarifS = () => {
         dot="true"
         id="Maincalendar"
         v-model="navigatorMenu.currentDate"
-        class="border-none text-xs px-3 calendar-custom"
+        class="border-none text-xs px-3 calendar-custom calendar-nav-custom"
         style="border: none!important;"
         :style="{ backgroundColor: datePickerBG }"
         show-weeknumbers="left"
@@ -299,69 +299,69 @@ padding: 0 !important;
 .vc-weeknumber-content {
 @apply bg-white dark:bg-gray-800 rounded-lg text-violet-600 dark:text-white;
 }
-.vc-weeknumber-content {
+.calendar-nav-custom .vc-weeknumber-content {
   color: rgb(124 58 237) !important;
 }
-.vc-title {
+.calendar-nav-custom .vc-title {
 color: #2A2927 !important;
 }
-.vc-weekday {
+.calendar-nav-custom .vc-weekday {
 color: #2A2927!important;
 }
-.vc-header {
+.calendar-nav-custom .vc-header {
 margin-bottom: 10px !important;
 }
-.vc-arrows-container {
+.calendar-nav-custom .vc-arrows-container {
 padding-left: 0 !important;
 padding-right: 0 !important;
 }
-.vc-container .vc-highlights .vc-day-box-center-center:nth-child(2) .vc-highlight {
+.calendar-nav-custom .vc-container .vc-highlights .vc-day-box-center-center:nth-child(2) .vc-highlight {
 @apply bg-gray-300;
 }
-.vc-container .vc-highlight {
+.calendar-nav-custom .vc-container .vc-highlight {
 @apply bg-gray-300;
 }
-.vc-day-content .vc-focusable
+.calendar-nav-custom .vc-day-content .vc-focusable
 {
 @apply text-black !important;
 }
-.vc-container .is-today .vc-day-content  {
+.calendar-nav-custom .vc-container .is-today .vc-day-content  {
 }
-.vc-container .is-today:hover .vc-day-content {
+.calendar-nav-custom .vc-container .is-today:hover .vc-day-content {
 @apply bg-orange-400
 }
-.vc-container .is-today .vc-day-content:hover {
+.calendar-nav-custom .vc-container .is-today .vc-day-content:hover {
 @apply bg-orange-400
 }
-.vc-container .vc-day-content:hover:not(.is-disabled) {
+.calendar-nav-custom .vc-container .vc-day-content:hover:not(.is-disabled) {
 @apply bg-transparent text-black !important;
 }
-.vc-container .vc-day-content.is-disabled {
+.calendar-nav-custom .vc-container .vc-day-content.is-disabled {
 @apply pointer-events-none;
 }
-.vc-container .vc-day-content.is-disabled:hover {
+.calendar-nav-custom .vc-container .vc-day-content.is-disabled:hover {
 @apply bg-transparent;
 }
-.vc-day.is-not-in-month *:not(.is-disabled) {
+.calendar-nav-custom .vc-day.is-not-in-month *:not(.is-disabled) {
 @apply opacity-100 text-gray-500 pointer-events-auto;
 }
-.vc-day.is-not-in-month .is-disabled  {
+.calendar-nav-custom .vc-day.is-not-in-month .is-disabled  {
 @apply opacity-100 text-gray-400;
 }
-.vc-day.weekday-7 {
+.calendar-nav-custom .vc-day.weekday-7 {
 @apply text-red-500;
 }
-.vc-day.weekday-1 {
+.calendar-nav-custom .vc-day.weekday-1 {
 @apply text-red-500;
 }
-.vc-weekday:nth-last-of-type(-n+2) {
+.calendar-nav-custom .vc-weekday:nth-last-of-type(-n+2) {
 @apply text-red-500;
 }
 .vc-weeknumber-content
 {
   font-style: normal!important;
 }
-.is-today .vc-day-content.vc-focusable
+.calendar-nav-custom .is-today .vc-day-content.vc-focusable
 {
   border: 2px solid #FF9123 !important;
   border-radius: 7px !important;
@@ -369,7 +369,7 @@ padding-right: 0 !important;
 
   font-weight: normal !important;
 }
-.is-today .vc-day-content.vc-focusable:hover, .is-today .vc-day-content.vc-focusable:focus
+.calendar-nav-custom .is-today .vc-day-content.vc-focusable:hover, .is-today .vc-day-content.vc-focusable:focus
 {
   border: 2px solid #FF9123;
   border-radius: 7px;
@@ -377,59 +377,59 @@ padding-right: 0 !important;
   color:black !important;
 
 }
-.today:focus
+.calendar-nav-custom .today:focus
 {
 
 }
 
-.vc-arrow
+.calendar-nav-custom .vc-arrow
 {
   color: black !important;
   border-radius: 7px !important;
 }
-.vc-title {
+.calendar-nav-custom .vc-title {
   /* html code => Html Code */
   text-transform: capitalize !important;
   font-size: 15px !important;
 }
-.vc-weekday
+.calendar-nav-custom .vc-weekday
 {
   text-transform: capitalize !important;
 }
-.vc-day-content.vc-focusable
+.calendar-nav-custom .vc-day-content.vc-focusable
 {
   color:black !important;
   font-weight: normal !important;
   border-radius: 7px !important;
 }
-.vc-day-content.vc-focusable:hover
+.calendar-nav-custom .vc-day-content.vc-focusable:hover
 {
   font-weight: normal !important;
   border-radius: 7px !important;
 }
-.vc-highlight
+.calendar-nav-custom .vc-highlight
 {
   background-color: #FF9123;
   border-radius: 7px !important;
 }
-.vc-highlights .vc-highlight, .vc-highlights .vc-highlight:hover
+.calendar-nav-custom .vc-highlights .vc-highlight, .vc-highlights .vc-highlight:hover
 {
   border-radius: 7px !important;
   color:black !important;
 }
-.vc-highlights>.vc-day-box-center-center:nth-child(1) .vc-highlight
+.calendar-nav-custom .vc-highlights>.vc-day-box-center-center:nth-child(1) .vc-highlight
 {
   border-radius: 7px !important;
   color: black !important;
   border-color: transparent !important;
 }
-.vc-highlights>.vc-day-box-center-center:nth-child(2) .vc-highlight
+.calendar-nav-custom .vc-highlights>.vc-day-box-center-center:nth-child(2) .vc-highlight
 {
   border-radius: 7px !important;
   color: black !important;
   opacity: 1 !important;
 }
-.dots-back
+.calendar-nav-custom .dots-back
 {
   background-color: black !important;
   height: 3px !important;
@@ -437,16 +437,16 @@ padding-right: 0 !important;
   position: relative !important;
   top: 10px !important;
 }
-.today
+.calendar-nav-custom .today
 {
   background-color: white !important;
 }
-.is-today>.vc-highlights>.vc-day-box-center-center:nth-child(1) .vc-highlight
+.calendar-nav-custom .is-today>.vc-highlights>.vc-day-box-center-center:nth-child(1) .vc-highlight
 {
   background-color: #FFF !important;
   opacity: 1 !important;
 }
-.is-today>.vc-highlights>.vc-day-box-center-center:nth-child(2) .vc-highlight
+.calendar-nav-custom .is-today>.vc-highlights>.vc-day-box-center-center:nth-child(2) .vc-highlight
 {
   opacity: 1 !important;
 }
@@ -454,25 +454,25 @@ padding-right: 0 !important;
 {
   background-color:#E4E3E5 !important;
 }
-.vc-weekday:nth-child(7), .vc-weekday:nth-child(8)
+.calendar-nav-custom .vc-weekday:nth-child(7), .vc-weekday:nth-child(8)
 {
   color: #E23300 !important;
 }
-.vc-container .vc-day-content:hover:not(.is-disabled)
+.calendar-nav-custom .vc-container .vc-day-content:hover:not(.is-disabled)
 {
   border-radius: 7px !important;
 }
-.dotclass
+.calendar-nav-custom .dotclass
 {
   background-color: #444444 !important;
   position: relative !important;
   top: -3px !important;
 }
-.is-not-in-month
+.calendar-nav-custom .is-not-in-month
 {
   color: rgba(0, 0, 0, 0.5) !important;
 }
-.weekday-position-6:not(.is-not-in-month) .vc-day-content.vc-focusable, .weekday-position-7:not(.is-not-in-month) .vc-day-content.vc-focusable
+.calendar-nav-custom .weekday-position-6:not(.is-not-in-month) .vc-day-content.vc-focusable, .weekday-position-7:not(.is-not-in-month) .vc-day-content.vc-focusable
 {
   color: #E23300 !important;
 }

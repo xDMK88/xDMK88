@@ -164,7 +164,6 @@ export default {
     }
     const resetTags = (key) => {
       selectedTask.value.tags.splice(selectedTask.value.tags.indexOf(key), 1)
-      console.log(selectedTask.value.tags)
       const data = {
         uid: selectedTask.value.uid,
         tags: selectedTask.value.tags
@@ -182,8 +181,13 @@ export default {
       }
       store.dispatch(CREATE_FILES_REQUEST, data).then(
         resp => {
-          taskFiles.value.uid = data.uid_task
+          console.log(resp.data)
         })
+      this.infoComplete = true
+      setTimeout(() => {
+        var elmnt = document.getElementById('content').lastElementChild
+        elmnt.scrollIntoView({ behavior: 'smooth' })
+      }, 100)
     }
     const changeComment = (event) => {
       const message = event.target.innerText
@@ -222,6 +226,9 @@ export default {
       store.dispatch(CREATE_MESSAGE_REQUEST, data).then(
         resp => {
           selectedTask.value.msg = taskMsg.value
+          this.infoComplete = true
+          var elmnt = document.getElementById('content').lastElementChild
+          elmnt.scrollIntoView({ behavior: 'smooth' })
         })
       taskMsg.value = ''
     }
@@ -324,7 +331,22 @@ export default {
       const taskName = event.target.innerText
       selectedTask.value.name = taskName
     }
+    const resetFocusCalendar = () => {
+      this.range = {
+        start: '',
+        end: ''
+      }
+    }
+    const scrollDown = () => {
+      this.showAllMessages = true
+      this.infoComplete = true
+      setTimeout(() => {
+        var elmnt = document.getElementById('content').lastElementChild
+        elmnt.scrollIntoView({ behavior: 'smooth' })
+      }, 100)
+    }
     return {
+      scrollDown,
       editTaskName,
       removeTaskName,
       editcomment,
@@ -353,6 +375,7 @@ export default {
       changeCheck,
       changeComment,
       handleInput,
+      resetFocusCalendar,
       resetProject,
       resetColor,
       resetTags,
@@ -530,7 +553,7 @@ export default {
     </p>
   </modal-box-confirm>
   <div class="break-words">
-    <div class="column-resize">
+    <div class="column-resize" id="generalscroll">
       <div />
       <div
         v-if="selectedTask.uid_parent !== '00000000-0000-0000-0000-000000000000' && tasks[selectedTask.uid_parent]"
@@ -892,6 +915,7 @@ export default {
           arrow
           append-to-body="true"
           trigger="hover"
+          @mouseleave="resetFocusCalendar"
           :class="isDark ? 'dark' : 'light'"
           placement="bottom"
         >
@@ -910,10 +934,12 @@ export default {
                   is24hr
                   min-date="01.01.1970"
                   isDragging
+                  :minute-increment="10"
                   class="border-none text-xs calendar-properties"
                   style="border: none!important;"
                   title-position="left"
                   :masks="masks"
+                  delay-on-mouse-over="10"
                   datePicker.updateOnInput="true"
                 >
                   <template v-slot:footer>
@@ -2129,17 +2155,15 @@ export default {
       <p
         v-if="taskMessages.length > 2 && !showAllMessages"
         class="text-gray-500 text-sm text-center cursor-pointer" style="border-bottom: 1px dashed; padding-bottom: 0; width: 125px; margin: 0 auto;"
-        @click="showAllMessages = true"
-      >
+        @click="scrollDown">
         Show all messages
       </p>
       <!-- /Show all -->
-
       <div
         v-if="taskMessages"
-        class="mt-3"
+        class="mt-3 messages" id="content"
       >
-        <div class="scroll-to-me"
+        <div class="message"
           v-for="(key,value) in taskMessages"
           :key="value"
         >
@@ -2397,6 +2421,139 @@ export default {
 .linkified {
   @apply text-blue-600;
 }
+.vc-container.calendar-properties {
+  --white: #ffffff;
+  --black: #000000;
+  --gray-100: #f7fafc;
+  --gray-200: #edf2f7;
+  --gray-300: #e2e8f0;
+  --gray-400: #cbd5e0;
+  --gray-500: #a0aec0;
+  --gray-600: #718096;
+  --gray-700: #4a5568;
+  --gray-800: #2d3748;
+  --gray-900: #1a202c;
+  --red-100: #fff5f5;
+  --red-200: #fed7d7;
+  --red-300: #feb2b2;
+  --red-400: #fc8181;
+  --red-500: #f56565;
+  --red-600: #e53e3e;
+  --red-700: #c53030;
+  --red-800: #9b2c2c;
+  --red-900: #742a2a;
+  --orange-100: #fffaf0;
+  --orange-200: #feebc8;
+  --orange-300: #fbd38d;
+  --orange-400: #f6ad55;
+  --orange-500: #ed8936;
+  --orange-600: #dd6b20;
+  --orange-700: #c05621;
+  --orange-800: #9c4221;
+  --orange-900: #7b341e;
+  --yellow-100: #fffff0;
+  --yellow-200: #fefcbf;
+  --yellow-300: #faf089;
+  --yellow-400: #f6e05e;
+  --yellow-500: #ecc94b;
+  --yellow-600: #d69e2e;
+  --yellow-700: #b7791f;
+  --yellow-800: #975a16;
+  --yellow-900: #744210;
+  --green-100: #f0fff4;
+  --green-200: #c6f6d5;
+  --green-300: #9ae6b4;
+  --green-400: #68d391;
+  --green-500: #48bb78;
+  --green-600: #38a169;
+  --green-700: #2f855a;
+  --green-800: #276749;
+  --green-900: #22543d;
+  --teal-100: #e6fffa;
+  --teal-200: #b2f5ea;
+  --teal-300: #81e6d9;
+  --teal-400: #4fd1c5;
+  --teal-500: #38b2ac;
+  --teal-600: #319795;
+  --teal-700: #2c7a7b;
+  --teal-800: #285e61;
+  --teal-900: #234e52;
+  --blue-100: #ebf8ff;
+  --blue-200: #e2e8f0;
+  --blue-300: #90cdf4;
+  --blue-400: #63b3ed;
+  --blue-500: #4299e1;
+  --blue-600: #a0aec0;
+  --blue-700: #2b6cb0;
+  --blue-800: #2c5282;
+  --blue-900: #2a4365;
+  --indigo-100: #ebf4ff;
+  --indigo-200: #c3dafe;
+  --indigo-300: #a3bffa;
+  --indigo-400: #7f9cf5;
+  --indigo-500: #667eea;
+  --indigo-600: #5a67d8;
+  --indigo-700: #4c51bf;
+  --indigo-800: #434190;
+  --indigo-900: #3c366b;
+  --purple-100: #faf5ff;
+  --purple-200: #e9d8fd;
+  --purple-300: #d6bcfa;
+  --purple-400: #b794f4;
+  --purple-500: #9f7aea;
+  --purple-600: #805ad5;
+  --purple-700: #6b46c1;
+  --purple-800: #553c9a;
+  --purple-900: #44337a;
+  --pink-100: #fff5f7;
+  --pink-200: #fed7e2;
+  --pink-300: #fbb6ce;
+  --pink-400: #f687b3;
+  --pink-500: #ed64a6;
+  --pink-600: #d53f8c;
+  --pink-700: #b83280;
+  --pink-800: #97266d;
+  --pink-900: #702459;
+}
+.vc-container.calendar-properties {
+  --font-normal: 400;
+  --font-medium: 500;
+  --font-semibold: 600;
+  --font-bold: 700;
+  --text-xs: 12px;
+  --text-sm: 14px;
+  --text-base: 16px;
+  --text-lg: 18px;
+  --leading-snug: 1.375;
+  --rounded: 0.25rem;
+  --rounded-lg: 0.5rem;
+  --rounded-full: 0.5rem !important;
+  --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --shadow-inner: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
+  --slide-translate: 22px;
+  --slide-duration: 0.15s;
+  --slide-timing: ease;
+  --day-content-transition-time: 0.13s ease-in;
+  --weeknumber-offset: -34px;
+  position: relative;
+  display: -webkit-inline-flex;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+  width: -webkit-max-content;
+  width: max-content;
+  height: -webkit-max-content;
+  height: max-content;
+  font-family: BlinkMacSystemFont, -apple-system, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
+  color: var(--gray-900);
+  background-color: var(--white);
+  border: 1px solid;
+  border-color: var(--gray-400);
+  border-radius: var(--rounded-lg);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-tap-highlight-color: transparent;
+}
 .calendar-properties .vc-container .vc-highlights .vc-day-box-center-center:nth-child(2) .vc-highlight {
   @apply bg-gray-300;
 }
@@ -2447,7 +2604,7 @@ export default {
 {
   border: 2px solid #FF9123 !important;
   border-radius: 7px !important;
-  color: black !important;
+  color: black;
 
   font-weight: normal !important;
 }
@@ -2480,7 +2637,7 @@ export default {
 }
 .calendar-properties .vc-day-content.vc-focusable
 {
-  color:black !important;
+  color:black;
   font-weight: normal !important;
   border-radius: 7px !important;
 }
@@ -2491,23 +2648,18 @@ export default {
 }
 .calendar-properties .vc-highlight
 {
-  background-color: rgb(209 213 219 / var(--tw-bg-opacity)) !important;
-  border-radius: 7px !important;
 }
 .calendar-properties .vc-highlights .vc-highlight, .vc-highlights .vc-highlight:hover
 {
-  border-radius: 7px !important;
   color:black !important;
 }
 .calendar-properties .vc-highlights>.vc-day-box-center-center:nth-child(1) .vc-highlight
 {
-  border-radius: 7px !important;
   color: black !important;
   border-color: transparent !important;
 }
 .calendar-properties .vc-highlights>.vc-day-box-center-center:nth-child(2) .vc-highlight
 {
-  border-radius: 7px !important;
   color: black !important;
   opacity: 1 !important;
 }
@@ -2525,7 +2677,6 @@ export default {
 }
 .calendar-properties .is-today>.vc-highlights>.vc-day-box-center-center:nth-child(1) .vc-highlight
 {
-  background-color: #FFF !important;
   opacity: 1 !important;
 }
 .calendar-properties .is-today>.vc-highlights>.vc-day-box-center-center:nth-child(2) .vc-highlight
@@ -2540,9 +2691,12 @@ export default {
 {
   color: #E23300 !important;
 }
+.calendar-properties .vc-weekday
+{
+  color: var(--black);
+}
 .calendar-properties .vc-container .vc-day-content:hover:not(.is-disabled)
 {
-  border-radius: 7px !important;
 }
 .calendar-properties .is-not-in-month
 {
@@ -2595,5 +2749,11 @@ export default {
 .vc-time-date[data-v-63f66eaa]
 {
   display: none;
+}
+.vc-time-picker.vc-invalid[data-v-63f66eaa]
+{
+  opacity: 0;
+  height: 0;
+  padding: 0;
 }
 </style>

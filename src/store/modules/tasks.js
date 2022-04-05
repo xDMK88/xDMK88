@@ -571,6 +571,9 @@ const actions = {
   },
   [TASK.CHANGE_TASK_NAME]: ({ commit, dispatch }, data) => {
     return new Promise((resolve, reject) => {
+      if (data.value === '') {
+        data.value = 'Task name'
+      }
       const url = 'https://web.leadertask.com/api/v1/task/name?uid=' + data.uid + '&value=' + data.value
       axios({
         url: url,

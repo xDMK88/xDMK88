@@ -204,6 +204,11 @@ input:focus {outline: 0;}
   content:attr(data-placeholder);
   color:gray
 }
+.taskName-custom div:empty:before {
+  content:attr(data-placeholder);
+  color:gray
+}
+
 .list-files-custom
 {
   width:100%;

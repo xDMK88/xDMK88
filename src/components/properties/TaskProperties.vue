@@ -11,7 +11,6 @@ import { CREATE_MESSAGE_REQUEST } from '@/store/actions/taskmessages'
 import { CREATE_FILES_REQUEST } from '@/store/actions/taskfiles'
 import * as TASK from '@/store/actions/tasks'
 import { copyText } from 'vue3-clipboard'
-import contenteditable from 'vue-contenteditable'
 import sanitizeHtml from 'sanitize-html'
 import linkify from 'vue-linkify'
 import { Tabs, Tab } from 'vue3-tabs-component'
@@ -22,7 +21,6 @@ export default {
     TreeItem,
     TreeTagsItem,
     Popper,
-    contenteditable,
     tabs: Tabs,
     tab: Tab,
     FileMessage,
@@ -234,7 +232,7 @@ export default {
       }
       store.dispatch(TASK.CHANGE_TASK_NAME, data).then(
         resp => {
-          selectedTask.value.name = event.target.innerText
+          //  selectedTask.value.name = event.target.innerText
         })
     }
     const resetProject = () => {
@@ -318,9 +316,19 @@ export default {
       const message = event.target.innerText
       selectedTask.value.comment = message
     }
+    const editTaskName = () => {
+      this.isEditableTaskName = true
+    }
+    const removeTaskName = (event) => {
+      this.isEditableTaskName = false
+      const taskName = event.target.innerText
+      selectedTask.value.name = taskName
+    }
     return {
-      removecomment,
+      editTaskName,
+      removeTaskName,
       editcomment,
+      removecomment,
       addsubmit,
       editCheckName,
       createChecklist,
@@ -395,6 +403,7 @@ export default {
         'status_refine'
       ],
       isEditable: false,
+      isEditableTaskName: false,
       remi: {
         date: new Date(),
         timezone: 'Europe/Moscow'
@@ -520,7 +529,6 @@ export default {
       Do you really wanna delete this task?
     </p>
   </modal-box-confirm>
-  {{selectedTask.type}}
   <div class="break-words">
     <div class="column-resize">
       <div />
@@ -547,9 +555,9 @@ export default {
           {{ tasks[selectedTask.uid_parent].info.name }}
         </a>
       </div>
-      <div class="user_child_customer_custom">
+      <div class="user_child_customer_custom" @click="editTaskName">
         <strong>
-          <contenteditable class="form-control taskName-custom" style="font-weight: bold; font-size: 18px" tag="p" :contenteditable="isEditable" @keyup.prevent="changeName($event)" v-model="selectedTask.name" :noNL="true" :noHTML="true" @returned="changeName($event)" />
+          <div class="form-control taskName-custom" data-placeholder="Task Name" ref="TaskName" v-linkify:options="{ className: 'text-blue-600', tagName: 'a' }" style="font-weight: bold; font-size: 18px" :contenteditable="isEditableTaskName" @blur="changeName($event)" @keyup="changeName($event)" @focus="this.$refs.TaskName.focus()" @focusout="removeTaskName($event)" v-html="selectedTask.name.replaceAll('\n','<br/>')" />
         </strong>
       </div>
       <!--   <p class="mt-3"><strong>{{ localization.task_created }}:</strong> {{ selectedTask.date_create }}</p>

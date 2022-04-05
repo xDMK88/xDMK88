@@ -1,5 +1,5 @@
 <script setup>
-import { computed, ref, watch } from 'vue'
+import { computed, ref, watch, onMounted } from 'vue'
 import { useStore } from 'vuex'
 import ColorPicker from '@/components/properties/ColorPicker.vue'
 
@@ -24,6 +24,10 @@ function uuidv4 () {
 }
 
 watch(selectedTag, () => {
+  hasChanged.value = false
+})
+
+onMounted(() => {
   hasChanged.value = false
 })
 

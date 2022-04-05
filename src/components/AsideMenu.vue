@@ -10,6 +10,7 @@ import Icon from '@/components/Icon.vue'
 import AccModal from '@/components/AccModal.vue'
 import AccTarif from '@/components/AccTarif.vue'
 import AsideMenuList from '@/components/AsideMenuList.vue'
+import 'v-calendar/dist/style.css'
 
 import * as TASK from '@/store/actions/tasks'
 import { AUTH_LOGOUT } from '@/store/actions/auth'

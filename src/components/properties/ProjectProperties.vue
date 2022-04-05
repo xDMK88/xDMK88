@@ -1,11 +1,10 @@
 <script setup>
-import { computed, ref, watch } from 'vue'
+import { computed, ref, watch, onMounted } from 'vue'
 import { useStore } from 'vuex'
 import Icon from '@/components/Icon.vue'
 import ColorPicker from '@/components/properties/ColorPicker.vue'
 import Toggle from '@vueform/toggle'
 import add from '@/icons/add.js'
-// import properties from '@/icons/properties.js'
 import close from '@/icons/close.js'
 import Popper from 'vue3-popper'
 
@@ -36,6 +35,10 @@ function arrayRemove (arr, value) {
   })
 }
 
+onMounted(() => {
+  hasChanged.value = false
+})
+
 watch(selectedProject, () => {
   showAllMembers.value = false
   selectedProject.value.quiet = !!selectedProject.value.quiet
@@ -52,7 +55,6 @@ const addRemoveMember = (email) => {
 }
 
 const removeMember = (member) => {
-  console.log('removing ', member.email)
   selectedProject.value.members = arrayRemove(selectedProject.value.members, member.email)
 }
 

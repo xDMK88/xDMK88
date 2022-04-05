@@ -1,5 +1,5 @@
 <script setup>
-import { computed, ref, watch } from 'vue'
+import { computed, ref, watch, onMounted } from 'vue'
 import { useStore } from 'vuex'
 import Toggle from '@vueform/toggle'
 import ColorPicker from '@/components/properties/ColorPicker.vue'
@@ -21,7 +21,12 @@ function uuidv4 () {
   )
 }
 
+onMounted(() => {
+  hasChanged.value = false
+})
+
 watch(selectedColor, () => {
+  hasChanged.value = false
   selectedColor.value.uppercase = !!selectedColor.value.uppercase
 })
 
@@ -62,6 +67,7 @@ const removeColor = (color) => {
 </script>
 
 <template>
+  hasChanged:{{ hasChanged }}
   <modal-box-confirm
     v-model="showConfirm"
     button="warning"

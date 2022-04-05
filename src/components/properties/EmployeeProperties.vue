@@ -1,5 +1,5 @@
 <script setup>
-import { computed, ref, watch } from 'vue'
+import { computed, ref, watch, onMounted } from 'vue'
 import { useStore } from 'vuex'
 
 import ModalBoxConfirm from '@/components/modals/ModalBoxConfirm.vue'
@@ -21,6 +21,10 @@ function uuidv4 () {
 }
 
 watch(selectedEmployee, () => {
+  hasChanged.value = false
+})
+
+onMounted(() => {
   hasChanged.value = false
 })
 

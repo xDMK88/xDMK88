@@ -2746,11 +2746,11 @@ export default {
   color: black;
   margin-left: 8px;
 }
-.vc-time-date[data-v-63f66eaa]
+.vc-time-date
 {
   display: none;
 }
-.vc-time-picker.vc-invalid[data-v-63f66eaa]
+.vc-time-picker.vc-invalid
 {
   opacity: 0;
   height: 0;

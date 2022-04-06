@@ -381,7 +381,7 @@
             Просрочено
           </div>
           <div
-            v-for="(tag, index) in props.node.info.tags"
+            v-for="(tag, index) in props.node.info.tags.filter(n=>n.length > 0)"
             :key="index"
           >
             <div

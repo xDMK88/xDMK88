@@ -6,6 +6,7 @@ public/storage
 storage/*.key
 package-lock.json
 vendor
+yarn.lock
 .env
 .env.backup
 .phpunit.result.cache

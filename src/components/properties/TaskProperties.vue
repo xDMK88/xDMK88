@@ -7,7 +7,7 @@ import TreeItem from '@/components/TreeItem.vue'
 import FileMessage from '@/components/properties/FileMessage.vue'
 import close from '@/icons/close.js'
 import TreeTagsItem from '@/components/TreeTagsItem.vue'
-import { CREATE_MESSAGE_REQUEST } from '@/store/actions/taskmessages'
+import { CREATE_MESSAGE_REQUEST, DELETE_MESSAGE_REQUEST } from '@/store/actions/taskmessages'
 import { CREATE_FILES_REQUEST } from '@/store/actions/taskfiles'
 import * as TASK from '@/store/actions/tasks'
 import { copyText } from 'vue3-clipboard'
@@ -171,6 +171,17 @@ export default {
             selectedTask.value.status = 9
           }
         })
+      console.log(data)
+
+      setTimeout(() => {
+        store.dispatch(TASK.CHANGE_TASK_TAGS, data)
+          .then(() => {
+            if (selectedTask.value.uid_customer === user.value.current_user_uid) {
+              // to refine
+              selectedTask.value.status = 9
+            }
+          })
+      }, 100)
     }
     const resetTags = (key) => {
       selectedTask.value.tags.splice(selectedTask.value.tags.indexOf(key), 1)
@@ -180,7 +191,7 @@ export default {
       }
       store.dispatch(TASK.CHANGE_TASK_TAGS, data).then(
         resp => {
-          selectedTask.value.tags.push(resp)
+          selectedTask.value.tags.push(selectedTask.value.tags.splice(selectedTask.value.tags.indexOf(key), 1))
         }
       )
     }
@@ -229,14 +240,15 @@ export default {
       store.dispatch(TASK.REMOVE_TASK, data.uid)
     }
 
-    const createTaskMsg = () => {
+    const createTaskMsg = (event) => {
+      console.log(taskMsg.value)
       const data = {
         uid_task: selectedTask.value.uid,
         uid_creator: user.value.current_user_uid,
         uid_msg: uuidv4(),
         date_create: getTodaysDate(),
         text: taskMsg.value,
-        msg: this.HtmlRender(taskMsg.value)
+        msg: taskMsg.value
       }
       store.dispatch(CREATE_MESSAGE_REQUEST, data).then(
         resp => {
@@ -244,14 +256,16 @@ export default {
             // to refine
             selectedTask.value.status = 9
           }
-          selectedTask.value.msg = taskMsg.value
+          selectedTask.value.msg = decodeURIComponent(taskMsg.value)
           this.infoComplete = true
           var elmnt = document.getElementById('content').lastElementChild
           elmnt.scrollIntoView({ behavior: 'smooth' })
         })
       taskMsg.value = ''
     }
-
+    const deleteTaskMsg = (uid) => {
+      store.dispatch(DELETE_MESSAGE_REQUEST, { uid: uid })
+    }
     const changeName = (event) => {
       const data = {
         uid: selectedTask.value.uid,
@@ -362,8 +376,9 @@ export default {
       this.infoComplete = true
       setTimeout(() => {
         var elmnt = document.getElementById('content').lastElementChild
-        elmnt.scrollIntoView({ behavior: 'smooth' })
-      }, 100)
+        console.log(elmnt.scrollHeight)
+        elmnt.scrollIntoView()
+      }, 200)
     }
     return {
       scrollDown,
@@ -385,6 +400,7 @@ export default {
       unchecked,
       changeName,
       createTaskMsg,
+      deleteTaskMsg,
       createTaskFile,
       closeProperties,
       ClickAccessEmail,
@@ -402,6 +418,9 @@ export default {
       resetAccess,
       resetEmployes,
       resetCalendar,
+      viewMenu: false,
+      top: '0px',
+      left: '0px',
       datas: [],
       getfiles: getfiles,
       checkEmail: selectedTask.value.emails !== '' ? selectedTask.value.emails.split('..') : [],
@@ -456,8 +475,8 @@ export default {
         timezone: 'Europe/Moscow'
       },
       range: {
-        start: new Date(selectedTask.value.customer_date_begin),
-        end: new Date(selectedTask.value.customer_date_end)
+        start: new Date(),
+        end: new Date()
       },
       masks: {
         weekdays: 'WW'
@@ -1898,7 +1917,7 @@ export default {
                   >
             <div class="popper">
               <div @click="close"></div>
-                              <button @click="ClickTagsChange" class="btn-save-popover">Применить</button>
+                              <button @click="ClickTagsChange" class="btn-save-popover" @click.stop="close">Применить</button>
               <div class="text-white body-popover-custom">
                 <div class="container-tags-popover">
                     <div
@@ -2221,7 +2240,7 @@ export default {
                   class="mt-1 msg-custom-chat-left text-sm"
                   style="background-color:#EDF7ED;"
                 >
-                  <div v-html="key.msg" v-linkify:options="{ className: 'text-blue-600' }">
+                  <div v-html="key.msg.replaceAll('\n', '<br/>')" v-linkify:options="{ className: 'text-blue-600' }">
                   </div>
                   <div
                     v-if="key.date_create"
@@ -2296,7 +2315,7 @@ export default {
                   class="mt-1 msg-custom-chat-right text-sm"
                   style="background-color:#FCEAEA;"
                 >
-                  <div v-html="key.msg" v-linkify>
+                  <div v-html="key.msg.replaceAll('\n', '<br/>')" v-linkify>
                   </div>
                   <div
                     v-if="key.date_create"
@@ -2382,13 +2401,14 @@ export default {
             </label>
           </div>
         </span>
-      <input
+      <textarea
         v-model="taskMsg"
-        type="text"
-        class="form-control text-group-design"
-        placeholder="Введите описание"
-        @keyup.enter="createTaskMsg"
-      >
+        class="form-control text-group-design task-msg"
+        placeholder="Введите сообщение"
+        rows="3"
+        @keydown.enter.exact.prevent="createTaskMsg"
+        @keydown.enter.shift.exact.prevent="taskMsg += '\n'"
+      ></textarea>
       <span class="input-group-addon input-group-btn-send">
           <button
             type="button"
@@ -2765,11 +2785,11 @@ export default {
   color: black;
   margin-left: 8px;
 }
-.vc-time-date[data-v-63f66eaa]
+.vc-time-date
 {
   display: none;
 }
-.vc-time-picker.vc-invalid[data-v-63f66eaa]
+.vc-time-picker.vc-invalid
 {
   opacity: 0;
   height: 0;

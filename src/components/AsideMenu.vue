@@ -45,6 +45,7 @@ const isAsideMobileExpanded = computed(() => store.state.isAsideMobileExpanded)
 const isPropertiesMobileExpanded = computed(() => store.state.isPropertiesMobileExpanded)
 const isAsideLgActive = computed(() => store.state.isAsideLgActive)
 const isDark = computed(() => store.state.darkMode)
+const navStack = computed(() => store.state.navbar.navStack)
 
 const datePickerBG = computed(() => {
   return isDark.value ? 'rgb(31 41 55)' : 'rgb(243 244 246)'
@@ -55,8 +56,10 @@ const storeNavigator = computed(() => store.state.navigator.navigator)
 const navig = computed(() => store.state.navig)
 const getNavigatorLanguage = () => (navigator.languages && navigator.languages.length) ? navigator.languages[0] : navigator.userLanguage || navigator.language || navigator.browserLanguage || 'en'
 
+const lastVisitedDate = ref(navStack.value && navStack.value.length && navStack.value[navStack.value.length - 1].value && navStack.value[navStack.value.length - 1].value.uid && navStack.value[navStack.value.length - 1].value.uid === '901841d9-0016-491d-ad66-8ee42d2b496b' && navStack.value[navStack.value.length - 1].value.param ? new Date(navStack.value[navStack.value.length - 1].value.param) : new Date())
+
 const currentDate = computed({
-  get: () => new Date(),
+  get: () => lastVisitedDate.value,
   set: val => {
     if (isPropertiesMobileExpanded.value) { store.dispatch('asidePropertiesToggle', false) }
     store.commit('basic', { key: 'mainSectionState', value: 'tasks' })

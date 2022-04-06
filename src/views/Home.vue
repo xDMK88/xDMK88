@@ -75,43 +75,45 @@ const getNavigator = () => {
       .then(() => {
         // After navigator is loaded we are trying to set up last visited navElement
         // Checking if last navElement is a gridSource
-        if (navStack.value[navStack.value.length - 1].key === 'greedSource') {
-          store.commit('basic', { key: 'greedPath', value: navStack.value[navStack.value.length - 1].greedPath })
-          store.commit('basic', { key: 'mainSectionState', value: 'greed' })
+        if (navStack.value.length && navStack.value.length > 0) {
+          if (navStack.value[navStack.value.length - 1].key === 'greedSource') {
+            store.commit('basic', { key: 'greedPath', value: navStack.value[navStack.value.length - 1].greedPath })
+            store.commit('basic', { key: 'mainSectionState', value: 'greed' })
 
-          // If last navElement is related to processed navigator instance with 'new_' prefix
-          // then we pass entire object from storeNavigator
-          if (['new_private_projects', 'new_emps', 'new_delegate'].includes(navStack.value[navStack.value.length - 1].greedPath)) {
-            store.commit('basic', { key: navStack.value[navStack.value.length - 1].key, value: storeNavigator.value[navStack.value[navStack.value.length - 1].greedPath] })
+            // If last navElement is related to processed navigator instance with 'new_' prefix
+            // then we pass entire object from storeNavigator
+            if (['new_private_projects', 'new_emps', 'new_delegate'].includes(navStack.value[navStack.value.length - 1].greedPath)) {
+              store.commit('basic', { key: navStack.value[navStack.value.length - 1].key, value: storeNavigator.value[navStack.value[navStack.value.length - 1].greedPath] })
 
-          // if last visited navElemen is in nested in children, then we trying to find these children with visitChildren fucntion
-          // from storeNavigator
-          } else if (['tags_children', 'projects_children'].includes(navStack.value[navStack.value.length - 1].greedPath)) {
-            if (navStack.value[navStack.value.length - 1].greedPath === 'tags_children') {
-              // nested lookup for tags
-              visitChildren(storeNavigator.value.tags.items, value => {
-                if (value.uid === navStack.value[navStack.value.length - 1].uid) {
-                  store.commit('basic', { key: navStack.value[navStack.value.length - 1].key, value: value.children })
-                }
-              })
+            // if last visited navElemen is in nested in children, then we trying to find these children with visitChildren fucntion
+            // from storeNavigator
+            } else if (['tags_children', 'projects_children'].includes(navStack.value[navStack.value.length - 1].greedPath)) {
+              if (navStack.value[navStack.value.length - 1].greedPath === 'tags_children') {
+                // nested lookup for tags
+                visitChildren(storeNavigator.value.tags.items, value => {
+                  if (value.uid === navStack.value[navStack.value.length - 1].uid) {
+                    store.commit('basic', { key: navStack.value[navStack.value.length - 1].key, value: value.children })
+                  }
+                })
+              }
+
+              // nested lookup for shared and private projects
+              if (navStack.value[navStack.value.length - 1].greedPath === 'projects_children') {
+                visitChildren(storeNavigator.value.new_private_projects[0].items, value => {
+                  if (value.uid === navStack.value[navStack.value.length - 1].uid) {
+                    store.commit('basic', { key: navStack.value[navStack.value.length - 1].key, value: value.children })
+                  }
+                })
+                visitChildren(storeNavigator.value.new_private_projects[1].items, value => {
+                  if (value.uid === navStack.value[navStack.value.length - 1].uid) {
+                    store.commit('basic', { key: navStack.value[navStack.value.length - 1].key, value: value.children })
+                  }
+                })
+              }
+            // colors
+            } else {
+              store.commit('basic', { key: navStack.value[navStack.value.length - 1].key, value: storeNavigator.value[navStack.value[navStack.value.length - 1].greedPath].items })
             }
-
-            // nested lookup for shared and private projects
-            if (navStack.value[navStack.value.length - 1].greedPath === 'projects_children') {
-              visitChildren(storeNavigator.value.new_private_projects[0].items, value => {
-                if (value.uid === navStack.value[navStack.value.length - 1].uid) {
-                  store.commit('basic', { key: navStack.value[navStack.value.length - 1].key, value: value.children })
-                }
-              })
-              visitChildren(storeNavigator.value.new_private_projects[1].items, value => {
-                if (value.uid === navStack.value[navStack.value.length - 1].uid) {
-                  store.commit('basic', { key: navStack.value[navStack.value.length - 1].key, value: value.children })
-                }
-              })
-            }
-          // colors
-          } else {
-            store.commit('basic', { key: navStack.value[navStack.value.length - 1].key, value: storeNavigator.value[navStack.value[navStack.value.length - 1].greedPath].items })
           }
         }
       })

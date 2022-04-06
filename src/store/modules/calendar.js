@@ -15,7 +15,7 @@ const actions = {
     const calendarDates = []
     for (const date of dates) {
       const splittedDate = date.split('-')
-      calendarDates.push(new Date(+splittedDate[2], splittedDate[1] - 1, +splittedDate[0]))
+      calendarDates.push(new Date(+splittedDate[1], splittedDate[1] - 1, +splittedDate[0]))
     }
     const attr = { order: 1, dates: calendarDates, highlight: { color: 'dark', class: 'dots-back' } }
     const value = [{ key: 'today', highlight: { fillMode: 'outline', class: 'today' }, dates: new Date() }, attr]

@@ -247,7 +247,6 @@
         <!-- Name, Status -->
         <div
           class="flex"
-          :class="props.node.info.focus ? 'justify-between' : ''"
         >
           <div
             class="flex items-center"
@@ -329,14 +328,6 @@
               @blur="updateTask(props.node.info)"
             />
           </div>
-          <Icon
-            v-if="props.node.info.focus == '1'"
-            :path="taskfocus.path"
-            class="text-red-600 float-right"
-            :box="taskfocus.viewBox"
-            :width="taskfocus.width"
-            :height="taskfocus.height"
-          />
         </div>
 
         <!-- Tags, Overdue, Customer, Performer -->
@@ -415,9 +406,9 @@
           </div>
         </div>
 
-        <!-- Icons, Access, Messages, Files, Data, Checklist -->
+        <!-- Icons, Access, Messages, Files, Data, Checklist, Focus -->
         <div
-          v-if="props.node.info.term_customer || props.node.info.checklist || props.node.info.has_files || props.node.info.has_msgs || props.node.info.comment"
+          v-if="props.node.info.term_customer || props.node.info.checklist || props.node.info.has_files || props.node.info.has_msgs || props.node.info.comment || props.node.info.focus"
           class="flex"
         >
           <div
@@ -501,6 +492,19 @@
               :path="taskcomment.path"
               class="cursor-pointer text-gray-600 dark:text-white"
               :box="taskcomment.viewBox"
+              :width="13"
+              :height="12"
+            />
+          </div>
+          <div
+            v-if="props.node.info.focus"
+            class="bg-gray-200 dark:bg-gray-700 rounded px-1.5 mr-1 mt-1.5"
+            :style="{backgroundColor: colors[props.node.info.uid_marker] ? colors[props.node.info.uid_marker].back_color : '' }"
+          >
+            <Icon
+              :path="taskfocus.path"
+              class="cursor-pointer text-red-600 dark:text-white my-auto"
+              :box="taskfocus.viewBox"
               :width="13"
               :height="12"
             />

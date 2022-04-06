@@ -980,12 +980,17 @@ fieldset[disabled] .btn {
 }
 .nav-scroll {
   display: flex;
-  width: 80%;
+  width: 100%;
   height: auto;
   margin: auto;
   overflow: auto;
   justify-content: flex-start;
 }
+
+.nav-scroll::-webkit-scrollbar {
+  width: 0;
+}
+
 .column-resize::-webkit-scrollbar {
   width: 0px;
 }

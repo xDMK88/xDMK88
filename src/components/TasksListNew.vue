@@ -16,11 +16,11 @@
   <!-- Add task input -->
   <div
     v-if="!DONT_SHOW_TASK_INPUT_UIDS[taskListSource.uid]"
-    class="pr-3"
+    class="fixed-create"
     :class="newConfig.listHasChildren ? 'pl-8' : 'pl-0'"
   >
     <div
-      class="flex items-center bg-gray-600 dark:bg-gray-700 bg-opacity-70 rounded-xl"
+      class="flex items-center bg-gray-600 dark:bg-gray-700 bg-opacity-75 rounded-xl"
     >
       <div
         class="flex items-center pl-3"
@@ -54,7 +54,7 @@
       <control
         ref="root"
         v-model="createTaskText"
-        class="w-full text-white"
+        class="w-full text-white fixed"
         :placeholder="'Enter task name'"
         borderless
         transparent
@@ -1033,7 +1033,7 @@ export default {
   border-color: #00000042
 }
 
-.checkbox-wrapper. checked:after {
+.checkbox-wrapper.checked:after {
   transform: translate(.25em, .3365384615em) rotate(-45deg);
   width: .7em;
   height: .3em;
@@ -1045,7 +1045,7 @@ export default {
 .checkbox-wrapper.indeterminate:after {
   transform: translate(.25em, .3365384615em) rotate(0);
   width: .7em;
-  height: . 3em;
+  height: .3em;
   border: .125em solid #fff;
   border-top-style: none;
   border-right-style: none;
@@ -1206,5 +1206,13 @@ export default {
   --popper-theme-border-radius: 0.75rem;
   --popper-theme-padding: 10px;
   --popper-theme-box-shadow: 0 6px 30px -6px rgba(0, 0, 0, 0.25);
+}
+
+.fixed-create {
+  position: sticky;
+  top: 55px;
+  z-index: 1;
+  margin-bottom: 1px;
+  padding-right: 10px;
 }
 </style>

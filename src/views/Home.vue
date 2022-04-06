@@ -83,8 +83,8 @@ const getNavigator = () => {
 }
 
 onBeforeMount(() => {
-  getTasks()
   getNavigator()
+  getTasks()
   store.dispatch(USER_REQUEST)
 })
 

@@ -323,7 +323,7 @@
               placeholder="Enter task name"
               :noNL="true"
               :noHTML="true"
-              :class="{ 'text-gray-500': props.node.info.status == 1 || props.node.info.status == 7, 'line-through': props.node.info.status == 1 || props.node.info.status == 7, 'font-extrabold': props.node.info.readed == 0, 'text-gray-300': props.node.info._justCreated }"
+              :class="{ 'text-gray-500': props.node.info.status == 1 || props.node.info.status == 7, 'line-through': props.node.info.status == 1 || props.node.info.status == 7, 'font-extrabold': props.node.info.readed == 0 }"
               :style="{ color: colors[props.node.info.uid_marker] ? colors[props.node.info.uid_marker].fore_color : '' }"
               @returned="updateTask(props.node.info)"
               @blur="updateTask(props.node.info)"
@@ -812,7 +812,7 @@ export default {
       const taskName = document.getElementById(uid).querySelector('.taskName')
       const range = document.createRange()
       const sel = document.getSelection()
-      taskName.click({ preventScroll: false })
+      taskName.focus({ preventScroll: false })
       range.setStart(taskName, 1)
       range.collapse(true)
       sel.removeAllRanges()
@@ -826,7 +826,7 @@ export default {
         uid: uuidv4(),
         uid_customer: user.value.current_user_uid,
         email_performer: parent.email_performer,
-        name: 'Task name',
+        name: '',
         status: 0,
         uid_parent: parent.uid,
         uid_project: parent.uid_project !== '00000000-0000-0000-0000-000000000000' ? parent.uid_project : '00000000-0000-0000-0000-000000000000',
@@ -839,7 +839,7 @@ export default {
         .then(() => {
           // TODO: somehow refactor it later
           // awful, but I can't find event when subtask node has been pushed into the DOM
-          setTimeout(() => { gotoNode(newSubtask.uid) }, 0)
+          setTimeout(() => { gotoNode(newSubtask.uid) }, 10)
         })
     }
 
@@ -1219,5 +1219,12 @@ export default {
   --popper-theme-border-radius: 0.75rem;
   --popper-theme-padding: 10px;
   --popper-theme-box-shadow: 0 6px 30px -6px rgba(0, 0, 0, 0.25);
+}
+
+[contenteditable=true]:empty:before{
+  content: attr(placeholder);
+  pointer-events: none;
+  display: block; /* For Firefox */
+  color: gray
 }
 </style>

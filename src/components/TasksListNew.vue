@@ -58,25 +58,14 @@
         :placeholder="'Enter task name'"
         borderless
         transparent
-        @keyup.enter="createTask(); this.focus()"
+        @keyup.enter="createTask"
       />
     </div>
   </div>
 
-  <div
-    class="pointer-events-none"
+  <EmptyTasksListPics
     v-if="!Object.keys(storeTasks).length && status != 'loading'"
-  >
-    <img
-      class="mx-auto mt-10"
-      width="300"
-      height="300"
-      src="@/assets/images/emptytask.png"
-      alt="Empty task image"
-    >
-    <p class="text-xl text-center mt-10">There are no tasks yet :(</p>
-    <p class="text-xl text-center text-gray-600 mt-5">Let's create some!</p>
-  </div>
+  />
 
   <!-- Skeleton -->
   <div
@@ -324,8 +313,8 @@
             <!-- Editable name -->
             <contenteditable
               tag="div"
-              class="taskName"
-              :contenteditable="props.node.info.type == 1 || props.node.info.type == 0"
+              class="taskName p-0.5 ring-0 outline-none"
+              :contenteditable="props.node.info.type == 1 || props.node.info.type == 0 || props.node.info.uid_customer == user.current_user_uid"
               v-model="props.node.info.name"
               placeholder="Enter task name"
               :noNL="true"
@@ -392,8 +381,9 @@
             :key="index"
           >
             <div
+              v-if="tags[tag]"
               class="p-1 px-2 text-xs text-white rounded-lg mr-1 flex items-center"
-              :style="{ backgroundColor: tags[tag].back_color }"
+              :style="{ backgroundColor: tags[tag] ? tags[tag].back_color : '' }"
             >
               <Icon
                 :path="tagIcon.path"
@@ -523,6 +513,7 @@ import treeview from 'vue3-treeview'
 import { useStore } from 'vuex'
 import Icon from '@/components/Icon.vue'
 import Control from '@/components/Control.vue'
+import EmptyTasksListPics from '@/components/EmptyTasksListPics.vue'
 import Popper from 'vue3-popper'
 import ModalBoxConfirm from '@/components/modals/ModalBoxConfirm.vue'
 import contenteditable from 'vue-contenteditable'
@@ -561,6 +552,7 @@ export default {
     Control,
     Popper,
     ModalBoxConfirm,
+    EmptyTasksListPics,
     contenteditable
   },
   props: {
@@ -589,6 +581,7 @@ export default {
     const copiedTasks = computed(() => store.state.tasks.copiedTasks)
     const lastSelectedTaskUid = ref('')
     const selectedTasks = ref({})
+    const showConfirm = ref(false)
     const isTaskHoverPopperActive = ref(false)
 
     const clickAndShift = (arg) => {
@@ -661,6 +654,9 @@ export default {
     const getTodaysDate = (val, isYearFirst = true) => {
       if (val == null) {
         val = new Date()
+      }
+      if (typeof val === 'string') { // parse date from ISO 8601 string
+        val = new Date(val)
       }
       const month = pad2(val.getMonth() + 1)
       const day = pad2(val.getDate())
@@ -751,18 +747,23 @@ export default {
     }
 
     const updateTask = (task) => {
-      if (task.name.length > 1) {
+      task.name = task.name.replace(/\r?\n|\r/g, '')
+      if (task.name.length > 0) {
         if (task._justCreated) {
           store.dispatch(TASK.CREATE_TASK, task)
         } else {
           store.dispatch(TASK.CHANGE_TASK_NAME, { uid: task.uid, value: task.name })
         }
         task._isEditing = false
-      } else {
+      } else if (task.name.length === 0) {
         if (task._justCreated) {
+          if (isPropertiesMobileExpanded.value) {
+            store.dispatch('asidePropertiesToggle', false)
+          }
           store.commit(TASK.REMOVE_TASK, task.uid)
         } else {
-          removeTask(task.uid)
+          showConfirm.value = true
+          // removeTask(task.uid)
         }
       }
     }
@@ -788,6 +789,9 @@ export default {
     }
 
     const removeTask = (uid) => {
+      if (isPropertiesMobileExpanded.value) {
+        store.dispatch('asidePropertiesToggle', false)
+      }
       store.dispatch(TASK.REMOVE_TASK, uid)
     }
 
@@ -845,7 +849,7 @@ export default {
       lastSelectedTaskUid.value = arg.info.uid
       store.dispatch(TASK.SELECT_TASK, arg.info)
 
-      if (!isPropertiesMobileExpanded.value) {
+      if (!isPropertiesMobileExpanded.value && arg.info.name) {
         store.dispatch('asidePropertiesToggle', true)
       }
     }
@@ -877,6 +881,7 @@ export default {
     }
 
     return {
+      showConfirm,
       selectedTasks,
       clickAndShift,
       nodeDragstart,
@@ -960,7 +965,6 @@ export default {
     ]
     return {
       DONT_SHOW_TASK_INPUT_UIDS,
-      showConfirm: false,
       statuses,
       statusesLabels,
       project,

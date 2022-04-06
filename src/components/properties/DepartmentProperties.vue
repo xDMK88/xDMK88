@@ -77,7 +77,7 @@ const removeDepartment = (department) => {
         v-model="selectedDepartment.name"
         type="text"
         placeholder="Имя отдела"
-        class="mt-2 rounded-xl bg-gray-100 font-bold text-gray-700 w-full border-none ring-0 outline-none"
+        class="mt-2 p-3 rounded-xl bg-gray-100 font-bold text-gray-700 w-full border-none ring-0 outline-none"
       >
       <button
         v-if="employees[user.current_user_uid].type != 3"

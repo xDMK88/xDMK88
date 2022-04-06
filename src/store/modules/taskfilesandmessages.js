@@ -42,7 +42,6 @@ const actions = {
       axios({ url: url, method: 'GET' })
         .then(resp => {
           commit(FILES_SUCCESS, resp)
-          commit(MERGE_FILES_WITH_MESSAGES)
           resolve(resp)
         }).catch(err => {
           commit(FILES_ERROR)

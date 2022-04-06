@@ -57,6 +57,7 @@ const getNavigatorLanguage = () => (navigator.languages && navigator.languages.l
 const currentDate = computed({
   get: () => new Date(),
   set: val => {
+    if (isPropertiesMobileExpanded.value) { store.dispatch('asidePropertiesToggle', false) }
     store.commit('basic', { key: 'mainSectionState', value: 'tasks' })
     store.dispatch(TASK.TASKS_REQUEST, val)
     // hardcoded and messy

@@ -148,7 +148,7 @@ export default {
       const value = '0\r\nЗадача 1\n\n1\nЗадача 2'
       store.dispatch(TASK.CHANGE_TASK_CHEKCLIST, { uid_task: selectedTask.value.uid, value: value }).then(
         resp => {
-          if (selectedTask.value.uid_customer === user.value.current_user_uid) {
+          if (selectedTask.value.uid_customer === user.value.current_user_uid && selectedTask.value.status === 5) {
             // to refine
             selectedTask.value.status = 9
           }
@@ -166,7 +166,7 @@ export default {
       }
       store.dispatch(TASK.CHANGE_TASK_TAGS, data)
         .then(() => {
-          if (selectedTask.value.uid_customer === user.value.current_user_uid) {
+          if (selectedTask.value.uid_customer === user.value.current_user_uid && selectedTask.value.status === 5) {
             // to refine
             selectedTask.value.status = 9
           }
@@ -191,7 +191,7 @@ export default {
       }
       store.dispatch(CREATE_FILES_REQUEST, data).then(
         resp => {
-          if (selectedTask.value.uid_customer === user.value.current_user_uid) {
+          if (selectedTask.value.uid_customer === user.value.current_user_uid && selectedTask.value.status === 5) {
             // to refine
             selectedTask.value.status = 9
           }
@@ -240,7 +240,7 @@ export default {
       }
       store.dispatch(CREATE_MESSAGE_REQUEST, data).then(
         resp => {
-          if (selectedTask.value.uid_customer === user.value.current_user_uid) {
+          if (selectedTask.value.uid_customer === user.value.current_user_uid && selectedTask.value.status === 5) {
             // to refine
             selectedTask.value.status = 9
           }
@@ -952,7 +952,6 @@ export default {
                   is-range
                   mode="dateTime"
                   is24hr
-                  min-date="01.01.1970"
                   isDragging
                   :minute-increment="10"
                   class="border-none text-xs calendar-properties"

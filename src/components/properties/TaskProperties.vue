@@ -148,7 +148,7 @@ export default {
       const value = '0\r\nЗадача 1\n\n1\nЗадача 2'
       store.dispatch(TASK.CHANGE_TASK_CHEKCLIST, { uid_task: selectedTask.value.uid, value: value }).then(
         resp => {
-          if (selectedTask.value.uid_customer === user.value.current_user_uid) {
+          if (selectedTask.value.uid_customer === user.value.current_user_uid && selectedTask.value.status === 5) {
             // to refine
             selectedTask.value.status = 9
           }
@@ -164,6 +164,13 @@ export default {
         uid: selectedTask.value.uid,
         tags: selectedTask.value.tags
       }
+      store.dispatch(TASK.CHANGE_TASK_TAGS, data)
+        .then(() => {
+          if (selectedTask.value.uid_customer === user.value.current_user_uid && selectedTask.value.status === 5) {
+            // to refine
+            selectedTask.value.status = 9
+          }
+        })
       console.log(data)
 
       setTimeout(() => {
@@ -195,7 +202,7 @@ export default {
       }
       store.dispatch(CREATE_FILES_REQUEST, data).then(
         resp => {
-          if (selectedTask.value.uid_customer === user.value.current_user_uid) {
+          if (selectedTask.value.uid_customer === user.value.current_user_uid && selectedTask.value.status === 5) {
             // to refine
             selectedTask.value.status = 9
           }
@@ -245,7 +252,7 @@ export default {
       }
       store.dispatch(CREATE_MESSAGE_REQUEST, data).then(
         resp => {
-          if (selectedTask.value.uid_customer === user.value.current_user_uid) {
+          if (selectedTask.value.uid_customer === user.value.current_user_uid && selectedTask.value.status === 5) {
             // to refine
             selectedTask.value.status = 9
           }

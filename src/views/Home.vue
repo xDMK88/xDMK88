@@ -1,6 +1,7 @@
 <script setup>
 import { onBeforeMount, computed } from 'vue'
 import { useStore } from 'vuex'
+import { visitChildren } from '@/store/helpers/functions'
 import TasksListNew from '@/components/TasksListNew.vue'
 import MainSection from '@/components/MainSection.vue'
 import Projects from '@/components/Projects.vue'
@@ -22,6 +23,7 @@ const greedSource = computed(() => store.state.greedSource)
 const storeTasks = computed(() => store.state.tasks.newtasks)
 const newConfig = computed(() => store.state.tasks.newConfig)
 const navStack = computed(() => store.state.navbar.navStack)
+const storeNavigator = computed(() => store.state.navigator.navigator)
 
 const UID_TO_ACTION = {
   '901841d9-0016-491d-ad66-8ee42d2b496b': TASK.TASKS_REQUEST, // get today's day
@@ -44,21 +46,12 @@ const UID_TO_ACTION = {
 const getTasks = () => {
   if (store.state.auth.token) {
     // Process saved last visited nav
-    if (navStack.value.length) {
+    if (navStack.value.length && navStack.value.length > 0) {
       if (navStack.value[navStack.value.length - 1].key === 'taskListSource') {
         store.dispatch(UID_TO_ACTION[navStack.value[navStack.value.length - 1].value.uid], navStack.value[navStack.value.length - 1].value.param)
         store.commit('basic', { key: 'mainSectionState', value: 'tasks' })
         store.commit('basic', { key: navStack.value[navStack.value.length - 1].key, value: navStack.value[navStack.value.length - 1].value })
-      } else if (navStack.value[navStack.value.length - 1].key === 'greedSource') {
-        if ('greedPath' in navStack.value[navStack.value.length - 1]) {
-          store.commit('basic', { key: 'greedPath', value: navStack.value[navStack.value.length - 1].greedPath })
-        }
-        if (navStack.value[navStack.value.length - 1].key === 'greedSource') {
-          store.commit('basic', { key: 'mainSectionState', value: 'greed' })
-          store.commit('basic', { key: navStack.value[navStack.value.length - 1].key, value: navStack.value[navStack.value.length - 1].value })
-        }
       }
-    // start from today's tasks if there are not saved last visited navs
     } else {
       store.commit('basic', { key: 'taskListSource', value: { uid: '901841d9-0016-491d-ad66-8ee42d2b496b', param: null } })
       // TODO: here we need localization
@@ -79,12 +72,55 @@ const getTasks = () => {
 const getNavigator = () => {
   if (store.state.auth.token) {
     store.dispatch(NAVIGATOR_REQUEST)
+      .then(() => {
+        // After navigator is loaded we are trying to set up last visited navElement
+        // Checking if last navElement is a gridSource
+        if (navStack.value[navStack.value.length - 1].key === 'greedSource') {
+          store.commit('basic', { key: 'greedPath', value: navStack.value[navStack.value.length - 1].greedPath })
+          store.commit('basic', { key: 'mainSectionState', value: 'greed' })
+
+          // If last navElement is related to processed navigator instance with 'new_' prefix
+          // then we pass entire object from storeNavigator
+          if (['new_private_projects', 'new_emps', 'new_delegate'].includes(navStack.value[navStack.value.length - 1].greedPath)) {
+            store.commit('basic', { key: navStack.value[navStack.value.length - 1].key, value: storeNavigator.value[navStack.value[navStack.value.length - 1].greedPath] })
+
+          // if last visited navElemen is in nested in children, then we trying to find these children with visitChildren fucntion
+          // from storeNavigator
+          } else if (['tags_children', 'projects_children'].includes(navStack.value[navStack.value.length - 1].greedPath)) {
+            if (navStack.value[navStack.value.length - 1].greedPath === 'tags_children') {
+              // nested lookup for tags
+              visitChildren(storeNavigator.value.tags.items, value => {
+                if (value.uid === navStack.value[navStack.value.length - 1].uid) {
+                  store.commit('basic', { key: navStack.value[navStack.value.length - 1].key, value: value.children })
+                }
+              })
+            }
+
+            // nested lookup for shared and private projects
+            if (navStack.value[navStack.value.length - 1].greedPath === 'projects_children') {
+              visitChildren(storeNavigator.value.new_private_projects[0].items, value => {
+                if (value.uid === navStack.value[navStack.value.length - 1].uid) {
+                  store.commit('basic', { key: navStack.value[navStack.value.length - 1].key, value: value.children })
+                }
+              })
+              visitChildren(storeNavigator.value.new_private_projects[1].items, value => {
+                if (value.uid === navStack.value[navStack.value.length - 1].uid) {
+                  store.commit('basic', { key: navStack.value[navStack.value.length - 1].key, value: value.children })
+                }
+              })
+            }
+          // colors
+          } else {
+            store.commit('basic', { key: navStack.value[navStack.value.length - 1].key, value: storeNavigator.value[navStack.value[navStack.value.length - 1].greedPath].items })
+          }
+        }
+      })
   }
 }
 
 onBeforeMount(() => {
-  getTasks()
   getNavigator()
+  getTasks()
   store.dispatch(USER_REQUEST)
 })
 
@@ -112,7 +148,7 @@ onBeforeMount(() => {
         :employees="greedSource"
       />
       <tags
-        v-if="greedPath === 'tags'"
+        v-if="greedPath === 'tags' || greedPath === 'tags_children'"
         :tags="greedSource"
       />
       <colors

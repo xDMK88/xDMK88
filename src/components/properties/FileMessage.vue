@@ -66,6 +66,7 @@ const getAnyUrl = (uid, extension, filename) => {
     return fileURL
   })
 }
+
 </script>
 
 <template>

@@ -145,7 +145,7 @@ const removeProject = (project) => {
         @input="hasChanged = true"
         type="text"
         placeholder="Название проекта"
-        class="mt-2 rounded-xl bg-gray-100 font-bold text-gray-700 w-full border-none ring-0 outline-none p-3"
+        class="mt-2 rounded-xl bg-gray-100 font-bold text-gray-700 dark:text-gray-100 w-full border-none ring-0 outline-none p-3 bg-transparent"
         :disabled="selectedProject.email_creator != user.current_user_email"
       >
       <div
@@ -220,9 +220,9 @@ const removeProject = (project) => {
             :box="add.viewBox"
             :width="add.width"
             :height="add.height"
-            class="text-gray-500 mx-3"
+            class="text-gray-500 dark:text-gray-100 mx-3"
           />
-          <p class="text-gray-600">
+          <p class="text-gray-600 dark:text-gray-100">
             Добавить участника проекта
           </p>
         </div>
@@ -278,8 +278,8 @@ const removeProject = (project) => {
       </div>
       <button
         v-if="selectedProject.email_creator == user.current_user_email"
-        class="w-full bg-gray-100 rounded-xl mt-4 p-3 text-gray-700 font-bold hover:bg-gray-200"
-        :class="{ 'bg-orange-400 hover:bg-orange-500': hasChanged }"
+        class="w-full bg-gray-100 dark:bg-gray-800 rounded-xl mt-4 p-3 text-gray-700 dark:text-gray-100 font-bold hover:bg-gray-200 hover:dark:bg-gray-700"
+        :class="{ 'bg-orange-400 dark:bg-orange-400 hover:bg-orange-500 hover:dark:bg-orange-500': hasChanged }"
         @click="createOrUpdateProject(selectedProject)"
       >
         {{ selectedProject.uid ? 'Сохранить' : 'Создать' }}

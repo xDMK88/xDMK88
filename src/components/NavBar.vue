@@ -141,7 +141,7 @@ const clickOnGridCard = (item, index) => {
         />
       </nav-bar-item>
       <nav-bar-item
-        class="bg-gray-50 dark:bg-gray-700 rounded-lg mr-1 mt-1"
+        class="bg-gray-50 dark:bg-gray-700 text-black dark:text-gray-100 rounded-lg mr-1 mt-1"
         @click="clickOnGridCard(navStack[navStack.length - 2], navStack.length - 2)"
       >
         <icon
@@ -160,7 +160,7 @@ const clickOnGridCard = (item, index) => {
       >
         <span
           v-if="navItem && navItem.name"
-          class="bg-white text-black dark:bg-gray-700 rounded-lg breadcrumbs"
+          class="bg-white text-black dark:bg-gray-700 dark:text-gray-100 rounded-lg breadcrumbs"
           @click="clickOnGridCard(navItem, index)"
         >
           {{ navItem.name.length > 15 ? navItem.name.slice(0, 15) + '...' : navItem.name }}

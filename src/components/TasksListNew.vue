@@ -110,11 +110,11 @@
         :id="props.node.info.uid"
         class="group task-node flex-col items-center w-full bg-white p-2 rounded-xl dark:bg-gray-900 dark:border-gray-700 border border-gray-300 my-0.5 relative"
         :style="{ backgroundColor: colors[props.node.info.uid_marker] ? colors[props.node.info.uid_marker].back_color : '' }"
-        :class="{ 'bg-gray-200 dark:bg-gray-900': (props.node.info.status == 1 || props.node.info.status == 7) && props.node.info.uid_marker == '00000000-0000-0000-0000-000000000000', 'ring-2 ring-orange-400 border border-orange-400': props.node.id === lastSelectedTaskUid || selectedTasks[props.node.id]}"
+        :class="{ 'bg-gray-200 dark:bg-gray-800': (props.node.info.status == 1 || props.node.info.status == 7) && props.node.info.uid_marker == '00000000-0000-0000-0000-000000000000', 'ring-2 ring-orange-400 border border-orange-400': props.node.id === lastSelectedTaskUid || selectedTasks[props.node.id]}"
       >
         <Transition>
           <div
-            class="absolute hidden group-hover:flex right-2 top-2 bg-gray-200 rounded-lg items-cetner justify-center py-0.5 px-3"
+            class="absolute hidden group-hover:flex right-2 top-2 bg-gray-200 dark:bg-gray-800 rounded-lg items-cetner justify-center py-0.5 px-3"
             :style="{ backgroundColor: colors[props.node.info.uid_marker] ? colors[props.node.info.uid_marker].back_color : '' }"
           >
             <Icon
@@ -139,7 +139,7 @@
                   <!-- Set task for tomorrow -->
                   <div
                     v-if="props.node.info.uid_customer == user.current_user_uid"
-                    class="flex cursor-pointer items-center hover:bg-gray-100 py-0.5 px-1.5 rounded-xl"
+                    class="flex cursor-pointer items-center hover:bg-gray-100 hover:dark:bg-stone-800 py-0.5 px-1.5 rounded-xl"
                     @click="moveTaskTomorrow(props.node.info)"
                   >
                     <Icon
@@ -154,7 +154,7 @@
 
                   <!-- Copy task name -->
                   <div
-                    class="flex cursor-pointer items-center hover:bg-gray-100 py-0.5 px-1.5 rounded-xl"
+                    class="flex cursor-pointer items-center hover:bg-gray-100 hover:dark:bg-stone-800 py-0.5 px-1.5 rounded-xl"
                     @click="copyTaskName(props.node.info); close();"
                   >
                     <Icon
@@ -170,7 +170,7 @@
                   <!-- Copy task -->
                   <div
                     class="flex items-center py-0.5 px-1.5 rounded-xl"
-                    :class="{ 'cursor-pointer': !copiedTasks[props.node.info.uid], 'hover:bg-gray-100': !copiedTasks[props.node.info.uid], 'text-gray-200': copiedTasks[props.node.info.uid] }"
+                    :class="{ 'cursor-pointer': !copiedTasks[props.node.info.uid], 'hover:bg-gray-100 hover:dark:bg-stone-800': !copiedTasks[props.node.info.uid], 'text-gray-200': copiedTasks[props.node.info.uid] }"
                     @click="copyTask(props.node.info)" >
                     <Icon
                       :path="copy.path"
@@ -186,7 +186,7 @@
                   <!-- Paste task -->
                   <div
                     v-if="Object.keys(copiedTasks).length"
-                    class="flex cursor-pointer items-center py-0.5 px-1.5 rounded-xl"
+                    class="flex cursor-pointer items-center py-0.5 px-1.5 rounded-xl hover:dark:bg-stone-800"
                     @click="pasteCopiedTasks(props.node.id)"
                   >
                     <Icon
@@ -202,7 +202,7 @@
                   <!-- Cut task -->
                   <div
                     v-if="props.node.info.uid_customer == user.current_user_uid"
-                    class="flex cursor-pointer items-center hover:bg-gray-100 py-0.5 px-1.5 rounded-xl"
+                    class="flex cursor-pointer items-center hover:bg-gray-100 hover:dark:bg-stone-800 py-0.5 px-1.5 rounded-xl"
                     @click="cutTask(props.node.info); close();"
                   >
                     <Icon
@@ -218,7 +218,7 @@
                   <!-- Delete task -->
                   <div
                     v-if="props.node.info.uid_customer == user.current_user_uid"
-                    class="flex cursor-pointer items-center hover:bg-gray-100 py-0.5 px-1.5 rounded-xl"
+                    class="flex cursor-pointer items-center hover:bg-gray-100 hover:dark:bg-stone-800 py-0.5 px-1.5 rounded-xl"
                     @click="showConfirm = true;"
                   >
                     <Icon
@@ -267,7 +267,7 @@
                   >
                     <div
                       v-if="showStatusOrNot(props.node.info.type, taskStatus - 1) && props.node.info.status != taskStatus - 1"
-                      class="flex cursor-pointer items-center hover:bg-gray-100 py-0.5 px-1.5 rounded-xl"
+                      class="flex cursor-pointer items-center hover:bg-gray-100 hover:dark:bg-stone-800 py-0.5 px-1.5 rounded-xl"
                       @click="changeTaskStatus(props.node.info.uid, taskStatus - 1)"
                     >
                       <div
@@ -338,14 +338,14 @@
           <div
             v-if="props.node.info.uid_customer != '00000000-0000-0000-0000-000000000000' && employees[props.node.info.uid_customer] && props.node.info.uid_customer != user.current_user_uid"
             class="p-1 px-2 text-xs text-white bg-red-500 rounded-lg mr-1 flex items-center"
-            :class="{ 'bg-gray-400': user.current_user_email != props.node.info.email_performer, 'bg-opacity-50': props.node.info.status == 1 || props.node.info.status == 7 }"
+            :class="{ 'bg-gray-400 dark:bg-gray-700': user.current_user_email != props.node.info.email_performer, 'bg-opacity-50': props.node.info.status == 1 || props.node.info.status == 7 }"
           >
             {{ employees[props.node.info.uid_customer].name }}
           </div>
           <div
             v-if="props.node.info.email_performer && employeesByEmail[props.node.info.email_performer] && user.current_user_email != props.node.info.email_performer && employees[props.node.info.uid_customer].email != props.node.info.email_performer"
             class="p-1 px-2 text-xs text-white rounded-lg mr-1 flex items-center"
-            :class="{ 'bg-gray-400': user.current_user_email != props.node.info.email_performer, 'bg-green-500': user.current_user_uid == props.node.info.uid_customer, 'bg-opacity-50': props.node.info.status == 1 || props.node.info.status == 7 }"
+            :class="{ 'bg-gray-400 dark:bg-gray-700': user.current_user_email != props.node.info.email_performer, 'bg-green-500': user.current_user_uid == props.node.info.uid_customer, 'bg-opacity-50': props.node.info.status == 1 || props.node.info.status == 7 }"
           >
             <Icon
               v-if="!props.node.info.performerreaded"
@@ -372,7 +372,7 @@
             Просрочено
           </div>
           <div
-            v-for="(tag, index) in props.node.info.tags.filter(n=>n.length > 0)"
+            v-for="(tag, index) in props.node.info.tags"
             :key="index"
           >
             <div

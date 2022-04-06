@@ -611,7 +611,7 @@ export default {
           />
         </svg>
         <a
-          class="parent-name cursor-pointer"
+          class="parent-name cursor-pointer dark:text-gray-100"
           @click="gotoParentNode(selectedTask.uid_parent)"
         >
           {{ tasks[selectedTask.uid_parent].info.name }}
@@ -619,7 +619,19 @@ export default {
       </div>
       <div class="user_child_customer_custom" @click="editTaskName">
         <strong>
-          <div class="form-control taskName-custom" data-placeholder="Task Name" ref="TaskName" v-linkify:options="{ className: 'text-blue-600', tagName: 'a' }" style="font-weight: bold; font-size: 18px" :contenteditable="isEditableTaskName" @blur="changeName($event)" @keyup="changeName($event)" @focus="this.$refs.TaskName.focus()" @focusout="removeTaskName($event)" v-html="selectedTask.name.replaceAll('\n','<br/>')" />
+          <div
+            class="form-control taskName-custom dark:bg-gray-900 dark:text-gray-100 dark:border-gray-900"
+            data-placeholder="Task Name"
+            ref="TaskName"
+            v-linkify:options="{ className: 'text-blue-600', tagName: 'a' }"
+            style="font-weight: bold; font-size: 18px"
+            :contenteditable="isEditableTaskName"
+            @blur="changeName($event)"
+            @keyup="changeName($event)"
+            @focus="this.$refs.TaskName.focus()"
+            @focusout="removeTaskName($event)"
+            v-html="selectedTask.name.replaceAll('\n','<br/>')"
+          />
         </strong>
       </div>
       <!--   <p class="mt-3"><strong>{{ localization.task_created }}:</strong> {{ selectedTask.date_create }}</p>
@@ -647,7 +659,7 @@ export default {
             <div
               v-if="selectedTask.type===1"
               ref="btnRefEmployee"
-              class="mt-3 tags-custom active project-hover-close"
+              class="mt-3 tags-custom dark:bg-gray-800 dark:text-gray-100 active project-hover-close"
             >
               <svg
                 width="24"
@@ -674,7 +686,7 @@ export default {
             <div
               v-else-if="selectedTask.type===2 || cusers.owner_email!==selectedTask.email_performer.toLowerCase()"
               ref="btnRefEmployee"
-              class="mt-3 tags-custom project-hover-close"
+              class="mt-3 tags-custom dark:bg-gray-800 dark:text-gray-100 project-hover-close"
             >
               <svg
                 width="24"
@@ -699,7 +711,7 @@ export default {
             <div
               v-else-if="selectedTask.type===3"
               ref="btnRefEmployee"
-              class="mt-3 tags-custom active project-hover-close"
+              class="mt-3 tags-custom dark:bg-gray-800 dark:text-gray-100 active project-hover-close"
             >
 
               <svg
@@ -727,7 +739,7 @@ export default {
             <div
               v-else-if="selectedTask.type===4"
               ref="btnRefEmployee"
-              class="mt-3 tags-custom active project-hover-close"
+              class="mt-3 tags-custom dark:bg-gray-800 dark:text-gray-100 active project-hover-close"
             >
 
               <svg
@@ -874,7 +886,7 @@ export default {
               <div
                 v-for="(key,value) in selectedTask.emails.split('..').filter(n=>n)"
                 :key="value"
-                class="mt-3 tags-custom project-hover-close"
+                class="mt-3 tags-custom dark:bg-gray-800 dark:text-gray-100 project-hover-close"
               >
                 <svg v-if="key!=='null'"
                      width="24"
@@ -900,7 +912,7 @@ export default {
             </div>
             <div v-else>
               <div
-                class="mt-3 tags-custom project-hover-close"
+                class="mt-3 tags-custom dark:bg-gray-800 dark:text-gray-100 project-hover-close"
               >
                 <svg v-if="key!=='null'"
                      width="24"
@@ -928,7 +940,7 @@ export default {
           <div
             v-else
             ref="btnRef"
-            class="mt-3 tags-custom"
+            class="mt-3 tags-custom dark:bg-gray-800 dark:text-gray-100"
           >
             <svg
               width="24"
@@ -990,7 +1002,7 @@ export default {
               </form>
             </div>
           </template>
-          <a class="mt-3 tags-custom any-calendar project-hover-close">
+          <a class="mt-3 tags-custom dark:bg-gray-800 dark:text-gray-100 any-calendar project-hover-close">
             <span
                 v-if="selectedTask.term_customer!=='' && selectedTask.term_customer!=null"
                 class="flex"
@@ -1414,7 +1426,7 @@ export default {
             <div
               v-if="selectedTask.SeriesEnd!==''"
               ref="btnRefRepeat"
-              class="mt-3 tags-custom project-hover-close"
+              class="mt-3 tags-custom dark:bg-gray-800 dark:text-gray-100 project-hover-close"
             >
               <svg
                 width="24"
@@ -1466,7 +1478,7 @@ export default {
           </div>
           <div
             v-else
-            class="mt-3 tags-custom"
+            class="mt-3 tags-custom dark:bg-gray-800 dark:text-gray-100"
           >
             <svg
               width="24"
@@ -1612,7 +1624,7 @@ export default {
           <a
             v-if="selectedTask.uid_project !== '00000000-0000-0000-0000-000000000000' && projects[selectedTask.uid_project].name!==''"
             ref="btnRefProject"
-            class="mt-3 tags-custom project-hover-close"
+            class="mt-3 tags-custom dark:bg-gray-800 dark:text-gray-100 project-hover-close"
           >
             <svg
               width="24"
@@ -1643,7 +1655,7 @@ export default {
           <a
             v-else
             ref="btnRefProject"
-            class="mt-3 tags-custom"
+            class="mt-3 tags-custom dark:bg-gray-800 dark:text-gray-100"
           >
             <svg
               width="24"
@@ -1708,7 +1720,7 @@ export default {
           </template>
           <a
             ref="btnRefColor"
-            class="mt-3 tags-custom project-hover-close"
+            class="mt-3 tags-custom dark:bg-gray-800 dark:text-gray-100 project-hover-close"
           >
             <span v-if="selectedTask.uid_marker !== '00000000-0000-0000-0000-000000000000'">
               <svg
@@ -1824,7 +1836,7 @@ export default {
           <span
             v-if="selectedTask.tags.length"
           >
-            <a class="mt-3 tags-custom project-hover-close"
+            <a class="mt-3 tags-custom dark:bg-gray-800 dark:text-gray-100 project-hover-close"
 
             >
               <svg
@@ -1875,7 +1887,7 @@ export default {
           </span>
           <button
             v-else
-            class="mt-3 tags-custom"
+            class="mt-3 tags-custom dark:bg-gray-800 dark:text-gray-100"
           >
             <svg
               width="24"
@@ -1959,7 +1971,7 @@ export default {
             </div>
           </template>
   <button v-if="selectedTask.tags.length===0"
-          class="mt-3 tags-custom"
+          class="mt-3 tags-custom dark:bg-gray-800 dark:text-gray-100"
   >
             <svg
               width="24"
@@ -1987,7 +1999,7 @@ export default {
         <!-- Чек лист -->
         <div
           v-if="!selectedTask.checklist && selectedTask.type!==4 && selectedTask.type!==3"
-          class="mt-3 tags-custom"
+          class="mt-3 tags-custom dark:bg-gray-800 dark:text-gray-100"
           @click="createChecklist"
         >
           <svg
@@ -2028,7 +2040,7 @@ export default {
         <!-- Фокус -->
         <div
           v-if="selectedTask.focus===1"
-          class="mt-3 tags-custom project-hover-close"
+          class="mt-3 tags-custom dark:bg-gray-800 dark:text-gray-100 project-hover-close"
           @click="changeFocus(selectedTask.uid, 0)"
         >
           <svg
@@ -2054,7 +2066,7 @@ export default {
         </div>
         <div
           v-else
-          class="mt-3 tags-custom project-hover-close"
+          class="mt-3 tags-custom dark:bg-gray-800 dark:text-gray-100 project-hover-close"
           @click="changeFocus(selectedTask.uid, 1)"
         >
           <svg
@@ -2062,6 +2074,7 @@ export default {
             height="24"
             viewBox="0 0 66 89"
             fill="none"
+            class="dark:text-gray-100"
             xmlns="http://www.w3.org/2000/svg"
           >
             <path
@@ -2074,7 +2087,7 @@ export default {
         </div>
         <!-- Три точки -->
         <div
-          class="mt-3 tags-custom any-list-custom relative"
+          class="mt-3 tags-custom dark:bg-gray-800 dark:text-gray-100 any-list-custom relative"
         >
           <svg
             style="width:24px;height:24px"
@@ -2185,14 +2198,26 @@ export default {
         </div>
       </div>
       <div class="mt-3 description-content" @click="editcomment">
-        <div v-html="selectedTask.comment.replaceAll('\n','<br/>')" id="comment" ref="comment" :contenteditable="isEditable" data-placeholder="Добавить заметку..." v-linkify:options="{ className: 'text-blue-600', tagName: 'a' }"  @blur="changeComment($event)" @keyup="changeComment($event)" @focus="this.$refs.comment.focus()" @focusout="removecomment($event)">
+        <div
+          v-html="selectedTask.comment.replaceAll('\n','<br/>')"
+          class="dark:text-gray-100"
+          id="comment"
+          ref="comment"
+          :contenteditable="isEditable"
+          data-placeholder="Добавить заметку..."
+          v-linkify:options="{ className: 'text-blue-600', tagName: 'a' }"
+          @blur="changeComment($event)"
+          @keyup="changeComment($event)"
+          @focus="this.$refs.comment.focus()"
+          @focusout="removecomment($event)"
+        >
         </div>
       </div>
 
       <!-- Show all -->
       <p
         v-if="taskMessages.length > 2 && !showAllMessages"
-        class="text-gray-500 text-sm text-center cursor-pointer" style="border-bottom: 1px dashed; padding-bottom: 0; width: 125px; margin: 0 auto;"
+        class="text-gray-500 dark:text-gray-100 text-sm text-center cursor-pointer" style="border-bottom: 1px dashed; padding-bottom: 0; width: 125px; margin: 0 auto;"
         @click="scrollDown">
         Show all messages
       </p>
@@ -2213,13 +2238,14 @@ export default {
               class="text-center"
             >
               <p
-                class="text-xs text-gray-500 my-3"
+                class="text-xs text-gray-500 dark:text-gray-300 my-3"
               >
                 {{ new Date(taskMessages[value].date_create).toLocaleString('default', { weekday: 'long' }) }},
                 {{ new Date(taskMessages[value].date_create).getDate() }}
                 {{ new Date(taskMessages[value].date_create).toLocaleString('default', { month: 'short' }) }}
               </p>
             </div>
+
             <!-- Chat message interlocutor -->
             <div v-if="key.uid_creator !== cusers.current_user_uid && !key.uid_file">
               <div
@@ -2228,7 +2254,7 @@ export default {
               >
                 <p
                   v-if="employees[key.uid_creator]"
-                  class="name-chat-custom"
+                  class="name-chat-custom dark:text-gray-100"
                 >
                   {{ employees[key.uid_creator].name }}
                 </p>
@@ -2237,14 +2263,13 @@ export default {
                 class="chat-main"
               >
                 <div
-                  class="mt-1 msg-custom-chat-left text-sm"
-                  style="background-color:#EDF7ED;"
+                  class="mt-1 msg-custom-chat-left text-sm bg-[#EDF7ED] dark:bg-gray-800 dark:text-gray-100"
                 >
                   <div v-html="key.msg.replaceAll('\n', '<br/>')" v-linkify:options="{ className: 'text-blue-600' }">
                   </div>
                   <div
                     v-if="key.date_create"
-                    class="time-chat"
+                    class="time-chat dark:text-gray-300"
                   >
                     {{ key.date_create.split('T')[1].split(":")[0] }}:{{ key.date_create.split('T')[1].split(":")[1] }}
                   </div>
@@ -2269,8 +2294,7 @@ export default {
                 class="chat-main"
               >
                 <div
-                  class="mt-1 msg-custom-chat-left text-sm items-center"
-                  style="background-color:#EDF7ED;"
+                  class="mt-1 msg-custom-chat-left bg-[#EDF7ED] dark:bg-gray-800 text-sm items-center"
                 >
                   <FileMessage
                     :file="key"
@@ -2281,7 +2305,7 @@ export default {
                     </div>
                     <div
                       v-if="key.date_create"
-                      class="mt-1 flex items center justify-between text-gray-400 text-xs"
+                      class="mt-1 flex items center justify-between text-gray-400 dark:text-gray-300 text-xs"
                     >
                       <p>{{ formatBytes(key.file_size) }}</p>
                       <p>{{ key.date_create.split('T')[1].split(":")[0] }}:{{ key.date_create.split('T')[1].split(":")[1] }}</p>
@@ -2302,7 +2326,7 @@ export default {
                 >
                   <p
                     v-if="employees[key.uid_creator]"
-                    class="name-chat-custom"
+                    class="name-chat-custom dark:text-gray-100"
                   >
                     {{ employees[key.uid_creator].name }}
                   </p>
@@ -2312,14 +2336,13 @@ export default {
                 class="chat-main"
               >
                 <div
-                  class="mt-1 msg-custom-chat-right text-sm"
-                  style="background-color:#FCEAEA;"
+                  class="mt-1 msg-custom-chat-right bg-[#FCEAEA] dark:bg-gray-800 text-sm dark:text-gray-100"
                 >
                   <div v-html="key.msg.replaceAll('\n', '<br/>')" v-linkify>
                   </div>
                   <div
                     v-if="key.date_create"
-                    class="time-chat"
+                    class="time-chat dark:text-gray-300"
                   >
                     {{ key.date_create.split('T')[1].split(":")[0] }}:{{ key.date_create.split('T')[1].split(":")[1] }}
                   </div>
@@ -2338,7 +2361,7 @@ export default {
                 >
                   <p
                     v-if="employees[key.uid_creator]"
-                    class="name-chat-custom"
+                    class="name-chat-custom dark:text-gray-100"
                   >
                     {{ employees[key.uid_creator].name }}
                   </p>
@@ -2348,8 +2371,7 @@ export default {
                 class="chat-main"
               >
                 <div
-                  class="mt-1 msg-custom-chat-right text-sm"
-                  style="background-color:#FCEAEA;"
+                  class="mt-1 msg-custom-chat-right bg-[#FCEAEA] dark:bg-gray-800 text-sm"
                 >
                   <FileMessage
                     :file="key"
@@ -2360,7 +2382,7 @@ export default {
                     </div>
                     <div
                       v-if="key.date_create"
-                      class="mt-1 flex items center justify-between text-gray-400 text-xs"
+                      class="mt-1 flex items center justify-between text-gray-400 dark:text-gray-300 text-xs"
                     >
                       <p>{{ formatBytes(key.file_size) }}</p>
                       <p>{{ key.date_create.split('T')[1].split(":")[0] }}:{{ key.date_create.split('T')[1].split(":")[1] }}</p>
@@ -2376,7 +2398,7 @@ export default {
   </div>
   <div class="form-send-message">
     <div class="input-group">
-        <span class="input-group-addon input-group-attach">
+        <span class="input-group-addon input-group-attach dark:bg-gray-800 dark:text-gray-100">
           <div class="example-1">
             <label class="label">
               <svg
@@ -2403,13 +2425,13 @@ export default {
         </span>
       <textarea
         v-model="taskMsg"
-        class="form-control text-group-design task-msg"
+        class="form-control text-group-design task-msg dark:bg-gray-800 dark:text-gray-100"
         placeholder="Введите сообщение"
         rows="3"
         @keydown.enter.exact.prevent="createTaskMsg"
         @keydown.enter.shift.exact.prevent="taskMsg += '\n'"
       ></textarea>
-      <span class="input-group-addon input-group-btn-send">
+      <span class="input-group-addon input-group-btn-send dark:bg-gray-800 dark:text-gray-100">
           <button
             type="button"
             name="btn-send"

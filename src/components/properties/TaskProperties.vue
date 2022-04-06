@@ -2404,7 +2404,7 @@ export default {
       <textarea
         v-model="taskMsg"
         class="form-control text-group-design task-msg"
-        placeholder="Введите описание"
+        placeholder="Введите сообщение"
         rows="3"
         @keydown.enter.exact.prevent="createTaskMsg"
         @keydown.enter.shift.exact.prevent="taskMsg += '\n'"

@@ -84,6 +84,7 @@ const goToChildren = (value) => {
     const navElem = {
       name: value.name,
       key: 'greedSource',
+      uid: value.uid,
       greedPath: 'projects_children',
       value: value.children
     }

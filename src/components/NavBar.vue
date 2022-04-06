@@ -1,5 +1,6 @@
 <script setup>
 import { computed, watch } from 'vue'
+import { visitChildren } from '@/store/helpers/functions'
 import { useStore } from 'vuex'
 import {
   mdiForwardburger,
@@ -7,7 +8,6 @@ import {
   mdiMenu
 } from '@mdi/js'
 import NavBarItem from '@/components/NavBarItem.vue'
-// import NavBarItemLabel from '@/components/NavBarItemLabel.vue'
 import Icon from '@/components/Icon.vue'
 import Popper from 'vue3-popper'
 import NavBarSearch from '@/components/NavBarSearch.vue'
@@ -43,6 +43,7 @@ const isAsideMobileExpanded = computed(() => store.state.isAsideMobileExpanded)
 const isPropertiesMobileExpanded = computed(() => store.state.isPropertiesMobileExpanded)
 
 const navStack = computed(() => store.state.navbar.navStack)
+const storeNavigator = computed(() => store.state.navigator.navigator)
 
 const menuToggleMobileIcon = computed(() => isAsideMobileExpanded.value ? mdiBackburger : mdiForwardburger)
 const menuToggleMobile = () => {
@@ -81,12 +82,34 @@ const clickOnGridCard = (item, index) => {
     return
   }
   store.commit('removeAllFromStackAfterIndex', index)
-  if ('greedPath' in item) {
-    store.commit('basic', { key: 'greedPath', value: item.greedPath })
-  }
-  if (item.key === 'greedSource') {
-    store.commit('basic', { key: 'mainSectionState', value: 'greed' })
-    store.commit('basic', { key: 'greedSource', value: item.value })
+
+  store.commit('basic', { key: 'greedPath', value: item.greedPath })
+  store.commit('basic', { key: 'mainSectionState', value: 'greed' })
+
+  if (['new_private_projects', 'new_emps', 'new_delegate'].includes(item.greedPath)) {
+    store.commit('basic', { key: item.key, value: storeNavigator.value[item.greedPath] })
+  } else if (['tags_children', 'projects_children'].includes(item.greedPath)) {
+    if (item.greedPath === 'tags_children') {
+      visitChildren(storeNavigator.value.tags.items, value => {
+        if (value.uid === item.uid) {
+          store.commit('basic', { key: item.key, value: value.children })
+        }
+      })
+    }
+    if (item.greedPath === 'projects_children') {
+      visitChildren(storeNavigator.value.new_private_projects[0].items, value => {
+        if (value.uid === item.uid) {
+          store.commit('basic', { key: item.key, value: value.children })
+        }
+      })
+      visitChildren(storeNavigator.value.new_private_projects[1].items, value => {
+        if (value.uid === item.uid) {
+          store.commit('basic', { key: item.key, value: value.children })
+        }
+      })
+    }
+  } else {
+    store.commit('basic', { key: item.key, value: storeNavigator.value[item.greedPath].items })
   }
 }
 </script>

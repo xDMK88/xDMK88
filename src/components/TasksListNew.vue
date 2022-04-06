@@ -19,7 +19,7 @@
 
   <!-- Add task input -->
   <div
-    v-if="!DONT_SHOW_TASK_INPUT_UIDS[taskListSource.uid]"
+    v-if="taskListSource && !DONT_SHOW_TASK_INPUT_UIDS[taskListSource.uid]"
     class="pr-3"
     :class="newConfig.listHasChildren ? 'pl-8' : 'pl-0'"
   >

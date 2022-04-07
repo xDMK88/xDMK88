@@ -44,7 +44,7 @@ export default createStore({
     isPropertiesLgActive: false,
 
     /* Dark mode */
-    darkMode: true,
+    darkMode: false,
 
     /* Field focus with ctrl+k (to register only once) */
     isFieldFocusRegistered: false,

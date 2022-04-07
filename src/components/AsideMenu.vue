@@ -44,7 +44,7 @@ const isFullScreen = computed(() => store.state.isFullScreen)
 const isAsideMobileExpanded = computed(() => store.state.isAsideMobileExpanded)
 const isPropertiesMobileExpanded = computed(() => store.state.isPropertiesMobileExpanded)
 const isAsideLgActive = computed(() => store.state.isAsideLgActive)
-const isDark = computed(() => !store.state.darkMode)
+const isDark = computed(() => store.state.darkMode)
 const navStack = computed(() => store.state.navbar.navStack)
 
 const datePickerBG = computed(() => {

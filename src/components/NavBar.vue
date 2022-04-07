@@ -11,12 +11,14 @@ import NavBarItem from '@/components/NavBarItem.vue'
 import Icon from '@/components/Icon.vue'
 import Popper from 'vue3-popper'
 import NavBarSearch from '@/components/NavBarSearch.vue'
-import arrowBack from '@/icons/arrow-back.js'
 import properties from '@/icons/properties.js'
 
 import { PATCH_SETTINGS } from '@/store/actions/navigator.js'
 
 const store = useStore()
+const closeProperties = () => {
+  store.dispatch('asidePropertiesToggle', false)
+}
 
 defineProps({
   item: {
@@ -118,8 +120,8 @@ const clickOnGridCard = (item, index) => {
   <nav
     v-show="isNavBarVisible"
     class="top-0 left-0 right-0 fixed flex h-14 z-30 bg-gray-100
-    transition-position xl:pl-80 w-auto lg:items-center dark:bg-gray-800 dark:border-gray-800"
-    :class="{ 'ml-80 lg:ml-80':isAsideMobileExpanded, 'mr-96':isPropertiesMobileExpanded}"
+    transition-position xl:ml-80 w-auto lg:items-center dark:bg-gray-800 dark:border-gray-800"
+    :class="{ 'ml-80':isAsideMobileExpanded, 'mr-96':isPropertiesMobileExpanded}"
   >
     <div class="flex-1 items-stretch flex h-14 py-2 pl-3">
       <nav-bar-item
@@ -140,17 +142,6 @@ const clickOnGridCard = (item, index) => {
           size="24"
         />
       </nav-bar-item>
-      <nav-bar-item
-        class="bg-gray-50 dark:bg-gray-700 text-black dark:text-gray-100 rounded-lg mr-1 mt-1"
-        @click="clickOnGridCard(navStack[navStack.length - 2], navStack.length - 2)"
-      >
-        <icon
-          :path="arrowBack.path"
-          :width="arrowBack.width"
-          :height="arrowBack.height"
-          :box="arrowBack.viewBox"
-        />
-      </nav-bar-item>
     </div>
     <div class="nav-scroll">
       <nav-bar-item
@@ -161,7 +152,7 @@ const clickOnGridCard = (item, index) => {
         <span
           v-if="navItem && navItem.name"
           class="bg-white text-black dark:bg-gray-700 dark:text-gray-100 rounded-lg breadcrumbs"
-          @click="clickOnGridCard(navItem, index)"
+          @click="clickOnGridCard(navItem, index), closeProperties()"
         >
           {{ navItem.name.length > 15 ? navItem.name.slice(0, 15) + '...' : navItem.name }}
         </span>

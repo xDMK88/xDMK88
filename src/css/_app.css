@@ -43,7 +43,7 @@ input:focus {outline: 0;}
   display: flex;
   background: #F4F5F7;
 }
-.tags-custom.active, .tags-custom.active svg
+.tags-custom.active
 {
   background-color:#977DE3;
   color:white;
@@ -180,26 +180,43 @@ input:focus {outline: 0;}
   font-size:13px;
   color:black;
 }
-.description-content
-{
-
-}
 .custom-list-tags
 {
   width:100%;
   display: inline-block;
   padding-right: 5px;
+  float: left;
 }
 .custom-list-tags .inline-block {
-  margin: 0 0 -6px 0 !important;
+  margin: 0 0 0 0 !important;
   border: none !important;
+  float: left;
 }
 .description-content
 {
   width:100%;
   font-size:14px;
   padding-right: 5px;
+  min-height: 100px;
   display: inline-block;
+}
+.description-content div:empty:before {
+  content:attr(data-placeholder);
+  color:gray
+}
+.taskName-custom div:empty:before {
+  content:attr(data-placeholder);
+  color:gray
+}
+.task-msg div:empty:before
+{
+  content:attr(data-placeholder);
+  color:gray
+}
+.task-msg
+{
+  resize: none;
+  overflow: hidden;
 }
 .list-files-custom
 {
@@ -503,10 +520,11 @@ input:focus {outline: 0;}
   font-size: 11px;
   display: none;
   position: absolute;
-  right: 2px;
+  right: 0;
   width: 15px;
   height: 15px;
   top: 7px;
+  border-radius: 25px;
   -webkit-transition: all 0.7s ease;
   -moz-transition: all 0.7s ease;
   -o-transition: all 0.7s ease;
@@ -521,7 +539,7 @@ input:focus {outline: 0;}
 {
   width: 15px;
   height: 15px;
-  left: 2px;
+  left: 0;
   top: 0;
   padding: 2px;
   border-radius: 25px;
@@ -539,15 +557,14 @@ input:focus {outline: 0;}
   transition: all 0.7s ease;
   animation-delay: -2s;
   display: block;
-  background: white;
   height: 15px;
   z-index: 9999;
-  animation: ani 1s forwards;
-  transform: translateX(70%);
+  animation: ani 0.4s forwards;
+  transform: translateX(30%);
   opacity: 1;
 }
 @keyframes ani {
-  0% {transform: translateX(70%);}
+  0% {transform: translateX(30%);}
   100% {transform: translateY(0);}
 }
 .btn-save-popover
@@ -1126,7 +1143,7 @@ input {
 }
 /* стили для активного состояния чекбокса (при нажатии на него) */
 .custom-checkbox:not(:disabled):active+label::after {
-  background-color: #b3d7ff;
+
   border-color: #b3d7ff;
 }
 /* стили для чекбокса, находящегося в фокусе */
@@ -1152,15 +1169,12 @@ label
 }
 .input-group-attach
 {
-  padding: 0 12px;
+  padding: 0 1px;
   height: 36px;
+  border: none;
   background: #F4F5F7;
   border-top-left-radius: 100px;
   border-bottom-left-radius: 100px;
-  border-left: 1px solid #F4F5F7;
-  border-top: 1px solid #F4F5F7;
-  border-bottom: 1px solid #F4F5F7;
-
 }
 .form-send-message .input-group
 {
@@ -1168,18 +1182,20 @@ label
 .text-group-design
 {
   background: #F4F5F7;
-  height: 43px;
+  min-height: 40px;
   border:none;
+  padding: 9px 3px;
+  width: 100% !important;
+  display: table !important;
 }
 .input-group-btn-send
 {
   background: #F4F5F7;
   height: 36px;
+  padding: 4px 8px;
   border-top-right-radius: 100px;
   border-bottom-right-radius: 100px;
-  border-left: 1px solid #F4F5F7;
-  border-top: 1px solid #F4F5F7;
-  border-bottom: 1px solid #F4F5F7;
+  border: none;
 }
 .parent-name
 {
@@ -1207,7 +1223,7 @@ label
 .body-repeat-custom
 {
   display: table;
-  width: 320px;
+  width: 317px;
 }
 .tab-content
 {
@@ -1226,27 +1242,26 @@ label
 }
 .btn-save-repeat
 {
-  width:80px;
-  display: table;
-  height: 30px;
-  color:white;
+  width: 85px;
+  height: 25px;
   font-size: 11px;
-  background: #FF9123;
-  -webkit-box-shadow: 3px 4px 5px 0px rgba(50, 50, 50, 0.5);
-  -moz-box-shadow:    3px 4px 5px 0px rgba(50, 50, 50, 0.5);
-  box-shadow:         3px 4px 5px 0px rgba(50, 50, 50, 0.5);
+  color: gray;
+  float: left;
+  margin-bottom: 5px;
+  margin-right: 5px;
+  border-radius: 7px;
+  border: 1px solid gray;
 }
 .btn-cancel-repeat
 {
+  width: 85px;
+  height: 25px;
   font-size: 11px;
-  width:80px;
-  display: table;
-  height: 30px;
-  color:white;
-  background: gray;
-  -webkit-box-shadow: 3px 4px 5px 0px rgba(50, 50, 50, 0.5);
-  -moz-box-shadow:    3px 4px 5px 0px rgba(50, 50, 50, 0.5);
-  box-shadow:         3px 4px 5px 0px rgba(50, 50, 50, 0.5);
+  color: gray;
+  float: left;
+  margin-right: 5px;
+  border-radius: 7px;
+  border: 1px solid gray;
 }
 .top-panel-repeat
 {
@@ -1543,14 +1558,12 @@ label
 .example-1
 {
   width: 40px;
-  height: 40px;
 }
 .example-1 input[type=file]
 {
   outline:0;
   opacity:0;
   width: 40px;
-  height: 40px;
   pointer-events: none;
   user-select:none
 }
@@ -1804,4 +1817,63 @@ label
 .calendar-properties
 {
 
+}
+.any-list-custom .custom-dropdown
+{
+  display: none;
+}
+.any-list-custom:hover .custom-dropdown, .any-list-custom.active .custom-dropdown
+{
+  display: block;
+}
+.btn-access-popover
+{
+  display: none;
+}
+.btn-access-popover.showb
+{
+  display: table;
+}
+.btn-access-popover
+{
+  display: none;
+}
+.btn-access-popover.showb
+{
+  display: table;
+}
+.right-click-menu
+{
+  display: none;
+}
+.right-click-menu.contextmenuactive
+{
+  display: block;
+}
+#right-click-menu{
+  background: #FAFAFA;
+  border: 1px solid #BDBDBD;
+  box-shadow: 0 2px 2px 0 rgba(0,0,0,.14),0 3px 1px -2px rgba(0,0,0,.2),0 1px 5px 0 rgba(0,0,0,.12);
+  display: block;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  position: absolute;
+  width: 250px;
+  z-index: 999999;
+}
+
+#right-click-menu li {
+  border-bottom: 1px solid #E0E0E0;
+  margin: 0;
+  padding: 5px 35px;
+}
+
+#right-click-menu li:last-child {
+  border-bottom: none;
+}
+
+#right-click-menu li:hover {
+  background: #1E88E5;
+  color: #FAFAFA;
 }

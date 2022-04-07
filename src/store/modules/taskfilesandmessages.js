@@ -1,6 +1,7 @@
 import {
   MESSAGES_REQUEST,
   CREATE_MESSAGE_REQUEST,
+  DELETE_MESSAGE_REQUEST,
   MESSAGES_ERROR,
   MESSAGES_SUCCESS,
   REFRESH_MESSAGES
@@ -126,6 +127,25 @@ const actions = {
             group: 'api',
             title: 'REST API Error, please make screenshot',
             action: CREATE_MESSAGE_REQUEST,
+            text: err.response.data
+          }, 15000)
+          reject(err)
+        })
+    })
+  },
+  [DELETE_MESSAGE_REQUEST]: ({ commit, dispatch }, data) => {
+    return new Promise((resolve, reject) => {
+      commit(MESSAGES_REQUEST)
+      const url = 'https://web.leadertask.com/api/v1/tasksmsgs?uid=' + data.uid
+      axios({ url: url, method: 'DELETE' })
+        .then(resp => {
+          resolve(resp)
+          commit(DELETE_MESSAGE_REQUEST, data)
+        }).catch(err => {
+          notify({
+            group: 'api',
+            title: 'REST API Error, please make screenshot',
+            action: DELETE_MESSAGE_REQUEST,
             text: err.response.data
           }, 15000)
           reject(err)

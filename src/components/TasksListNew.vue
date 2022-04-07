@@ -8,19 +8,23 @@
     button-label="Delete"
     @confirm="removeTask(lastSelectedTaskUid)"
   >
-    <p class="text-center">
-      Do you really wanna delete this task?
+    <p class="text-center" v-if="storeTasks[lastSelectedTaskUid]">
+      Do you really wanna delete <strong>"{{ storeTasks[lastSelectedTaskUid].info.name }}"</strong> task?
+      <span
+        v-if="storeTasks[lastSelectedTaskUid].info.has_children">
+        Children will also be affected!
+      </span>
     </p>
   </modal-box-confirm>
 
   <!-- Add task input -->
   <div
-    v-if="!DONT_SHOW_TASK_INPUT_UIDS[taskListSource.uid]"
+    v-if="taskListSource && !DONT_SHOW_TASK_INPUT_UIDS[taskListSource.uid]"
     class="fixed-create"
     :class="newConfig.listHasChildren ? 'pl-8' : 'pl-0'"
   >
     <div
-      class="flex items-center bg-gray-600 dark:bg-gray-700 bg-opacity-75 rounded-xl"
+      class="flex items-center bg-gray-600 dark:bg-gray-700 bg-opacity-70 rounded-xl"
     >
       <div
         class="flex items-center pl-3"
@@ -54,7 +58,7 @@
       <control
         ref="root"
         v-model="createTaskText"
-        class="w-full text-white fixed"
+        class="w-full text-white"
         :placeholder="'Enter task name'"
         borderless
         transparent
@@ -106,11 +110,11 @@
         :id="props.node.info.uid"
         class="group task-node flex-col items-center w-full bg-white p-2 rounded-xl dark:bg-gray-900 dark:border-gray-700 border border-gray-300 my-0.5 relative"
         :style="{ backgroundColor: colors[props.node.info.uid_marker] ? colors[props.node.info.uid_marker].back_color : '' }"
-        :class="{ 'bg-gray-200 dark:bg-gray-900': (props.node.info.status == 1 || props.node.info.status == 7) && props.node.info.uid_marker == '00000000-0000-0000-0000-000000000000', 'ring-2 ring-orange-400 border border-orange-400': props.node.id === lastSelectedTaskUid || selectedTasks[props.node.id]}"
+        :class="{ 'bg-gray-200 dark:bg-gray-800': (props.node.info.status == 1 || props.node.info.status == 7) && props.node.info.uid_marker == '00000000-0000-0000-0000-000000000000', 'ring-2 ring-orange-400 border border-orange-400': props.node.id === lastSelectedTaskUid || selectedTasks[props.node.id]}"
       >
         <Transition>
           <div
-            class="absolute hidden group-hover:flex right-2 top-2 bg-gray-200 rounded-lg items-cetner justify-center py-0.5 px-3"
+            class="absolute hidden group-hover:flex right-2 top-2 bg-gray-200 dark:bg-gray-800 rounded-lg items-cetner justify-center py-0.5 px-3"
             :style="{ backgroundColor: colors[props.node.info.uid_marker] ? colors[props.node.info.uid_marker].back_color : '' }"
           >
             <Icon
@@ -135,7 +139,7 @@
                   <!-- Set task for tomorrow -->
                   <div
                     v-if="props.node.info.uid_customer == user.current_user_uid"
-                    class="flex cursor-pointer items-center hover:bg-gray-100 py-0.5 px-1.5 rounded-xl"
+                    class="flex cursor-pointer items-center hover:bg-gray-100 hover:dark:bg-stone-800 py-0.5 px-1.5 rounded-xl"
                     @click="moveTaskTomorrow(props.node.info)"
                   >
                     <Icon
@@ -150,7 +154,7 @@
 
                   <!-- Copy task name -->
                   <div
-                    class="flex cursor-pointer items-center hover:bg-gray-100 py-0.5 px-1.5 rounded-xl"
+                    class="flex cursor-pointer items-center hover:bg-gray-100 hover:dark:bg-stone-800 py-0.5 px-1.5 rounded-xl"
                     @click="copyTaskName(props.node.info); close();"
                   >
                     <Icon
@@ -166,7 +170,7 @@
                   <!-- Copy task -->
                   <div
                     class="flex items-center py-0.5 px-1.5 rounded-xl"
-                    :class="{ 'cursor-pointer': !copiedTasks[props.node.info.uid], 'hover:bg-gray-100': !copiedTasks[props.node.info.uid], 'text-gray-200': copiedTasks[props.node.info.uid] }"
+                    :class="{ 'cursor-pointer': !copiedTasks[props.node.info.uid], 'hover:bg-gray-100 hover:dark:bg-stone-800': !copiedTasks[props.node.info.uid], 'text-gray-200': copiedTasks[props.node.info.uid] }"
                     @click="copyTask(props.node.info)" >
                     <Icon
                       :path="copy.path"
@@ -182,7 +186,7 @@
                   <!-- Paste task -->
                   <div
                     v-if="Object.keys(copiedTasks).length"
-                    class="flex cursor-pointer items-center py-0.5 px-1.5 rounded-xl"
+                    class="flex cursor-pointer items-center py-0.5 px-1.5 rounded-xl hover:dark:bg-stone-800"
                     @click="pasteCopiedTasks(props.node.id)"
                   >
                     <Icon
@@ -198,7 +202,7 @@
                   <!-- Cut task -->
                   <div
                     v-if="props.node.info.uid_customer == user.current_user_uid"
-                    class="flex cursor-pointer items-center hover:bg-gray-100 py-0.5 px-1.5 rounded-xl"
+                    class="flex cursor-pointer items-center hover:bg-gray-100 hover:dark:bg-stone-800 py-0.5 px-1.5 rounded-xl"
                     @click="cutTask(props.node.info); close();"
                   >
                     <Icon
@@ -214,7 +218,7 @@
                   <!-- Delete task -->
                   <div
                     v-if="props.node.info.uid_customer == user.current_user_uid"
-                    class="flex cursor-pointer items-center hover:bg-gray-100 py-0.5 px-1.5 rounded-xl"
+                    class="flex cursor-pointer items-center hover:bg-gray-100 hover:dark:bg-stone-800 py-0.5 px-1.5 rounded-xl"
                     @click="showConfirm = true;"
                   >
                     <Icon
@@ -243,7 +247,6 @@
         <!-- Name, Status -->
         <div
           class="flex"
-          :class="props.node.info.focus ? 'justify-between' : ''"
         >
           <div
             class="flex items-center"
@@ -264,7 +267,7 @@
                   >
                     <div
                       v-if="showStatusOrNot(props.node.info.type, taskStatus - 1) && props.node.info.status != taskStatus - 1"
-                      class="flex cursor-pointer items-center hover:bg-gray-100 py-0.5 px-1.5 rounded-xl"
+                      class="flex cursor-pointer items-center hover:bg-gray-100 hover:dark:bg-stone-800 py-0.5 px-1.5 rounded-xl"
                       @click="changeTaskStatus(props.node.info.uid, taskStatus - 1)"
                     >
                       <div
@@ -319,20 +322,12 @@
               placeholder="Enter task name"
               :noNL="true"
               :noHTML="true"
-              :class="{ 'text-gray-500': props.node.info.status == 1 || props.node.info.status == 7, 'line-through': props.node.info.status == 1 || props.node.info.status == 7, 'font-extrabold': props.node.info.readed == 0, 'text-gray-300': props.node.info._justCreated }"
+              :class="{ 'text-gray-500': props.node.info.status == 1 || props.node.info.status == 7, 'line-through': props.node.info.status == 1 || props.node.info.status == 7, 'font-extrabold': props.node.info.readed == 0 }"
               :style="{ color: colors[props.node.info.uid_marker] ? colors[props.node.info.uid_marker].fore_color : '' }"
               @returned="updateTask(props.node.info)"
               @blur="updateTask(props.node.info)"
             />
           </div>
-          <Icon
-            v-if="props.node.info.focus == '1'"
-            :path="taskfocus.path"
-            class="text-red-600 float-right"
-            :box="taskfocus.viewBox"
-            :width="taskfocus.width"
-            :height="taskfocus.height"
-          />
         </div>
 
         <!-- Tags, Overdue, Customer, Performer -->
@@ -343,14 +338,14 @@
           <div
             v-if="props.node.info.uid_customer != '00000000-0000-0000-0000-000000000000' && employees[props.node.info.uid_customer] && props.node.info.uid_customer != user.current_user_uid"
             class="p-1 px-2 text-xs text-white bg-red-500 rounded-lg mr-1 flex items-center"
-            :class="{ 'bg-gray-400': user.current_user_email != props.node.info.email_performer, 'bg-opacity-50': props.node.info.status == 1 || props.node.info.status == 7 }"
+            :class="{ 'bg-gray-400 dark:bg-gray-700': user.current_user_email != props.node.info.email_performer, 'bg-opacity-50': props.node.info.status == 1 || props.node.info.status == 7 }"
           >
             {{ employees[props.node.info.uid_customer].name }}
           </div>
           <div
             v-if="props.node.info.email_performer && employeesByEmail[props.node.info.email_performer] && user.current_user_email != props.node.info.email_performer && employees[props.node.info.uid_customer].email != props.node.info.email_performer"
             class="p-1 px-2 text-xs text-white rounded-lg mr-1 flex items-center"
-            :class="{ 'bg-gray-400': user.current_user_email != props.node.info.email_performer, 'bg-green-500': user.current_user_uid == props.node.info.uid_customer, 'bg-opacity-50': props.node.info.status == 1 || props.node.info.status == 7 }"
+            :class="{ 'bg-gray-400 dark:bg-gray-700': user.current_user_email != props.node.info.email_performer, 'bg-green-500': user.current_user_uid == props.node.info.uid_customer, 'bg-opacity-50': props.node.info.status == 1 || props.node.info.status == 7 }"
           >
             <Icon
               v-if="!props.node.info.performerreaded"
@@ -396,7 +391,7 @@
             </div>
           </div>
           <div
-            v-if="props.node.info.uid_project != '00000000-0000-0000-0000-000000000000' && projects[props.node.info.uid_project]"
+            v-if="props.node.info.uid_project != '00000000-0000-0000-0000-000000000000' && projects[props.node.info.uid_project] && props.node.info.uid_project !== taskListSource.param"
             class="p-1 px-2 text-xs text-white bg-yellow-400 rounded-lg mr-1 flex items-center"
             :class="{ 'bg-opacity-50': props.node.info.status == 1 || props.node.info.status == 7 }"
           >
@@ -411,9 +406,9 @@
           </div>
         </div>
 
-        <!-- Icons, Access, Messages, Files, Data, Checklist -->
+        <!-- Icons, Access, Messages, Files, Data, Checklist, Focus -->
         <div
-          v-if="props.node.info.term_customer || props.node.info.checklist || props.node.info.has_files || props.node.info.has_msgs || props.node.info.comment"
+          v-if="props.node.info.term_customer || props.node.info.checklist || props.node.info.has_files || props.node.info.has_msgs || props.node.info.comment || props.node.info.focus"
           class="flex"
         >
           <div
@@ -489,7 +484,7 @@
             />
           </div>
           <div
-            v-if="props.node.info.comment"
+            v-if="props.node.info.comment.replace(/\r?\n|\r/g, '')"
             class="bg-gray-200 dark:bg-gray-700 rounded px-1.5 mr-1 mt-1.5"
             :style="{backgroundColor: colors[props.node.info.uid_marker] ? colors[props.node.info.uid_marker].back_color : '' }"
           >
@@ -497,6 +492,19 @@
               :path="taskcomment.path"
               class="cursor-pointer text-gray-600 dark:text-white"
               :box="taskcomment.viewBox"
+              :width="13"
+              :height="12"
+            />
+          </div>
+          <div
+            v-if="props.node.info.focus"
+            class="bg-gray-200 dark:bg-gray-700 rounded px-1.5 mr-1 mt-1.5"
+            :style="{backgroundColor: colors[props.node.info.uid_marker] ? colors[props.node.info.uid_marker].back_color : '' }"
+          >
+            <Icon
+              :path="taskfocus.path"
+              class="cursor-pointer text-red-600 dark:text-white my-auto"
+              :box="taskfocus.viewBox"
               :width="13"
               :height="12"
             />
@@ -520,6 +528,7 @@ import contenteditable from 'vue-contenteditable'
 
 import * as TASK from '@/store/actions/tasks'
 
+/* Icons */
 import file from '@/icons/file.js'
 import inaccess from '@/icons/inaccess.js'
 import msgs from '@/icons/msgs.js'
@@ -544,6 +553,7 @@ import fortomorrow from '@/icons/for-tomorrow.js'
 import copy from '@/icons/copy.js'
 import cut from '@/icons/cut.js'
 import bin from '@/icons/bin.js'
+/* /Icons */
 
 export default {
   components: {
@@ -775,13 +785,15 @@ export default {
       store.dispatch(
         TASK.CHANGE_TASK_DATE,
         {
-          uid: task.uid,
-          str_date_begin: getTodaysDate(tomorrow, false),
-          str_date_end: getTodaysDate(tomorrow, false),
-          str_time_begin: '00:00',
-          str_time_end: '23:59'
+          uid_task: task.uid,
+          str_date_begin: getTodaysDate(tomorrow) + 'T00:00:00',
+          str_date_end: getTodaysDate(tomorrow) + 'T23:59:59',
+          reset: 0
         }
       )
+        .then(() => {
+          store.commit(TASK.REMOVE_TASK, task.uid)
+        })
     }
 
     const copyTaskName = (task) => {
@@ -804,7 +816,7 @@ export default {
       const taskName = document.getElementById(uid).querySelector('.taskName')
       const range = document.createRange()
       const sel = document.getSelection()
-      taskName.click({ preventScroll: false })
+      taskName.focus({ preventScroll: false })
       range.setStart(taskName, 1)
       range.collapse(true)
       sel.removeAllRanges()
@@ -817,7 +829,8 @@ export default {
       const newSubtask = {
         uid: uuidv4(),
         uid_customer: user.value.current_user_uid,
-        name: 'Task name',
+        email_performer: parent.email_performer,
+        name: '',
         status: 0,
         uid_parent: parent.uid,
         uid_project: parent.uid_project !== '00000000-0000-0000-0000-000000000000' ? parent.uid_project : '00000000-0000-0000-0000-000000000000',
@@ -830,7 +843,7 @@ export default {
         .then(() => {
           // TODO: somehow refactor it later
           // awful, but I can't find event when subtask node has been pushed into the DOM
-          setTimeout(() => { gotoNode(newSubtask.uid) }, 0)
+          setTimeout(() => { gotoNode(newSubtask.uid) }, 10)
         })
     }
 
@@ -1037,7 +1050,7 @@ export default {
   border-color: #00000042
 }
 
-.checkbox-wrapper.checked:after {
+.checkbox-wrapper. checked:after {
   transform: translate(.25em, .3365384615em) rotate(-45deg);
   width: .7em;
   height: .3em;
@@ -1049,7 +1062,7 @@ export default {
 .checkbox-wrapper.indeterminate:after {
   transform: translate(.25em, .3365384615em) rotate(0);
   width: .7em;
-  height: .3em;
+  height: . 3em;
   border: .125em solid #fff;
   border-top-style: none;
   border-right-style: none;
@@ -1218,5 +1231,12 @@ export default {
   z-index: 1;
   margin-bottom: 1px;
   padding-right: 10px;
+}
+
+[contenteditable=true]:empty:before{
+  content: attr(placeholder);
+  pointer-events: none;
+  display: block; /* For Firefox */
+  color: gray
 }
 </style>

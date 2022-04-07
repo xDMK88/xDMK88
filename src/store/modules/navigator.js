@@ -8,6 +8,8 @@ import {
   NAVIGATOR_REMOVE_TAG,
   NAVIGATOR_PUSH_COLOR,
   NAVIGATOR_REMOVE_COLOR,
+  NAVIGATOR_PUSH_EMPLOYEE,
+  NAVIGATOR_REMOVE_EMPLOYEE,
   PATCH_SETTINGS,
   PATCH_SETTINGS_SUCCESS,
   RESET_STATE_NAVIGATOR
@@ -412,6 +414,11 @@ const mutations = {
       state.navigator.colors.items.push(color)
     }
   },
+  [NAVIGATOR_PUSH_EMPLOYEE]: (state, employees) => {
+    for (const employee of employees) {
+      state.navigator.new_emps[state.navigator.new_emps.length - 1].items.push(employee)
+    }
+  },
   [NAVIGATOR_REMOVE_PROJECT]: (state, project) => {
     if (!project.uid_parent || project.uid_parent === '00000000-0000-0000-0000-000000000000') {
       // state.navigator.new_private_projects[0].items = arrayRemove(state.navigator.new_private_projects[0].items, project)
@@ -431,6 +438,15 @@ const mutations = {
           }
         }
       })
+    }
+  },
+  [NAVIGATOR_REMOVE_EMPLOYEE]: (state, employee) => {
+    for (const dep of state.navigator.new_emps) {
+      for (let i = 0; i < dep.items.length; i++) {
+        if (dep.items[i].uid === employee.uid) {
+          dep.items.splice(i, 1)
+        }
+      }
     }
   },
   [NAVIGATOR_REMOVE_TAG]: (state, tag) => {

@@ -1,11 +1,12 @@
 node_modules/
+dist/
+dist.zip
 public/hot
 public/storage
 storage/*.key
 package-lock.json
-dist/
-dist.zip
 vendor
+yarn.lock
 .env
 .env.backup
 .phpunit.result.cache

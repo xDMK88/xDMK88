@@ -571,6 +571,9 @@ const actions = {
   },
   [TASK.CHANGE_TASK_NAME]: ({ commit, dispatch }, data) => {
     return new Promise((resolve, reject) => {
+      if (data.value === '') {
+        data.value = 'Task name'
+      }
       const url = 'https://web.leadertask.com/api/v1/task/name?uid=' + data.uid + '&value=' + data.value
       axios({
         url: url,
@@ -639,9 +642,6 @@ const actions = {
   },
   [TASK.CHANGE_TASK_ACCESS]: ({ commit, dispatch }, data) => {
     return new Promise((resolve, reject) => {
-      if (data.value === '') {
-        data.value = null
-      }
       const url = 'https://web.leadertask.com/api/v1/task/common?uid=' + data.uid + '&value=' + data.value
       axios({
         url: url,
@@ -686,13 +686,11 @@ const actions = {
   [TASK.CHANGE_TASK_TAGS]: ({ commit, dispatch }, data) => {
     // tags
     return new Promise((resolve, reject) => {
-      commit(TASK.TAG_TASKS_REQUEST)
+      if (data.tags.length === '') {
+        data.tags = []
+      }
       const url = 'https://web.leadertask.com/api/v1/task/tags'
-      axios({
-        url: url,
-        method: 'PATCH',
-        data: { uid: data.uid, tags: data.tags }
-      })
+      axios({ url: url, method: 'PATCH', data: data })
         .then(resp => {
           commit(TASK.CHANGE_TASK_TAGS, data)
           resolve(resp)
@@ -709,6 +707,9 @@ const actions = {
   },
   [TASK.CHANGE_TASK_PERFORMER]: ({ commit, dispatch }, data) => {
     return new Promise((resolve, reject) => {
+      if (data.value !== '') {
+        data.value = null
+      }
       const url = 'https://web.leadertask.com/api/v1/task/performer?uid=' + data.uid + '&value=' + data.value
       axios({
         url: url,
@@ -731,7 +732,7 @@ const actions = {
   [TASK.CHANGE_TASK_FOCUS]: ({ commit, dispatch }, data) => {
     return new Promise((resolve, reject) => {
       commit(TASK.IN_FOCUS_TASKS_REQUEST)
-      const url = 'https://web.leadertask.com/api/v1/task/focus?uid=' + data.uid + '&focus=' + data.value
+      const url = 'https://web.leadertask.com/api/v1/task/focus?uid=' + data.uid + '&value=' + data.value
       axios({
         url: url,
         method: 'PATCH'
@@ -792,10 +793,11 @@ const actions = {
   },
   [TASK.CHANGE_TASK_COMMENT]: ({ commit, dispatch }, data) => {
     return new Promise((resolve, reject) => {
-      const url = 'https://web.leadertask.com/api/v1/task/comment?uid=' + data.uid + '&value=' + data.value
+      const url = 'https://web.leadertask.com/api/v1/task/comment?uid=' + data.uid
       axios({
         url: url,
-        method: 'PATCH'
+        method: 'PATCH',
+        data: 'comment= ' + encodeURIComponent(data.value)
       })
         .then(resp => {
           resolve(resp)
@@ -1078,7 +1080,7 @@ const mutations = {
     state.focus = data.value
   },
   [TASK.CHANGE_TASK_TAGS]: (state, data) => {
-    state.tags = data.value
+    state.selectedTag = data.value
   },
   [TASK.CHANGE_TASK_DATE]: (state, data) => {
     state.date.push(data.value)

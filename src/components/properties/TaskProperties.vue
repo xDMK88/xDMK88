@@ -133,32 +133,6 @@ export default {
           selectedTask.value.focus = value
         })
     }
-    const changeCheck = (check, value) => {
-      const el = check + '\n' + value + '\n\n'
-      const data = {
-        uid_task: selectedTask.value.uid,
-        checklist: el
-      }
-      store.dispatch(TASK.CHANGE_TASK_CHEKCLIST, data).then(
-        resp => {
-          selectedTask.value.checklist = value
-        })
-    }
-    const createChecklist = () => {
-      const value = '0\r\nЗадача 1\n\n1\nЗадача 2'
-      store.dispatch(TASK.CHANGE_TASK_CHEKCLIST, { uid_task: selectedTask.value.uid, value: value }).then(
-        resp => {
-          if (selectedTask.value.uid_customer === user.value.current_user_uid && selectedTask.value.status === 5) {
-            // to refine
-            selectedTask.value.status = 9
-          }
-          selectedTask.value.checklist = value
-        })
-    }
-    const editCheckName = () => {
-    }
-    const addCheckName = () => {
-    }
     const ClickTagsChange = () => {
       const data = {
         uid: selectedTask.value.uid,
@@ -360,7 +334,7 @@ export default {
     const editTaskName = () => {
       this.isEditableTaskName = true
     }
-    const removeTaskName = (event) => {
+    const removeEditTaskName = (event) => {
       this.isEditableTaskName = false
       const taskName = event.target.innerText
       selectedTask.value.name = taskName
@@ -380,16 +354,126 @@ export default {
         elmnt.scrollIntoView()
       }, 200)
     }
+    const createChecklist = () => {
+      this.checklistshow = true
+    }
+    const addCheckName = (value, event) => {
+      console.log(value)
+      console.log(event.target.innerText)
+      this.massel = '\n\n' + value + '\n' + event.target.innerText
+      console.log(this.massel)
+      const data = {
+        uid_task: selectedTask.value.uid,
+        checklist: this.massel
+      }
+      console.log(data)
+      store.dispatch(TASK.CHANGE_TASK_CHEKCLIST, data).then(
+        resp => {
+          if (selectedTask.value.uid_customer === user.value.current_user_uid && selectedTask.value.status === 5) {
+            // to refine
+            selectedTask.value.status = 9
+          }
+          selectedTask.value.checklist = value
+        })
+      this.checklistshowbutton = true
+      this.checklistshowelement = true
+    }
+    const addchecklistelement = () => {
+      if (this.massel !== '') {
+        this.massel += '\n\n' + 0 + '\n' + 'Новый чек'
+        console.log(this.massel)
+        const data = {
+          uid_task: selectedTask.value.uid,
+          checklist: this.massel
+        }
+        store.dispatch(TASK.CHANGE_TASK_CHEKCLIST, data).then(
+          resp => {
+            if (selectedTask.value.uid_customer === user.value.current_user_uid && selectedTask.value.status === 5) {
+              // to refine
+              selectedTask.value.checklist = this.massel
+              selectedTask.value.status = 9
+            }
+          })
+      } else {
+        selectedTask.value.checklist += '\n\n' + 0 + '\n' + 'Новый чек'
+        const data = {
+          uid_task: selectedTask.value.uid,
+          checklist: selectedTask.value.checklist
+        }
+        store.dispatch(TASK.CHANGE_TASK_CHEKCLIST, data).then(
+          resp => {
+            if (selectedTask.value.uid_customer === user.value.current_user_uid && selectedTask.value.status === 5) {
+              // to refine
+              selectedTask.value.checklist = data.checklist
+              selectedTask.value.status = 9
+            }
+          })
+      }
+    }
+    const editvaluechecklist = (value, event) => {
+      console.log(event.target.innerText)
+      console.log(this.massel)
+      if (event.target.innerText !== '') {
+        selectedTask.value.checklist = this.massel
+        const data = {
+          uid_task: selectedTask.value.uid,
+          checklist: selectedTask.value.checklist
+        }
+        store.dispatch(TASK.CHANGE_TASK_CHEKCLIST, data).then(
+          resp => {
+            if (selectedTask.value.uid_customer === user.value.current_user_uid && selectedTask.value.status === 5) {
+              // to refine
+              selectedTask.value.status = 9
+            }
+          })
+      } else {
+        const data = {
+          uid_task: selectedTask.value.uid,
+          checklist: ''
+        }
+        store.dispatch(TASK.CHANGE_TASK_CHEKCLIST, data).then(
+          resp => {
+            if (selectedTask.value.uid_customer === user.value.current_user_uid && selectedTask.value.status === 5) {
+              // to refine
+              selectedTask.value.status = 9
+            }
+          })
+      }
+    }
+    const changeCheckboxChecklist = (check, value) => {
+      this.massel += '\n\n' + check + '\n' + value
+      const data = {
+        uid_task: selectedTask.value.uid,
+        checklist: this.massel
+      }
+      store.dispatch(TASK.CHANGE_TASK_CHEKCLIST, data).then(
+        resp => {
+          selectedTask.value.checklist = value
+        })
+    }
+    const checklistedit = () => {
+      this.checklisteditable = true
+    }
+    const removeEditCheckList = () => {
+      this.checklisteditable = false
+    }
+    const handlercontextmenu = () => {
+    }
     return {
+      handlercontextmenu,
+      addchecklistelement,
+      createChecklist,
+      changeCheckboxChecklist,
+      addCheckName,
+      checklistedit,
+      removeEditCheckList,
+      editvaluechecklist,
       scrollDown,
       editTaskName,
-      removeTaskName,
+      removeEditTaskName,
       editcomment,
       removecomment,
       addsubmit,
-      editCheckName,
-      createChecklist,
-      addCheckName,
       setCursorPosition,
       showAllMessages,
       copyurl,
@@ -408,7 +492,6 @@ export default {
       changeColors,
       changeEmployee,
       changeFocus,
-      changeCheck,
       changeComment,
       handleInput,
       resetFocusCalendar,
@@ -418,6 +501,7 @@ export default {
       resetAccess,
       resetEmployes,
       resetCalendar,
+      massel: '',
       viewMenu: false,
       top: '0px',
       left: '0px',
@@ -489,7 +573,7 @@ export default {
       tabs: [],
       defaultDate: selectedTask.value.term_customer,
       isActive: false,
-      checklisttext: selectedTask.value.checklist.split('\n\n')[0],
+      checklisttext: '',
       SeriesType: selectedTask.value.SeriesType,
       SeriesAfterCount: selectedTask.value.SeriesAfterCount,
       SeriesAfterType: selectedTask.value.SeriesAfterType,
@@ -506,7 +590,13 @@ export default {
       SeriesYearDayOfWeek: selectedTask.value.SeriesYearDayOfWeek,
       selectedTaskcomment: selectedTask.value.comment,
       ActiveSelect: selectedTask.value.SeriesMonthType,
-      ActiveYartype: selectedTask.value.SeriesYearType
+      ActiveYartype: selectedTask.value.SeriesYearType,
+      checklisteditable: false,
+      timeEditStart: false,
+      timeEditEnd: false,
+      checklistshow: false,
+      checklistshowbutton: false,
+      checklistshowelement: false
     }
   },
   mounted () {
@@ -629,7 +719,7 @@ export default {
             @blur="changeName($event)"
             @keyup="changeName($event)"
             @focus="this.$refs.TaskName.focus()"
-            @focusout="removeTaskName($event)"
+            @focusout="removeEditTaskName($event)"
             v-html="selectedTask.name.replaceAll('\n','<br/>')"
           />
         </strong>
@@ -993,6 +1083,13 @@ export default {
                   datePicker.updateOnInput="true"
                 >
                   <template v-slot:footer>
+                    <div class="form-group display-none">
+                      <div :contenteditable="timeEditStart"></div>
+                      <div v-for="(key, value) in 23" :key="value">
+                        <div v-if="key<10">0{{key}}:00</div>
+                        <div v-else>{{key}}:00</div>
+                      </div>
+                    </div>
                     <div class="">
                       <button @click="handleInput" @click.stop="close" class="btn-save-popover">Сохранить</button>
                     </div>
@@ -2173,26 +2270,45 @@ export default {
             v-for="(key,value) in selectedTask.checklist.replace(/[\r]/g,' ').split('\n\n')"
             :key="value"
           >
+            <div v-if="key!==''">
             <div v-if="selectedTask.checklist.split('\n\n')[value]!==''">
-              <span v-if="selectedTask.checklist.split('\n\n')[value][0]==='1'">
+              <span v-if="selectedTask.checklist.split('\n\n')[value][0]==='1' && selectedTask.checklist.split('\n\n')[value][1] !== ''">
                 <del> <input
-                  type="checkbox"
-                  value="value" v-model="checklisttext"
+                  type="checkbox" ref="checknew"
+                  value="1"
                   checked="checked"
-                  @click="changeCheck(0, '\n' + selectedTask.checklist.split('\n\n')[value].replace('1',''))"
+                  @click="editvaluechecklist(this.$refs.checknew.value, $event)"
                 />&nbsp;{{selectedTask.checklist.split('\n\n')[value].replace('1','')}}</del>
               </span>
-              <span v-else><input
-                type="checkbox"
-                value="value" v-model="checklisttext"
-                @click="changeCheck(1, + '\n' + selectedTask.checklist.split('\n\n')[value].replace('0',''))"
-              >&nbsp;{{ selectedTask.checklist.split('\n\n')[value].replace('0','') }}</span>
+              <span v-else @click="checklistedit"><input
+                type="checkbox" ref="checknew"
+                value="0"
+                @click="editvaluechecklist(this.$refs.checknew.value, $event)"
+              />&nbsp;<span :contenteditable="checklisteditable" @focusout="removeEditCheckList" @keyup="editvaluechecklist(this.$refs.checknew.value, $event)">{{ selectedTask.checklist.split('\n\n')[value].replace('0','') }}</span></span>
+            </div>
             </div>
           </li>
-          <li class="display-none"><input type="checkbox" value="0" ref="checknew"><div contenteditable="true" @keyup.enter="addCheckName($refs.checknew.value,$event)">Новый чек</div></li>
+          <li v-for="(key,value) in massel.split('\n\n')" :key="value" class="add-new-check" :class="{checklistnew:checklistshowelement}">
+              <span @click="checklistedit"><input
+                type="checkbox" ref="checknew"
+                :value="0"
+                @click="editvaluechecklist(this.$refs.checknew.value, $event)"
+              />&nbsp;<span :contenteditable="checklisteditable" @focusout="removeEditCheckList" @keyup="editvaluechecklist(this.$refs.checknew.value, $event)">{{ massel.split('\n\n')[value].replace('0','') }}</span></span>
+          </li>
+        </ul>
+        <button class="btn btn-transperant" @click="addchecklistelement">
+          Добавить
+        </button>
+      </div>
+      <div class="mt-3 checklist-custom">
+        <ul class="check-padding">
+        <li class="checklistadd" :class="{checklistnew:checklistshow}" @click="checklistedit">
+          <input type="checkbox" value="0" ref="checknew" /> &nbsp;
+          <span :contenteditable="checklisteditable" @focusout="removeEditCheckList" @keyup="addCheckName(this.$refs.checknew.value, $event)" data-placeholder="Новый чек" class="placeholderchecklist"></span>
+        </li>
         </ul>
         <div>
-          <button class="btn btn-transperant">
+          <button class="btn btn-transperant btn-addcheclist" :class="{checklistnew:checklistshowbutton}" @click="addchecklistelement">
             Добавить
           </button>
         </div>
@@ -2263,7 +2379,7 @@ export default {
                 class="chat-main"
               >
                 <div
-                  class="mt-1 msg-custom-chat-left text-sm bg-[#EDF7ED] dark:bg-gray-800 dark:text-gray-100"
+                  class="mt-1 msg-custom-chat-left text-sm bg-[#EDF7ED] dark:bg-gray-800 dark:text-gray-100" @contextmenu="handlercontextmenu"
                 >
                   <div v-html="key.msg.replaceAll('\n', '<br/>')" v-linkify:options="{ className: 'text-blue-600' }">
                   </div>
@@ -2336,7 +2452,7 @@ export default {
                 class="chat-main"
               >
                 <div
-                  class="mt-1 msg-custom-chat-right bg-[#FCEAEA] dark:bg-gray-800 text-sm dark:text-gray-100"
+                  class="mt-1 msg-custom-chat-right bg-[#FCEAEA] dark:bg-gray-800 text-sm dark:text-gray-100" @contextmenu="handlercontextmenu"
                 >
                   <div v-html="key.msg.replaceAll('\n', '<br/>')" v-linkify>
                   </div>

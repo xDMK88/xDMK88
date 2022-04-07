@@ -18,7 +18,7 @@ export default {
         if (selectedTask.value.tags.length > 0) {
           selectedTask.value.tags.splice(selectedTask.value.tags.indexOf(tags), 1)
         } else {
-          selectedTask.value.tags = []
+          selectedTask.value.tags = {}
         }
       }
     }

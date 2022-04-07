@@ -1870,3 +1870,46 @@ label
   background: #1E88E5;
   color: #FAFAFA;
 }
+.col-md-6
+{
+  width:50%;
+  float:left
+}
+.checklistadd
+{
+  display: none;
+}
+.checklistadd.checklistnew
+{
+  display: flex;
+}
+.add-new-check
+{
+  display: none;
+}
+.add-new-check.checklistnew
+{
+  display: flex;
+}
+.btn-addcheclist
+{
+  display: none;
+}
+.btn-addcheclist.checklistnew
+{
+  display: flex;
+}
+.placeholderchecklist
+{
+  position: relative;
+  top: -5px;
+}
+.placeholderchecklist:empty:before
+{
+  content:attr(data-placeholder);
+  color:gray
+}
+.checklist-list li
+{
+
+}

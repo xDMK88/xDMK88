@@ -833,7 +833,7 @@ const actions = {
   },
   [TASK.CHANGE_TASK_PARENT_AND_ORDER]: ({ commit, dispatch }, data) => {
     return new Promise((resolve, reject) => {
-      const url = 'https://web.leadertask.com/api/v1/task/parent?uid=' + data.uid + '&parent=' + data.parent + '&order' + data.order
+      const url = 'https://web.leadertask.com/api/v1/task/parent?uid=' + data.uid + '&parent=' + data.parent + '&order=' + data.order
       axios({
         url: url,
         method: 'PATCH'
@@ -905,6 +905,13 @@ const actions = {
 }
 
 const mutations = {
+  [TASK.REMOVE_TASK_FROM_LEAVES]: (state, taskUid) => {
+    for (let i = 0; i < state.newConfig.leaves.length; i++) {
+      if (taskUid === state.newConfig.leaves[i]) {
+        state.newConfig.leaves.splice(i, 1)
+      }
+    }
+  },
   [TASK.TASKS_REQUEST]: state => {
     state.status = 'loading'
   },
@@ -914,7 +921,7 @@ const mutations = {
     state.hasLoadedOnce = true
 
     Object.assign(state.newtasks, {})
-    Object.assign(state.newConfig, { roots: [], leaves: [], listHasChildren: false, dragAndDrop: false, keyboardNavigation: true })
+    Object.assign(state.newConfig, { roots: [], leaves: [], listHasChildren: false, dragAndDrop: true, keyboardNavigation: true })
 
     const nodes = {}
     for (const node of resp.data.tasks) {
@@ -931,7 +938,7 @@ const mutations = {
         info: node,
         children: node.has_children ? ['fake-uid'] : [],
         state: {
-          draggable: false
+          draggable: node.type === 1
         }
       }
     }
@@ -991,7 +998,7 @@ const mutations = {
       // even if copy, we would copy without children
       children: [],
       state: {
-        draggable: false,
+        draggable: true,
         disabled: false,
         checked: false
       }
@@ -1032,7 +1039,7 @@ const mutations = {
       children: [],
       state: {
         disabled: false,
-        draggable: false
+        draggable: true
       }
     }
     if (state.newtasks[task.uid_parent].children && state.newtasks[task.uid_parent].children.length) {

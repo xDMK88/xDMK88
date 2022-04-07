@@ -20,7 +20,7 @@
   <!-- Add task input -->
   <div
     v-if="taskListSource && !DONT_SHOW_TASK_INPUT_UIDS[taskListSource.uid]"
-    class="pr-3"
+    class="fixed-create"
     :class="newConfig.listHasChildren ? 'pl-8' : 'pl-0'"
   >
     <div
@@ -1273,6 +1273,14 @@ export default {
   --popper-theme-border-radius: 0.75rem;
   --popper-theme-padding: 10px;
   --popper-theme-box-shadow: 0 6px 30px -6px rgba(0, 0, 0, 0.25);
+}
+
+.fixed-create {
+  position: sticky;
+  top: 55px;
+  z-index: 1;
+  margin-bottom: 1px;
+  padding-right: 10px;
 }
 
 [contenteditable=true]:empty:before{

@@ -1,5 +1,5 @@
 {
-  "name": "LeaderTask Web 2.0",
+  "name": "leadertask-web",
   "version": "2.0.0",
   "scripts": {
     "dev": "vite --host",

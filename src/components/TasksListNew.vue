@@ -91,6 +91,7 @@
     </div>
   </div>
 
+  <pre class="text-[10px] leading-none font-bold text-pink-500">newConfig: {{ newConfig }}</pre>
   <!-- vue3-treeview -->
   <tree
     v-if="status == 'success'"
@@ -99,9 +100,10 @@
     class="mt-0.5"
     @nodeOpened="nodeExpanding"
     @nodeFocus="nodeSelected"
-    @nodeDragstart="nodeDragstart"
-    @nodeDragenter="nodeDragenter"
-    @nodeDragend="nodeDragend"
+    @nodeDragenter="nodeDragEnter"
+    @nodeDragleave="nodeDragLeave"
+    @nodeOver="nodeOver"
+    @nodeDragend="nodeDragEnd"
   >
     <template #before-input="props">
       <div
@@ -112,6 +114,12 @@
         :style="{ backgroundColor: colors[props.node.info.uid_marker] ? colors[props.node.info.uid_marker].back_color : '' }"
         :class="{ 'bg-gray-200 dark:bg-gray-800': (props.node.info.status == 1 || props.node.info.status == 7) && props.node.info.uid_marker == '00000000-0000-0000-0000-000000000000', 'ring-2 ring-orange-400 border border-orange-400': props.node.id === lastSelectedTaskUid || selectedTasks[props.node.id]}"
       >
+        <!--
+        <p class="text-[10px] leading-none">parent: {{ props.node.parent }}</p>
+        <pre class="text-[10px] leading-none font-bold text-yellow-500">children: {{ props.node.children  }}</pre>
+        <p class="text-[10px] leading-none">id: <strong>{{ props.node.id  }}</strong></p>
+        -->
+        <p class="text-[10px] leading-none mb-5">order_new: <strong>{{ props.node.info.order_new }}</strong></p>
         <Transition>
           <div
             class="absolute hidden group-hover:flex right-2 top-2 bg-gray-200 dark:bg-gray-800 rounded-lg items-cetner justify-center py-0.5 px-3"
@@ -565,17 +573,7 @@ export default {
     EmptyTasksListPics,
     contenteditable
   },
-  props: {
-    storeTasks: {
-      type: Object,
-      default () { return {} }
-    },
-    newConfig: {
-      type: Object,
-      default () { return {} }
-    }
-  },
-  setup () {
+  setup (props) {
     const store = useStore()
     const loadedTasks = computed(() => store.state.tasks.loadedTasks)
     const employees = computed(() => store.state.employees.employees)
@@ -586,6 +584,8 @@ export default {
     const status = computed(() => store.state.tasks.status)
     const localization = computed(() => store.state.localization.localization)
     const user = computed(() => store.state.user.user)
+    const newConfig = computed(() => store.state.tasks.newConfig)
+    const storeTasks = computed(() => store.state.tasks.newtasks)
     const isDark = computed(() => store.state.darkMode)
     const isPropertiesMobileExpanded = computed(() => store.state.isPropertiesMobileExpanded)
     const copiedTasks = computed(() => store.state.tasks.copiedTasks)
@@ -621,6 +621,14 @@ export default {
         .then(() => {
           store.commit(TASK.ADD_LOADED_TASK, arg.id)
           store.commit(TASK.UPDATE_NEW_TASK_LIST, store.state.tasks.subtasks.tasks)
+
+          // remove fake-uid from children array if subtasks are loaded
+          for (let i = 0; i < arg.children.length; i++) {
+            if (arg.children[i] === 'fake-uid') {
+              arg.children.splice(i, 1)
+            }
+          }
+
           for (const task of store.state.tasks.subtasks.tasks) {
             arg.children.push(task.uid)
           }
@@ -859,7 +867,7 @@ export default {
     const nodeSelected = (arg) => {
       store.commit('basic', { key: 'propertiesState', value: 'task' })
 
-      lastSelectedTaskUid.value = arg.info.uid
+      lastSelectedTaskUid.value = arg.id
       store.dispatch(TASK.SELECT_TASK, arg.info)
 
       if (!isPropertiesMobileExpanded.value && arg.info.name) {
@@ -867,39 +875,79 @@ export default {
       }
     }
 
-    const nodeDragstart = (node) => {
-      // console.log('dragged', node.dragged)
-      // console.log('target', node.target)
+    const nodeDragEnter = (node) => {
+      // console.log('drag enter')
+      // console.log(node)
     }
 
-    const nodeDragenter = (node) => {
-      // console.log('dragged', node.dragged)
-      // console.log('target', node.target)
+    const nodeOver = (node) => {
+      // console.log('drag over')
+      // console.log(node)
     }
 
-    const nodeDragend = (node) => {
+    const nodeDragLeave = (node) => {
+      // console.log('drag leave')
+      // console.log(node)
+    }
+
+    const nodeDragEnd = (node) => {
+      console.log('drag end')
       console.log(node)
-      console.log('NEW PARENT ', node.dragged.parentId)
-      console.log('OLD PARENT ', node.dragged.node.info.uid_parent)
-      if (node.dragged.parentId && node.dragged.parentId !== node.dragged.node.info.uid_parent) {
-        store.dispatch(
-          TASK.CHANGE_TASK_PARENT_AND_ORDER,
-          {
-            uid: node.dragged.node.id,
-            parent: node.dragged.parentId,
-            order: node.dragged.node.info.order_new
+      console.log('new parent ', storeTasks.value[node.target.node])
+      if (storeTasks.value[node.dragged.node.id]) {
+        // change order in children
+        if (storeTasks.value[node.dragged.node.id].parent) {
+          const parent = storeTasks.value[storeTasks.value[node.dragged.node.id].parent]
+          if (parent.children.length > 1) {
+            for (let i = 0; i < parent.children.length; i++) {
+              if (parent.children[i] === node.dragged.node.id) {
+                if (i === 0) {
+                  storeTasks.value[parent.children[i]].info.order_new = storeTasks.value[parent.children[i + 1]].info.order_new - 0.1
+                } else if (i > 0 && i !== parent.children.length - 1) {
+                  storeTasks.value[parent.children[i]].info.order_new = (storeTasks.value[parent.children[i - 1]].info.order_new + storeTasks.value[parent.children[i + 1]].info.order_new) / 2
+                } else {
+                  storeTasks.value[parent.children[i]].info.order_new = storeTasks.value[parent.children[i - 1]].info.order_new + 0.1
+                }
+              }
+            }
           }
-        )
+        } else {
+          // change order in root
+          if (newConfig.value.roots.length >= 1) {
+            for (let i = 0; i < newConfig.value.roots.length; i++) {
+              if (newConfig.value.roots[i] === node.dragged.node.id) {
+                if (i === 0) {
+                  storeTasks.value[newConfig.value.roots[i]].info.order_new = storeTasks.value[newConfig.value.roots[i + 1]].info.order_new - 0.1
+                } else if (i > 0 && i !== newConfig.value.roots.length - 1) {
+                  storeTasks.value[newConfig.value.roots[i]].info.order_new = (storeTasks.value[newConfig.value.roots[i - 1]].info.order_new + storeTasks.value[newConfig.value.roots[i + 1]].info.order_new) / 2
+                } else {
+                  storeTasks.value[newConfig.value.roots[i]].info.order_new = storeTasks.value[newConfig.value.roots[i - 1]].info.order_new + 0.1
+                }
+              }
+            }
+          }
+        }
       }
+      store.dispatch(
+        TASK.CHANGE_TASK_PARENT_AND_ORDER,
+        {
+          uid: node.dragged.node.id,
+          parent: node.dragged.node.parent ?? '00000000-0000-0000-0000-000000000000',
+          order: node.dragged.node.info.order_new ?? 0
+        }
+      )
     }
 
     return {
+      storeTasks,
+      newConfig,
       showConfirm,
       selectedTasks,
       clickAndShift,
-      nodeDragstart,
-      nodeDragenter,
-      nodeDragend,
+      nodeDragEnter,
+      nodeDragLeave,
+      nodeOver,
+      nodeDragEnd,
       isDark,
       status,
       tags: computed(() => store.state.tasks.tags),

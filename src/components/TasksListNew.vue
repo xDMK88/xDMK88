@@ -91,7 +91,9 @@
     </div>
   </div>
 
+  <!--
   <pre class="text-[10px] leading-none font-bold text-pink-500">newConfig: {{ newConfig }}</pre>
+  -->
   <!-- vue3-treeview -->
   <tree
     v-if="status == 'success'"
@@ -118,8 +120,8 @@
         <p class="text-[10px] leading-none">parent: {{ props.node.parent }}</p>
         <pre class="text-[10px] leading-none font-bold text-yellow-500">children: {{ props.node.children  }}</pre>
         <p class="text-[10px] leading-none">id: <strong>{{ props.node.id  }}</strong></p>
-        -->
         <p class="text-[10px] leading-none mb-5">order_new: <strong>{{ props.node.info.order_new }}</strong></p>
+        -->
         <Transition>
           <div
             class="absolute hidden group-hover:flex right-2 top-2 bg-gray-200 dark:bg-gray-800 rounded-lg items-cetner justify-center py-0.5 px-3"

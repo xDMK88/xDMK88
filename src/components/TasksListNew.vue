@@ -107,6 +107,13 @@
     @nodeOver="nodeOver"
     @nodeDragend="nodeDragEnd"
   >
+    <template #loading-slot>
+      <div class="flex-col w-full">
+        <div class="animate-pulse h-20 dark:bg-slate-900 bg-white my-1 border border-gray-300 dark:border-gray-700 rounded-xl" />
+        <div class="animate-pulse h-10 dark:bg-slate-900 bg-white my-1 border border-gray-300 dark:border-gray-700 rounded-xl" />
+        <div class="animate-pulse h-10 dark:bg-slate-900 bg-white my-1 border border-gray-300 dark:border-gray-700 rounded-xl" />
+      </div>
+    </template>
     <template #before-input="props">
       <div
         @click.shift="clickAndShift(props.node)"
@@ -119,7 +126,9 @@
         <!--
         <p class="text-[10px] leading-none">parent: {{ props.node.parent }}</p>
         <pre class="text-[10px] leading-none font-bold text-yellow-500">children: {{ props.node.children  }}</pre>
+        <pre class="text-[10px] leading-none font-bold text-rose-500">state: {{ props.node.state }}</pre>
         <p class="text-[10px] leading-none">id: <strong>{{ props.node.id  }}</strong></p>
+        <p class="text-[10px] leading-none">type: {{ props.node.info.type }}</p>
         <p class="text-[10px] leading-none mb-5">order_new: <strong>{{ props.node.info.order_new }}</strong></p>
         -->
         <Transition>
@@ -634,8 +643,8 @@ export default {
           for (const task of store.state.tasks.subtasks.tasks) {
             arg.children.push(task.uid)
           }
+          arg.state.isLoading = false
         })
-      arg.state.isLoading = false
     }
 
     const countChecklist = (checklist) => {

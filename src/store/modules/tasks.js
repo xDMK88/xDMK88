@@ -976,7 +976,11 @@ const mutations = {
       state.newtasks[task.uid] = {
         info: task,
         children: [],
-        state: { checked: false, opened: false }
+        state: {
+          checked: false,
+          opened: false,
+          draggable: task.type === 1
+        }
       }
     }
   },

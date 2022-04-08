@@ -11,7 +11,7 @@ const props = defineProps({
   }
 })
 
-const pics = ['jpg', 'png', 'jpeg', 'git', 'bmp', 'gif']
+const pics = ['jpg', 'png', 'jpeg', 'git', 'bmp', 'gif', 'PNG', 'JPG', 'JPEG', 'BMP', 'GIF']
 const movies = ['mov', 'mp4']
 const docs = ['doc', 'xls', 'xlsx', 'txt', 'pdf']
 const audio = ['mp3', 'wav', 'm4a']

@@ -326,10 +326,12 @@ export default {
     const editcomment = () => {
       this.isEditable = true
     }
-    const removecomment = (event) => {
+    const removeeditcomment = () => {
       this.isEditable = false
       const message = event.target.innerText
       selectedTask.value.comment = message
+    }
+    const updatecomment = (event) => {
     }
     const editTaskName = () => {
       this.isEditableTaskName = true
@@ -359,12 +361,12 @@ export default {
     }
     const addCheckName = (value, event) => {
       console.log(value)
-      console.log(event.target.innerText)
-      this.massel = '\n\n' + value + '\n' + event.target.innerText
+      console.log(selectedTask.value.checklist)
+      selectedTask.value.checklist = '\n\n' + value + '\n' + event.target.innerText
       console.log(this.massel)
       const data = {
         uid_task: selectedTask.value.uid,
-        checklist: this.massel
+        checklist: selectedTask.value.checklist
       }
       console.log(data)
       store.dispatch(TASK.CHANGE_TASK_CHEKCLIST, data).then(
@@ -375,95 +377,130 @@ export default {
           }
           selectedTask.value.checklist = value
         })
-      this.checklistshowbutton = true
-      this.checklistshowelement = true
+      this.checklistshowbutton = false
+      this.checklistshowelement = false
+      this.checklistshow = false
     }
     const addchecklistelement = () => {
-      if (this.massel !== '') {
-        this.massel += '\n\n' + 0 + '\n' + 'Новый чек'
-        console.log(this.massel)
-        const data = {
-          uid_task: selectedTask.value.uid,
-          checklist: this.massel
-        }
-        store.dispatch(TASK.CHANGE_TASK_CHEKCLIST, data).then(
-          resp => {
-            if (selectedTask.value.uid_customer === user.value.current_user_uid && selectedTask.value.status === 5) {
-              // to refine
-              selectedTask.value.checklist = this.massel
-              selectedTask.value.status = 9
-            }
-          })
-      } else {
-        selectedTask.value.checklist += '\n\n' + 0 + '\n' + 'Новый чек'
-        const data = {
-          uid_task: selectedTask.value.uid,
-          checklist: selectedTask.value.checklist
-        }
-        store.dispatch(TASK.CHANGE_TASK_CHEKCLIST, data).then(
-          resp => {
-            if (selectedTask.value.uid_customer === user.value.current_user_uid && selectedTask.value.status === 5) {
-              // to refine
-              selectedTask.value.checklist = data.checklist
-              selectedTask.value.status = 9
-            }
-          })
-      }
-    }
-    const editvaluechecklist = (value, event) => {
-      console.log(event.target.innerText)
+      this.checklistshowelement = false
+      selectedTask.value.checklist += '\n\n' + 0 + '\n' + 'Новый чек'
       console.log(this.massel)
-      if (event.target.innerText !== '') {
-        selectedTask.value.checklist = this.massel
-        const data = {
-          uid_task: selectedTask.value.uid,
-          checklist: selectedTask.value.checklist
-        }
-        store.dispatch(TASK.CHANGE_TASK_CHEKCLIST, data).then(
-          resp => {
-            if (selectedTask.value.uid_customer === user.value.current_user_uid && selectedTask.value.status === 5) {
-              // to refine
-              selectedTask.value.status = 9
-            }
-          })
-      } else {
-        const data = {
-          uid_task: selectedTask.value.uid,
-          checklist: ''
-        }
-        store.dispatch(TASK.CHANGE_TASK_CHEKCLIST, data).then(
-          resp => {
-            if (selectedTask.value.uid_customer === user.value.current_user_uid && selectedTask.value.status === 5) {
-              // to refine
-              selectedTask.value.status = 9
-            }
-          })
-      }
-    }
-    const changeCheckboxChecklist = (check, value) => {
-      this.massel += '\n\n' + check + '\n' + value
       const data = {
         uid_task: selectedTask.value.uid,
-        checklist: this.massel
+        checklist: selectedTask.value.checklist
       }
       store.dispatch(TASK.CHANGE_TASK_CHEKCLIST, data).then(
         resp => {
-          selectedTask.value.checklist = value
+          if (selectedTask.value.uid_customer === user.value.current_user_uid && selectedTask.value.status === 5) {
+            // to refine
+            selectedTask.value.checklist = this.massel
+            selectedTask.value.status = 9
+          }
         })
+    }
+    const editvaluechecklist = (check, event) => {
+      if (event.target.innerText === '') {
+        //  const c = value
+        const bu = document.getElementById('childrenchecklist').parentElement.innerText.trim()
+        var delmass = ''
+        for (const values of bu.split('\n')) {
+          delmass += '\n\n' + check.trim() + '\n' + values.trim()
+        }
+        const data = {
+          uid_task: selectedTask.value.uid,
+          checklist: selectedTask.value.checklist = delmass
+        }
+        store.dispatch(TASK.CHANGE_TASK_CHEKCLIST, data).then(
+          resp => {
+            if (selectedTask.value.uid_customer === user.value.current_user_uid && selectedTask.value.status === 5) {
+              // to refine
+              selectedTask.value.status = 9
+            }
+          })
+      }
     }
     const checklistedit = () => {
       this.checklisteditable = true
     }
-    const removeEditCheckList = () => {
+    const removeEditCheckList = (check, event) => {
       this.checklisteditable = false
+      if (event.target.innerText !== '') {
+        //  const c = value
+        const bu = document.getElementById('childrenchecklist').parentElement.innerText.trim()
+        var mass = ''
+        for (const values of bu.split('\n')) {
+          if (mass === '') {
+            mass = '\n\n' + check.trim() + '\n' + values.trim()
+          } else {
+            mass += '\n\n' + check.trim() + '\n' + values.trim()
+          }
+        }
+        //  const old = check + '\n' + document.getElementById('oldvalue').innerText
+        //  const a = check + '\n' + event.target.innerText
+        const data = {
+          uid_task: selectedTask.value.uid,
+          checklist: selectedTask.value.checklist = mass.trim()
+        }
+        store.dispatch(TASK.CHANGE_TASK_CHEKCLIST, data).then(
+          resp => {
+            if (selectedTask.value.uid_customer === user.value.current_user_uid && selectedTask.value.status === 5) {
+              // to refine
+              selectedTask.value.status = 9
+            }
+          })
+      } else {
+        const bu = document.getElementById('childrenchecklist').parentElement.innerText.trim()
+        var delmass = ''
+        for (const values of bu.split('\n')) {
+          delmass += '\n\n' + check.trim() + '\n' + values.trim()
+        }
+        const data = {
+          uid_task: selectedTask.value.uid,
+          checklist: selectedTask.value.checklist = delmass
+        }
+        store.dispatch(TASK.CHANGE_TASK_CHEKCLIST, data).then(
+          resp => {
+            if (selectedTask.value.uid_customer === user.value.current_user_uid && selectedTask.value.status === 5) {
+              // to refine
+              selectedTask.value.status = 9
+            }
+          })
+      }
+    }
+    const changevaluechecklist = (check, uid) => {
+      console.log(this.$refs.checknew.checked)
+      const bu = document.getElementById('childrenchecklist').parentElement.innerText.trim()
+      var mass = ''
+      for (const values of bu.split('\n')) {
+        if (mass === '') {
+          mass = '\n\n' + check + '\n' + values.trim()
+        } else {
+          mass += '\n\n' + check + '\n' + values.trim()
+        }
+      }
+      console.log(mass)
+      //  const old = check + '\n' + document.getElementById('oldvalue').innerText
+      //  const a = check + '\n' + event.target.innerText
+      const data = {
+        uid_task: selectedTask.value.uid,
+        checklist: selectedTask.value.checklist = mass.trim()
+      }
+      store.dispatch(TASK.CHANGE_TASK_CHEKCLIST, data).then(
+        resp => {
+          if (selectedTask.value.uid_customer === user.value.current_user_uid && selectedTask.value.status === 5) {
+            // to refine
+            selectedTask.value.status = 9
+          }
+        })
     }
     const handlercontextmenu = () => {
     }
     return {
+      updatecomment,
+      changevaluechecklist,
       handlercontextmenu,
       addchecklistelement,
       createChecklist,
-      changeCheckboxChecklist,
       addCheckName,
       checklistedit,
       removeEditCheckList,
@@ -472,7 +509,7 @@ export default {
       editTaskName,
       removeEditTaskName,
       editcomment,
-      removecomment,
+      removeeditcomment,
       addsubmit,
       setCursorPosition,
       showAllMessages,
@@ -559,8 +596,8 @@ export default {
         timezone: 'Europe/Moscow'
       },
       range: {
-        start: new Date(),
-        end: new Date()
+        start: selectedTask.value.term_customer === '' ? new Date() : new Date(selectedTask.value.customer_date_begin),
+        end: selectedTask.value.term_customer === '' ? new Date() : new Date(selectedTask.value.customer_date_end)
       },
       masks: {
         weekdays: 'WW'
@@ -573,7 +610,6 @@ export default {
       tabs: [],
       defaultDate: selectedTask.value.term_customer,
       isActive: false,
-      checklisttext: '',
       SeriesType: selectedTask.value.SeriesType,
       SeriesAfterCount: selectedTask.value.SeriesAfterCount,
       SeriesAfterType: selectedTask.value.SeriesAfterType,
@@ -767,10 +803,6 @@ export default {
               <span
                 class="rounded"
               >Поручить</span>
-                <button @click="resetEmployes" class="btn-close-popover"><svg width="5" height="5" viewBox="0 0 16 15" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M14.8483 2.34833C15.317 1.8797 15.317 1.11991 14.8483 0.651277C14.3797 0.182647 13.6199 0.182647 13.1513 0.651277L7.99981 5.80275L2.84833 0.651277C2.3797 0.182647 1.61991 0.182647 1.15128 0.651277C0.682647 1.11991 0.682647 1.8797 1.15128 2.34833L6.30275 7.4998L1.15128 12.6513C0.682647 13.1199 0.682647 13.8797 1.15128 14.3483C1.61991 14.817 2.3797 14.817 2.84833 14.3483L7.99981 9.19686L13.1513 14.3483C13.6199 14.817 14.3797 14.817 14.8483 14.3483C15.317 13.8797 15.317 13.1199 14.8483 12.6513L9.69686 7.4998L14.8483 2.34833Z" fill="black" fill-opacity="0.5"/>
-              </svg>
-              </button>
             </div>
               <!-- Поручено на email -->
             <div
@@ -1056,7 +1088,6 @@ export default {
           arrow
           append-to-body="true"
           trigger="hover"
-          @mouseleave="resetFocusCalendar"
           :class="isDark ? 'dark' : 'light'"
           placement="bottom"
         >
@@ -2262,44 +2293,38 @@ export default {
       </div>
 
       <div
-        v-if="selectedTask.checklist"
+        v-if="selectedTask.checklist!==''"
         class="mt-3 checklist-custom"
       >
-        <ul class="check-padding">
+        <ul class="check-padding" id="childrenchecklist">
           <li
             v-for="(key,value) in selectedTask.checklist.replace(/[\r]/g,' ').split('\n\n')"
             :key="value"
           >
             <div v-if="key!==''">
             <div v-if="selectedTask.checklist.split('\n\n')[value]!==''">
-              <span v-if="selectedTask.checklist.split('\n\n')[value][0]==='1' && selectedTask.checklist.split('\n\n')[value][1] !== ''">
+              <span v-if="selectedTask.checklist.split('\n\n')[value][0]==='1'">
                 <del> <input
-                  type="checkbox" ref="checknew"
+                  type="checkbox" ref="checknewadd"
                   value="1"
-                  checked="checked"
-                  @click="editvaluechecklist(this.$refs.checknew.value, $event)"
-                />&nbsp;{{selectedTask.checklist.split('\n\n')[value].replace('1','')}}</del>
+                  :checked="{checked:selectedTask.checklist.split('\n\n')[value][0]==='1'}"
+                  @click="changevaluechecklist(0, 'uid' + value)"
+                />{{selectedTask.checklist.split('\n\n')[value].replace('1','')}}</del>
               </span>
               <span v-else @click="checklistedit"><input
-                type="checkbox" ref="checknew"
+                type="checkbox" ref="checknewremove"
                 value="0"
-                @click="editvaluechecklist(this.$refs.checknew.value, $event)"
-              />&nbsp;<span :contenteditable="checklisteditable" @focusout="removeEditCheckList" @keyup="editvaluechecklist(this.$refs.checknew.value, $event)">{{ selectedTask.checklist.split('\n\n')[value].replace('0','') }}</span></span>
+                @click="changevaluechecklist(1, 'uid' + value)"
+              />&nbsp;<span :contenteditable="checklisteditable" @focusout="removeEditCheckList(this.$refs.checknew.value, $event)" @keyup="editvaluechecklist(this.$refs.checknew.value, $event)">{{ selectedTask.checklist.split('\n\n')[value].replace('0','') }}</span></span>
             </div>
             </div>
-          </li>
-          <li v-for="(key,value) in massel.split('\n\n')" :key="value" class="add-new-check" :class="{checklistnew:checklistshowelement}">
-              <span @click="checklistedit"><input
-                type="checkbox" ref="checknew"
-                :value="0"
-                @click="editvaluechecklist(this.$refs.checknew.value, $event)"
-              />&nbsp;<span :contenteditable="checklisteditable" @focusout="removeEditCheckList" @keyup="editvaluechecklist(this.$refs.checknew.value, $event)">{{ massel.split('\n\n')[value].replace('0','') }}</span></span>
           </li>
         </ul>
-        <button class="btn btn-transperant" @click="addchecklistelement">
-          Добавить
-        </button>
+
       </div>
+      <button  v-if="selectedTask.checklist!==''" class="btn btn-transperant" @click="addchecklistelement">
+        Добавить
+      </button>
       <div class="mt-3 checklist-custom">
         <ul class="check-padding">
         <li class="checklistadd" :class="{checklistnew:checklistshow}" @click="checklistedit">
@@ -2321,11 +2346,11 @@ export default {
           ref="comment"
           :contenteditable="isEditable"
           data-placeholder="Добавить заметку..."
-          v-linkify:options="{ className: 'text-blue-600', tagName: 'a' }"
+          v-linkify:options="{ className: 'text-blue-600'}"
           @blur="changeComment($event)"
           @keyup="changeComment($event)"
           @focus="this.$refs.comment.focus()"
-          @focusout="removecomment($event)"
+          @focusout="removeeditcomment($event)"
         >
         </div>
       </div>

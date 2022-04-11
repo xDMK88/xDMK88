@@ -1020,6 +1020,7 @@ const mutations = {
         state.newConfig.leaves.push(node.uid)
       }
 
+      node._isEditable = false
       nodes[node.uid] = {
         info: node,
         children: node.has_children ? ['fake-uid'] : [],
@@ -1059,6 +1060,7 @@ const mutations = {
       if (!task.has_children) {
         state.newConfig.leaves.push(task.uid)
       }
+      task._isEditable = false
       state.newtasks[task.uid] = {
         info: task,
         children: [],
@@ -1083,6 +1085,7 @@ const mutations = {
     task._justCreated = false
     state.newConfig.leaves.push(task.uid)
     task.type = 1
+    task._isEditable = false
     state.newtasks[task.uid] = {
       info: task,
       // even if copy, we would copy without children

@@ -1920,3 +1920,11 @@ label
 {
 
 }
+.checkdellist
+{
+  text-decoration: none;
+}
+.checkdellist.linethoud
+{
+  text-decoration: line-through;
+}

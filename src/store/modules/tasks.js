@@ -901,6 +901,92 @@ const actions = {
           reject(err)
         })
     })
+  },
+  //  Повтор API
+  [TASK.RESET_REPEAT_CHANGE]: ({ commit, dispatch }, uid) => {
+    return new Promise((resolve, reject) => {
+      const url = 'https://web.leadertask.com/api/v1/taskrepeat/reset?uid=' + uid
+      axios({ url: url, method: 'PATCH' })
+        .then(resp => {
+          resolve(resp)
+        }).catch(err => {
+          notify({
+            group: 'api',
+            title: 'REST API Error, please make screenshot',
+            action: TASK.RESET_REPEAT_CHANGE,
+            text: err.response.data
+          }, 15000)
+          reject(err)
+        })
+    })
+  },
+  [TASK.EVERY_DAY_CHANGE]: ({ commit, dispatch }, data) => {
+    return new Promise((resolve, reject) => {
+      const url = 'https://web.leadertask.com/api/v1/taskrepeat/everyday?uid=' + data.uid
+      axios({ url: url, method: 'PATCH', data: data })
+        .then(resp => {
+          resolve(resp)
+        }).catch(err => {
+          notify({
+            group: 'api',
+            title: 'REST API Error, please make screenshot',
+            action: TASK.EVERY_DAY_CHANGE,
+            text: err.response.data
+          }, 15000)
+          reject(err)
+        })
+    })
+  },
+  [TASK.EVERY_WEEK_CHANGE]: ({ commit, dispatch }, data) => {
+    return new Promise((resolve, reject) => {
+      const url = 'https://web.leadertask.com/api/v1/taskrepeat/everyweek?uid=' + data.uid
+      axios({ url: url, method: 'PATCH', data: data })
+        .then(resp => {
+          resolve(resp)
+        }).catch(err => {
+          notify({
+            group: 'api',
+            title: 'REST API Error, please make screenshot',
+            action: TASK.EVERY_WEEK_CHANGE,
+            text: err.response.data
+          }, 15000)
+          reject(err)
+        })
+    })
+  },
+  [TASK.EVERY_MONTH_CHANGE]: ({ commit, dispatch }, data) => {
+    return new Promise((resolve, reject) => {
+      const url = 'https://web.leadertask.com/api/v1/taskrepeat/everymonth?uid=' + data.uid
+      axios({ url: url, method: 'PATCH', data: data })
+        .then(resp => {
+          resolve(resp)
+        }).catch(err => {
+          notify({
+            group: 'api',
+            title: 'REST API Error, please make screenshot',
+            action: TASK.EVERY_MONTH_CHANGE,
+            text: err.response.data
+          }, 15000)
+          reject(err)
+        })
+    })
+  },
+  [TASK.EVERY_YEAR_CHANGE]: ({ commit, dispatch }, data) => {
+    return new Promise((resolve, reject) => {
+      const url = 'https://web.leadertask.com/api/v1/taskrepeat/everyyear?uid=' + data.uid
+      axios({ url: url, method: 'PATCH', data: data })
+        .then(resp => {
+          resolve(resp)
+        }).catch(err => {
+          notify({
+            group: 'api',
+            title: 'REST API Error, please make screenshot',
+            action: TASK.EVERY_YEAR_CHANGE,
+            text: err.response.data
+          }, 15000)
+          reject(err)
+        })
+    })
   }
 }
 

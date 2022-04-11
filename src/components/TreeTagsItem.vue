@@ -11,19 +11,23 @@ export default {
     const selectedTask = computed(() => store.state.tasks.selectedTask)
     //  const tagselect = computed(() => store.state.tasks.tags)
     const changetags = (tags) => {
-      console.log(selectedTask.value.tags)
+      console.log(!selectedTask.value.tags.includes(tags))
       if (!selectedTask.value.tags.includes(tags)) {
         selectedTask.value.tags.push(tags)
       } else {
         if (selectedTask.value.tags.length > 0) {
-          selectedTask.value.tags.splice(selectedTask.value.tags.indexOf(tags), 1)
+          //  selectedTask.value.tags.splice(selectedTask.value.tags.indexOf(tags), 1)
+          //  selectedTask.value.tags.filter(v => v === tags)
+          console.log(selectedTask.value.tags)
         } else {
-          selectedTask.value.tags = {}
+          console.log(selectedTask.value.tags)
+          selectedTask.value.tags = []
         }
       }
     }
     return {
-      selectTags: [],
+      selectTags: selectedTask.value.tags,
+      selectBug: [],
       changetags,
       selectedTask: selectedTask,
       isOpen: false
@@ -147,7 +151,7 @@ export default {
         class="check-custom-empployee custom-checkbox"
         :value="model.uid"
         :id="model.uid"
-        v-model="selectedTask.tags"
+        v-model="selectTags"
         @click="changetags(model.uid)"
       >
       <label class="break-words" :for="model.uid">{{ model.name.substring(0, 15) }}</label>

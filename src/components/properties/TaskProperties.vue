@@ -8,7 +8,7 @@ import FileMessage from '@/components/properties/FileMessage.vue'
 import close from '@/icons/close.js'
 import TreeTagsItem from '@/components/TreeTagsItem.vue'
 import { CREATE_MESSAGE_REQUEST, DELETE_MESSAGE_REQUEST } from '@/store/actions/taskmessages'
-import { CREATE_FILES_REQUEST } from '@/store/actions/taskfiles'
+import { CREATE_FILES_REQUEST, FILES_REQUEST } from '@/store/actions/taskfiles'
 import * as TASK from '@/store/actions/tasks'
 import { copyText } from 'vue3-clipboard'
 import sanitizeHtml from 'sanitize-html'
@@ -170,14 +170,21 @@ export default {
       )
     }
     const createTaskFile = (event) => {
+      this.files = event.target.files
+      var formData = new FormData()
+      for (var i = 0; i < this.files.length; i++) {
+        var file = this.files[i]
+        formData.append('files[' + i + ']', file)
+      }
       const data = {
         uid_task: selectedTask.value.uid,
-        name: event.target.files[0]
+        name: formData
       }
       store.dispatch(CREATE_FILES_REQUEST, data).then(
         resp => {
           if (selectedTask.value.uid_customer === user.value.current_user_uid && selectedTask.value.status === 5) {
             // to refine
+            store.commit(FILES_REQUEST)
             selectedTask.value.status = 9
           }
           console.log(resp.data)
@@ -352,7 +359,6 @@ export default {
       this.infoComplete = true
       setTimeout(() => {
         var elmnt = document.getElementById('content').lastElementChild
-        console.log(elmnt.scrollHeight)
         elmnt.scrollIntoView()
       }, 200)
     }
@@ -360,15 +366,11 @@ export default {
       this.checklistshow = true
     }
     const addCheckName = (value, event) => {
-      console.log(value)
-      console.log(selectedTask.value.checklist)
-      selectedTask.value.checklist = '\n\n' + value + '\n' + event.target.innerText
-      console.log(this.massel)
+      selectedTask.value.checklist = value + '\n' + event.target.innerText
       const data = {
         uid_task: selectedTask.value.uid,
         checklist: selectedTask.value.checklist
       }
-      console.log(data)
       store.dispatch(TASK.CHANGE_TASK_CHEKCLIST, data).then(
         resp => {
           if (selectedTask.value.uid_customer === user.value.current_user_uid && selectedTask.value.status === 5) {
@@ -384,7 +386,7 @@ export default {
     const addchecklistelement = () => {
       this.checklistshowelement = false
       selectedTask.value.checklist += '\n\n' + 0 + '\n' + 'Новый чек'
-      console.log(this.massel)
+      console.log(selectedTask.value.checklist.split('\n'))
       const data = {
         uid_task: selectedTask.value.uid,
         checklist: selectedTask.value.checklist
@@ -419,71 +421,92 @@ export default {
           })
       }
     }
-    const checklistedit = () => {
-      this.checklisteditable = true
+    const checklistedit = (check) => {
+      if (check === 1) {
+        this.checklisteditable = false
+      } else {
+        this.checklisteditable = true
+      }
     }
     const removeEditCheckList = (check, event) => {
       this.checklisteditable = false
-      if (event.target.innerText !== '') {
-        //  const c = value
-        const bu = document.getElementById('childrenchecklist').parentElement.innerText.trim()
-        var mass = ''
-        for (const values of bu.split('\n')) {
-          if (mass === '') {
-            mass = '\n\n' + check.trim() + '\n' + values.trim()
-          } else {
-            mass += '\n\n' + check.trim() + '\n' + values.trim()
+      if (check !== 1) {
+        if (event.target.innerText !== '') {
+          const bu = document.getElementById('childrenchecklist').parentElement.innerText.trim()
+          var mass = ''
+          for (const values of bu.split('\n')) {
+            console.log(values.split('\n')[0])
+            if (mass === '') {
+              mass = check + '\n' + values.trim()
+            } else {
+              mass += '\n\n' + check + '\n' + values.trim()
+            }
           }
-        }
-        //  const old = check + '\n' + document.getElementById('oldvalue').innerText
-        //  const a = check + '\n' + event.target.innerText
-        const data = {
-          uid_task: selectedTask.value.uid,
-          checklist: selectedTask.value.checklist = mass.trim()
-        }
-        store.dispatch(TASK.CHANGE_TASK_CHEKCLIST, data).then(
-          resp => {
-            if (selectedTask.value.uid_customer === user.value.current_user_uid && selectedTask.value.status === 5) {
-              // to refine
-              selectedTask.value.status = 9
+          //  const old = check + '\n' + document.getElementById('oldvalue').innerText
+          //  const a = check + '\n' + event.target.innerText
+          const data = {
+            uid_task: selectedTask.value.uid,
+            checklist: selectedTask.value.checklist = mass
+          }
+          store.dispatch(TASK.CHANGE_TASK_CHEKCLIST, data).then(
+            resp => {
+              if (selectedTask.value.uid_customer === user.value.current_user_uid && selectedTask.value.status === 5) {
+                // to refine
+                selectedTask.value.status = 9
+              }
+            })
+        } else {
+          const bu = document.getElementById('childrenchecklist').parentElement.innerText.trim()
+          var delmass = ''
+          for (const values of bu.split('\n')) {
+            if (delmass === '') {
+              delmass = '\n\n' + check + '\n' + values.trim()
+            } else {
+              delmass += '\n\n' + check + '\n' + values.trim()
             }
-          })
-      } else {
-        const bu = document.getElementById('childrenchecklist').parentElement.innerText.trim()
-        var delmass = ''
-        for (const values of bu.split('\n')) {
-          delmass += '\n\n' + check.trim() + '\n' + values.trim()
+          }
+          const data = {
+            uid_task: selectedTask.value.uid,
+            checklist: selectedTask.value.checklist = delmass
+          }
+          store.dispatch(TASK.CHANGE_TASK_CHEKCLIST, data).then(
+            resp => {
+              if (selectedTask.value.uid_customer === user.value.current_user_uid && selectedTask.value.status === 5) {
+                // to refine
+                selectedTask.value.status = 9
+              }
+            })
         }
-        const data = {
-          uid_task: selectedTask.value.uid,
-          checklist: selectedTask.value.checklist = delmass
-        }
-        store.dispatch(TASK.CHANGE_TASK_CHEKCLIST, data).then(
-          resp => {
-            if (selectedTask.value.uid_customer === user.value.current_user_uid && selectedTask.value.status === 5) {
-              // to refine
-              selectedTask.value.status = 9
-            }
-          })
       }
     }
     const changevaluechecklist = (check, uid) => {
-      console.log(this.$refs.checknew.checked)
+      //  const bu = document.getElementById('childrenchecklist').parentElement.innerText.trim()
+      var checked = check === '0' ? '1' : '0'
+      //  console.log(selectedTask.value.checklist.split('\n')[uid])
+      //  console.log(checked)
+      //
+      console.log(selectedTask.value.checklist.split('\n')[0].replace('0', '1'))
       const bu = document.getElementById('childrenchecklist').parentElement.innerText.trim()
       var mass = ''
       for (const values of bu.split('\n')) {
-        if (mass === '') {
-          mass = '\n\n' + check + '\n' + values.trim()
+        console.log(bu.split('\n').indexOf(values))
+        if (bu.split('\n').indexOf(values) === uid) {
+          if (mass === '') {
+            mass = checked + '\n' + values.trim()
+          } else {
+            mass += '\n\n' + checked + '\n' + values.trim()
+          }
         } else {
-          mass += '\n\n' + check + '\n' + values.trim()
+          if (mass === '') {
+            mass = checked + '\n' + values.trim()
+          } else {
+            mass += '\n\n' + checked + '\n' + values.trim()
+          }
         }
       }
-      console.log(mass)
-      //  const old = check + '\n' + document.getElementById('oldvalue').innerText
-      //  const a = check + '\n' + event.target.innerText
       const data = {
         uid_task: selectedTask.value.uid,
-        checklist: selectedTask.value.checklist = mass.trim()
+        checklist: selectedTask.value.checklist = mass
       }
       store.dispatch(TASK.CHANGE_TASK_CHEKCLIST, data).then(
         resp => {
@@ -2275,7 +2298,7 @@ export default {
             >
              Показать только файлы
             </router-link>-->
-              <router-link
+              <router-link v-if="selectedTask.type===1"
                 to="/"
                 @click="showConfirm = true;"
                 class="
@@ -2291,7 +2314,6 @@ export default {
           </Transition>
         </div>
       </div>
-
       <div
         v-if="selectedTask.checklist!==''"
         class="mt-3 checklist-custom"
@@ -2303,19 +2325,15 @@ export default {
           >
             <div v-if="key!==''">
             <div v-if="selectedTask.checklist.split('\n\n')[value]!==''">
-              <span v-if="selectedTask.checklist.split('\n\n')[value][0]==='1'">
-                <del> <input
-                  type="checkbox" ref="checknewadd"
-                  value="1"
-                  :checked="{checked:selectedTask.checklist.split('\n\n')[value][0]==='1'}"
-                  @click="changevaluechecklist(0, 'uid' + value)"
-                />{{selectedTask.checklist.split('\n\n')[value].replace('1','')}}</del>
+              <span class="checkdellist" :class="{linethoud:selectedTask.checklist.split('\n\n')[value][0]==='1'}">
+                <input
+                  type="checkbox" ref="checknew"
+                  :value="selectedTask.checklist.split('\n\n')[value][0]"
+                  :checked="selectedTask.checklist.split('\n\n')[value][0]==='1'"
+                  @click="changevaluechecklist(this.$refs.checknew.value, value)"
+                /><span v-if="selectedTask.checklist.split('\n\n')[value][0]==='1'">{{selectedTask.checklist.split('\n\n')[value].replace('1','')}}</span>
+                  <span v-else @click="checklistedit"><span :contenteditable="checklisteditable" @focusout="removeEditCheckList(this.$refs.checknew.value, $event)">{{ selectedTask.checklist.split('\n\n')[value].replace('0','') }}</span></span>
               </span>
-              <span v-else @click="checklistedit"><input
-                type="checkbox" ref="checknewremove"
-                value="0"
-                @click="changevaluechecklist(1, 'uid' + value)"
-              />&nbsp;<span :contenteditable="checklisteditable" @focusout="removeEditCheckList(this.$refs.checknew.value, $event)" @keyup="editvaluechecklist(this.$refs.checknew.value, $event)">{{ selectedTask.checklist.split('\n\n')[value].replace('0','') }}</span></span>
             </div>
             </div>
           </li>
@@ -2558,6 +2576,7 @@ export default {
               <input
                 ref="file_attach"
                 type="file"
+                multiple="multiple"
                 name="file_attach"
                 @change="createTaskFile($event)"
               >
@@ -2568,7 +2587,6 @@ export default {
         v-model="taskMsg"
         class="form-control text-group-design task-msg dark:bg-gray-800 dark:text-gray-100"
         placeholder="Введите сообщение"
-        rows="3"
         @keydown.enter.exact.prevent="createTaskMsg"
         @keydown.enter.shift.exact.prevent="taskMsg += '\n'"
       ></textarea>

@@ -74,13 +74,11 @@ const actions = {
   },
   [CREATE_FILES_REQUEST]: ({ commit, dispatch }, data) => {
     return new Promise((resolve, reject) => {
-      const formData = new FormData()
-      formData.append('files', data.name)
-      const url = 'https://web.leadertask.com/api/v1/tasksfiles?uid_task=' + data.uid_task
+      const url = 'https://web.leadertask.com/api/v1/tasksfiles/several?uid_task=' + data.uid_task
       axios({
         url: url,
         method: 'POST',
-        data: formData,
+        data: data.name,
         headers: {
           'Content-Type': 'multipart/form-data'
         }

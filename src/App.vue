@@ -20,15 +20,6 @@ const overlayClick = () => {
   store.dispatch('asideLgToggle', false)
 }
 
-if (!store.getters.isAuthenticated) {
-  const lastIdx = window.location.href.lastIndexOf('/')
-  const currentDirectory = window.location.href.slice(lastIdx)
-  if (currentDirectory !== '/login') {
-    const link = window.location.href.slice(0, lastIdx)
-    window.location.href = link + '/login'
-  }
-}
-
 </script>
 
 <template>

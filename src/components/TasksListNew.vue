@@ -124,13 +124,16 @@
         :class="{ 'bg-gray-200 dark:bg-gray-800': (props.node.info.status == 1 || props.node.info.status == 7) && props.node.info.uid_marker == '00000000-0000-0000-0000-000000000000', 'ring-2 ring-orange-400 border border-orange-400': props.node.id === lastSelectedTaskUid || selectedTasks[props.node.id]}"
       >
         <!--
+        DEBUG TASK INFO, don't remove this comment
         <p class="text-[10px] leading-none">parent: {{ props.node.parent }}</p>
         <pre class="text-[10px] leading-none font-bold text-yellow-500">children: {{ props.node.children  }}</pre>
         <pre class="text-[10px] leading-none font-bold text-rose-500">state: {{ props.node.state }}</pre>
         <p class="text-[10px] leading-none">id: <strong>{{ props.node.id  }}</strong></p>
         <p class="text-[10px] leading-none">type: {{ props.node.info.type }}</p>
         <p class="text-[10px] leading-none mb-5">order_new: <strong>{{ props.node.info.order_new }}</strong></p>
+        <pre class="text-[10px] leading-none font-bold text-green-900">state: {{ props.node.info }}</pre>
         -->
+
         <Transition>
           <div
             class="absolute hidden group-hover:flex right-2 top-2 bg-gray-200 dark:bg-gray-800 rounded-lg items-cetner justify-center py-0.5 px-3"
@@ -143,13 +146,15 @@
               :width="subtask.width"
               :style="{ color: colors[props.node.info.uid_marker] ? colors[props.node.info.uid_marker].fore_color : '' }"
               :height="subtask.height"
-              @click="addSubtask(props.node.info);"
+              @click.stop="addSubtask(props.node.info);"
             />
 
             <!-- Task action popper -->
             <Popper
               arrow
               :class="isDark ? 'dark' : 'light'"
+              placement="auto"
+              @click.stop="toggleTaskHoverPopper(true)"
               @open:popper="toggleTaskHoverPopper(true)"
               @close:popper="toggleTaskHoverPopper(false)"
             >
@@ -276,6 +281,9 @@
               :class="isDark ? 'dark' : 'light'"
               placement="left"
               :disabled="props.node.info.type == 4"
+              @click.stop="toggleTaskStatusPopper(true)"
+              @open:popper="toggleTaskStatusPopper(true)"
+              @close:popper="toggleTaskStatusPopper(false)"
             >
               <template #content="{ close }">
                 <div class="flex flex-col">
@@ -336,15 +344,15 @@
             <contenteditable
               tag="div"
               class="taskName p-0.5 ring-0 outline-none"
-              :contenteditable="props.node.info.type == 1 || props.node.info.type == 0 || props.node.info.uid_customer == user.current_user_uid"
+              :contenteditable="props.node.info._isEditable"
               v-model="props.node.info.name"
               placeholder="Enter task name"
               :noNL="true"
               :noHTML="true"
               :class="{ 'text-gray-500': props.node.info.status == 1 || props.node.info.status == 7, 'line-through': props.node.info.status == 1 || props.node.info.status == 7, 'font-extrabold': props.node.info.readed == 0 }"
               :style="{ color: colors[props.node.info.uid_marker] ? colors[props.node.info.uid_marker].fore_color : '' }"
-              @returned="updateTask(props.node.info)"
-              @blur="updateTask(props.node.info)"
+              @dblclick.stop="editTaskName(props.node.id)"
+              @keyup.enter="updateTask($event, props.node.info); props.node.info._isEditable = false;"
             />
           </div>
         </div>
@@ -535,7 +543,7 @@
 </template>
 
 <script>
-import { computed, ref } from 'vue'
+import { computed, ref, nextTick } from 'vue'
 import treeview from 'vue3-treeview'
 import { useStore } from 'vuex'
 import Icon from '@/components/Icon.vue'
@@ -604,6 +612,7 @@ export default {
     const selectedTasks = ref({})
     const showConfirm = ref(false)
     const isTaskHoverPopperActive = ref(false)
+    const isTaskStatusPopperActive = ref(false)
 
     const clickAndShift = (arg) => {
       selectedTasks.value[arg.id] = arg.info
@@ -625,6 +634,25 @@ export default {
       isTaskHoverPopperActive.value = val
     }
 
+    const toggleTaskStatusPopper = (val) => {
+      isTaskStatusPopperActive.value = val
+    }
+
+    const editTaskName = (uid) => {
+      storeTasks.value[uid].info._isEditable = user.value.current_user_uid === storeTasks.value[uid].info.uid_customer
+      document.getElementById(uid).parentNode.draggable = false
+      nextTick(() => {
+        // select all content in editing task
+        const taskName = document.getElementById(uid).querySelector('.taskName')
+        const range = document.createRange()
+        const sel = document.getSelection()
+        taskName.focus({ preventScroll: false })
+        range.setStart(taskName, 0)
+        range.setEnd(taskName, 1)
+        sel.addRange(range)
+      })
+    }
+
     const nodeExpanding = (arg) => {
       if (loadedTasks.value[arg.id]) return
       arg.state.isLoading = true
@@ -635,7 +663,7 @@ export default {
 
           // remove fake-uid from children array if subtasks are loaded
           for (let i = 0; i < arg.children.length; i++) {
-            if (arg.children[i] === 'fake-uid') {
+            if (arg.children[i] === 'cfake-uid') {
               arg.children.splice(i, 1)
             }
           }
@@ -775,7 +803,7 @@ export default {
       createTaskText.value = ''
     }
 
-    const updateTask = (task) => {
+    const updateTask = (event, task) => {
       task.name = task.name.replace(/\r?\n|\r/g, '')
       if (task.name.length > 0) {
         if (task._justCreated) {
@@ -795,6 +823,10 @@ export default {
           // removeTask(task.uid)
         }
       }
+      if (task.uid_customer === user.value.current_user_uid) {
+        document.getElementById(task.uid).parentNode.draggable = true
+      }
+      nextTick(() => { document.getElementById(task.uid).parentNode.click() })
     }
 
     const moveTaskTomorrow = (task) => {
@@ -856,13 +888,17 @@ export default {
         type: 1,
         SeriesType: 0,
         _isEditing: true,
+        _isEditable: true,
         _justCreated: true
       }
       store.dispatch(TASK.ADD_SUBTASK, newSubtask)
         .then(() => {
-          // TODO: somehow refactor it later
-          // awful, but I can't find event when subtask node has been pushed into the DOM
-          setTimeout(() => { gotoNode(newSubtask.uid) }, 10)
+          // Don't know the event when I can call edit just created subtask
+          // If we don't wait, then we won't focus on just created subtask
+          setTimeout(() => {
+            document.getElementById(newSubtask.uid).parentNode.draggable = false
+            gotoNode(newSubtask.uid)
+          }, 100)
         })
     }
 
@@ -878,9 +914,10 @@ export default {
     const nodeSelected = (arg) => {
       store.commit('basic', { key: 'propertiesState', value: 'task' })
 
-      lastSelectedTaskUid.value = arg.id
-      store.dispatch(TASK.SELECT_TASK, arg.info)
-
+      if (lastSelectedTaskUid.value !== arg.id) {
+        lastSelectedTaskUid.value = arg.id
+        store.dispatch(TASK.SELECT_TASK, arg.info)
+      }
       if (!isPropertiesMobileExpanded.value && arg.info.name) {
         store.dispatch('asidePropertiesToggle', true)
       }
@@ -950,6 +987,7 @@ export default {
     }
 
     return {
+      editTaskName,
       storeTasks,
       newConfig,
       showConfirm,
@@ -965,8 +1003,10 @@ export default {
       employees,
       employeesByEmail,
       isTaskHoverPopperActive,
+      isTaskStatusPopperActive,
       projects,
       toggleTaskHoverPopper,
+      toggleTaskStatusPopper,
       nodeExpanding,
       nodeSelected,
       showStatusOrNot,

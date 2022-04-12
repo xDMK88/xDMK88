@@ -1,6 +1,6 @@
 <script setup>
 import Icon from '@/components/Icon.vue'
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useStore } from 'vuex'
 import * as TASK from '@/store/actions/tasks'
 import { SELECT_COLOR } from '@/store/actions/colors'
@@ -22,6 +22,7 @@ const UID_TO_ACTION = {
 const isPropertiesMobileExpanded = computed(() => store.state.isPropertiesMobileExpanded)
 
 const isGridView = computed(() => store.state.isGridView)
+const focusedColor = ref('')
 
 const updateGridView = (value) => {
   store.commit('basic', { key: 'isGridView', value: value })
@@ -32,6 +33,7 @@ const openProperties = (color) => {
   if (!isPropertiesMobileExpanded.value) {
     store.dispatch('asidePropertiesToggle', true)
   }
+  focusedColor.value = color.uid
   store.commit('basic', { key: 'propertiesState', value: 'color' })
   if (!color) {
     color = {
@@ -103,6 +105,7 @@ const clickOnGridCard = (value) => {
     >
       <div
         class="flex items-center bg-white dark:bg-gray-700 rounded-xl shadow hover:shadow-md cursor-pointer h-30 px-3 py-5 order-4"
+        :class="{ 'ring-4 ring-orange-300': focusedColor == color.uid }"
       >
         <div class="w-full">
           <div class="flex items-center justify-between">
@@ -116,6 +119,7 @@ const clickOnGridCard = (value) => {
               />
               <p
                 class="font-normal cursor-pointer self-center"
+                :class="{ 'uppercase': color.uppercase }"
                 @click="clickOnGridCard(color)"
               >
                 {{ color.name }}

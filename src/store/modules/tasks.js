@@ -571,6 +571,9 @@ const actions = {
   },
   [TASK.CHANGE_TASK_NAME]: ({ commit, dispatch }, data) => {
     return new Promise((resolve, reject) => {
+      if (data.value === '') {
+        data.value = 'Task name'
+      }
       const url = 'https://web.leadertask.com/api/v1/task/name?uid=' + data.uid + '&value=' + data.value
       axios({
         url: url,
@@ -639,9 +642,6 @@ const actions = {
   },
   [TASK.CHANGE_TASK_ACCESS]: ({ commit, dispatch }, data) => {
     return new Promise((resolve, reject) => {
-      if (data.value === '') {
-        data.value = null
-      }
       const url = 'https://web.leadertask.com/api/v1/task/common?uid=' + data.uid + '&value=' + data.value
       axios({
         url: url,
@@ -686,13 +686,11 @@ const actions = {
   [TASK.CHANGE_TASK_TAGS]: ({ commit, dispatch }, data) => {
     // tags
     return new Promise((resolve, reject) => {
-      commit(TASK.TAG_TASKS_REQUEST)
+      if (data.tags.length === '') {
+        data.tags = []
+      }
       const url = 'https://web.leadertask.com/api/v1/task/tags'
-      axios({
-        url: url,
-        method: 'PATCH',
-        data: { uid: data.uid, tags: data.tags }
-      })
+      axios({ url: url, method: 'PATCH', data: data })
         .then(resp => {
           commit(TASK.CHANGE_TASK_TAGS, data)
           resolve(resp)
@@ -709,6 +707,9 @@ const actions = {
   },
   [TASK.CHANGE_TASK_PERFORMER]: ({ commit, dispatch }, data) => {
     return new Promise((resolve, reject) => {
+      if (data.value !== '') {
+        data.value = null
+      }
       const url = 'https://web.leadertask.com/api/v1/task/performer?uid=' + data.uid + '&value=' + data.value
       axios({
         url: url,
@@ -731,7 +732,7 @@ const actions = {
   [TASK.CHANGE_TASK_FOCUS]: ({ commit, dispatch }, data) => {
     return new Promise((resolve, reject) => {
       commit(TASK.IN_FOCUS_TASKS_REQUEST)
-      const url = 'https://web.leadertask.com/api/v1/task/focus?uid=' + data.uid + '&focus=' + data.value
+      const url = 'https://web.leadertask.com/api/v1/task/focus?uid=' + data.uid + '&value=' + data.value
       axios({
         url: url,
         method: 'PATCH'
@@ -792,10 +793,11 @@ const actions = {
   },
   [TASK.CHANGE_TASK_COMMENT]: ({ commit, dispatch }, data) => {
     return new Promise((resolve, reject) => {
-      const url = 'https://web.leadertask.com/api/v1/task/comment?uid=' + data.uid + '&value=' + data.value
+      const url = 'https://web.leadertask.com/api/v1/task/comment?uid=' + data.uid
       axios({
         url: url,
-        method: 'PATCH'
+        method: 'PATCH',
+        data: 'comment= ' + encodeURIComponent(data.value)
       })
         .then(resp => {
           resolve(resp)
@@ -831,7 +833,7 @@ const actions = {
   },
   [TASK.CHANGE_TASK_PARENT_AND_ORDER]: ({ commit, dispatch }, data) => {
     return new Promise((resolve, reject) => {
-      const url = 'https://web.leadertask.com/api/v1/task/parent?uid=' + data.uid + '&parent=' + data.parent + '&order' + data.order
+      const url = 'https://web.leadertask.com/api/v1/task/parent?uid=' + data.uid + '&parent=' + data.parent + '&order=' + data.order
       axios({
         url: url,
         method: 'PATCH'
@@ -899,10 +901,103 @@ const actions = {
           reject(err)
         })
     })
+  },
+  //  Повтор API
+  [TASK.RESET_REPEAT_CHANGE]: ({ commit, dispatch }, uid) => {
+    return new Promise((resolve, reject) => {
+      const url = 'https://web.leadertask.com/api/v1/taskrepeat/reset?uid=' + uid
+      axios({ url: url, method: 'PATCH' })
+        .then(resp => {
+          resolve(resp)
+        }).catch(err => {
+          notify({
+            group: 'api',
+            title: 'REST API Error, please make screenshot',
+            action: TASK.RESET_REPEAT_CHANGE,
+            text: err.response.data
+          }, 15000)
+          reject(err)
+        })
+    })
+  },
+  [TASK.EVERY_DAY_CHANGE]: ({ commit, dispatch }, data) => {
+    return new Promise((resolve, reject) => {
+      const url = 'https://web.leadertask.com/api/v1/taskrepeat/everyday?uid=' + data.uid
+      axios({ url: url, method: 'PATCH', data: data })
+        .then(resp => {
+          resolve(resp)
+        }).catch(err => {
+          notify({
+            group: 'api',
+            title: 'REST API Error, please make screenshot',
+            action: TASK.EVERY_DAY_CHANGE,
+            text: err.response.data
+          }, 15000)
+          reject(err)
+        })
+    })
+  },
+  [TASK.EVERY_WEEK_CHANGE]: ({ commit, dispatch }, data) => {
+    return new Promise((resolve, reject) => {
+      const url = 'https://web.leadertask.com/api/v1/taskrepeat/everyweek?uid=' + data.uid
+      axios({ url: url, method: 'PATCH', data: data })
+        .then(resp => {
+          resolve(resp)
+        }).catch(err => {
+          notify({
+            group: 'api',
+            title: 'REST API Error, please make screenshot',
+            action: TASK.EVERY_WEEK_CHANGE,
+            text: err.response.data
+          }, 15000)
+          reject(err)
+        })
+    })
+  },
+  [TASK.EVERY_MONTH_CHANGE]: ({ commit, dispatch }, data) => {
+    return new Promise((resolve, reject) => {
+      const url = 'https://web.leadertask.com/api/v1/taskrepeat/everymonth?uid=' + data.uid
+      axios({ url: url, method: 'PATCH', data: data })
+        .then(resp => {
+          resolve(resp)
+        }).catch(err => {
+          notify({
+            group: 'api',
+            title: 'REST API Error, please make screenshot',
+            action: TASK.EVERY_MONTH_CHANGE,
+            text: err.response.data
+          }, 15000)
+          reject(err)
+        })
+    })
+  },
+  [TASK.EVERY_YEAR_CHANGE]: ({ commit, dispatch }, data) => {
+    return new Promise((resolve, reject) => {
+      const url = 'https://web.leadertask.com/api/v1/taskrepeat/everyyear?uid=' + data.uid
+      axios({ url: url, method: 'PATCH', data: data })
+        .then(resp => {
+          resolve(resp)
+        }).catch(err => {
+          notify({
+            group: 'api',
+            title: 'REST API Error, please make screenshot',
+            action: TASK.EVERY_YEAR_CHANGE,
+            text: err.response.data
+          }, 15000)
+          reject(err)
+        })
+    })
   }
 }
 
 const mutations = {
+  [TASK.REMOVE_TASK_FROM_LEAVES]: (state, taskUid) => {
+    for (let i = 0; i < state.newConfig.leaves.length; i++) {
+      if (taskUid === state.newConfig.leaves[i]) {
+        state.newConfig.leaves.splice(i, 1)
+      }
+    }
+  },
   [TASK.TASKS_REQUEST]: state => {
     state.status = 'loading'
   },
@@ -912,7 +1007,7 @@ const mutations = {
     state.hasLoadedOnce = true
 
     Object.assign(state.newtasks, {})
-    Object.assign(state.newConfig, { roots: [], leaves: [], listHasChildren: false, dragAndDrop: false, keyboardNavigation: true })
+    Object.assign(state.newConfig, { roots: [], leaves: [], listHasChildren: false, dragAndDrop: true, keyboardNavigation: true })
 
     const nodes = {}
     for (const node of resp.data.tasks) {
@@ -925,11 +1020,12 @@ const mutations = {
         state.newConfig.leaves.push(node.uid)
       }
 
+      node._isEditable = false
       nodes[node.uid] = {
         info: node,
         children: node.has_children ? ['fake-uid'] : [],
         state: {
-          draggable: false
+          draggable: node.type === 1
         }
       }
     }
@@ -964,10 +1060,15 @@ const mutations = {
       if (!task.has_children) {
         state.newConfig.leaves.push(task.uid)
       }
+      task._isEditable = false
       state.newtasks[task.uid] = {
         info: task,
         children: [],
-        state: { checked: false, opened: false }
+        state: {
+          checked: false,
+          opened: false,
+          draggable: task.type === 1
+        }
       }
     }
   },
@@ -984,12 +1085,13 @@ const mutations = {
     task._justCreated = false
     state.newConfig.leaves.push(task.uid)
     task.type = 1
+    task._isEditable = false
     state.newtasks[task.uid] = {
       info: task,
       // even if copy, we would copy without children
       children: [],
       state: {
-        draggable: false,
+        draggable: true,
         disabled: false,
         checked: false
       }
@@ -1030,7 +1132,7 @@ const mutations = {
       children: [],
       state: {
         disabled: false,
-        draggable: false
+        draggable: true
       }
     }
     if (state.newtasks[task.uid_parent].children && state.newtasks[task.uid_parent].children.length) {
@@ -1078,7 +1180,7 @@ const mutations = {
     state.focus = data.value
   },
   [TASK.CHANGE_TASK_TAGS]: (state, data) => {
-    state.tags = data.value
+    state.selectedTag = data.value
   },
   [TASK.CHANGE_TASK_DATE]: (state, data) => {
     state.date.push(data.value)

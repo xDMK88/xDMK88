@@ -82,6 +82,8 @@ const goToChildren = (value) => {
     const navElem = {
       name: value.name,
       key: 'greedSource',
+      greedPath: 'tags_children',
+      uid: value.uid,
       value: value.children
     }
     store.commit('pushIntoNavStack', navElem)

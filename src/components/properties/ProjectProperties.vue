@@ -1,10 +1,11 @@
 <script setup>
-import { computed, ref } from 'vue'
+import { computed, ref, watch, onMounted } from 'vue'
 import { useStore } from 'vuex'
 import Icon from '@/components/Icon.vue'
 import ColorPicker from '@/components/properties/ColorPicker.vue'
+import Toggle from '@vueform/toggle'
 import add from '@/icons/add.js'
-import properties from '@/icons/properties.js'
+import close from '@/icons/close.js'
 import Popper from 'vue3-popper'
 
 import ModalBoxConfirm from '@/components/modals/ModalBoxConfirm.vue'
@@ -25,6 +26,8 @@ const employeesByEmail = computed(() => store.state.employees.employeesByEmail)
 const isDark = computed(() => store.state.darkMode)
 const showConfirm = ref(false)
 const showConfirmQuit = ref(false)
+const hasChanged = ref(false)
+const showAllMembers = ref(false)
 
 function arrayRemove (arr, value) {
   return arr.filter(function (ele) {
@@ -32,12 +35,27 @@ function arrayRemove (arr, value) {
   })
 }
 
+onMounted(() => {
+  hasChanged.value = false
+})
+
+watch(selectedProject, () => {
+  showAllMembers.value = false
+  selectedProject.value.quiet = !!selectedProject.value.quiet
+  hasChanged.value = false
+})
+
 const addRemoveMember = (email) => {
+  hasChanged.value = true
   if (email.included) {
     selectedProject.value.members.push(email.email)
   } else {
     selectedProject.value.members = arrayRemove(selectedProject.value.members, email.email)
   }
+}
+
+const removeMember = (member) => {
+  selectedProject.value.members = arrayRemove(selectedProject.value.members, member.email)
 }
 
 function uuidv4 () {
@@ -47,13 +65,15 @@ function uuidv4 () {
 }
 
 const createOrUpdateProject = (project) => {
-  project.quiet = quiet.value ? 1 : 0
+  project.quiet = project.quiet ? 1 : 0
   // TODO: should not be hardcoded
   project.global_property_uid = '431a3531-a77a-45c1-8035-f0bf75c32641'
   if (!project.uid) {
     project.uid = uuidv4()
     store.dispatch(CREATE_PROJECT_REQUEST, project)
       .then(() => {
+        hasChanged.value = false
+        project.quiet = !!project.quiet
         store.dispatch('asidePropertiesToggle', false)
         store.commit(PUSH_PROJECT, [project])
         store.commit(NAVIGATOR_PUSH_PROJECT, [project])
@@ -61,6 +81,8 @@ const createOrUpdateProject = (project) => {
   } else {
     store.dispatch(UPDATE_PROJECT_REQUEST, project)
       .then(() => {
+        hasChanged.value = false
+        project.quiet = !!project.quiet
         store.dispatch('asidePropertiesToggle', false)
       })
   }
@@ -81,8 +103,6 @@ const removeProject = (project) => {
       store.commit(NAVIGATOR_REMOVE_PROJECT, project)
     })
 }
-
-const quiet = ref(!selectedProject.value.quiet)
 </script>
 
 <template>
@@ -122,9 +142,10 @@ const quiet = ref(!selectedProject.value.quiet)
       </p>
       <input
         v-model="selectedProject.name"
+        @input="hasChanged = true"
         type="text"
         placeholder="Название проекта"
-        class="mt-2 rounded-xl bg-gray-100 font-bold text-gray-700 w-full border-none ring-0 outline-none p-3"
+        class="mt-2 rounded-xl bg-gray-100 font-bold text-gray-700 dark:text-gray-100 w-full border-none ring-0 outline-none p-3 bg-transparent"
         :disabled="selectedProject.email_creator != user.current_user_email"
       >
       <div
@@ -132,25 +153,26 @@ const quiet = ref(!selectedProject.value.quiet)
       >
         <ColorPicker
           v-model="selectedProject.color"
+          :update="() => hasChanged = true "
           :label="'Цвет проекта'"
           :disabled="selectedProject.email_creator != user.current_user_email"
         />
       </div>
+      <hr class="my-6">
       <div
-        class="flex items-center mt-3"
+        class="flex items-center mb-6"
       >
-        <input
-          v-model="quiet"
-          type="checkbox"
-          class="mr-1 bg-gray-100 border border-gray-300 rounded"
-        >
-        <p class="text-sm">
+        <p class="text-sm mr-3">
           Не следить за изменениями
         </p>
+        <Toggle
+          v-model="selectedProject.quiet"
+          @change="hasChanged = true"
+          class="outline-none ring-0"
+          :classes="{ toggleOn: 'bg-blue-400 border-blue-400 justify-start text-white', container: 'focus:ring-0' }"
+        />
       </div>
-      <hr class="my-6">
-      <!-- <pre class="text-xs">{{ selectedProject }}</pre> -->
-      <p class="text-sm text-gray-500 dark:text-gray-200">
+      <p class="dark:text-gray-200">
         Доступ
       </p>
       <Popper
@@ -191,22 +213,22 @@ const quiet = ref(!selectedProject.value.quiet)
         </template>
         <div
           v-if="selectedProject.email_creator == user.current_user_email"
-          class="flex items-center my-6 cursor-pointer"
+          class="flex items-center justify-center my-6 cursor-pointer"
         >
           <Icon
             :path="add.path"
             :box="add.viewBox"
             :width="add.width"
             :height="add.height"
-            class="text-gray-500 mx-3"
+            class="text-gray-500 dark:text-gray-100 mx-3"
           />
-          <p class="text-gray-600">
+          <p class="text-gray-600 dark:text-gray-100">
             Добавить участника проекта
           </p>
         </div>
       </Popper>
       <div
-        class="grid grid-cols-1 mt-3"
+        class="grid grid-cols-1"
       >
         <template
           v-for="(employee, pindex) in selectedProject.members"
@@ -215,6 +237,7 @@ const quiet = ref(!selectedProject.value.quiet)
           <div
             class="flex items-center bg-white dark:bg-gray-700 rounded-xl shadow h-30 px-3 py-5 mt-1"
             v-if="employeesByEmail[employee]"
+            v-show="pindex < 4 || showAllMembers"
           >
             <img
               :src="employeesByEmail[employee].fotolink"
@@ -230,11 +253,13 @@ const quiet = ref(!selectedProject.value.quiet)
                   {{ employeesByEmail[employee].name }}
                 </p>
                 <icon
-                  :path="properties.path"
-                  :width="properties.width"
-                  :height="properties.height"
-                  :box="properties.viewBox"
-                  class="text-gray-400 cursor-pointer hover:text-gray-800"
+                  v-if="employeesByEmail[employee].uid !== user.current_user_uid && selectedProject.email_creator == user.current_user_email"
+                  :path="close.path"
+                  :width="10"
+                  :height="10"
+                  :box="close.viewBox"
+                  @click="removeMember(employeesByEmail[employee])"
+                  class="text-grayemployeesByEmail[employee]-400 cursor-pointer hover:text-gray-800"
                 />
               </div>
               <p class="font-light text-xs break-all">
@@ -243,10 +268,18 @@ const quiet = ref(!selectedProject.value.quiet)
             </div>
           </div>
         </template>
+      <p
+        v-if="selectedProject.members && selectedProject.members.length > 4 && !showAllMembers"
+        class="text-gray-500 text-center decoration-dashed underline mt-3 cursor-pointer"
+        @click="showAllMembers = true"
+      >
+        Show all members
+      </p>
       </div>
       <button
         v-if="selectedProject.email_creator == user.current_user_email"
-        class="w-full bg-gray-100 rounded-xl mt-4 p-3 text-gray-700 font-bold hover:bg-gray-200"
+        class="w-full bg-gray-100 dark:bg-gray-800 rounded-xl mt-4 p-3 text-gray-700 dark:text-gray-100 font-bold hover:bg-gray-200 hover:dark:bg-gray-700"
+        :class="{ 'bg-orange-400 dark:bg-orange-400 hover:bg-orange-500 hover:dark:bg-orange-500': hasChanged }"
         @click="createOrUpdateProject(selectedProject)"
       >
         {{ selectedProject.uid ? 'Сохранить' : 'Создать' }}

@@ -86,6 +86,7 @@ const goToChildren = (value) => {
     const navElem = {
       name: value.name,
       key: 'greedSource',
+      uid: value.uid,
       greedPath: 'projects_children',
       value: value.children
     }
@@ -141,14 +142,22 @@ const goToChildren = (value) => {
         :key="pindex"
       >
         <div
-          class="flex items-center bg-white dark:bg-gray-700 rounded-xl shadow hover:shadow-md px-5 py-7 relative"
+          class="flex items-center bg-white dark:bg-gray-900 rounded-xl shadow hover:shadow-md px-5 py-7 relative min-h-[100px]"
           :class="{ 'ring-4 ring-orange-300': focusedProject == project.uid }"
         >
+          <icon
+            :path="properties.path"
+            :width="properties.width"
+            :height="properties.height"
+            :box="properties.viewBox"
+            class="text-gray-400 cursor-pointer hover:text-gray-800 absolute top-10 right-5"
+            @click="openProperties(project)"
+          />
           <div
             v-if="project.color != '#A998B6'"
             :style="{ backgroundColor: project.color }"
             style="border-radius: 100% 0 0.75rem 0;"
-            class="w-7 h-7 absolute bottom-0 right-0"
+            class="w-6 h-6 absolute bottom-0 right-0"
           />
           <svg
             width="20"
@@ -177,14 +186,6 @@ const goToChildren = (value) => {
           </svg>
           <div>
             <div class="flex items-start">
-              <icon
-                :path="properties.path"
-                :width="properties.width"
-                :height="properties.height"
-                :box="properties.viewBox"
-                class="text-gray-400 cursor-pointer hover:text-gray-800 mr-2 mt-0.5"
-                @click="openProperties(project)"
-              />
               <icon
                 v-if="project.members && project.members.length == 1"
                 :path="projectIcon.path"
@@ -251,17 +252,16 @@ const goToChildren = (value) => {
       </template>
       <div
         v-if="index == 0"
-        class="flex items-center justify-center bg-gray-50 dark:bg-gray-700 rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-500 cursor-pointer px-5 py-7"
+        class="flex items-center justify-center bg-gray-50 dark:bg-gray-900 rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-500 cursor-pointer px-5 py-7"
         @click="openProperties(false)"
       >
-        <div class="flex items-center justify-center w-10 h-10 bg-gray-200 dark:bg-gray-600 rounded-xl">
+        <div class="flex items-center justify-center w-10 h-10 bg-gray-200 dark:bg-gray-800 rounded-xl text-gray-100">
           <svg
             width="16"
             height="16"
             viewBox="0 0 16 16"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
-            class="dark:text-gray-100"
           >
             <path
               d="M8.00011 2.3457V8.4034M8.00011 8.4034V14.4611M8.00011 8.4034H14.4617M8.00011 8.4034H1.53857"

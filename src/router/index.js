@@ -5,7 +5,6 @@ import Home from '@/views/Home'
 const ifNotAuthenticated = (to, from, next) => {
   if (!store.getters.isAuthenticated) {
     next()
-    return
   }
   next('/')
 }
@@ -13,7 +12,13 @@ const ifNotAuthenticated = (to, from, next) => {
 const ifAuthenticated = (to, from, next) => {
   if (store.getters.isAuthenticated) {
     next()
-    return
+  }
+  next('/login')
+}
+
+const ifRouteNotExists = (to, from, next) => {
+  if (store.getters.isAuthenticated) {
+    next('/')
   }
   next('/login')
 }
@@ -39,6 +44,10 @@ const routes = [
     name: 'login',
     component: () => import('@/views/Login.vue'),
     beforeEnter: ifNotAuthenticated
+  },
+  {
+    path: '/:pathMatch(.*)*',
+    beforeEnter: ifRouteNotExists
   }
 ]
 

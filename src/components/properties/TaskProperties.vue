@@ -845,7 +845,7 @@ export default {
     </p>
   </modal-box-confirm>
   <div class="break-words">
-    <div class="column-resize" id="generalscroll">
+    <div class="column-resize" id="generalscroll" @focusin="copypastefile">
       <div />
       <div
         v-if="selectedTask.uid_parent !== '00000000-0000-0000-0000-000000000000' && tasks[selectedTask.uid_parent]"

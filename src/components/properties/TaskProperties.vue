@@ -5,6 +5,7 @@ import { DatePicker } from 'v-calendar'
 import { useStore } from 'vuex'
 import TreeItem from '@/components/TreeItem.vue'
 import FileMessage from '@/components/properties/FileMessage.vue'
+import Checklist from '@/components/properties/Checklist.vue'
 import close from '@/icons/close.js'
 import TreeTagsItem from '@/components/TreeTagsItem.vue'
 import { CREATE_MESSAGE_REQUEST, DELETE_MESSAGE_REQUEST } from '@/store/actions/taskmessages'
@@ -24,6 +25,7 @@ export default {
     tabs: Tabs,
     tab: Tab,
     FileMessage,
+    Checklist,
     ModalBoxConfirm
   },
   directives: {
@@ -2424,6 +2426,11 @@ export default {
           </Transition>
         </div>
       </div>
+      <Checklist
+        class="mt-3"
+        v-if="selectedTask.checklist"
+        :task-uid="selectedTask.uid"
+      />
       <div
         v-if="selectedTask.checklist && selectedTask.checklist.replace(/\r?\n|\r/g, '')"
         class="mt-3 checklist-custom"
@@ -2448,14 +2455,13 @@ export default {
             </div>
           </li>
         </ul>
-
       </div>
-      <button  v-if="selectedTask.checklist!==''" class="btn btn-transperant" @click="addchecklistelement">
+      <button  v-if="selectedTask.checklist" class="btn btn-transperant" @click="addchecklistelement">
         Добавить
       </button>
       <div class="mt-3 checklist-custom">
         <ul class="check-padding">
-        <li class="checklistadd" :class="{checklistnew:checklistshow}" @click="checklistedit">
+        <li class="checklistadd" :class="{ checklistnew: checklistshow }" @click="checklistedit">
           <input type="checkbox" value="0" ref="checknew" /> &nbsp;
           <span :contenteditable="checklisteditable" @focusout="removeEditCheckList" @keyup="addCheckName(this.$refs.checknew.value, $event)" data-placeholder="Новый чек" class="placeholderchecklist"></span>
         </li>

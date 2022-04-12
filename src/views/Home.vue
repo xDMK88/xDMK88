@@ -154,7 +154,9 @@ onBeforeMount(() => {
         v-if="greedPath === 'new_private_projects'"
         :projects="greedSource"
       />
-      <dashboard v-if="greedPath = 'dashboard'"/>
+      <dashboard
+        v-if="greedPath === 'dashboard'"
+      />
       <projects-children
         v-if="greedPath === 'projects_children'"
         :projects="greedSource"

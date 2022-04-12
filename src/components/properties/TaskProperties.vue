@@ -2429,7 +2429,7 @@ export default {
       <Checklist
         class="mt-3"
         v-if="selectedTask.checklist"
-        :task-uid="selectedTask.uid"
+        :taskUid="selectedTask.uid"
       />
       <div
         v-if="selectedTask.checklist && selectedTask.checklist.replace(/\r?\n|\r/g, '')"

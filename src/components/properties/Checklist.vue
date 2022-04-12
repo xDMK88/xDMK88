@@ -34,6 +34,7 @@ const processChecklist = () => {
     if (!check.text) continue
     proccessedChecklist.value += (check.checked ? '1' : '0') + '\n' + check.text + '\n\n'
   }
+  store.state.tasks.newTasks[props.taskUid].info.cheklist = proccessedChecklist.value
   store.dispatch('CHANGE_TASK_CHECKLIST', { uid_task: props.taskUid, checklist: proccessedChecklist.value })
 }
 

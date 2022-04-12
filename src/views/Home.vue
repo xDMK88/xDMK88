@@ -87,6 +87,45 @@ const getNavigator = () => {
   if (store.state.auth.token) {
     store.dispatch(NAVIGATOR_REQUEST)
       .then(() => {
+        // Web sync
+        // avoid error with Capital constructor name
+        const clientProperty = 'client'
+        console.log('navigator push_cnannedl', storeNavigator.value.push_channel)
+        const client = new window.fm.websync[clientProperty]('https://sync.leadertask.net/websync.ashx?uid_session=' + storeNavigator.value.push_channel)
+        client.connect({
+          onSuccess: function (e) {
+            console.log('Websync connected success!')
+          },
+          onFailure: function (e) {
+            console.log('websync onfailure connect fail')
+          },
+          onStreamFailure: function (e) {
+            console.log('websync on streamfailer connect fail')
+          }
+        })
+
+        client.subscribe({
+          channel: '/' + storeNavigator.value.push_channel,
+          onSuccess: function (e) {
+            console.log('websync subscribe success')
+          },
+          onFailure: function (e) {
+            console.log('websync subscribe fail')
+            e.setRetry(true)
+          },
+          onReceive: function (e) {
+            try {
+              const str = e.getDataJson()
+              const obj = JSON.parse(str)
+              console.log(obj)
+            } catch (e) {
+              console.log('error in get Data Json')
+            }
+          }
+
+        })
+        console.log(client)
+
         // After navigator is loaded we are trying to set up last visited navElement
         // Checking if last navElement is a gridSource
         if (navStack.value.length && navStack.value.length > 0) {

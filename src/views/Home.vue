@@ -1,5 +1,9 @@
+<!--
+<script src="https://web.leadertask.com/scripts/websync/fm.min.js"></script>
+<script src="https://web.leadertask.com/scripts/websync/fm.websync.min.js"></script>
+-->
 <script setup>
-import { onBeforeMount, computed } from 'vue'
+import { onBeforeMount, onMounted, computed } from 'vue'
 import { useStore } from 'vuex'
 import { visitChildren } from '@/store/helpers/functions'
 import TasksListNew from '@/components/TasksListNew.vue'
@@ -10,6 +14,7 @@ import Employees from '@/components/Employees.vue'
 import Tags from '@/components/Tags.vue'
 import Colors from '@/components/Colors.vue'
 import Assignments from '@/components/Assignments.vue'
+import Dashboard from '@/components/Dashboard.vue'
 
 import { NAVIGATOR_REQUEST } from '@/store/actions/navigator'
 import { USER_REQUEST } from '@/store/actions/user'
@@ -43,6 +48,15 @@ const UID_TO_ACTION = {
   'd35fe0bc-1747-4eb1-a1b2-3411e07a92a0': TASK.READY_FOR_COMPLITION_TASKS_REQUEST
 }
 
+onMounted(() => {
+  const fm = document.createElement('script')
+  const websync = document.createElement('script')
+  fm.setAttribute('src', 'https://web.leadertask.com/scripts/websync/fm.min.js')
+  websync.setAttribute('src', 'https://web.leadertask.com/scripts/websync/fm.websync.min.js')
+  document.head.appendChild(fm)
+  document.head.appendChild(websync)
+})
+
 const getTasks = () => {
   if (store.state.auth.token) {
     // Process saved last visited nav
@@ -73,6 +87,45 @@ const getNavigator = () => {
   if (store.state.auth.token) {
     store.dispatch(NAVIGATOR_REQUEST)
       .then(() => {
+        // Web sync
+        // avoid error with Capital constructor name
+        const clientProperty = 'client'
+        console.log('navigator push_cnannedl', storeNavigator.value.push_channel)
+        const client = new window.fm.websync[clientProperty]('https://sync.leadertask.net/websync.ashx?uid_session=' + storeNavigator.value.push_channel)
+        client.connect({
+          onSuccess: function (e) {
+            console.log('Websync connected success!')
+          },
+          onFailure: function (e) {
+            console.log('websync onfailure connect fail')
+          },
+          onStreamFailure: function (e) {
+            console.log('websync on streamfailer connect fail')
+          }
+        })
+
+        client.subscribe({
+          channel: '/' + storeNavigator.value.push_channel,
+          onSuccess: function (e) {
+            console.log('websync subscribe success')
+          },
+          onFailure: function (e) {
+            console.log('websync subscribe fail')
+            e.setRetry(true)
+          },
+          onReceive: function (e) {
+            try {
+              const str = e.getDataJson()
+              const obj = JSON.parse(str)
+              console.log(obj)
+            } catch (e) {
+              console.log('error in get Data Json')
+            }
+          }
+
+        })
+        console.log(client)
+
         // After navigator is loaded we are trying to set up last visited navElement
         // Checking if last navElement is a gridSource
         if (navStack.value.length && navStack.value.length > 0) {
@@ -125,7 +178,6 @@ onBeforeMount(() => {
   getTasks()
   store.dispatch(USER_REQUEST)
 })
-
 </script>
 
 <template>
@@ -140,6 +192,9 @@ onBeforeMount(() => {
       <projects
         v-if="greedPath === 'new_private_projects'"
         :projects="greedSource"
+      />
+      <dashboard
+        v-if="greedPath === 'dashboard'"
       />
       <projects-children
         v-if="greedPath === 'projects_children'"

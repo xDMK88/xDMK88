@@ -29,6 +29,7 @@ const storeTasks = computed(() => store.state.tasks.newtasks)
 const newConfig = computed(() => store.state.tasks.newConfig)
 const navStack = computed(() => store.state.navbar.navStack)
 const storeNavigator = computed(() => store.state.navigator.navigator)
+const selectedTask = computed(() => store.state.tasks.selectedTask)
 
 const UID_TO_ACTION = {
   '901841d9-0016-491d-ad66-8ee42d2b496b': TASK.TASKS_REQUEST, // get today's day
@@ -90,17 +91,16 @@ const getNavigator = () => {
         // Web sync
         // avoid error with Capital constructor name
         const clientProperty = 'client'
-        console.log('navigator push_cnannedl', storeNavigator.value.push_channel)
         const client = new window.fm.websync[clientProperty]('https://sync.leadertask.net/websync.ashx?uid_session=' + storeNavigator.value.push_channel)
         client.connect({
           onSuccess: function (e) {
-            console.log('Websync connected success!')
+            console.log('websync connected success!')
           },
           onFailure: function (e) {
-            console.log('websync onfailure connect fail')
+            console.log('websync onfailure connect fail ' + e.getException().message)
           },
           onStreamFailure: function (e) {
-            console.log('websync on streamfailer connect fail')
+            console.log('websync on stream failer connect fail ' + e.getException().message)
           }
         })
 
@@ -110,21 +110,24 @@ const getNavigator = () => {
             console.log('websync subscribe success')
           },
           onFailure: function (e) {
-            console.log('websync subscribe fail')
+            console.log('websync subscribe fail' + e.getException().message)
             e.setRetry(true)
           },
           onReceive: function (e) {
             try {
               const str = e.getDataJson()
               const obj = JSON.parse(str)
-              console.log(obj)
+              // we got the message we want to push
+              if (obj.operation === 1 && obj.type === 13) {
+                if ('uid_task' in obj && obj.uid_task === selectedTask.value.uid) {
+                  store.commit('CREATE_MESSAGE_REQUEST', obj.obj)
+                }
+              }
             } catch (e) {
               console.log('error in get Data Json')
             }
           }
-
         })
-        console.log(client)
 
         // After navigator is loaded we are trying to set up last visited navElement
         // Checking if last navElement is a gridSource
@@ -181,6 +184,7 @@ onBeforeMount(() => {
 </script>
 
 <template>
+  {{ selectedTask }}
   <main-section>
     <TasksListNew
       v-if="mainSectionState === 'tasks'"

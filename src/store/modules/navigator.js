@@ -377,6 +377,7 @@ const mutations = {
       items: resp.data.common_projects.items
     })
     resp.data.new_private_projects = newCommonProjects
+
     state.navigator = resp.data
   },
   [NAVIGATOR_PUSH_PROJECT]: (state, projects) => {

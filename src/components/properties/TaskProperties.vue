@@ -140,7 +140,7 @@ export default {
       }
       store.dispatch(TASK.CHANGE_TASK_TAGS, data)
         .then(() => {
-          if (selectedTask.value.uid_customer === user.value.current_user_uid && selectedTask.value.status === 5) {
+          if (selectedTask.value.uid_customer === user.value.current_user_uid && (selectedTask.value.status === 5 || selectedTask.value.status === 7)) {
             // to refine
             selectedTask.value.status = 9
           }
@@ -182,7 +182,7 @@ export default {
       }
       store.dispatch(CREATE_FILES_REQUEST, data).then(
         resp => {
-          if (selectedTask.value.uid_customer === user.value.current_user_uid && selectedTask.value.status === 5) {
+          if (selectedTask.value.uid_customer === user.value.current_user_uid && (selectedTask.value.status === 5 || selectedTask.value.status === 7)) {
             // to refine
             store.commit(FILES_REQUEST)
             selectedTask.value.status = 9
@@ -233,7 +233,7 @@ export default {
       }
       store.dispatch(CREATE_MESSAGE_REQUEST, data).then(
         resp => {
-          if (selectedTask.value.uid_customer === user.value.current_user_uid && selectedTask.value.status === 5) {
+          if (selectedTask.value.uid_customer === user.value.current_user_uid && (selectedTask.value.status === 5 || selectedTask.value.status === 7)) {
             // to refine
             selectedTask.value.status = 9
           }
@@ -373,7 +373,7 @@ export default {
       }
       store.dispatch(TASK.CHANGE_TASK_CHEKCLIST, data).then(
         resp => {
-          if (selectedTask.value.uid_customer === user.value.current_user_uid && selectedTask.value.status === 5) {
+          if (selectedTask.value.uid_customer === user.value.current_user_uid && (selectedTask.value.status === 5 || selectedTask.value.status === 7)) {
             // to refine
             selectedTask.value.status = 9
           }
@@ -393,7 +393,7 @@ export default {
       }
       store.dispatch(TASK.CHANGE_TASK_CHEKCLIST, data).then(
         resp => {
-          if (selectedTask.value.uid_customer === user.value.current_user_uid && selectedTask.value.status === 5) {
+          if (selectedTask.value.uid_customer === user.value.current_user_uid && (selectedTask.value.status === 5 || selectedTask.value.status === 7)) {
             // to refine
             selectedTask.value.checklist = this.massel
             selectedTask.value.status = 9
@@ -414,7 +414,7 @@ export default {
         }
         store.dispatch(TASK.CHANGE_TASK_CHEKCLIST, data).then(
           resp => {
-            if (selectedTask.value.uid_customer === user.value.current_user_uid && selectedTask.value.status === 5) {
+            if (selectedTask.value.uid_customer === user.value.current_user_uid && (selectedTask.value.status === 5 || selectedTask.value.status === 7)) {
               // to refine
               selectedTask.value.status = 9
             }
@@ -450,7 +450,7 @@ export default {
           }
           store.dispatch(TASK.CHANGE_TASK_CHEKCLIST, data).then(
             resp => {
-              if (selectedTask.value.uid_customer === user.value.current_user_uid && selectedTask.value.status === 5) {
+              if (selectedTask.value.uid_customer === user.value.current_user_uid && (selectedTask.value.status === 5 || selectedTask.value.status === 7)) {
                 // to refine
                 selectedTask.value.status = 9
               }
@@ -471,7 +471,7 @@ export default {
           }
           store.dispatch(TASK.CHANGE_TASK_CHEKCLIST, data).then(
             resp => {
-              if (selectedTask.value.uid_customer === user.value.current_user_uid && selectedTask.value.status === 5) {
+              if (selectedTask.value.uid_customer === user.value.current_user_uid && (selectedTask.value.status === 5 || selectedTask.value.status === 7)) {
                 // to refine
                 selectedTask.value.status = 9
               }
@@ -510,7 +510,7 @@ export default {
       }
       store.dispatch(TASK.CHANGE_TASK_CHEKCLIST, data).then(
         resp => {
-          if (selectedTask.value.uid_customer === user.value.current_user_uid && selectedTask.value.status === 5) {
+          if (selectedTask.value.uid_customer === user.value.current_user_uid && (selectedTask.value.status === 5 || selectedTask.value.status === 7)) {
             // to refine
             selectedTask.value.status = 9
           }
@@ -567,7 +567,7 @@ export default {
       left: '0px',
       datas: [],
       getfiles: getfiles,
-      checkEmail: selectedTask.value.emails !== '' ? selectedTask.value.emails.split('..') : [],
+      checkEmail: (selectedTask.value.emails && selectedTask.value.emails !== '') ? selectedTask.value.emails.split('..') : [],
       close,
       file: '',
       taskMsg,
@@ -1010,7 +1010,7 @@ export default {
                           :value="key.email"
                           :id="key.uid"
                           class="check-custom-empployee custom-checkbox"
-                          :checked="selectedTask.emails.split('..').filter(email=>email===key.email)[0]===key.email"
+                          :checked="selectedTask.emails ? selectedTask.emails.split('..').filter(email=>email===key.email)[0]===key.email : false"
                         >
                         <label class="employee-name-custom " :for="key.uid">
                           <div class="popover-employee-email"><div style="color: black;">{{ key.name }}</div>{{ key.email }}</div>
@@ -1023,11 +1023,11 @@ export default {
             </div>
           </template>
           <div
-            v-if="selectedTask.emails!==''"
+            v-if="selectedTask.emails !== ''"
             ref="btnRef"
             style="position: relative"
           >
-            <div v-if="selectedTask.emails.split('..').length>1">
+            <div v-if="selectedTask.emails && selectedTask.emails.split('..').length > 1">
               <div
                 v-for="(key,value) in selectedTask.emails.split('..').filter(n=>n)"
                 :key="value"
@@ -1074,7 +1074,9 @@ export default {
                     fill-opacity="0.5"
                   />
                 </svg>
-                <span class="rounded">{{employeesByEmail[selectedTask.emails.toLowerCase()].name}}</span>
+                <span class="rounded">
+                  {{employeesByEmail[selectedTask.emails.toLowerCase()].name}}
+                </span>
                 <button @click="resetAccess" class="btn-close-popover"><svg width="5" height="5" viewBox="0 0 16 15" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M14.8483 2.34833C15.317 1.8797 15.317 1.11991 14.8483 0.651277C14.3797 0.182647 13.6199 0.182647 13.1513 0.651277L7.99981 5.80275L2.84833 0.651277C2.3797 0.182647 1.61991 0.182647 1.15128 0.651277C0.682647 1.11991 0.682647 1.8797 1.15128 2.34833L6.30275 7.4998L1.15128 12.6513C0.682647 13.1199 0.682647 13.8797 1.15128 14.3483C1.61991 14.817 2.3797 14.817 2.84833 14.3483L7.99981 9.19686L13.1513 14.3483C13.6199 14.817 14.3797 14.817 14.8483 14.3483C15.317 13.8797 15.317 13.1199 14.8483 12.6513L9.69686 7.4998L14.8483 2.34833Z" fill="black" fill-opacity="0.5"/>
                 </svg>
@@ -1923,7 +1925,7 @@ export default {
         </Popper>
         <!--Всплывающее окно Метки-->
         <span v-if="selectedTask.type!==4">
-        <span v-if="selectedTask.tags.length>0">
+        <span v-if="selectedTask.tags && selectedTask.tags.length > 0">
         <Popper v-for="(key, value) in selectedTask.tags"
                 :key="value"
                 class="popper-tags"
@@ -1985,7 +1987,7 @@ export default {
             </div>
           </template>
           <span
-            v-if="selectedTask.tags.length"
+            v-if="selectedTask.tags && selectedTask.tags.length"
           >
             <a class="mt-3 tags-custom dark:bg-gray-800 dark:text-gray-100 project-hover-close"
 
@@ -2121,7 +2123,7 @@ export default {
               </div>
             </div>
           </template>
-  <button v-if="selectedTask.tags.length===0"
+  <button v-if="selectedTask.tags && selectedTask.tags.length === 0"
           class="mt-3 tags-custom dark:bg-gray-800 dark:text-gray-100"
   >
             <svg
@@ -2315,7 +2317,7 @@ export default {
         </div>
       </div>
       <div
-        v-if="selectedTask.checklist!==''"
+        v-if="selectedTask.checklist && selectedTask.checklist.replace(/\r?\n|\r/g, '')"
         class="mt-3 checklist-custom"
       >
         <ul class="check-padding" id="childrenchecklist">
@@ -2358,7 +2360,7 @@ export default {
       </div>
       <div class="mt-3 description-content" @click="editcomment">
         <div
-          v-html="selectedTask.comment.replaceAll('\n','<br/>')"
+          v-html="selectedTask.comment ? selectedTask.comment.replaceAll('\n','<br/>') : ''"
           class="dark:text-gray-100"
           id="comment"
           ref="comment"

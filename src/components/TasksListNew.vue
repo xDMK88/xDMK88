@@ -826,6 +826,7 @@ export default {
       if (task.uid_customer === user.value.current_user_uid) {
         document.getElementById(task.uid).parentNode.draggable = true
       }
+      store.dispatch(TASK.SELECT_TASK, task)
       nextTick(() => { document.getElementById(task.uid).parentNode.click() })
     }
 
@@ -898,7 +899,8 @@ export default {
           setTimeout(() => {
             document.getElementById(newSubtask.uid).parentNode.draggable = false
             gotoNode(newSubtask.uid)
-          }, 100)
+            store.dispatch(TASK.SELECT_TASK, newSubtask)
+          }, 200)
         })
     }
 

@@ -1,5 +1,9 @@
+<!--
+<script src="https://web.leadertask.com/scripts/websync/fm.min.js"></script>
+<script src="https://web.leadertask.com/scripts/websync/fm.websync.min.js"></script>
+-->
 <script setup>
-import { onBeforeMount, computed } from 'vue'
+import { onBeforeMount, onMounted, computed } from 'vue'
 import { useStore } from 'vuex'
 import { visitChildren } from '@/store/helpers/functions'
 import TasksListNew from '@/components/TasksListNew.vue'
@@ -42,6 +46,15 @@ const UID_TO_ACTION = {
   '511d871c-c5e9-43f0-8b4c-e8c447e1a823': TASK.DELEGATED_TO_USER_TASKS_REQUEST,
   'd35fe0bc-1747-4eb1-a1b2-3411e07a92a0': TASK.READY_FOR_COMPLITION_TASKS_REQUEST
 }
+
+onMounted(() => {
+  const fm = document.createElement('script')
+  const websync = document.createElement('script')
+  fm.setAttribute('src', 'https://web.leadertask.com/scripts/websync/fm.min.js')
+  websync.setAttribute('src', 'https://web.leadertask.com/scripts/websync/fm.websync.min.js')
+  document.head.appendChild(fm)
+  document.head.appendChild(websync)
+})
 
 const getTasks = () => {
   if (store.state.auth.token) {

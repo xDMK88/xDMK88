@@ -10,6 +10,7 @@ import Employees from '@/components/Employees.vue'
 import Tags from '@/components/Tags.vue'
 import Colors from '@/components/Colors.vue'
 import Assignments from '@/components/Assignments.vue'
+import Dashboard from '@/components/Dashboard.vue'
 
 import { NAVIGATOR_REQUEST } from '@/store/actions/navigator'
 import { USER_REQUEST } from '@/store/actions/user'
@@ -125,7 +126,6 @@ onBeforeMount(() => {
   getTasks()
   store.dispatch(USER_REQUEST)
 })
-
 </script>
 
 <template>
@@ -141,6 +141,7 @@ onBeforeMount(() => {
         v-if="greedPath === 'new_private_projects'"
         :projects="greedSource"
       />
+      <dashboard v-if="greedPath = 'dashboard'"/>
       <projects-children
         v-if="greedPath === 'projects_children'"
         :projects="greedSource"

@@ -14,6 +14,7 @@ import {
   MYFILES,
   GETFILES,
   FILE_SUCCESS,
+  CREATE_FILE_REQUEST,
   CREATE_FILES_REQUEST,
   MERGE_FILES_WITH_MESSAGES
 } from '../actions/taskfiles'
@@ -85,6 +86,25 @@ const actions = {
       })
         .then(resp => {
           commit(CREATE_FILES_REQUEST, data)
+          resolve(resp)
+        }).catch(err => {
+          reject(err)
+        })
+    })
+  },
+  [CREATE_FILE_REQUEST]: ({ commit, dispatch }, data) => {
+    return new Promise((resolve, reject) => {
+      const url = 'https://web.leadertask.com/api/v1/tasksfiles/one?uid_task=' + data.uid_task
+      axios({
+        url: url,
+        method: 'POST',
+        data: data.name,
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      })
+        .then(resp => {
+          commit(CREATE_FILE_REQUEST, data)
           resolve(resp)
         }).catch(err => {
           reject(err)

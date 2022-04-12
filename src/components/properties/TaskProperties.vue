@@ -8,7 +8,7 @@ import FileMessage from '@/components/properties/FileMessage.vue'
 import close from '@/icons/close.js'
 import TreeTagsItem from '@/components/TreeTagsItem.vue'
 import { CREATE_MESSAGE_REQUEST, DELETE_MESSAGE_REQUEST } from '@/store/actions/taskmessages'
-import { CREATE_FILES_REQUEST, FILES_REQUEST } from '@/store/actions/taskfiles'
+import { CREATE_FILES_REQUEST, GETFILES } from '@/store/actions/taskfiles'
 import * as TASK from '@/store/actions/tasks'
 import { copyText } from 'vue3-clipboard'
 import sanitizeHtml from 'sanitize-html'
@@ -184,10 +184,17 @@ export default {
         resp => {
           if (selectedTask.value.uid_customer === user.value.current_user_uid && (selectedTask.value.status === 5 || selectedTask.value.status === 7)) {
             // to refine
-            store.commit(FILES_REQUEST)
             selectedTask.value.status = 9
+            this.Files.onload()
+            var img = new Image()
+            img.onload = function () {
+              document.getElementById('copypaste').appendChild(this)
+            }
+            console.log(resp.data)
+            store.dispatch(GETFILES, resp.data.uid_file).then(respon => {
+              img.src = URL.createObjectURL(new Blob([respon.data]))
+            })
           }
-          console.log(resp.data)
         })
       this.infoComplete = true
       setTimeout(() => {
@@ -199,14 +206,16 @@ export default {
       const message = event.target.innerText
       console.log(event.target.innerText)
       setCursorPosition(event.target.id, 0, 100)
-      const data = {
-        uid: selectedTask.value.uid,
-        value: message
+      if (message !== '') {
+        const data = {
+          uid: selectedTask.value.uid,
+          value: message
+        }
+        store.dispatch(TASK.CHANGE_TASK_COMMENT, data).then(
+          resp => {
+            //  selectedTask.value.comment = message
+          })
       }
-      store.dispatch(TASK.CHANGE_TASK_COMMENT, data).then(
-        resp => {
-          //  selectedTask.value.comment = message
-        })
       if (message === '') {
         selectedTask.value.comment = 'Добавить заметку...'
       }
@@ -516,10 +525,103 @@ export default {
           }
         })
     }
+    const pics = ['jpg', 'png', 'jpeg', 'git', 'bmp', 'gif', 'PNG', 'JPG', 'JPEG', 'BMP', 'GIF']
+    const movies = ['mov', 'mp4']
+    const docs = ['doc', 'xls', 'xlsx', 'txt', 'pdf', 'sql']
+    const audio = ['mp3', 'wav', 'm4a']
     const handlercontextmenu = () => {
+    }
+    const copypastefile = () => {
+      window.addEventListener('paste', function (e) {
+        const items = (e.clipboardData || e.originalEvent.clipboardData).items
+        for (var index in items) {
+          const item = items[index]
+          if (item.kind === 'file') {
+            console.log(index)
+            var blob = item.getAsFile()
+            var div = document.createElement('div')
+            div.className = 'lineloadfile'
+            var href = document.createElement('a')
+            href.className = 'text-blue-600'
+            var img = document.createElement('img')
+            href.target = '_blank'
+            if (pics.includes(blob.name.split('.').pop())) {
+              const fileURL = URL.createObjectURL(blob)
+              div.className = 'lineloadfile'
+              img.src = URL.createObjectURL(blob)
+              img.title = blob.name
+              img.className = 'img-preview-custom'
+              img.src = URL.createObjectURL(blob)
+              href.setAttribute('href', fileURL)
+              href.appendChild(img)
+              href.innerHTML += '<span class="img-title-custom">' + blob.name + '</span>'
+              div.appendChild(href)
+              document.getElementById('copypaste').appendChild(div)
+            } else if (movies.includes(blob.name.split('.').pop())) {
+              const fileURL = URL.createObjectURL(blob)
+              div.className = 'lineloadfile'
+              href.className = 'text-blue-600'
+              href.innerHTML = blob.name
+              href.setAttribute('href', fileURL)
+              href.setAttribute('download', blob.name + '.' + blob.name.split('.').pop())
+              div.appendChild(href)
+              document.getElementById('copypaste').appendChild(div)
+            } else if (docs.includes(blob.name.split('.').pop())) {
+              const fileURL = URL.createObjectURL(blob)
+              div.className = 'lineloadfile'
+              href.innerHTML = blob.name
+              href.setAttribute('href', fileURL)
+              href.setAttribute('download', blob.name + '.' + blob.name.split('.').pop())
+              div.appendChild(href)
+              document.getElementById('copypaste').appendChild(div)
+            } else if (audio.includes(blob.name.split('.').pop())) {
+              div.className = 'lineloadfile'
+              const fileURL = URL.createObjectURL(blob)
+              var myAudio = new Audio()
+              myAudio.src = fileURL
+              var hrefaudio = document.createElement('audio')
+              hrefaudio.innerHTML = 'Your browser does not support the\n' +
+                '      <code>audio</code> element.'
+              hrefaudio.setAttribute('src', fileURL)
+              hrefaudio.setAttribute('controls', 'true')
+              div.appendChild(hrefaudio)
+              document.getElementById('copypaste').appendChild(div)
+            } else {
+              const fileURL = URL.createObjectURL(blob)
+              div.className = 'lineloadfile'
+              href.className = 'text-blue-600'
+              href.innerHTML = blob.name
+              href.setAttribute('href', fileURL)
+              href.setAttribute('download', blob.name + '.' + blob.name.split('.').pop())
+              div.appendChild(href)
+            }
+            var formData = new FormData()
+            formData.append('files', blob)
+            const data = {
+              uid_task: selectedTask.value.uid,
+              name: formData
+            }
+            this.isloading = true
+            store.dispatch(CREATE_FILES_REQUEST, data).then(
+              resp => {
+                if (selectedTask.value.uid_customer === user.value.current_user_uid && selectedTask.value.status === 5) {
+                  // to refine
+                  this.isloading = false
+                  selectedTask.value.status = 9
+                }
+              })
+          }
+        }
+        setTimeout(() => {
+          var elmnt = document.getElementById('content').lastElementChild
+          elmnt.scrollIntoView({ behavior: 'smooth' })
+        }, 100)
+        //  console.log(blob.name.length)
+      })
     }
     return {
       updatecomment,
+      copypastefile,
       changevaluechecklist,
       handlercontextmenu,
       addchecklistelement,
@@ -536,6 +638,7 @@ export default {
       addsubmit,
       setCursorPosition,
       showAllMessages,
+      isloading: false,
       copyurl,
       changeEveryYearType,
       changeEveryMonthType,
@@ -581,6 +684,7 @@ export default {
       taskFiles: taskFiles,
       myFiles: myFiles,
       tasks: tasks,
+      Files: [],
       navigator: navigator,
       employeesByEmail: employeesByEmail,
       tags: computed(() => store.state.tasks.tags),
@@ -741,7 +845,7 @@ export default {
     </p>
   </modal-box-confirm>
   <div class="break-words">
-    <div class="column-resize" id="generalscroll">
+    <div class="column-resize" id="generalscroll" @focusin="copypastefile">
       <div />
       <div
         v-if="selectedTask.uid_parent !== '00000000-0000-0000-0000-000000000000' && tasks[selectedTask.uid_parent]"
@@ -2558,6 +2662,8 @@ export default {
     </div>
   </div>
   <div class="form-send-message">
+    <img src="/ajaxloader.gif" v-if="isloading" >
+    <div id="copypaste" ref="pastefile" class="сopypastefiles"></div>
     <div class="input-group">
         <span class="input-group-addon input-group-attach dark:bg-gray-800 dark:text-gray-100">
           <div class="example-1">
@@ -2589,6 +2695,7 @@ export default {
         v-model="taskMsg"
         class="form-control text-group-design task-msg dark:bg-gray-800 dark:text-gray-100"
         placeholder="Введите сообщение"
+        @click="copypastefile"
         @keydown.enter.exact.prevent="createTaskMsg"
         @keydown.enter.shift.exact.prevent="taskMsg += '\n'"
       ></textarea>

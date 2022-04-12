@@ -463,7 +463,7 @@ padding-right: 0 !important;
 }
 .back-hover
 {
-  background-color:#E4E3E5 !important;
+  background-color:#E4E3E5;
 }
 .calendar-nav-custom .vc-weekday:nth-child(7), .vc-weekday:nth-child(8)
 {
@@ -486,6 +486,9 @@ padding-right: 0 !important;
 .calendar-nav-custom .weekday-position-6:not(.is-not-in-month) .vc-day-content.vc-focusable, .weekday-position-7:not(.is-not-in-month) .vc-day-content.vc-focusable
 {
   color: #E23300 !important;
+}
+.vc-day :hover {
+  background-color: #CCC;
 }
 
 &, & * {

@@ -112,6 +112,7 @@ const menuClick = (event, item) => {
   if (item.uid === '2bad1413-a373-4926-8a3c-58677a680714') {
     store.commit('basic', { key: 'mainSectionState', value: 'greed' })
     store.commit('basic', { key: 'greedPath', value: 'dashboard' })
+    return
   }
 
   // Tasks list source

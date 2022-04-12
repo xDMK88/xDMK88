@@ -108,6 +108,12 @@ const menuClick = (event, item) => {
     store.dispatch('asidePropertiesToggle', false)
   }
 
+  // desktop check
+  if (item.uid === '2bad1413-a373-4926-8a3c-58677a680714') {
+    store.commit('basic', { key: 'mainSectionState', value: 'greed' })
+    store.commit('basic', { key: 'greedPath', value: 'dashboard' })
+  }
+
   // Tasks list source
   if (UID_TO_ACTION[item.uid] && item.type === 'uid') {
     store.dispatch(UID_TO_ACTION[item.uid])

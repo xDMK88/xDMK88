@@ -182,6 +182,7 @@ export default {
       }
       store.dispatch(CREATE_FILES_REQUEST, data).then(
         resp => {
+          selectedTask.value.has_files = true
           if (selectedTask.value.uid_customer === user.value.current_user_uid && (selectedTask.value.status === 5 || selectedTask.value.status === 7)) {
             // to refine
             selectedTask.value.status = 9
@@ -242,6 +243,7 @@ export default {
       }
       store.dispatch(CREATE_MESSAGE_REQUEST, data).then(
         resp => {
+          selectedTask.value.has_msgs = true
           if (selectedTask.value.uid_customer === user.value.current_user_uid && (selectedTask.value.status === 5 || selectedTask.value.status === 7)) {
             // to refine
             selectedTask.value.status = 9

@@ -184,7 +184,6 @@ onBeforeMount(() => {
 </script>
 
 <template>
-  {{ selectedTask }}
   <main-section>
     <TasksListNew
       v-if="mainSectionState === 'tasks'"

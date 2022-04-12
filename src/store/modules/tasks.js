@@ -19,6 +19,7 @@ function pad2 (n) {
 
 const state = {
   tasks: false,
+  unread: '',
   tags: {},
   selectedTag: null,
   subtasks: false,
@@ -239,6 +240,7 @@ const actions = {
       axios({ url: url, method: 'GET' })
         .then(resp => {
           commit(TASK.TASKS_SUCCESS, resp)
+          commit(TASK.UNREAD_TASKS_REQUEST, resp)
           if (resp.data.anothers_tags.length) {
             commit(TASK.ADD_TASK_TAGS, resp.data.anothers_tags)
           }
@@ -997,6 +999,9 @@ const mutations = {
         state.newConfig.leaves.splice(i, 1)
       }
     }
+  },
+  [TASK.UNREAD_TASKS_REQUEST]: (state, resp) => {
+    state.unread = resp
   },
   [TASK.TASKS_REQUEST]: state => {
     state.status = 'loading'

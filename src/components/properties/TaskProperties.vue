@@ -182,6 +182,11 @@ export default {
         uid_task: selectedTask.value.uid,
         name: formData
       }
+
+      for (const formItem of formData) {
+        store.commit('createLoadingFile', { msg: formItem[1].name, uid_creator: user.value.current_user_uid, date_create: new Date().toISOString() })
+      }
+
       store.dispatch(CREATE_FILES_REQUEST, data).then(
         resp => {
           selectedTask.value.has_files = true
@@ -2656,7 +2661,7 @@ export default {
                       {{ key.msg }}
                     </div>
                     <div
-                      v-if="key.date_create"
+                      v-if="key.date_create && key.file_size"
                       class="mt-1 flex items center justify-between text-gray-400 dark:text-gray-300 text-xs"
                     >
                       <p>{{ formatBytes(key.file_size) }}</p>

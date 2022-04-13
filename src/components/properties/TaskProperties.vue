@@ -15,6 +15,7 @@ import sanitizeHtml from 'sanitize-html'
 import linkify from 'vue-linkify'
 import { Tabs, Tab } from 'vue3-tabs-component'
 import ModalBoxConfirm from '@/components/modals/ModalBoxConfirm.vue'
+import { maska } from 'maska'
 export default {
   components: {
     DatePicker,
@@ -27,7 +28,8 @@ export default {
     ModalBoxConfirm
   },
   directives: {
-    linkify
+    linkify,
+    maska
   },
   filters: {
     shorten: (val, words = 2) => val.split(' ').slice(0, words).join(' ')
@@ -286,28 +288,48 @@ export default {
       const data = {
         uid_task: selectedTask.value.uid,
         str_date_begin: '0001-01-01T00:00:00',
-        str_date_end: '0001-01-01T00:00:00',
+        str_date_end: '0001-01-01T23:59:59',
         reset: 1
       }
       store.dispatch(TASK.CHANGE_TASK_DATE, data).then(
         resp => {
           selectedTask.value.term_customer = resp.data.term
-          this.range = {
-            start: '',
-            end: ''
-          }
+          //  const timestart = this.timeStart === '' ? 'T00:00:00' : 'T' + this.timeStart + ':00'
+          //  const timeend = this.timeEnd === '' ? 'T23:59:59' : 'T' + this.timeEnd + ':00'
+          this.range.start = new Date().getFullYear() + '-' + (pad2(new Date().getMonth() + 1)) + '-' + new Date().getDate() + 'T00:00:00'
+          this.range.end = new Date().getFullYear() + '-' + (pad2(new Date().getMonth() + 1)) + '-' + new Date().getDate() + 'T00:00:00'
+          this.timeEnd = ''
+          this.timeStart = ''
+          this.timeStartActive = false
         })
     }
     const handleInput = () => {
+      const timestart = this.timeStart === '' ? 'T00:00:00' : 'T' + this.timeStart + ':00'
+      const timeend = this.timeEnd === '' ? 'T23:59:59' : 'T' + this.timeEnd + ':00'
+      console.log(new Date(this.range.start).getFullYear() + '-' + (pad2(new Date(this.range.start).getMonth() + 1)) + '-' + new Date(this.range.start).getDate() + timestart)
+      const starttime = new Date(this.range.start).getFullYear() + '-' + (pad2(new Date(this.range.start).getMonth() + 1)) + '-' + pad2(new Date(this.range.start).getDate()) + timestart
+      const startend = new Date(this.range.end).getFullYear() + '-' + (pad2(new Date(this.range.start).getMonth() + 1)) + '-' + pad2(new Date(this.range.end).getDate()) + timeend
       const data = {
         uid_task: selectedTask.value.uid,
-        str_date_begin: getTodaysDate(this.range.start),
-        str_date_end: getTodaysDate(this.range.end),
+        str_date_begin: starttime,
+        str_date_end: startend,
         reset: 0
       }
       store.dispatch(TASK.CHANGE_TASK_DATE, data).then(
         resp => {
           selectedTask.value.term_customer = resp.data.term
+          this.timeStart = timestart !== '' ? '' : timestart
+          this.timeEnd = timeend !== '' ? '' : timeend
+          this.timeStartActive = true
+        })
+    }
+    const resetRepeat = () => {
+      const data = {
+        uid: selectedTask.value.uid
+      }
+      store.dispatch(TASK.RESET_REPEAT_CHANGE, data).then(
+        resp => {
+          selectedTask.value.SeriesType = 0
         })
     }
     const copyurl = (e) => {
@@ -621,7 +643,39 @@ export default {
         //  console.log(blob.name.length)
       })
     }
+    const TimeSelectStart = () => {
+      this.timeEditStart = !this.timeEditStart
+    }
+    const TimeSelectEnd = () => {
+      this.timeEditEnd = !this.timeEditEnd
+    }
+    const TimeActiveStart = (event) => {
+      if (event.target.value.length > 1) {
+        this.timeEndRange = true
+      } else {
+        this.timeEndRange = false
+      }
+    }
+    const calendarTimeStartChange = (event) => {
+      const timeStartValue = event.target.value
+      this.$refs.inputTimeStart.value = timeStartValue
+    }
+    const calendarTimeEndChange = (event) => {
+      const timeEndValue = event.target.value
+      this.$refs.inputTimeEnd.value = timeEndValue
+    }
+    const onDayClick = () => {
+      this.timeStartActive = true
+    }
     return {
+      resetRepeat,
+      onDayClick,
+      pad2,
+      TimeSelectStart,
+      TimeSelectEnd,
+      TimeActiveStart,
+      calendarTimeStartChange,
+      calendarTimeEndChange,
       updatecomment,
       copypastefile,
       changevaluechecklist,
@@ -731,6 +785,8 @@ export default {
       masks: {
         weekdays: 'WW'
       },
+      timeStart: selectedTask.value.term_customer === '' ? '' : new Date(selectedTask.value.customer_date_begin).toLocaleTimeString(),
+      timeEnd: selectedTask.value.term_customer === '' ? '' : new Date(selectedTask.value.customer_date_end).toLocaleTimeString(),
       showConfirm: false,
       firstDayOfWeek: 2,
       selected: {},
@@ -759,7 +815,10 @@ export default {
       checklisteditable: false,
       timeEditStart: false,
       timeEditEnd: false,
+      timeEndRange: false,
+      timeStartActive: false,
       checklistshow: false,
+      TimeActive: false,
       checklistshowbutton: false,
       checklistshowelement: false
     }
@@ -829,6 +888,12 @@ export default {
     },
     moveToToday () {
       this.$refs.calendar.move(new Date())
+    },
+    addZero (i) {
+      if (i < 10) {
+        i = '0' + i
+      }
+      return i
     }
   }
 }
@@ -1235,7 +1300,6 @@ export default {
                   ref="calendar"
                   v-model="range"
                   is-range
-                  mode="dateTime"
                   is24hr
                   isDragging
                   :minute-increment="10"
@@ -1245,17 +1309,93 @@ export default {
                   :masks="masks"
                   delay-on-mouse-over="10"
                   datePicker.updateOnInput="true"
+                  @dayclick="onDayClick"
                 >
                   <template v-slot:footer>
-                    <div class="form-group display-none">
-                      <div :contenteditable="timeEditStart"></div>
-                      <div v-for="(key, value) in 23" :key="value">
-                        <div v-if="key<10">0{{key}}:00</div>
-                        <div v-else>{{key}}:00</div>
+                    <div v-if="timeStartActive">
+                    <div class="timestamp-custom">Установить напоминание</div>
+                    <div class="form-group form-arrow">
+                      <div class="input-group">
+                      <input type="text" v-maska="'##:##'" v-model="timeStart" ref="inputTimeStart" name="timestart" placeholder="Время" @keyup = "TimeActiveStart($event)"/>
+                      <span class="input-group-addon input-group-time-addon">
+                        <button class="toggleStartTime" @click="TimeSelectStart">
+                          <svg width="10" height="10" viewBox="0 0 88 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd" clip-rule="evenodd" d="M85.6569 2.34315C88.781 5.46734 88.781 10.5327 85.6569 13.6569L49.6569 49.6569C46.5327 52.781 41.4673 52.781 38.3431 49.6569L2.34315 13.6569C-0.781052 10.5327 -0.781052 5.46734 2.34315 2.34315C5.46734 -0.781049 10.5327 -0.781049 13.6569 2.34315L44 32.6863L74.3431 2.34315C77.4673 -0.781049 82.5327 -0.781049 85.6569 2.34315Z" fill="black" fill-opacity="0.5"/>
+                          </svg>
+                        </button>
+                      </span>
                       </div>
                     </div>
+                    <div class="timeselectstart" v-if="timeEditStart">
+                      <div class="col-md-3 col-time-custome">
+                      <div v-for="(key, value) in 6" :key="value" class="form_radio_btn">
+                        <input :id="'c1' + value" type="radio" @change="calendarTimeStartChange($event)" :value="pad2(value) + ':00'" name="radio" :checked="(pad2(new Date(selectedTask.customer_date_begin).getHours()) + ':' + pad2(new Date(selectedTask.customer_date_begin).getMinutes()))===(pad2(value) + ':00')">
+                        <label :for="'c1' + value">{{pad2(value)}}:00</label>
+                      </div>
+                      </div>
+                      <div class="col-md-3 col-time-custome">
+                      <div v-for="(key, value) in 6" :key="value" class="form_radio_btn">
+                        <input :id="'c2' + value" type="radio" @change="calendarTimeStartChange($event)" :value="pad2(value + 6) + ':00'" name="radio" :checked="(pad2(new Date(selectedTask.customer_date_begin).getHours()) + ':' + pad2(new Date(selectedTask.customer_date_begin).getMinutes()))===(pad2(value + 6) + ':00')">
+                        <label :for="'c2' + value">{{pad2(value + 6) }}:00</label>
+                      </div>
+                      </div>
+                      <div class="col-md-3 col-time-custome">
+                        <div v-for="(key, value) in 6" :key="value" class="form_radio_btn">
+                          <input :id="'c3' + value" type="radio" @change="calendarTimeStartChange($event)" :value="(value + 12)  + ':00'" name="radio" :checked="(pad2(new Date(selectedTask.customer_date_begin).getHours()) + ':' + pad2(new Date(selectedTask.customer_date_begin).getMinutes()))===(value + 12 + ':00')">
+                          <label :for="'c3' + value">{{value + 12 }}:00</label>
+                        </div>
+                      </div>
+                      <div class="col-md-3 col-time-custome">
+                        <div v-for="(key, value) in 6" :key="value" class="form_radio_btn">
+                          <input :id="'c4' + value" type="radio" @change="calendarTimeStartChange($event)" :value="(value + 18) + ':00'" name="radio" :checked="(pad2(new Date(selectedTask.customer_date_begin).getHours()) + ':' + pad2(new Date(selectedTask.customer_date_begin).getMinutes()))===(value + 18 + ':00')">
+                          <label :for="'c4' + value">{{value + 18 }}:00</label>
+                        </div>
+                      </div>
+                    </div>
+                    </div>
+                    <div v-if="timeEndRange = timeStart !== ''">
+                    <div class="timestamp-custom">Установить период</div>
+                    <div class="form-group form-arrow">
+                      <div class="input-group">
+                      <input type="text" v-maska="'##:##'" v-model="timeEnd" name="timeend" placeholder="Время" ref="inputTimeEnd"/>
+                      <span class="input-group-addon input-group-time-addon">
+                        <button class="toggleStartTime" @click="TimeSelectEnd">
+                          <svg width="10" height="10" viewBox="0 0 88 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd" clip-rule="evenodd" d="M85.6569 2.34315C88.781 5.46734 88.781 10.5327 85.6569 13.6569L49.6569 49.6569C46.5327 52.781 41.4673 52.781 38.3431 49.6569L2.34315 13.6569C-0.781052 10.5327 -0.781052 5.46734 2.34315 2.34315C5.46734 -0.781049 10.5327 -0.781049 13.6569 2.34315L44 32.6863L74.3431 2.34315C77.4673 -0.781049 82.5327 -0.781049 85.6569 2.34315Z" fill="black" fill-opacity="0.5"/>
+                          </svg>
+                        </button>
+                      </span>
+                      </div>
+                    </div>
+                    <div class="timeselectend" v-if="timeEditEnd">
+                      <div class="col-md-3 col-time-custome">
+                        <div v-for="(key, value) in 6" :key="value" class="form_radio_btn">
+                          <input :id="'c1' + value" type="radio" @change="calendarTimeEndChange($event)" :value="pad2(value) + ':00'" name="radio" :checked="(pad2(new Date(selectedTask.customer_date_begin).getHours()) + ':' + pad2(new Date(selectedTask.customer_date_begin).getMinutes()))===(pad2(value) + ':00')">
+                          <label :for="'c1' + value">{{pad2(value)}}:00</label>
+                        </div>
+                      </div>
+                      <div class="col-md-3 col-time-custome">
+                        <div v-for="(key, value) in 6" :key="value" class="form_radio_btn">
+                          <input :id="'c2' + value" type="radio" @change="calendarTimeEndChange($event)" :value="pad2(value + 6) + ':00'" name="radio" :checked="(pad2(new Date(selectedTask.customer_date_begin).getHours()) + ':' + pad2(new Date(selectedTask.customer_date_begin).getMinutes()))===(pad2(value + 6) + ':00')">
+                          <label :for="'c2' + value">{{pad2(value + 6) }}:00</label>
+                        </div>
+                      </div>
+                      <div class="col-md-3 col-time-custome">
+                        <div v-for="(key, value) in 6" :key="value" class="form_radio_btn">
+                          <input :id="'c3' + value" type="radio" @change="calendarTimeEndChange($event)" :value="(value + 12)  + ':00'" name="radio" :checked="(pad2(new Date(selectedTask.customer_date_begin).getHours()) + ':' + pad2(new Date(selectedTask.customer_date_begin).getMinutes()))===(value + 12 + ':00')">
+                          <label :for="'c3' + value">{{value + 12 }}:00</label>
+                        </div>
+                      </div>
+                      <div class="col-md-3 col-time-custome">
+                        <div v-for="(key, value) in 6" :key="value" class="form_radio_btn">
+                          <input :id="'c4' + value" type="radio" @change="calendarTimeEndChange($event)" :value="(value + 18) + ':00'" name="radio" :checked="(pad2(new Date(selectedTask.customer_date_begin).getHours()) + ':' + pad2(new Date(selectedTask.customer_date_begin).getMinutes()))===(value + 18 + ':00')">
+                          <label :for="'c4' + value">{{value + 18 }}:00</label>
+                        </div>
+                      </div>
+                    </div>
+                    </div>
                     <div class="">
-                      <button @click="handleInput" @click.stop="close" class="btn-save-popover">Сохранить</button>
+                      <button @click="handleInput" @click.stop="close" class="btn-save-popover">Готово</button>
                     </div>
                   </template>
                 </DatePicker>
@@ -1683,7 +1823,7 @@ export default {
               </div>
             </div>
           </template>
-          <div v-if="selectedTask.term_customer!==''">
+          <div v-if="selectedTask.term_customer!=='' && selectedTask.SeriesType!==0">
             <div
               v-if="selectedTask.SeriesEnd!==''"
               ref="btnRefRepeat"
@@ -1731,7 +1871,7 @@ export default {
               {{ day[selectedTask.SeriesYearDayOfWeek] }}
             </span>
               </span>
-              <button class="btn-close-popover"><svg width="5" height="5" viewBox="0 0 16 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <button class="btn-close-popover" @click="resetRepeat"><svg width="5" height="5" viewBox="0 0 16 15" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M14.8483 2.34833C15.317 1.8797 15.317 1.11991 14.8483 0.651277C14.3797 0.182647 13.6199 0.182647 13.1513 0.651277L7.99981 5.80275L2.84833 0.651277C2.3797 0.182647 1.61991 0.182647 1.15128 0.651277C0.682647 1.11991 0.682647 1.8797 1.15128 2.34833L6.30275 7.4998L1.15128 12.6513C0.682647 13.1199 0.682647 13.8797 1.15128 14.3483C1.61991 14.817 2.3797 14.817 2.84833 14.3483L7.99981 9.19686L13.1513 14.3483C13.6199 14.817 14.3797 14.817 14.8483 14.3483C15.317 13.8797 15.317 13.1199 14.8483 12.6513L9.69686 7.4998L14.8483 2.34833Z" fill="black" fill-opacity="0.5"/>
               </svg>
               </button>

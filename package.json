@@ -21,6 +21,7 @@
     "core-js": "^3.6.5",
     "he-tree-vue": "^3.0.3",
     "htmlparser2": "^7.2.0",
+    "maska": "^1.5.0",
     "notiwind": "^1.2.5",
     "numeral": "^2.0.6",
     "sanitize-html": "^2.7.0",

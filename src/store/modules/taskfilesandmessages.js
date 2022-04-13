@@ -76,6 +76,7 @@ const actions = {
   [CREATE_FILES_REQUEST]: ({ commit, dispatch }, data) => {
     return new Promise((resolve, reject) => {
       const url = 'https://web.leadertask.com/api/v1/tasksfiles/several?uid_task=' + data.uid_task
+      console.log(data)
       axios({
         url: url,
         method: 'POST',
@@ -85,7 +86,7 @@ const actions = {
         }
       })
         .then(resp => {
-          commit(CREATE_FILES_REQUEST, data)
+          commit(CREATE_FILES_REQUEST, resp)
           resolve(resp)
         }).catch(err => {
           reject(err)
@@ -215,9 +216,25 @@ const mutations = {
     state.file = resp.data.files
     state.hasLoadedOnce = true
   },
+  [CREATE_FILE_REQUEST]: (state, resp) => {
+    state.status = 'success'
+    state.hasLoadedOnce = true
+  },
+  createLoadingFile (state, data) {
+    data.loading = true
+    state.messages.push(data)
+  },
   [CREATE_FILES_REQUEST]: (state, resp) => {
     state.status = 'success'
     state.hasLoadedOnce = true
+    for (let i = 0; i < state.messages.length; i++) {
+      state.messages = state.messages.filter(item => !item.loading)
+    }
+    for (const file of resp.data.success) {
+      file.msg = file.file_name
+      state.messages.push(file)
+    }
+    console.log('create fileS request', resp)
   },
   [MYFILES]: (state, myfiles) => {
     state.status = 'success'
@@ -244,9 +261,6 @@ const mutations = {
       for (const file of state.files) {
         const fileDate = new Date(file.date_create)
         for (var i = 0; i < state.messages.length; i++) {
-          if (state.messages[i].uid_file) {
-            continue
-          }
           const messageDate = new Date(state.messages[i].date_create)
           // at the start
           if (i === 0) {

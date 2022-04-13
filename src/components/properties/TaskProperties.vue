@@ -180,8 +180,14 @@ export default {
         uid_task: selectedTask.value.uid,
         name: formData
       }
+
+      for (const formItem of formData) {
+        store.commit('createLoadingFile', { msg: formItem[1].name, uid_creator: user.value.current_user_uid, date_create: new Date().toISOString() })
+      }
+
       store.dispatch(CREATE_FILES_REQUEST, data).then(
         resp => {
+          selectedTask.value.has_files = true
           if (selectedTask.value.uid_customer === user.value.current_user_uid && (selectedTask.value.status === 5 || selectedTask.value.status === 7)) {
             // to refine
             selectedTask.value.status = 9
@@ -242,6 +248,7 @@ export default {
       }
       store.dispatch(CREATE_MESSAGE_REQUEST, data).then(
         resp => {
+          selectedTask.value.has_msgs = true
           if (selectedTask.value.uid_customer === user.value.current_user_uid && (selectedTask.value.status === 5 || selectedTask.value.status === 7)) {
             // to refine
             selectedTask.value.status = 9
@@ -1178,8 +1185,10 @@ export default {
                     fill-opacity="0.5"
                   />
                 </svg>
-                <span class="rounded">
-                  {{employeesByEmail[selectedTask.emails.toLowerCase()].name}}
+                <span class="rounded"
+                  v-if="selectedTask.emails"
+                >
+                  {{ employeesByEmail[selectedTask.emails.toLowerCase()].name }}
                 </span>
                 <button @click="resetAccess" class="btn-close-popover"><svg width="5" height="5" viewBox="0 0 16 15" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M14.8483 2.34833C15.317 1.8797 15.317 1.11991 14.8483 0.651277C14.3797 0.182647 13.6199 0.182647 13.1513 0.651277L7.99981 5.80275L2.84833 0.651277C2.3797 0.182647 1.61991 0.182647 1.15128 0.651277C0.682647 1.11991 0.682647 1.8797 1.15128 2.34833L6.30275 7.4998L1.15128 12.6513C0.682647 13.1199 0.682647 13.8797 1.15128 14.3483C1.61991 14.817 2.3797 14.817 2.84833 14.3483L7.99981 9.19686L13.1513 14.3483C13.6199 14.817 14.3797 14.817 14.8483 14.3483C15.317 13.8797 15.317 13.1199 14.8483 12.6513L9.69686 7.4998L14.8483 2.34833Z" fill="black" fill-opacity="0.5"/>
@@ -2646,7 +2655,7 @@ export default {
                       {{ key.msg }}
                     </div>
                     <div
-                      v-if="key.date_create"
+                      v-if="key.date_create && key.file_size"
                       class="mt-1 flex items center justify-between text-gray-400 dark:text-gray-300 text-xs"
                     >
                       <p>{{ formatBytes(key.file_size) }}</p>

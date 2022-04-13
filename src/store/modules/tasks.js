@@ -20,6 +20,7 @@ function pad2 (n) {
 const state = {
   tasks: false,
   unread: '',
+  unreadCustomersUid: [],
   tags: {},
   selectedTag: null,
   subtasks: false,
@@ -1001,7 +1002,10 @@ const mutations = {
     }
   },
   [TASK.UNREAD_TASKS_REQUEST]: (state, resp) => {
-    state.unread = resp
+    state.unread = resp.data.tasks.length
+    for (let i = 0; i < state.unread; i++) {
+      state.unreadCustomersUid.push(resp.data.tasks[i].uid_customer)
+    }
   },
   [TASK.TASKS_REQUEST]: state => {
     state.status = 'loading'

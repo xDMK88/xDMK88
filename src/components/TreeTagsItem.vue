@@ -10,7 +10,6 @@ export default {
     const store = useStore()
     const selectedTask = computed(() => store.state.tasks.selectedTask)
     const changetags = (tags) => {
-      console.log(!selectedTask.value.tags.includes(tags))
       if (!selectedTask.value.tags.includes(tags)) {
         selectedTask.value.tags.push(tags)
       } else {

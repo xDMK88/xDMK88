@@ -1882,6 +1882,16 @@ label
   width:50%;
   float:left
 }
+.col-md-4
+{
+  width:33.33333%;
+  float:left
+}
+.col-md-3
+{
+  width:25%;
+  float:left
+}
 .checklistadd
 {
   display: none;
@@ -1951,4 +1961,122 @@ label
 {
   width:50px;
   float:left;
+}
+.timestamp-custom
+{
+  margin-left: 20px;
+  font-weight: bold;
+  font-size: 16px;
+  margin-top: 5px;
+  margin-bottom: 10px;
+}
+.form-arrow
+{
+  position: relative;
+  width: 150px;
+  margin-left: 20px;
+}
+.form-arrow input
+{
+  border-top:1px solid #cbcbcb;
+  border-bottom:1px solid #cbcbcb;
+  border-left:1px solid #cbcbcb;
+  border-bottom-left-radius: 5px;
+  border-top-left-radius: 5px;
+  height: 30px;
+  width: 150px;
+  font-size: 16px;
+  padding: 6px 12px;
+}
+.input-group-time-addon
+{
+  border-right: 1px solid #cbcbcb;
+  border-bottom: 1px solid #cbcbcb;
+  border-top: 1px solid #cbcbcb;
+  border-bottom-right-radius: 5px;
+  border-top-right-radius: 5px;
+}
+.vc-timestamp-select-arrow
+{
+}
+.timeselectstart
+{
+
+  display: flex;
+  margin-bottom: 10px;
+  font-size: 14px;
+  padding: 5px;
+}
+.timeselectend
+{
+
+  display: flex;
+  margin-bottom: 10px;
+  font-size: 14px;
+  padding: 5px;
+}
+.col-time-custome
+{
+  line-height: 23px;
+  text-align: center;
+}
+audio
+{
+  width: 268px;
+  border-bottom: 1px solid #c9c7c7;
+}
+audio::-webkit-media-controls-enclosure {
+  background-color: transparent;
+  border-bottom: 1px solid #f0f0f0;
+}
+audio::-webkit-media-controls-timeline {}
+audio::-webkit-media-controls-volume-control-container {}
+audio::-webkit-media-controls-volume-control-container.closed {}
+audio::-webkit-media-controls-volume-slider-container {}
+audio::-webkit-media-controls-volume-slider {}
+audio::-webkit-media-controls-seek-back-button {}
+audio::-webkit-media-controls-seek-forward-button {}
+audio::-webkit-media-controls-fullscreen-button {}
+audio::-webkit-media-controls-rewind-button {}
+audio::-webkit-media-controls-return-to-realtime-button {}
+audio::-webkit-media-controls-toggle-closed-captions-button {}
+.btn-timestamp
+{
+  background-color: white;
+  padding: 2px;
+}
+.btn-timestamp.timeBtnActive
+{
+  background-color: #F5B44A;
+  border-radius:5px;
+}
+.form_radio_btn {
+  line-height: 20px;
+}
+.form_radio_btn input[type=radio] {
+  display: none;
+}
+.form_radio_btn label {
+  display: inline-block;
+  cursor: pointer;
+  padding: 0 8px;
+  line-height: 27px;
+  border-radius: 6px;
+  user-select: none;
+}
+
+/* Checked */
+.form_radio_btn input[type=radio]:checked + label {
+  background: #ffe0a6;
+}
+
+/* Hover */
+.form_radio_btn label:hover {
+  color: #666;
+}
+
+/* Disabled */
+.form_radio_btn input[type=radio]:disabled + label {
+  background: #efefef;
+  color: #666;
 }

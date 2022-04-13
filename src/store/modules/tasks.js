@@ -906,9 +906,9 @@ const actions = {
     })
   },
   //  Повтор API
-  [TASK.RESET_REPEAT_CHANGE]: ({ commit, dispatch }, uid) => {
+  [TASK.RESET_REPEAT_CHANGE]: ({ commit, dispatch }, data) => {
     return new Promise((resolve, reject) => {
-      const url = 'https://web.leadertask.com/api/v1/taskrepeat/reset?uid=' + uid
+      const url = 'https://web.leadertask.com/api/v1/taskrepeat/reset?uid=' + data.uid
       axios({ url: url, method: 'PATCH' })
         .then(resp => {
           resolve(resp)

@@ -2086,11 +2086,11 @@ export default {
                     </div>
                     </div>-->
                     <ul
-                      v-for="(value,index, ind) in tags"
-                      :key="ind"
+                      v-for="(value, index) in tags"
+                      :key="index"
                     >
                       <TreeTagsItem
-                        v-if="value.uid_parent==='00000000-0000-0000-0000-000000000000'"
+                        v-if="value.uid_parent === '00000000-0000-0000-0000-000000000000'"
                         class="item"
                         :model="value"
                       />

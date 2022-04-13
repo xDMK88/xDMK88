@@ -1,7 +1,3 @@
-<!--
-<script src="https://web.leadertask.com/scripts/websync/fm.min.js"></script>
-<script src="https://web.leadertask.com/scripts/websync/fm.websync.min.js"></script>
--->
 <script setup>
 import { onBeforeMount, onMounted, computed } from 'vue'
 import { useStore } from 'vuex'

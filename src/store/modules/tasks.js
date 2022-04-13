@@ -1168,6 +1168,7 @@ const mutations = {
     state.project = data.value
   },
   [TASK.CHANGE_TASK_CHEKCLIST]: (state, data) => {
+    state.newtasks[data.uid_task].info.checklist = data.checklist
     state.checklist.push(data.value)
   },
   [TASK.CHANGE_TASK_ACCESS]: (state, data) => {

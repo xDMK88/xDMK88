@@ -2431,11 +2431,7 @@ export default {
           </Transition>
         </div>
       </div>
-      <Checklist
-        class="mt-3"
-        v-if="selectedTask.checklist"
-        :taskUid="selectedTask.uid"
-      />
+      <!--
       <div
         v-if="selectedTask.checklist && selectedTask.checklist.replace(/\r?\n|\r/g, '')"
         class="mt-3 checklist-custom"
@@ -2464,19 +2460,12 @@ export default {
       <button  v-if="selectedTask.checklist" class="btn btn-transperant" @click="addchecklistelement">
         Добавить
       </button>
-      <div class="mt-3 checklist-custom">
-        <ul class="check-padding">
-        <li class="checklistadd" :class="{ checklistnew: checklistshow }" @click="checklistedit">
-          <input type="checkbox" value="0" ref="checknew" /> &nbsp;
-          <span :contenteditable="checklisteditable" @focusout="removeEditCheckList" @keyup="addCheckName(this.$refs.checknew.value, $event)" data-placeholder="Новый чек" class="placeholderchecklist"></span>
-        </li>
-        </ul>
-        <div>
-          <button class="btn btn-transperant btn-addcheclist" :class="{checklistnew:checklistshowbutton}" @click="addchecklistelement">
-            Добавить
-          </button>
-        </div>
-      </div>
+      -->
+      <Checklist
+        class="mt-3 checklist-custom"
+        v-if="selectedTask.checklist || checklistshow"
+        :taskUid="selectedTask.uid"
+      />
       <div class="mt-3 description-content" @click="editcomment">
         <div
           v-html="selectedTask.comment ? selectedTask.comment.replaceAll('\n','<br/>') : ''"

@@ -21,7 +21,7 @@ const isImageLoaded = ref(false)
 
 const getImgUrl = (uid, extension, filename) => {
   // computed value triggered after template change
-  if (isImageLoaded) return
+  if (isImageLoaded.value) return
   store.dispatch(GETFILES, uid).then(resp => {
     const fileURL = window.URL.createObjectURL(new Blob([resp.data]))
     var myImage = new Image()
@@ -86,7 +86,12 @@ const getAnyUrl = (uid, extension, filename) => {
       target="_blank"
     >
       {{ getImgUrl(props.file.uid, props.file.file_name.split('.').pop(), props.file.file_name) }}
-      <ChatLoader v-if="!isImageLoaded" />
+      <ChatLoader
+        v-if="!isImageLoaded"
+        width="250px"
+        height="150px"
+        align="center"
+      />
     </a>
   </span>
 

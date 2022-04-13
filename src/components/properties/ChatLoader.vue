@@ -1,5 +1,8 @@
 <template>
-  <div class="chat-loader">
+  <div
+    class="chat-loader"
+    :style="{ width: props.width, height: props.height, alignItems: props.align, justifyContent: props.align }"
+  >
     <svg
       class="chat-loader__svg w-8 h-8 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600"
       viewBox="0 0 100 101"
@@ -18,13 +21,29 @@
   </div>
 </template>
 
+<script setup>
+import { defineProps } from 'vue'
+
+const props = defineProps({
+  width: {
+    type: String,
+    default: '100%'
+  },
+  height: {
+    type: String,
+    default: '100%'
+  },
+  align: {
+    type: String,
+    default: 'flex-start'
+  }
+})
+
+</script>
+
 <style scoped>
 .chat-loader {
   position: relative;
   display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 250px;
-  height: 150px;
 }
 </style>

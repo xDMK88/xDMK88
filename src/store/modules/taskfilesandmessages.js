@@ -31,7 +31,8 @@ const state = {
   /* files */
   files: [],
   file: '',
-  myfiles: {}
+  myfiles: {},
+  uploadStarted: false
 }
 
 const getters = {}
@@ -76,6 +77,7 @@ const actions = {
   [CREATE_FILES_REQUEST]: ({ commit, dispatch }, data) => {
     return new Promise((resolve, reject) => {
       const url = 'https://web.leadertask.com/api/v1/tasksfiles/several?uid_task=' + data.uid_task
+      state.uploadStarted = true
       console.log(data)
       axios({
         url: url,
@@ -87,9 +89,11 @@ const actions = {
       })
         .then(resp => {
           commit(CREATE_FILES_REQUEST, resp)
+          state.uploadStarted = false
           resolve(resp)
         }).catch(err => {
           reject(err)
+          state.uploadStarted = false
         })
     })
   },

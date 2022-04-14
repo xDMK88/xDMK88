@@ -19,6 +19,9 @@ function pad2 (n) {
 
 const state = {
   tasks: false,
+  unread: '',
+  unreadCustomersUid: [],
+  customersTasks: {},
   tags: {},
   selectedTag: null,
   subtasks: false,
@@ -239,6 +242,7 @@ const actions = {
       axios({ url: url, method: 'GET' })
         .then(resp => {
           commit(TASK.TASKS_SUCCESS, resp)
+          commit(TASK.UNREAD_TASKS_REQUEST, resp)
           if (resp.data.anothers_tags.length) {
             commit(TASK.ADD_TASK_TAGS, resp.data.anothers_tags)
           }
@@ -1000,6 +1004,13 @@ const mutations = {
       if (taskUid === state.newConfig.leaves[i]) {
         state.newConfig.leaves.splice(i, 1)
       }
+    }
+  },
+  [TASK.UNREAD_TASKS_REQUEST]: (state, resp) => {
+    state.unread = resp.data.tasks.length
+    for (let i = 0; i < state.unread; i++) {
+      state.unreadCustomersUid.push(resp.data.tasks[i].uid_customer)
+      // state.customersTasks[state.unreadCustomersUid[i]] = state.employees.employees
     }
   },
   [TASK.TASKS_REQUEST]: state => {

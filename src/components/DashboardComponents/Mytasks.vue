@@ -4,7 +4,7 @@ import calendar from '@/icons/calendar.js'
 </script>
 
 <template>
-    <div class="flex bg-white rounded-xl w-3/5">
+    <div>
         <span class="font-bold m-2 text-lg">Сегодня</span>
         <icon
         :path="calendar"
@@ -12,5 +12,6 @@ import calendar from '@/icons/calendar.js'
         :width="calendar.width"
         :viewBox="calendar.viewBox"
         />
+        <slot></slot>
     </div>
 </template>

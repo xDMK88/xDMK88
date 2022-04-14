@@ -1,8 +1,8 @@
 
 <script setup>
-import Todayblock from '@/components/Todayblock.vue'
-import Unreadblock from '@/components/Unreadblock.vue'
-import Focusblock from '@/components/Focusblock.vue'
+import Mytasks from '@/components/DashboardComponents/Mytasks.vue'
+import Unreadblock from '@/components/DashboardComponents/Unreadblock.vue'
+import Focusblock from '@/components/DashboardComponents/Focusblock.vue'
 import { computed } from 'vue'
 import { useStore } from 'vuex'
 
@@ -19,26 +19,17 @@ const unreadCustomersUid = computed(() => {
 const employees = computed(() => {
   return store.state.employees.employees
 })
-
 </script>
 
 <template>
   <div>
-    <h1>Рабочий стол</h1>
-    <span>У вас всего: {{ unread }} непрочитанных блоков задач!</span>
-    <span class="about" v-for="(uid, id) in unreadCustomersUid" :key="unreadCustomersUid[id]">
-      Заказчик: {{ employees[uid].name }}
-    </span>
+    <h1 class="text-xl">Рабочий стол</h1>
   </div>
   <div class="flex" style="justify-content: space-between">
-    <todayblock></todayblock>
-    <unreadblock></unreadblock>
-    <focusblock></focusblock>
+    <mytasks class="flex-col bg-white rounded-xl w-3/12 overflow-auto">{{ unread }}</mytasks>
+    <unreadblock class="flex-col bg-white rounded-xl h-64 w-5/12 overflow-auto">
+      <div>{{ employees }}</div>
+    </unreadblock>
+    <focusblock class="flex-col bg-white rounded-xl w-3/12 h-64 overflow-auto">{{ unreadCustomersUid }}</focusblock>
   </div>
 </template>
-
-<style scoped>
-  .about{
-    display: block;
-  }
-</style>

@@ -4,7 +4,7 @@ import focus from '@/icons/focus.js'
 </script>
 
 <template>
-    <div class="flex bg-white rounded-xl w-3/5">
+    <div>
         <span class="font-bold m-2 text-lg">Задачи в фокусе</span>
         <icon
         :path="focus"
@@ -12,5 +12,6 @@ import focus from '@/icons/focus.js'
         :width="focus.width"
         :viewBox="focus.viewBox"
         />
+        <slot></slot>
     </div>
 </template>

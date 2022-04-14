@@ -2598,7 +2598,7 @@ export default {
                 <div
                   class="mt-1 msg-custom-chat-right bg-[#FCEAEA] dark:bg-gray-800 text-sm dark:text-gray-100" @contextmenu="handlercontextmenu"
                 >
-                  <ChatLoader v-if="uploadStarted" />
+                  <ChatLoader v-if="uploadStarted && key.loading" />
                   <div v-html="key.msg.replaceAll('\n', '<br/>')" v-linkify>
                   </div>
                   <div

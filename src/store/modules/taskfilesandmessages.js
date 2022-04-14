@@ -256,44 +256,13 @@ const mutations = {
     state.files = []
   },
   [MERGE_FILES_WITH_MESSAGES]: state => {
-    if (state.messages.length === 0) {
-      for (const file of state.files) {
-        file.msg = file.file_name
-        file._isAdded = true
-        state.messages.push(file)
-      }
-    } else {
-      for (const file of state.files) {
-        const fileDate = new Date(file.date_create)
-        for (var i = 0; i < state.messages.length; i++) {
-          const messageDate = new Date(state.messages[i].date_create)
-          // at the start
-          if (i === 0) {
-            if ((fileDate < messageDate) && (!file._isAdded)) {
-              file.msg = file.file_name
-              file._isAdded = true
-              state.messages.unshift(file)
-            }
-          // at the end
-          } else if (i === state.messages.length - 1) {
-            const fileDate = new Date(file.date_create)
-            if ((fileDate > messageDate) && (!file._isAdded)) {
-              file.msg = file.file_name
-              file._isAdded = true
-              state.messages.push(file)
-            }
-          } else {
-            const secondMessageDate = new Date(state.messages[i + 1].date_create)
-            const fileDate = new Date(file.date_create)
-            if ((fileDate < secondMessageDate) && (!file._isAdded)) {
-              file.msg = file.file_name
-              file._isAdded = true
-              state.messages.splice(i + 1, 0, file)
-            }
-          }
-        }
-      }
-    }
+    state.files.forEach(item => {
+      item.msg = item.file_name
+    })
+    state.messages = state.messages.concat(state.files)
+    state.messages.sort((a, b) => {
+      return new Date(a.date_create) - new Date(b.date_create)
+    })
   },
   [TOGGLE_UPLOAD_STATUS]: state => {
     state.uploadStarted = !state.uploadStarted

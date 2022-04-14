@@ -1240,6 +1240,11 @@ label
 {
   float: right;
 }
+.ready-button
+{
+  margin: 5px auto;
+  display: table;
+}
 .btn-save-repeat
 {
   width: 85px;
@@ -1265,7 +1270,8 @@ label
 }
 .top-panel-repeat
 {
-  height: 40px;
+  margin:0 auto;
+  display: table;
 }
 .repeat-seleclist label
 {
@@ -1282,13 +1288,15 @@ label
 {
   display: flex;
   font-size:12px;
-  float: left;
 
 }
-.every-content label
+.top-panel-repeat label
 {
   margin-right: 5px;
-  margin-top: 0px;
+  margin-top: 0;
+  font-size: 14px;
+  display: inline-block;
+  width: 100%;
 }
 
 .everyweek-content
@@ -1328,7 +1336,6 @@ label
 .everymonth-content
 {
   font-size:12px;
-  float: left;
 }
 .everymonth-content label
 {
@@ -1337,25 +1344,23 @@ label
 }
 .form-everymonth-container
 {
-  display: inline-block;
-  width: 225px;
+
 }
 .btn-day-month
 {
-  background: #F0F0F0;
   padding: 5px;
-  height: 20px;
+  height: 30px;
   width: 30px;
-  border: 1px solid #F0F0F0;
+  margin: 2px;
+  border-radius:25px;
   display: inline;
-  color: gray;
-  font-size: 12px;
+  color: black;
+  font-size: 14px;
   line-height: 8px;
-  margin-right: 2px;
 }
 .btn-day-month:hover, .btn-day-month.active
 {
-  border:1px solid gray;
+  background: #F5B44A;
 }
 
 .everyyear-content
@@ -1370,50 +1375,49 @@ label
 }
 .form-everyyear-container
 {
-  display: inline-block;
-  width: 225px;
+
 }
 .btn-day-year
 {
-  background: #F0F0F0;
   padding: 5px;
-  height: 20px;
+  height: 30px;
   width: 30px;
-  border: 1px solid #F0F0F0;
+  margin: 2px;
+  border-radius:25px;
   display: inline;
-  color: gray;
-  font-size: 12px;
+  color: black;
+  font-size: 14px;
   line-height: 8px;
-  margin-right: 2px;
 }
 .btn-day-year:hover, .btn-day-year.active
 {
-  border:1px solid black;
+  background: #F5B44A;
 }
 .btn-month-year
 {
-  background: #F0F0F0;
   padding: 5px;
-  height: 20px;
-  width: 38px;
-  border: 1px solid #F0F0F0;
+  height: 30px;
+  width: 30px;
+  margin: 2px;
+  border-radius:25px;
   display: inline;
-  color: gray;
-  font-size: 12px;
+  color: black;
+  font-size: 14px;
   line-height: 8px;
-  margin-right: 2px;
 }
 .btn-month-year:hover, .btn-month-year.active
 {
-  border:1px solid black;
+  background: #F5B44A;
 }
 .everymonthtype
 {
   display: none;
+  margin: 0 auto;
 }
 .everymonthtype.showselect
 {
-  display: flex;
+  width: 100%;
+  display: table;
 }
 .everyyeartype
 {
@@ -1426,12 +1430,11 @@ label
 .everyyearbuttontype
 {
   display: none;
-  width: 225px;
-  float: left;
 }
 .everyyearbuttontype.showselect
 {
-  display: block;
+  display: table;
+  width: 100%;
 }
 .title-repeat-custom {
   color: black;
@@ -1484,16 +1487,6 @@ label
   top: 7px;
   cursor: pointer;
   color:#007AFF;
-}
-.form-control-select-repeat
-{
-  width: 85px;
-  margin-right: 5px;
-  font-size: 12px;
-  padding: 0px;
-  color: black;
-  background-color: #f0f0f0;
-  height: 25px;
 }
 #tooltip {
 
@@ -2079,4 +2072,19 @@ audio::-webkit-media-controls-toggle-closed-captions-button {}
 .form_radio_btn input[type=radio]:disabled + label {
   background: #efefef;
   color: #666;
+}
+.form-control-select-repeat
+{
+  padding: 6px 12px;
+  border-radius: 5px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  width: 155px;
+}
+.select-repeat-control
+{
+  padding: 6px 12px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 5px;
+  margin:0 auto;
+  display: table;
 }

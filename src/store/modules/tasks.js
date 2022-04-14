@@ -21,6 +21,7 @@ const state = {
   tasks: false,
   unread: '',
   unreadCustomersUid: [],
+  customersTasks: {},
   tags: {},
   selectedTag: null,
   subtasks: false,
@@ -1005,6 +1006,7 @@ const mutations = {
     state.unread = resp.data.tasks.length
     for (let i = 0; i < state.unread; i++) {
       state.unreadCustomersUid.push(resp.data.tasks[i].uid_customer)
+      // state.customersTasks[state.unreadCustomersUid[i]] = state.employees.employees
     }
   },
   [TASK.TASKS_REQUEST]: state => {

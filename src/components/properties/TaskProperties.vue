@@ -187,7 +187,15 @@ export default {
       }
 
       for (const formItem of formData) {
-        store.commit('createLoadingFile', { msg: formItem[1].name, uid_creator: user.value.current_user_uid, date_create: new Date().toISOString() })
+        store.commit(
+          'createLoadingFile',
+          {
+            msg: formItem[1].name,
+            uid_creator: user.value.current_user_uid,
+            date_create: new Date().toISOString(),
+            file_size: formItem[1].size
+          }
+        )
       }
 
       store.dispatch(CREATE_FILES_REQUEST, data).then(

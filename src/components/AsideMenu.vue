@@ -10,6 +10,8 @@ import Icon from '@/components/Icon.vue'
 import AccModal from '@/components/AccModal.vue'
 import AccTarif from '@/components/AccTarif.vue'
 import AsideMenuList from '@/components/AsideMenuList.vue'
+import AccModalPass from '@/components/AccModalPass.vue'
+import AccOption from '@/components/AccOption.vue'
 import 'v-calendar/dist/style.css'
 
 import * as TASK from '@/store/actions/tasks'
@@ -156,6 +158,8 @@ const menuClick = (event, item) => {
 const TitleName = () => {
   if (navig.value === 0) return ('Аккаунт')
   else if (navig.value === 1) return ('Тариф')
+  else if (navig.value === 2) return ('Основное')
+  else if (navig.value === 3) return ('Изменение пароля')
 }
 const accS = () => {
   store.commit('basic', { key: 'navig', value: 0 })
@@ -178,10 +182,18 @@ const tarifS = () => {
       v-if="navig === 0"
       class="text-lg"
       @AccLogout="logout()"
-      @AccToTarif="tarifS()"
     />
     <acc-tarif
       v-if="navig === 1"
+      class="text-lg"
+    />
+    <acc-modal-pass
+      v-if="navig === 3"
+      class="text-lg"
+    />
+    <acc-option
+      v-if="navig === 2"
+      class="text-lg"
     />
   </modal-box>
   <!-- /Profile modal -->
@@ -463,7 +475,7 @@ padding-right: 0 !important;
 }
 .back-hover
 {
-  background-color:#E4E3E5;
+  background-color:#E4E3E5 !important;
 }
 .calendar-nav-custom .vc-weekday:nth-child(7), .vc-weekday:nth-child(8)
 {
@@ -486,9 +498,6 @@ padding-right: 0 !important;
 .calendar-nav-custom .weekday-position-6:not(.is-not-in-month) .vc-day-content.vc-focusable, .weekday-position-7:not(.is-not-in-month) .vc-day-content.vc-focusable
 {
   color: #E23300 !important;
-}
-.vc-day :hover {
-  background-color: #CCC;
 }
 
 &, & * {

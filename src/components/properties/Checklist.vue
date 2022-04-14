@@ -1,8 +1,7 @@
 <script setup>
-
 import contenteditable from 'vue-contenteditable'
 import { useStore } from 'vuex'
-import { computed, reactive, ref } from 'vue'
+import { computed, reactive, ref, watch } from 'vue'
 
 const props = defineProps({
   taskUid: {
@@ -33,7 +32,11 @@ const computedChecklist = computed(() => {
   return _renderedChecklist
 })
 
-const renderedChecklist = reactive({ checklist: computedChecklist })
+const renderedChecklist = reactive({ checklist: computedChecklist.value })
+
+watch(() => computedChecklist.value, (oldValue, newValue) => {
+  renderedChecklist.checklist = computedChecklist.value
+})
 
 const processChecklist = () => {
   processedChecklist.value = ''
@@ -53,8 +56,6 @@ const addEmptyChecklist = (index = -1) => {
 }
 
 const saveChecklist = (index) => {
-  console.log(index)
-  console.log(renderedChecklist.checklist[index])
   if (renderedChecklist.checklist.length === 1) {
     return false
   }
@@ -67,7 +68,6 @@ const saveChecklist = (index) => {
 }
 
 const updateChecklist = (index) => {
-  console.log(renderedChecklist.checklist[index])
   if (!renderedChecklist.checklist[renderedChecklist.checklist.length - 1].text) {
     return false
   }
@@ -114,6 +114,7 @@ const updateChecklist = (index) => {
     </div>
     <button
       class="mt-2 text-sm border border-gray-500 p-1 px-2 rounded-lg"
+      v-if="store.state.tasks.newtasks[props.taskUid].info.uid_customer === user.current_user_uid"
       @click="addEmptyChecklist(false)"
     >
       Добавить

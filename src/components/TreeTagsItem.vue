@@ -14,18 +14,14 @@ export default {
         selectedTask.value.tags.push(tags)
       } else {
         if (selectedTask.value.tags.length > 0) {
-          //  selectedTask.value.tags.splice(selectedTask.value.tags.indexOf(tags), 1)
-          //  selectedTask.value.tags.filter(v => v === tags)
-          console.log(selectedTask.value.tags)
+          selectedTask.value.tags.splice(selectedTask.value.tags.indexOf(tags), 1)
         } else {
-          console.log(selectedTask.value.tags)
           selectedTask.value.tags = []
         }
       }
     }
     return {
       selectTags: selectedTask.value.tags,
-      selectBug: [],
       changetags,
       selectedTask: selectedTask,
       isOpen: false
@@ -34,22 +30,6 @@ export default {
   computed: {
     isFolder () {
       return this.model.children && this.model.children.length
-    },
-    selectAll: {
-      get: function () {
-        return this.model ? this.selectTags.length === this.selectedTask.tags.length : false
-      },
-      set: function (value) {
-        const select = []
-
-        if (value) {
-          this.model.forEach(function (user) {
-            select.push(user.uid)
-          })
-        }
-
-        this.selectTags = select
-      }
     }
   },
   methods: {

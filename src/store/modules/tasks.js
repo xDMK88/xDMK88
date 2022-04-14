@@ -785,7 +785,7 @@ const actions = {
             group: 'api',
             title: 'REST API Error, please make screenshot',
             action: TASK.CHANGE_TASK_CHEKCLIST,
-            text: err.response.data
+            text: 'error while uploading checklist'
           }, 15000)
           reject(err)
         })
@@ -1173,7 +1173,6 @@ const mutations = {
   },
   [TASK.CHANGE_TASK_CHEKCLIST]: (state, data) => {
     state.newtasks[data.uid_task].info.checklist = data.checklist
-    state.checklist.push(data.value)
   },
   [TASK.CHANGE_TASK_ACCESS]: (state, data) => {
     state.access.push(data.value)

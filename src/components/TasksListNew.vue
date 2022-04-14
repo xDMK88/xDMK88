@@ -677,9 +677,9 @@ export default {
 
     const countChecklist = (checklist) => {
       const data = { done: 0, undone: 0 }
-      for (const line in checklist.split('\r\n\r\n')) {
+      for (const line of checklist.split('\r\n\r\n')) {
         data.undone++
-        if (line[0] === '1') {
+        if (+line.split('\r\n')[0] === 1) {
           data.done++
         }
       }

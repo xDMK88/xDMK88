@@ -5,6 +5,7 @@ import { DatePicker } from 'v-calendar'
 import { useStore } from 'vuex'
 import TreeItem from '@/components/TreeItem.vue'
 import FileMessage from '@/components/properties/FileMessage.vue'
+import Checklist from '@/components/properties/Checklist.vue'
 import close from '@/icons/close.js'
 import TreeTagsItem from '@/components/TreeTagsItem.vue'
 import { CREATE_MESSAGE_REQUEST, DELETE_MESSAGE_REQUEST } from '@/store/actions/taskmessages'
@@ -25,6 +26,7 @@ export default {
     tabs: Tabs,
     tab: Tab,
     FileMessage,
+    Checklist,
     ModalBoxConfirm
   },
   directives: {
@@ -47,6 +49,7 @@ export default {
 
     watch(selectedTask, (currentValue, oldValue) => {
       this.showAllMessages = false
+      this.checklistshow = false
     })
 
     const user = computed(() => store.state.user.user)
@@ -411,157 +414,6 @@ export default {
     const createChecklist = () => {
       this.checklistshow = true
     }
-    const addCheckName = (value, event) => {
-      selectedTask.value.checklist = value + '\n' + event.target.innerText
-      const data = {
-        uid_task: selectedTask.value.uid,
-        checklist: selectedTask.value.checklist
-      }
-      store.dispatch(TASK.CHANGE_TASK_CHEKCLIST, data).then(
-        resp => {
-          if (selectedTask.value.uid_customer === user.value.current_user_uid && (selectedTask.value.status === 5 || selectedTask.value.status === 7)) {
-            // to refine
-            selectedTask.value.status = 9
-          }
-          selectedTask.value.checklist = value
-        })
-      this.checklistshowbutton = false
-      this.checklistshowelement = false
-      this.checklistshow = false
-    }
-    const addchecklistelement = () => {
-      this.checklistshowelement = false
-      selectedTask.value.checklist += '\n\n' + 0 + '\n' + 'Новый чек'
-      console.log(selectedTask.value.checklist.split('\n'))
-      const data = {
-        uid_task: selectedTask.value.uid,
-        checklist: selectedTask.value.checklist
-      }
-      store.dispatch(TASK.CHANGE_TASK_CHEKCLIST, data).then(
-        resp => {
-          if (selectedTask.value.uid_customer === user.value.current_user_uid && (selectedTask.value.status === 5 || selectedTask.value.status === 7)) {
-            // to refine
-            selectedTask.value.checklist = this.massel
-            selectedTask.value.status = 9
-          }
-        })
-    }
-    const editvaluechecklist = (check, event) => {
-      if (event.target.innerText === '') {
-        //  const c = value
-        const bu = document.getElementById('childrenchecklist').parentElement.innerText.trim()
-        var delmass = ''
-        for (const values of bu.split('\n')) {
-          delmass += '\n\n' + check.trim() + '\n' + values.trim()
-        }
-        const data = {
-          uid_task: selectedTask.value.uid,
-          checklist: selectedTask.value.checklist = delmass
-        }
-        store.dispatch(TASK.CHANGE_TASK_CHEKCLIST, data).then(
-          resp => {
-            if (selectedTask.value.uid_customer === user.value.current_user_uid && (selectedTask.value.status === 5 || selectedTask.value.status === 7)) {
-              // to refine
-              selectedTask.value.status = 9
-            }
-          })
-      }
-    }
-    const checklistedit = (check) => {
-      if (check === 1) {
-        this.checklisteditable = false
-      } else {
-        this.checklisteditable = true
-      }
-    }
-    const removeEditCheckList = (check, event) => {
-      this.checklisteditable = false
-      if (check !== 1) {
-        if (event.target.innerText !== '') {
-          const bu = document.getElementById('childrenchecklist').parentElement.innerText.trim()
-          var mass = ''
-          for (const values of bu.split('\n')) {
-            console.log(values.split('\n')[0])
-            if (mass === '') {
-              mass = check + '\n' + values.trim()
-            } else {
-              mass += '\n\n' + check + '\n' + values.trim()
-            }
-          }
-          //  const old = check + '\n' + document.getElementById('oldvalue').innerText
-          //  const a = check + '\n' + event.target.innerText
-          const data = {
-            uid_task: selectedTask.value.uid,
-            checklist: selectedTask.value.checklist = mass
-          }
-          store.dispatch(TASK.CHANGE_TASK_CHEKCLIST, data).then(
-            resp => {
-              if (selectedTask.value.uid_customer === user.value.current_user_uid && (selectedTask.value.status === 5 || selectedTask.value.status === 7)) {
-                // to refine
-                selectedTask.value.status = 9
-              }
-            })
-        } else {
-          const bu = document.getElementById('childrenchecklist').parentElement.innerText.trim()
-          var delmass = ''
-          for (const values of bu.split('\n')) {
-            if (delmass === '') {
-              delmass = '\n\n' + check + '\n' + values.trim()
-            } else {
-              delmass += '\n\n' + check + '\n' + values.trim()
-            }
-          }
-          const data = {
-            uid_task: selectedTask.value.uid,
-            checklist: selectedTask.value.checklist = delmass
-          }
-          store.dispatch(TASK.CHANGE_TASK_CHEKCLIST, data).then(
-            resp => {
-              if (selectedTask.value.uid_customer === user.value.current_user_uid && (selectedTask.value.status === 5 || selectedTask.value.status === 7)) {
-                // to refine
-                selectedTask.value.status = 9
-              }
-            })
-        }
-      }
-    }
-    const changevaluechecklist = (check, uid) => {
-      //  const bu = document.getElementById('childrenchecklist').parentElement.innerText.trim()
-      var checked = check === '0' ? '1' : '0'
-      //  console.log(selectedTask.value.checklist.split('\n')[uid])
-      //  console.log(checked)
-      //
-      console.log(selectedTask.value.checklist.split('\n')[0].replace('0', '1'))
-      const bu = document.getElementById('childrenchecklist').parentElement.innerText.trim()
-      var mass = ''
-      for (const values of bu.split('\n')) {
-        console.log(bu.split('\n').indexOf(values))
-        if (bu.split('\n').indexOf(values) === uid) {
-          if (mass === '') {
-            mass = checked + '\n' + values.trim()
-          } else {
-            mass += '\n\n' + checked + '\n' + values.trim()
-          }
-        } else {
-          if (mass === '') {
-            mass = checked + '\n' + values.trim()
-          } else {
-            mass += '\n\n' + checked + '\n' + values.trim()
-          }
-        }
-      }
-      const data = {
-        uid_task: selectedTask.value.uid,
-        checklist: selectedTask.value.checklist = mass
-      }
-      store.dispatch(TASK.CHANGE_TASK_CHEKCLIST, data).then(
-        resp => {
-          if (selectedTask.value.uid_customer === user.value.current_user_uid && (selectedTask.value.status === 5 || selectedTask.value.status === 7)) {
-            // to refine
-            selectedTask.value.status = 9
-          }
-        })
-    }
     const pics = ['jpg', 'png', 'jpeg', 'git', 'bmp', 'gif', 'PNG', 'JPG', 'JPEG', 'BMP', 'GIF']
     const movies = ['mov', 'mp4']
     const docs = ['doc', 'xls', 'xlsx', 'txt', 'pdf', 'sql']
@@ -691,14 +543,8 @@ export default {
       calendarTimeEndChange,
       updatecomment,
       copypastefile,
-      changevaluechecklist,
       handlercontextmenu,
-      addchecklistelement,
       createChecklist,
-      addCheckName,
-      checklistedit,
-      removeEditCheckList,
-      editvaluechecklist,
       scrollDown,
       editTaskName,
       removeEditTaskName,
@@ -2577,6 +2423,7 @@ export default {
           </Transition>
         </div>
       </div>
+      <!--
       <div
         v-if="selectedTask.checklist && selectedTask.checklist.replace(/\r?\n|\r/g, '')"
         class="mt-3 checklist-custom"
@@ -2601,24 +2448,17 @@ export default {
             </div>
           </li>
         </ul>
-
       </div>
-      <button  v-if="selectedTask.checklist!==''" class="btn btn-transperant" @click="addchecklistelement">
+      <button  v-if="selectedTask.checklist" class="btn btn-transperant" @click="addchecklistelement">
         Добавить
       </button>
-      <div class="mt-3 checklist-custom">
-        <ul class="check-padding">
-        <li class="checklistadd" :class="{checklistnew:checklistshow}" @click="checklistedit">
-          <input type="checkbox" value="0" ref="checknew" /> &nbsp;
-          <span :contenteditable="checklisteditable" @focusout="removeEditCheckList" @keyup="addCheckName(this.$refs.checknew.value, $event)" data-placeholder="Новый чек" class="placeholderchecklist"></span>
-        </li>
-        </ul>
-        <div>
-          <button class="btn btn-transperant btn-addcheclist" :class="{checklistnew:checklistshowbutton}" @click="addchecklistelement">
-            Добавить
-          </button>
-        </div>
-      </div>
+      -->
+      <Checklist
+        class="mt-3 checklist-custom"
+        v-if="selectedTask.checklist || checklistshow"
+        :taskUid="selectedTask.uid"
+        :checklist="selectedTask.checklist"
+      />
       <div class="mt-3 description-content" @click="editcomment">
         <div
           v-html="selectedTask.comment ? selectedTask.comment.replaceAll('\n','<br/>') : ''"

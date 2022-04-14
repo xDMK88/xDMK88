@@ -915,10 +915,8 @@ export default {
     const nodeSelected = (arg) => {
       store.commit('basic', { key: 'propertiesState', value: 'task' })
 
-      if (lastSelectedTaskUid.value !== arg.id) {
-        lastSelectedTaskUid.value = arg.id
-        store.dispatch(TASK.SELECT_TASK, arg.info)
-      }
+      lastSelectedTaskUid.value = arg.id
+      store.dispatch(TASK.SELECT_TASK, arg.info)
       if (!isPropertiesMobileExpanded.value && arg.info.name) {
         store.dispatch('asidePropertiesToggle', true)
       }

@@ -814,9 +814,13 @@ const actions = {
     })
   },
   [TASK.CHANGE_TASK_DATE]: ({ commit, dispatch }, data) => {
+    const dataSend = { ...data }
+    if (dataSend.str_date_end === '' || dataSend.str_date_end === null) {
+      dataSend.str_date_end = '0001-01-01T23:59:59'
+    }
     return new Promise((resolve, reject) => {
       const url = 'https://web.leadertask.com/api/v1/task/term'
-      axios({ url: url, method: 'PATCH', data: data })
+      axios({ url: url, method: 'PATCH', data: dataSend })
         .then(resp => {
           resolve(resp)
           commit(TASK.CHANGE_TASK_DATE, data)

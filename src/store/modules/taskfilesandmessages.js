@@ -16,7 +16,8 @@ import {
   FILE_SUCCESS,
   CREATE_FILE_REQUEST,
   CREATE_FILES_REQUEST,
-  MERGE_FILES_WITH_MESSAGES
+  MERGE_FILES_WITH_MESSAGES,
+  TOGGLE_UPLOAD_STATUS
 } from '../actions/taskfiles'
 import { AUTH_LOGOUT } from '../actions/auth'
 import { notify } from 'notiwind'
@@ -77,7 +78,7 @@ const actions = {
   [CREATE_FILES_REQUEST]: ({ commit, dispatch }, data) => {
     return new Promise((resolve, reject) => {
       const url = 'https://web.leadertask.com/api/v1/tasksfiles/several?uid_task=' + data.uid_task
-      state.uploadStarted = true
+      commit(TOGGLE_UPLOAD_STATUS)
       console.log(data)
       axios({
         url: url,
@@ -89,11 +90,11 @@ const actions = {
       })
         .then(resp => {
           commit(CREATE_FILES_REQUEST, resp)
-          state.uploadStarted = false
+          commit(TOGGLE_UPLOAD_STATUS)
           resolve(resp)
         }).catch(err => {
           reject(err)
-          state.uploadStarted = false
+          commit(TOGGLE_UPLOAD_STATUS)
         })
     })
   },
@@ -293,6 +294,9 @@ const mutations = {
         }
       }
     }
+  },
+  [TOGGLE_UPLOAD_STATUS]: state => {
+    state.uploadStarted = !state.uploadStarted
   }
 }
 

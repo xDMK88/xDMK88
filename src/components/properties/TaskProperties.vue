@@ -168,11 +168,7 @@ export default {
         uid: selectedTask.value.uid,
         tags: selectedTask.value.tags
       }
-      store.dispatch(TASK.CHANGE_TASK_TAGS, data).then(
-        resp => {
-          selectedTask.value.tags.push(selectedTask.value.tags.splice(selectedTask.value.tags.indexOf(key), 1))
-        }
-      )
+      store.dispatch(TASK.CHANGE_TASK_TAGS, data)
     }
     const createTaskFile = (event) => {
       this.files = event.target.files
@@ -2051,7 +2047,7 @@ export default {
           >
             <div class="popper">
               <div @click="close">
-                <button @click="ClickTagsChange; close" class="btn-save-popover">Применить</button>
+                <button @click="ClickTagsChange(); close()" class="btn-save-popover">Применить</button>
               </div>
               <div class="text-white body-popover-custom">
                 <div class="container-tags-popover">
@@ -2100,7 +2096,7 @@ export default {
 
             >
               <svg
-                v-if="tags[key].back_color!==-129876 && tags[key].back_color!==-6268231 && tags[key].back_color!==-12169111 && tags[key].back_color!==-2160377 && tags[key].back_color!==-16741998 && tags[key].back_color!==-11075513 && tags[key].back_color!==-12366748"
+                v-if="tags[key] && tags[key].back_color !== -129876 && tags[key].back_color!==-6268231 && tags[key].back_color!==-12169111 && tags[key].back_color!==-2160377 && tags[key].back_color!==-16741998 && tags[key].back_color!==-11075513 && tags[key].back_color!==-12366748"
                 width="24"
                 height="24"
                 viewBox="0 0 88 88"

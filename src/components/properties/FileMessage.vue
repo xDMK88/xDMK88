@@ -1,6 +1,8 @@
 <script setup>
+import { ref } from 'vue'
 import { useStore } from 'vuex'
 import { GETFILES } from '@/store/actions/taskfiles'
+import ChatLoader from './ChatLoader.vue'
 
 const store = useStore()
 
@@ -15,8 +17,11 @@ const pics = ['jpg', 'png', 'jpeg', 'git', 'bmp', 'gif', 'PNG', 'JPG', 'JPEG', '
 const movies = ['mov', 'mp4']
 const docs = ['doc', 'xls', 'xlsx', 'txt', 'pdf']
 const audio = ['mp3', 'wav', 'm4a']
+const isImageLoaded = ref(false)
 
 const getImgUrl = (uid, extension, filename) => {
+  // computed value triggered after template change
+  if (isImageLoaded.value) return
   store.dispatch(GETFILES, uid).then(resp => {
     const fileURL = window.URL.createObjectURL(new Blob([resp.data]))
     var myImage = new Image()
@@ -24,6 +29,7 @@ const getImgUrl = (uid, extension, filename) => {
     document.getElementById(uid).appendChild(myImage)
     document.getElementById(uid).setAttribute('href', fileURL)
     document.getElementById(uid).setAttribute('download', filename + '.' + extension)
+    isImageLoaded.value = true
     return myImage
   })
 }
@@ -75,9 +81,17 @@ const getAnyUrl = (uid, extension, filename) => {
     v-if="pics.includes(props.file.file_name.split('.').pop())"
   >
     <a
+      :id="props.file.uid"
       :href="'https://web.leadertask.com/User/Files/GetFile?uid=' + props.file.uid"
-      :id="props.file.uid" target="_blank">
+      target="_blank"
+    >
       {{ getImgUrl(props.file.uid, props.file.file_name.split('.').pop(), props.file.file_name) }}
+      <ChatLoader
+        v-if="!isImageLoaded"
+        width="250px"
+        height="150px"
+        align="center"
+      />
     </a>
   </span>
 
@@ -86,7 +100,7 @@ const getAnyUrl = (uid, extension, filename) => {
     v-if="movies.includes(props.file.file_name.split('.').pop())"
   >
     <a :href="'https://web.leadertask.com/User/Files/GetFile?uid=' + props.file.uid" :id="props.file.uid" target="_blank">
-      <svg width="74" height="89" viewBox="0 0 74 89" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <svg width="22" height="27" viewBox="0 0 74 89" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path fill-rule="evenodd" clip-rule="evenodd" d="M73.5 25.4C73.6 25.5 73.7 25.7 73.8 25.9C73.9 26.2 74 26.6 74 27V82C74 85.9 70.9 89 67 89H7C3.1 89 0 85.9 0 82V7C0 3.1 3.1 0 7 0H47C47.4 0 47.8 0.1 48 0.2H48.1C48.2 0.25 48.275 0.3 48.35 0.35C48.425 0.4 48.5 0.45 48.6 0.5C48.8 0.6 49 0.8 49.1 0.9L73.1 24.9L73.1001 24.9001C73.3 25.1 73.4 25.2 73.5 25.4ZM7 6C6.4 6 6 6.4 6 7V82C6 82.6 6.4 83 7 83H67C67.6 83 68 82.6 68 82V30H51C47.1 30 44 26.9 44 23V6H7ZM50 23C50 23.6 50.4 24 51 24H63.8L50 10.2V23ZM46.4104 41.044H52.3538C55.4245 41.044 58 43.5165 58 46.6813V66.3626C58 69.6264 54.7311 72 51.8585 72H21.6462C18.5755 72 16 69.5275 16 66.3626V46.6813C16 43.5165 18.5755 41.044 21.6462 40.9451H27.1934L28.184 39.1648C29.0755 37.2857 31.0566 36 33.2358 36H40.6651C42.8443 36 44.8255 37.3846 45.816 39.5604L46.4104 41.044ZM51.8585 67.3516C52.6509 67.3516 53.2453 66.6593 53.2453 66.3626V46.7802C53.2453 46.2857 52.9481 45.7912 52.3538 45.7912H44.8255C44.033 45.7912 43.1415 45.1978 42.7453 44.3077L41.4575 41.3407C41.3585 40.9451 41.0613 40.7473 40.6651 40.7473H33.2358C32.8396 40.7473 32.6415 40.9451 32.3443 41.2418L30.7594 44.4066C30.4623 45.1978 29.5708 45.6923 28.6792 45.6923H21.6462C21.25 45.6923 20.7547 46.0879 20.7547 46.6813V66.3626C20.7547 66.8571 21.0519 67.3516 21.6462 67.3516H51.8585ZM26.7972 55.5824C26.7972 49.9451 31.3538 45.3956 37 45.3956C42.6462 45.3956 47.2028 49.9451 47.2028 55.5824C47.2028 61.2198 42.6462 65.7692 37 65.7692C31.2547 65.7692 26.7972 61.3187 26.7972 55.5824ZM31.5519 55.5824C31.5519 58.6483 34.0283 61.1209 37 61.1209C39.9717 61.1209 42.4481 58.6483 42.4481 55.5824C42.4481 52.5165 39.9717 50.044 37 50.044C34.0283 50.044 31.5519 52.5165 31.5519 55.5824Z" fill="#757575"/>
       </svg>
            {{ getMovUrl(props.file.uid, props.file.file_name.split('.').pop(), props.file.file_name) }}
@@ -101,7 +115,7 @@ const getAnyUrl = (uid, extension, filename) => {
         :id="props.file.uid"
         :href="'https://web.leadertask.com/User/Files/GetFile?uid=' + props.file.uid" target="_blank"
       >
-        <svg v-if="props.file.file_name.split('.').pop() === 'pdf'" width="74" height="89" viewBox="0 0 74 89" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <svg v-if="props.file.file_name.split('.').pop() === 'pdf'" width="22" height="27" viewBox="0 0 74 89" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path fill-rule="evenodd" clip-rule="evenodd" d="M73.5 25.4C73.6 25.5 73.7 25.7 73.8 25.9C73.9 26.2 74 26.6 74 27V82C74 85.9 70.9 89 67 89H7C3.1 89 0 85.9 0 82V7C0 3.1 3.1 0 7 0H47C47.4 0 47.8 0.1 48 0.2H48.1C48.2 0.25 48.275 0.3 48.35 0.35C48.425 0.4 48.5 0.45 48.6 0.5C48.8 0.6 49 0.8 49.1 0.9L73.1 24.9L73.1001 24.9001C73.3 25.1 73.4 25.2 73.5 25.4ZM7 6C6.4 6 6 6.4 6 7V82C6 82.6 6.4 83 7 83H67C67.6 83 68 82.6 68 82V30H51C47.1 30 44 26.9 44 23V6H7ZM50 23C50 23.6 50.4 24 51 24H63.8L50 10.2V23ZM45.3787 51.6342C47.6615 51.2192 49.3217 51.0636 49.9442 51.0636C52.0195 51.0636 56.9481 51.0636 57 55.4734C57 57.2374 56.2737 60.2464 51.6044 60.2464C50.2555 60.2464 47.8171 58.8975 44.2892 56.1997C41.799 56.6667 37.3372 57.6005 33.6537 59.0532C30.4371 65.4864 25.8716 69.9481 22.3956 69.9481C19.8016 69.9481 17 68.2879 17 65.642C17 62.1161 20.5239 60.4558 25.9143 57.9161L25.9235 57.9118H25.9754C27.1167 57.393 28.31 56.8223 29.5551 56.1997L30.489 55.7328C30.9559 54.7471 31.3709 53.6576 31.7341 52.5681L32.1492 51.2711C32.2014 51.1099 32.2533 50.9498 32.3049 50.7909C32.8672 49.0567 33.386 47.4569 33.8612 46.0311C31.2672 42.607 29.9702 39.6498 29.9702 37.1595C29.9702 30.9339 33.3424 30 35.3658 30C39.2049 30 40.7613 32.0233 40.7613 37.0039C40.7613 38.249 40.2425 40.3243 38.6861 45.1492C39.5681 46.2387 40.6057 47.3281 41.7471 48.4695C42.5772 49.2996 43.8742 50.441 45.3787 51.6342ZM50.8199 55.4797C51.2764 55.7296 51.5781 55.8948 51.7601 55.9403C52.3332 55.9403 52.551 55.8757 52.6429 55.8485C52.6674 55.8412 52.683 55.8366 52.6939 55.8366V55.6291C52.5383 55.5253 52.0713 55.4215 50.6187 55.3697C50.6889 55.4079 50.7559 55.4447 50.8199 55.4797ZM36.4553 37.0558C36.4553 34.3061 36.2477 34.3061 35.3658 34.3061C34.9507 34.3061 34.2763 34.3061 34.2244 37.2114C34.2244 38.1453 34.6913 39.3904 35.5214 40.8431C35.9364 39.546 36.4553 37.6783 36.4553 37.0558ZM35.8327 53.7613C37.1297 53.3982 38.5305 53.035 40.035 52.6719C39.3606 52.1012 38.8936 51.6861 38.738 51.4786C38.4459 51.1864 38.1673 50.8943 37.8954 50.6091C37.6361 50.3372 37.3829 50.0716 37.1297 49.8184C36.8184 50.8041 35.8327 53.7613 35.8327 53.7613ZM21.358 65.4864C21.5655 65.5901 21.9287 65.6939 22.3956 65.6939C22.9144 65.6939 24.5746 64.7082 26.4423 62.4254C24.3671 63.463 21.8249 64.7601 21.358 65.4864Z" fill="#757575"/>
         </svg>
         <svg

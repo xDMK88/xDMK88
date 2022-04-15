@@ -16,8 +16,10 @@ import sanitizeHtml from 'sanitize-html'
 import linkify from 'vue-linkify'
 import ModalBoxConfirm from '@/components/modals/ModalBoxConfirm.vue'
 import { maska } from 'maska'
+import ChatLoader from '@/components/properties/ChatLoader'
 export default {
   components: {
+    ChatLoader,
     DatePicker,
     TreeItem,
     TreeTagsItem,
@@ -40,6 +42,7 @@ export default {
     const showAllMessages = false
     const store = useStore()
     const taskMessages = computed(() => store.state.taskfilesandmessages.messages)
+    const uploadStarted = computed(() => store.state.taskfilesandmessages.uploadStarted)
     const taskFiles = computed(() => store.state.taskfilesandmessages.files)
     const myFiles = computed(() => store.state.taskfilesandmessages.files.myFiles)
     const selectedTask = computed(() => store.state.tasks.selectedTask)
@@ -763,6 +766,7 @@ export default {
       isAsideLgActive: computed(() => store.state.isAsideLgActive),
       selectedTask,
       taskMessages,
+      uploadStarted,
       taskFiles: taskFiles,
       myFiles: myFiles,
       tasks: tasks,
@@ -2656,6 +2660,7 @@ export default {
                 <div
                   class="mt-1 msg-custom-chat-right bg-[#FCEAEA] dark:bg-gray-800 text-sm dark:text-gray-100" @contextmenu="handlercontextmenu"
                 >
+                  <ChatLoader v-if="uploadStarted && key.loading" />
                   <div v-html="key.msg.replaceAll('\n', '<br/>')" v-linkify>
                   </div>
                   <div

@@ -10,12 +10,11 @@ const user = computed(() => store.state.user.user)
 
 </script>
 <template>
-<form class="m-6 text-lg">
+    <form class="px-5 text-lg">
     <br>
     <strong>{{ localization.owner_license }}</strong>
     <br>
     <span>{{ user.owner_title }}</span>
-    <br>
     <br>
     <br>
     <strong>Почта владельца лицензии</strong>
@@ -23,17 +22,14 @@ const user = computed(() => store.state.user.user)
     <span>{{ user.owner_email }}</span>
     <br>
     <br>
-    <br>
     <strong>Количество рабочих мест</strong>
     <br>
-    <span>18</span>
-    <br>
+    <span>-</span>
     <br>
     <br>
     <strong>Занято места на сервере</strong>
     <br>
     <span>{{ user.total_mb }} {{ localization.megabytes }} ({{ user.percent_mb }}%)</span>
-    <br>
     <br>
     <br>
     <strong>Последняя синхронизация</strong>
@@ -42,7 +38,7 @@ const user = computed(() => store.state.user.user)
     <br>
 </form>
     <form class="text-center text-lg" action="https://www.leadertask.ru/market">
-        <button type="submit" class="bg-[#FF9123] rounded-xl px-10 p-3 text-white">
+        <button type="submit" class="bg-gray-100 hover:bg-gray-200 rounded-xl px-6 p-1">
           Продлить лицензию
         </button>
     </form>

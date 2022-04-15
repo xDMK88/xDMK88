@@ -1,6 +1,8 @@
 <script setup>
+import { ref } from 'vue'
 import { useStore } from 'vuex'
 import { GETFILES } from '@/store/actions/taskfiles'
+import ChatLoader from './ChatLoader.vue'
 
 const store = useStore()
 
@@ -15,8 +17,11 @@ const pics = ['jpg', 'png', 'jpeg', 'git', 'bmp', 'gif', 'PNG', 'JPG', 'JPEG', '
 const movies = ['mov', 'mp4']
 const docs = ['doc', 'xls', 'xlsx', 'txt', 'pdf']
 const audio = ['mp3', 'wav', 'm4a']
+const isImageLoaded = ref(false)
 
 const getImgUrl = (uid, extension, filename) => {
+  // computed value triggered after template change
+  if (isImageLoaded.value) return
   store.dispatch(GETFILES, uid).then(resp => {
     const fileURL = window.URL.createObjectURL(new Blob([resp.data]))
     var myImage = new Image()
@@ -24,6 +29,7 @@ const getImgUrl = (uid, extension, filename) => {
     document.getElementById(uid).appendChild(myImage)
     document.getElementById(uid).setAttribute('href', fileURL)
     document.getElementById(uid).setAttribute('download', filename + '.' + extension)
+    isImageLoaded.value = true
     return myImage
   })
 }
@@ -75,9 +81,17 @@ const getAnyUrl = (uid, extension, filename) => {
     v-if="pics.includes(props.file.file_name.split('.').pop())"
   >
     <a
+      :id="props.file.uid"
       :href="'https://web.leadertask.com/User/Files/GetFile?uid=' + props.file.uid"
-      :id="props.file.uid" target="_blank">
+      target="_blank"
+    >
       {{ getImgUrl(props.file.uid, props.file.file_name.split('.').pop(), props.file.file_name) }}
+      <ChatLoader
+        v-if="!isImageLoaded"
+        width="250px"
+        height="150px"
+        align="center"
+      />
     </a>
   </span>
 

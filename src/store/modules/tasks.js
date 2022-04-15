@@ -20,6 +20,7 @@ function pad2 (n) {
 const state = {
   tasks: false,
   unread: '',
+  inWork: {},
   unreadCustomersUid: [],
   customersTasks: {},
   tags: {},
@@ -270,6 +271,7 @@ const actions = {
       axios({ url: url, method: 'GET' })
         .then(resp => {
           commit(TASK.TASKS_SUCCESS, resp)
+          commit(TASK.IN_WORK_TASKS_REQUEST, resp)
           if (resp.data.anothers_tags.length) {
             commit(TASK.ADD_TASK_TAGS, resp.data.anothers_tags)
           }
@@ -1002,6 +1004,9 @@ const mutations = {
         state.newConfig.leaves.splice(i, 1)
       }
     }
+  },
+  [TASK.IN_WORK_TASKS_REQUEST]: (state, resp) => {
+    state.inWork = resp.data
   },
   [TASK.UNREAD_TASKS_REQUEST]: (state, resp) => {
     state.unread = resp.data.tasks.length

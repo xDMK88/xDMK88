@@ -547,9 +547,9 @@ export default {
         const data = {
           uid: selectedTask.value.uid,
           num_day: 1,
-          every_value: 1,
-          mwt: 3,
-          mdw: 1
+          every_value: this.$refs.SeriesMonthCount.value,
+          mwt: this.$refs.SeriesMonthWeekType.value,
+          mdw: this.$refs.SeriesMonthDayOfWeek.value
         }
         store.dispatch(TASK.EVERY_MONTH_CHANGE, data).then(
           resp => {

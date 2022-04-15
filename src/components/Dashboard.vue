@@ -11,7 +11,7 @@ import { useStore } from 'vuex'
 const store = useStore()
 
 store.dispatch(TASK.UNREAD_TASKS_REQUEST)
-// store.dispatch(TASK.IN_WORK_TASKS_REQUEST)
+store.dispatch(TASK.IN_WORK_TASKS_REQUEST)
 
 const unreadTasks = computed(() => {
   return store.state.tasks.tasks.tasks
@@ -24,9 +24,12 @@ const unreadTasks = computed(() => {
 // const tasksTitles = ['Непрочитанные задачи', 'Задачи в работе']
 
 // const testObj = {
-//   unRead: unreadTasks,
-//   iWork: inWork
+//   unreadTasks: unreadTasks,
+//   inWork: inWork
 // }
+
+// const keys = Object.keys(testObj)
+
 // const unreadCustomersUid = computed(() => {
 //   return store.state.tasks.unreadCustomersUid
 // })

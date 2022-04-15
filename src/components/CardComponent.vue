@@ -22,6 +22,7 @@ const props = defineProps({
     default: 'rounded-md'
   },
   hasTable: Boolean,
+  accMod: Boolean,
   empty: Boolean,
   form: Boolean,
   hoverable: Boolean
@@ -162,7 +163,7 @@ const submit = e => {
         <div
           v-else
           class=""
-          :class="{'p-6':!hasTable, 'h-[90%] overflow-auto':hasTable}"
+          :class="{'p-6':!hasTable, 'h-[90%] overflow-auto':accMod}"
         >
           <slot />
         </div>

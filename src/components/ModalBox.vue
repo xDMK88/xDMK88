@@ -60,6 +60,7 @@ const tarif = () => tarifSelect('tarif')
     <card-component
       v-show="value"
       has-table
+      acc-mod
       :title="title"
       class="shadow-lg w-full md:w-3/5 lg:w-3/5 z-50  h-4/5"
       @header-icon-click="cancel"

@@ -1339,21 +1339,18 @@ label
 }
 .everymonth-content label
 {
-  margin-right: 5px;
   margin-top: 0;
 }
 .form-everymonth-container
 {
-
 }
 .btn-day-month
 {
   padding: 5px;
-  height: 30px;
-  width: 30px;
+  height: 31px;
+  width: 31px;
   margin: 2px;
   border-radius:25px;
-  display: inline;
   color: black;
   font-size: 14px;
   line-height: 8px;
@@ -2087,4 +2084,58 @@ audio::-webkit-media-controls-toggle-closed-captions-button {}
   border-radius: 5px;
   margin:0 auto;
   display: table;
+}
+.form_radio_btn-custom {
+  line-height: 20px;
+  float: left;
+  text-align: center;
+  height: 31px;
+  width: 31px;
+  margin: 2px;
+  border-radius:25px;
+  color: black;
+  font-size: 14px;
+}
+.form_radio_btn-custo:hover
+{
+  background: #F5B44A;
+}
+.form_radio_btn-custom input[type=radio] {
+  display: none;
+}
+.form_radio_btn-custom {
+}
+.form_radio_btn-custom label {
+  cursor: pointer;
+  user-select: none;
+  line-height: 20px;
+  float: left;
+  text-align: center;
+  padding: 5px;
+  height: 31px;
+  width: 31px;
+  margin: 2px;
+  border-radius:25px;
+  color: black;
+  font-size: 14px;
+}
+
+/* Checked */
+.form_radio_btn-custom input[type=radio]:checked + label {
+  background: #F5B44A;
+  height: 31px;
+  border-radius:25px;
+  width: 31px;
+  padding: 5px;
+}
+
+/* Hover */
+.form_radio_btn-custom label:hover {
+  color: #666;
+}
+
+/* Disabled */
+.form_radio_btn-custom input[type=radio]:disabled + label {
+  background: #efefef;
+  color: #666;
 }

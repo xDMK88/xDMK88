@@ -20,7 +20,7 @@ function pad2 (n) {
 const state = {
   tasks: false,
   unread: '',
-  inWork: {},
+  inWork: '',
   unreadCustomersUid: [],
   customersTasks: {},
   tags: {},
@@ -1007,6 +1007,7 @@ const mutations = {
   },
   [TASK.IN_WORK_TASKS_REQUEST]: (state, resp) => {
     state.inWork = resp.data
+    // console.log(resp.data)
   },
   [TASK.UNREAD_TASKS_REQUEST]: (state, resp) => {
     state.unread = resp.data.tasks.length

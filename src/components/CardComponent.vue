@@ -163,7 +163,7 @@ const submit = e => {
         <div
           v-else
           class=""
-          :class="{'p-6':!hasTable, 'h-[90%] overflow-auto':accMod}"
+          :class="{'p-6':!hasTable, 'h-[85%] overflow-auto':accMod}"
         >
           <slot />
         </div>

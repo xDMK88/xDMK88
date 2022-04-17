@@ -624,7 +624,8 @@ export default {
     draggables.forEach(node => {
       node.addEventListener('drag', e => {
         stop.value = true
-        if (e.originalEvent.clientY < 150) {
+        console.log(e.originalEvent.clientY)
+        if (e.originalEvent.clientY < 300) {
           stop.value = false
           scroll(-1)
         }
@@ -633,7 +634,20 @@ export default {
           scroll(1)
         }
       })
+      node.addEventListener('dragend', e => {
+        stop.value = true
+      })
     })
+
+    const scroll = (step) => {
+      const scrollY = window.scrollTop()
+      window.scrollTop(scrollY + step)
+      if (!stop.value) {
+        setTimeout(() => {
+          scroll(step)
+        }, 20)
+      }
+    }
 
     const SHOW_TASK_INPUT_UIDS = {
       '901841d9-0016-491d-ad66-8ee42d2b496b': TASK.TASKS_REQUEST, // get today's day

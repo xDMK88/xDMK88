@@ -31,6 +31,14 @@ defineProps({
 let modalOneActive = ref(false)
 // Serves as linkage between requests from storage and tree view navigator
 const UID_TO_ACTION = {
+  '2bad1413-a373-4926-8a3c-58677a680714': [
+    TASK.TASKS_REQUEST,
+    TASK.OPENED_TASKS_REQUEST,
+    TASK.UNSORTED_TASKS_REQUEST,
+    TASK.OVERDUE_TASKS_REQUEST,
+    TASK.IN_WORK_TASKS_REQUEST,
+    TASK.IN_FOCUS_TASKS_REQUEST
+  ],
   '901841d9-0016-491d-ad66-8ee42d2b496b': TASK.TASKS_REQUEST, // get today's day
   '46418722-a720-4c9e-b255-16db4e590c34': TASK.OVERDUE_TASKS_REQUEST,
   '017a3e8c-79ac-452c-abb7-6652deecbd1c': TASK.OPENED_TASKS_REQUEST,
@@ -114,6 +122,12 @@ const menuClick = (event, item) => {
   if (item.uid === '2bad1413-a373-4926-8a3c-58677a680714') {
     store.commit('basic', { key: 'mainSectionState', value: 'greed' })
     store.commit('basic', { key: 'greedPath', value: 'dashboard' })
+    const navElem = {
+      name: 'Рабочий стол',
+      key: 'greedSoure',
+      uid: '2bad1413-a373-4926-8a3c-58677a680714'
+    }
+    store.commit('updateStackWithInitValue', navElem)
     return
   }
 

@@ -121,7 +121,7 @@
         :id="props.node.info.uid"
         class="group task-node flex-col items-center w-full bg-white p-2 rounded-xl dark:bg-gray-900 dark:border-gray-700 border border-gray-300 my-0.5 relative"
         :style="{ backgroundColor: colors[props.node.info.uid_marker] ? colors[props.node.info.uid_marker].back_color : '' }"
-        :class="{ 'bg-gray-200 dark:bg-gray-800': (props.node.info.status == 1 || props.node.info.status == 7) && props.node.info.uid_marker == '00000000-0000-0000-0000-000000000000', 'ring-2 ring-orange-400 border border-orange-400': props.node.id === lastSelectedTaskUid || selectedTasks[props.node.id]}"
+        :class="{ 'bg-gray-200 dark:bg-gray-800': (props.node.info.status == 1 || props.node.info.status == 7) && props.node.info.uid_marker == '00000000-0000-0000-0000-000000000000' }"
       >
         <!--
         DEBUG TASK INFO, don't remove this comment
@@ -243,7 +243,7 @@
                   <div
                     v-if="props.node.info.uid_customer == user.current_user_uid"
                     class="flex cursor-pointer items-center hover:bg-gray-100 hover:dark:bg-stone-800 py-0.5 px-1.5 rounded-xl"
-                    @click="showConfirm = true;"
+                    @click="showConfirm = true; lastSelectedTaskUid = props.node.id"
                   >
                     <Icon
                       :path="bin.path"
@@ -618,6 +618,23 @@ export default {
       selectedTasks.value[arg.id] = arg.info
     }
 
+    const stop = ref(true)
+    const draggables = document.querySelectorAll('.draggable')
+
+    draggables.forEach(node => {
+      node.addEventListener('drag', e => {
+        stop.value = true
+        if (e.originalEvent.clientY < 150) {
+          stop.value = false
+          scroll(-1)
+        }
+        if (e.originalEvent.clientY > (window.innerHeight - 150)) {
+          stop.value = false
+          scroll(1)
+        }
+      })
+    })
+
     const SHOW_TASK_INPUT_UIDS = {
       '901841d9-0016-491d-ad66-8ee42d2b496b': TASK.TASKS_REQUEST, // get today's day
       '5183b619-3968-4c3a-8d87-3190cfaab014': TASK.UNSORTED_TASKS_REQUEST,
@@ -877,7 +894,6 @@ export default {
     }
 
     const addSubtask = (parent) => {
-      lastSelectedTaskUid.value = ''
       const newSubtask = {
         uid: uuidv4(),
         uid_customer: user.value.current_user_uid,
@@ -892,6 +908,7 @@ export default {
         _isEditable: true,
         _justCreated: true
       }
+      store.dispatch(TASK.SELECT_TASK, newSubtask)
       store.dispatch(TASK.ADD_SUBTASK, newSubtask)
         .then(() => {
           // Don't know the event when I can call edit just created subtask
@@ -899,7 +916,6 @@ export default {
           setTimeout(() => {
             document.getElementById(newSubtask.uid).parentNode.draggable = false
             gotoNode(newSubtask.uid)
-            store.dispatch(TASK.SELECT_TASK, newSubtask)
           }, 200)
         })
     }
@@ -916,10 +932,8 @@ export default {
     const nodeSelected = (arg) => {
       store.commit('basic', { key: 'propertiesState', value: 'task' })
 
-      if (lastSelectedTaskUid.value !== arg.id) {
-        lastSelectedTaskUid.value = arg.id
-        store.dispatch(TASK.SELECT_TASK, arg.info)
-      }
+      lastSelectedTaskUid.value = arg.id
+      store.dispatch(TASK.SELECT_TASK, arg.info)
       if (!isPropertiesMobileExpanded.value && arg.info.name) {
         store.dispatch('asidePropertiesToggle', true)
       }

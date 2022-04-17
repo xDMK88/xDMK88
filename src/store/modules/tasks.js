@@ -19,6 +19,9 @@ function pad2 (n) {
 
 const state = {
   tasks: false,
+  unread: '',
+  unreadCustomersUid: [],
+  customersTasks: {},
   tags: {},
   selectedTag: null,
   subtasks: false,
@@ -239,6 +242,7 @@ const actions = {
       axios({ url: url, method: 'GET' })
         .then(resp => {
           commit(TASK.TASKS_SUCCESS, resp)
+          commit(TASK.UNREAD_TASKS_REQUEST, resp)
           if (resp.data.anothers_tags.length) {
             commit(TASK.ADD_TASK_TAGS, resp.data.anothers_tags)
           }
@@ -707,9 +711,6 @@ const actions = {
   },
   [TASK.CHANGE_TASK_PERFORMER]: ({ commit, dispatch }, data) => {
     return new Promise((resolve, reject) => {
-      if (data.value !== '') {
-        data.value = null
-      }
       const url = 'https://web.leadertask.com/api/v1/task/performer?uid=' + data.uid + '&value=' + data.value
       axios({
         url: url,
@@ -785,7 +786,7 @@ const actions = {
             group: 'api',
             title: 'REST API Error, please make screenshot',
             action: TASK.CHANGE_TASK_CHEKCLIST,
-            text: err.response.data
+            text: 'error while uploading checklist'
           }, 15000)
           reject(err)
         })
@@ -814,9 +815,13 @@ const actions = {
     })
   },
   [TASK.CHANGE_TASK_DATE]: ({ commit, dispatch }, data) => {
+    const dataSend = { ...data }
+    if (dataSend.str_date_end === '' || dataSend.str_date_end === null) {
+      dataSend.str_date_end = '0001-01-01T23:59:59'
+    }
     return new Promise((resolve, reject) => {
       const url = 'https://web.leadertask.com/api/v1/task/term'
-      axios({ url: url, method: 'PATCH', data: data })
+      axios({ url: url, method: 'PATCH', data: dataSend })
         .then(resp => {
           resolve(resp)
           commit(TASK.CHANGE_TASK_DATE, data)
@@ -998,6 +1003,13 @@ const mutations = {
       }
     }
   },
+  [TASK.UNREAD_TASKS_REQUEST]: (state, resp) => {
+    state.unread = resp.data.tasks.length
+    for (let i = 0; i < state.unread; i++) {
+      state.unreadCustomersUid.push(resp.data.tasks[i].uid_customer)
+      // state.customersTasks[state.unreadCustomersUid[i]] = state.employees.employees
+    }
+  },
   [TASK.TASKS_REQUEST]: state => {
     state.status = 'loading'
   },
@@ -1169,7 +1181,6 @@ const mutations = {
   },
   [TASK.CHANGE_TASK_CHEKCLIST]: (state, data) => {
     state.newtasks[data.uid_task].info.checklist = data.checklist
-    state.checklist.push(data.value)
   },
   [TASK.CHANGE_TASK_ACCESS]: (state, data) => {
     state.access.push(data.value)

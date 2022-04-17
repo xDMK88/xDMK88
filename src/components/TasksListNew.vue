@@ -618,6 +618,23 @@ export default {
       selectedTasks.value[arg.id] = arg.info
     }
 
+    const stop = ref(true)
+    const draggables = document.querySelectorAll('.draggable')
+
+    draggables.forEach(node => {
+      node.addEventListener('drag', e => {
+        stop.value = true
+        if (e.originalEvent.clientY < 150) {
+          stop.value = false
+          scroll(-1)
+        }
+        if (e.originalEvent.clientY > (window.innerHeight - 150)) {
+          stop.value = false
+          scroll(1)
+        }
+      })
+    })
+
     const SHOW_TASK_INPUT_UIDS = {
       '901841d9-0016-491d-ad66-8ee42d2b496b': TASK.TASKS_REQUEST, // get today's day
       '5183b619-3968-4c3a-8d87-3190cfaab014': TASK.UNSORTED_TASKS_REQUEST,
@@ -891,6 +908,7 @@ export default {
         _isEditable: true,
         _justCreated: true
       }
+      store.dispatch(TASK.SELECT_TASK, newSubtask)
       store.dispatch(TASK.ADD_SUBTASK, newSubtask)
         .then(() => {
           // Don't know the event when I can call edit just created subtask
@@ -898,7 +916,6 @@ export default {
           setTimeout(() => {
             document.getElementById(newSubtask.uid).parentNode.draggable = false
             gotoNode(newSubtask.uid)
-            store.dispatch(TASK.SELECT_TASK, newSubtask)
           }, 200)
         })
     }

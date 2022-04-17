@@ -232,7 +232,7 @@ export default {
           })
       }
       if (message === '') {
-        selectedTask.value.comment = 'Добавить заметку...'
+        selectedTask.value.comment = ''
       }
     }
     const unchecked = () => {
@@ -342,6 +342,26 @@ export default {
       store.dispatch(TASK.RESET_REPEAT_CHANGE, data).then(
         resp => {
           selectedTask.value.SeriesType = 0
+          selectedTask.value.SeriesAfterType = 0
+          selectedTask.value.SeriesAfterCount = 0
+          selectedTask.value.SeriesWeekCount = 0
+          selectedTask.value.SeriesWeekMon = 0
+          selectedTask.value.SeriesWeekTue = 0
+          selectedTask.value.SeriesWeekWed = 0
+          selectedTask.value.SeriesWeekThu = 0
+          selectedTask.value.SeriesWeekFri = 0
+          selectedTask.value.SeriesWeekSat = 0
+          selectedTask.value.SeriesWeekSun = 0
+          selectedTask.value.SeriesMonthType = 0
+          selectedTask.value.SeriesMonthCount = 0
+          selectedTask.value.SeriesMonthDay = 0
+          selectedTask.value.SeriesMonthWeekType = 0
+          selectedTask.value.SeriesMonthDayOfWeek = 0
+          selectedTask.value.SeriesYearType = 0
+          selectedTask.value.SeriesYearMonth = 0
+          selectedTask.value.SeriesYearMonthDay = 0
+          selectedTask.value.SeriesYearWeekType = 0
+          selectedTask.value.SeriesYearDayOfWeek = 0
         })
     }
     const copyurl = (e) => {
@@ -357,6 +377,7 @@ export default {
     }
     const changeEveryMonthType = (value) => {
       this.ActiveSelect = value
+      this.SeriesMonthDay = ''
     }
     const changeEveryYearType = (value) => {
       this.ActiveYartype = value
@@ -522,15 +543,14 @@ export default {
         }
         store.dispatch(TASK.EVERY_DAY_CHANGE, data).then(
           resp => {
-            console.log(this.$refs.SeriesAfterType.value + '-' + this.$refs.SeriesAfterCount.value + '-' + data.type)
             selectedTask.value.SeriesType = 1
-            selectedTask.value.SeriesAfterType = data.type
-            selectedTask.value.SeriesAfterCount = data.every_value
+            console.log(this.SeriesAfterCount + '-' + this.SeriesAfterType)
+            selectedTask.value.SeriesAfterType = this.SeriesAfterType
+            selectedTask.value.SeriesAfterCount = this.SeriesAfterCount
           })
       }
       if (this.$refs.SeriesType.value === '2') {
         this.dayWeekMassive.push(this.$refs.SeriesWeek.value)
-        console.log(this.dayWeekMassive + '-' + this.$refs.SeriesWeekCount.value)
         const data = {
           uid: selectedTask.value.uid,
           days: this.dayWeekMassive,
@@ -544,27 +564,68 @@ export default {
           })
       }
       if (this.$refs.SeriesType.value === '3') {
-        const data = {
-          uid: selectedTask.value.uid,
-          num_day: 1,
-          every_value: this.$refs.SeriesMonthCount.value,
-          mwt: this.$refs.SeriesMonthWeekType.value,
-          mdw: this.$refs.SeriesMonthDayOfWeek.value
+        if (this.SeriesMonthDay !== 0) {
+          const data = {
+            uid: selectedTask.value.uid,
+            num_day: this.SeriesMonthDay,
+            every_value: this.SeriesMonthCount
+          }
+
+          store.dispatch(TASK.EVERY_MONTH_CHANGE, data).then(
+            resp => {
+              selectedTask.value.SeriesType = 3
+              selectedTask.value.SeriesMonthDay = 1
+              selectedTask.value.SeriesMonthWeekType = this.SeriesMonthWeekType
+              selectedTask.value.SeriesMonthDayOfWeek = this.SeriesMonthDayOfWeek
+            })
         }
-        store.dispatch(TASK.EVERY_MONTH_CHANGE, data).then(
-          resp => {
-            selectedTask.value.SeriesType = 3
-          })
+        if (this.SeriesMonthDay === 0) {
+          const data = {
+            uid: selectedTask.value.uid,
+            every_value: this.SeriesMonthCount,
+            num_day: this.SeriesMonthDay,
+            mwt: this.SeriesMonthWeekType,
+            mdw: this.SeriesMonthDayOfWeek
+          }
+          store.dispatch(TASK.EVERY_MONTH_CHANGE, data).then(
+            resp => {
+              selectedTask.value.SeriesType = 3
+              selectedTask.value.SeriesMonthWeekType = this.SeriesMonthWeekType
+              selectedTask.value.SeriesMonthDayOfWeek = this.SeriesMonthDayOfWeek
+            })
+        }
       }
       if (this.$refs.SeriesType.value === '4') {
-        const data = {
-          uid: selectedTask.value.uid,
-          type: 1
+        if (this.SeriesYearMonthDay !== 0) {
+          const data = {
+            uid: selectedTask.value.uid,
+            num_day: this.SeriesYearMonthDay,
+            every_value: this.SeriesMonthCount
+          }
+
+          store.dispatch(TASK.EVERY_YEAR_CHANGE, data).then(
+            resp => {
+              selectedTask.value.SeriesType = 4
+              selectedTask.value.SeriesYearMonthDay = 1
+              selectedTask.value.SeriesMonthWeekType = this.SeriesYearWeekType
+              selectedTask.value.SeriesMonthDayOfWeek = this.SeriesYearDayOfWeek
+            })
         }
-        store.dispatch(TASK.EVERY_YEAR_CHANGE, data).then(
-          resp => {
-            selectedTask.value.SeriesType = 4
-          })
+        if (this.SeriesYearMonthDay === 0) {
+          const data = {
+            uid: selectedTask.value.uid,
+            every_value: this.SeriesYearMonthDay,
+            num_day: 0,
+            mwt: this.SeriesYearWeekType,
+            mdw: this.SeriesYearDayOfWeek
+          }
+          store.dispatch(TASK.EVERY_YEAR_CHANGE, data).then(
+            resp => {
+              selectedTask.value.SeriesType = 4
+              selectedTask.value.SeriesYearWeekType = this.SeriesYearWeekType
+              selectedTask.value.SeriesYearDayOfWeek = this.SeriesYearDayOfWeek
+            })
+        }
       }
     }
     const TimeSelectStart = () => {
@@ -599,6 +660,7 @@ export default {
         this.everyWeekRepeat = false
         this.everyMonthRepeat = false
         this.everyYearRepeat = false
+        selectedTask.value.SeriesType = 0
       }
       if (event.target.value === '1') {
         this.noRepeat = false
@@ -606,6 +668,7 @@ export default {
         this.everyWeekRepeat = false
         this.everyMonthRepeat = false
         this.everyYearRepeat = false
+        selectedTask.value.SeriesType = 1
       }
       if (event.target.value === '2') {
         this.noRepeat = false
@@ -613,6 +676,7 @@ export default {
         this.everyWeekRepeat = true
         this.everyMonthRepeat = false
         this.everyYearRepeat = false
+        selectedTask.value.SeriesType = 2
       }
       if (event.target.value === '3') {
         this.noRepeat = false
@@ -620,6 +684,7 @@ export default {
         this.everyWeekRepeat = false
         this.everyMonthRepeat = true
         this.everyYearRepeat = false
+        selectedTask.value.SeriesType = 3
       }
       if (event.target.value === '4') {
         this.noRepeat = false
@@ -627,11 +692,14 @@ export default {
         this.everyWeekRepeat = false
         this.everyMonthRepeat = false
         this.everyYearRepeat = true
+        selectedTask.value.SeriesType = 4
       }
 
       console.log(event.target.name)
     }
+
     return {
+      //  ресет Повтор
       dayWeekMassive: [],
       SaveRepeat,
       tabChanged,
@@ -1469,18 +1537,10 @@ export default {
                       </div>
                       <div class="form-group" style="margin-left: 5px">
                         <select class="form-control form-control-select-repeat" v-model="SeriesAfterType" ref="SeriesAfterType">
-                          <option value="1">
-                            День
-                          </option>
-                          <option value="2">
-                            Неделю
-                          </option>
-                          <option value="3">
-                            Месяц
-                          </option>
-                          <option value="4">
-                            Год
-                          </option>
+                          <option value="1">День</option>
+                          <option value="2">Неделю</option>
+                          <option value="3">Месяц</option>
+                          <option value="4">Год</option>
                         </select>
                       </div>
                     </div>
@@ -1527,7 +1587,7 @@ export default {
 
                     <div class="form-group">
                       <select
-                        class="form-control form-control-select-repeat" style="margin-right: 5px" v-model="SeriesMonthType" @change="changeEveryMonthType(SeriesMonthType)"
+                        class="form-control form-control-select-repeat" ref="SeriesMonthType" style="margin-right: 5px" v-model="SeriesMonthType" @change="changeEveryMonthType(SeriesMonthType)"
                         name=""
                       >
                         <option value="1">Каждый</option>
@@ -1583,14 +1643,11 @@ export default {
                     <div class="everymonthtype" :class="{showselect:ActiveSelect==1}">
                       <div class="form-group">
                         <div class="form-everymonth-container">
-                          <button
-                            v-for="day in 31"
-                            :key="day"
-                            class="btn-day-month" :class="{active:selectedTask.SeriesMonthDay===day}"
-                          >
-                            <input type="checkbox" v-model="SeriesMonthDay" :value="day" style="display: none">
-                            {{ day }}
-                          </button>
+                        <div v-for="day in 31"
+                        :key="day" class="form_radio_btn-custom">
+                          <input type="radio" name="radio" :id="'m1_' + day" v-bind:value="day" v-model="SeriesMonthDay"  ref="SeriesMonthDay" :checked="selectedTask.SeriesMonthDay === day">
+                          <label :for="'m1_' + day">{{ day }}</label>
+                        </div>
                         </div>
                       </div>
                     </div>
@@ -1607,7 +1664,7 @@ export default {
                         aria-valuemax="SeriesYearType"
                       >
                         <select
-                          class="form-control form-control-select-repeat" v-model="SeriesYearType" @change="changeEveryYearType(SeriesYearType)"
+                          class="form-control form-control-select-repeat" v-model="SeriesYearType" @change="changeEveryYearType(SeriesYearType)" ref="SeriesYearType"
                           name="SeriesYearWeekType"
                         >
                           <option value="1">Каждый</option>
@@ -1621,7 +1678,7 @@ export default {
                       <div class="everyyeartype" :class="{showselect:ActiveYartype==1}">
                         <div class="form-group">
                           <select
-                            class="form-control form-control-select-repeat" v-model="SeriesYearMonth"
+                            class="form-control form-control-select-repeat" v-model="SeriesYearMonth" ref="SeriesYearMonth"
                             name=""
                           >
                             <option :value="value+1"
@@ -1635,7 +1692,7 @@ export default {
                       </div>
                       <div class="everyyeartype" :class="{showselect:ActiveYartype>1}">
                         <div class="form-group">
-                          <select class="form-control form-control-select-repeat" v-model="SeriesYearDayOfWeek">
+                          <select class="form-control form-control-select-repeat" v-model="SeriesYearDayOfWeek" ref="SeriesYearDayOfWeek">
                             <option :value="value"
                                     v-for="(item, value) in days"
                                     :key="value"
@@ -1651,21 +1708,18 @@ export default {
                     <div class="everyyeartype" :class="{showselect:ActiveYartype==1}">
                       <div class="form-group">
                         <div class="form-everyyear-container" >
-                          <button
-                            v-for="(day,value) in 31"
-                            :key="value"
-                            class="btn-day-year" :class="{active:selectedTask.SeriesYearMonthDay===day}"
-                          >
-                            <input type="checkbox" :value="value" v-model="SeriesYearMonthDay" style="display: none">
-                            {{ day }}
-                          </button>
+                          <div v-for="day in 31"
+                               :key="day" class="form_radio_btn-custom">
+                            <input type="radio" name="radio" :id="'y1_' + day" v-model="SeriesYearMonthDay" :checked="selectedTask.SeriesYearMonthDay===day" ref="SeriesYearMonthDay">
+                            <label :for="'y1_' + day">{{ day }}</label>
+                          </div>
                         </div>
                       </div>
                     </div>
                   </div>
                   <div class="everyyearbuttontype" :class="{showselect:ActiveYartype>1}">
                     <div class="form-group">
-                      <select class="form-control select-repeat-control" v-model="SeriesYearMonth">
+                      <select class="form-control select-repeat-control" v-model="SeriesYearMonth" ref="SeriesYearMonth">
                         <option
                           v-for="(month,value) in months"
                           :key="value"

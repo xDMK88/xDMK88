@@ -70,6 +70,7 @@ const iconsKeys = Object.keys(icons)
 
 const typeofTasks = ['Непрочитанные задачи', 'В работе', 'В фокусе', 'Просрочено', 'Неразобранное', 'Готово к сдаче']
 
+alert('test')
 </script>
 
 <template>
@@ -96,7 +97,13 @@ const typeofTasks = ['Непрочитанные задачи', 'В работе
           <div class="font-bold">
             <span class="max-w-full break-all">{{ task.name }}</span>
           </div>
-          <div>
+          <div v-if="task.comment.length">
+            <details>
+              <summary>Описание</summary>
+              <p>{{ task.comment }}</p>
+            </details>
+          </div>
+          <div class="bg-white rounded-xl p-1">
               {{ task.customer_name }}
           </div>
         </div>

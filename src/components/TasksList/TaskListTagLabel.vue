@@ -1,22 +1,19 @@
 <template>
   <div
-    class="bg-gray-200 rounded px-1.5 mr-1 mt-1.5 flex items-center"
+    class="tag-label cursor-default p-1 px-2 text-xs rounded-lg mr-1 flex items-center"
+    :class="[colorTextClass, colorBgClass]"
+    :style="colorBgStyle"
   >
     <Icon
       v-if="iconPath"
       :path="iconPath"
-      class="py-1.5"
-      :class="[iconClass]"
+      class="mr-1"
+      :class="[colorTextClass]"
       :box="iconBox"
       :width="iconWidth"
       :height="iconHeight"
     />
-    <span
-      v-if="text"
-      class="cursor-default pl-1 text-xs text-gray-600"
-    >
-      {{ text }}
-    </span>
+    {{ text }}
   </div>
 </template>
 
@@ -28,9 +25,17 @@ export default {
     Icon
   },
   props: {
-    iconClass: {
+    colorTextClass: {
       type: String,
-      default: 'text-gray-600'
+      default: 'text-white'
+    },
+    colorBgClass: {
+      type: String,
+      default: ''
+    },
+    colorBgStyle: {
+      type: Object,
+      default: () => ({})
     },
     iconPath: {
       type: [String, Array],

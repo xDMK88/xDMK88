@@ -1,10 +1,11 @@
 <template>
   <div
-    class="bg-gray-200 rounded px-1.5 mr-1 mt-1.5"
+    class="bg-gray-200 rounded px-1.5 mr-1 mt-1.5 flex items-center"
   >
     <Icon
       v-if="iconPath"
       :path="iconPath"
+      class="py-1.5"
       :class="[iconClass]"
       :box="iconBox"
       :width="iconWidth"
@@ -12,7 +13,7 @@
     />
     <span
       v-if="text"
-      class="cursor-default ml-1 text-xs text-gray-600"
+      class="cursor-default pl-1 text-xs text-gray-600"
     >
       {{ text }}
     </span>

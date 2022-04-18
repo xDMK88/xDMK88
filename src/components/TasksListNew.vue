@@ -364,7 +364,7 @@
 
         <!-- Tags, Overdue, Customer, Performer -->
         <div
-          v-if="props.node.info.uid_customer == '00000000-0000-0000-0000-000000000000' || props.node.info.email_performer || props.node.info.is_overdue || props.node.info.tags || props.node.info.uid_project == '00000000-0000-0000-0000-000000000000'"
+          v-if="props.node.info.uid_customer == '00000000-0000-0000-0000-000000000000' || props.node.info.email_performer || props.node.info.is_overdue || props.node.info.tags || props.node.info.uid_project == '00000000-0000-0000-0000-000000000000' || props.node.info.term_customer || props.node.info.checklist || props.node.info.has_files || props.node.info.has_msgs || props.node.info.comment || props.node.info.focus"
           class="flex items-center mt-1.5"
         >
           <!-- Customer -->
@@ -411,13 +411,7 @@
             :text="projects[props.node.info.uid_project].name"
             :color-bg-class="{ 'bg-yellow-400': true, 'bg-opacity-50': props.node.info.status == 1 || props.node.info.status == 7 }"
           />
-        </div>
-
-        <!-- Icons, Access, Messages, Files, Data, Checklist, Focus -->
-        <div
-          v-if="props.node.info.term_customer || props.node.info.checklist || props.node.info.has_files || props.node.info.has_msgs || props.node.info.comment || props.node.info.focus"
-          class="flex"
-        >
+          <!-- Icons, Access, Messages, Files, Data, Checklist, Focus -->
           <TaskListIconLabel
             v-if="props.node.info.term_customer"
             :icon-path="clock.path"

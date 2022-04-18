@@ -23,6 +23,8 @@ const state = {
   inWork: '',
   inFocus: '',
   overdue: '',
+  unsorted: '',
+  ready: '',
   unreadCustomersUid: [],
   customersTasks: {},
   tags: {},
@@ -194,6 +196,7 @@ const actions = {
       axios({ url: url, method: 'GET' })
         .then(resp => {
           commit(TASK.TASKS_SUCCESS, resp)
+          commit(TASK.UNSORTED_TASKS_REQUEST, resp)
           if (resp.data.anothers_tags.length) {
             commit(TASK.ADD_TASK_TAGS, resp.data.anothers_tags)
           }
@@ -330,6 +333,7 @@ const actions = {
       axios({ url: url, method: 'GET' })
         .then(resp => {
           commit(TASK.TASKS_SUCCESS, resp)
+          commit(TASK.READY_FOR_COMPLITION_TASKS_REQUEST, resp)
           if (resp.data.anothers_tags.length) {
             commit(TASK.ADD_TASK_TAGS, resp.data.anothers_tags)
           }
@@ -1075,6 +1079,9 @@ const mutations = {
   [TASK.OVERDUE_TASKS_REQUEST]: (state, resp) => {
     state.overdue = resp.data
   },
+  [TASK.UNSORTED_TASKS_REQUEST]: (state, resp) => {
+    state.unsorted = resp.data
+  },
   [TASK.UPDATE_NEW_TASK_LIST]: (state, tasks) => {
     for (const task of tasks) {
       if (!task.has_children) {
@@ -1097,6 +1104,9 @@ const mutations = {
   },
   [TASK.CHANGE_TASK_STATUS]: (state, data) => {
     state.newtasks[data.uid].info.status = data.value
+  },
+  [TASK.READY_FOR_COMPLITION_TASKS_REQUEST]: (state, resp) => {
+    state.ready = resp.data
   },
   [TASK.ADD_TASK]: (state, task) => {
     if (!task._justCreated) {

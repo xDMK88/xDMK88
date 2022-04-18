@@ -8,10 +8,14 @@
     button-label="Delete"
     @confirm="removeTask(lastSelectedTaskUid)"
   >
-    <p class="text-center" v-if="storeTasks[lastSelectedTaskUid]">
+    <p
+      v-if="storeTasks[lastSelectedTaskUid]"
+      class="text-center"
+    >
       Do you really wanna delete <strong>"{{ storeTasks[lastSelectedTaskUid].info.name }}"</strong> task?
       <span
-        v-if="storeTasks[lastSelectedTaskUid].info.has_children">
+        v-if="storeTasks[lastSelectedTaskUid].info.has_children"
+      >
         Children will also be affected!
       </span>
     </p>
@@ -116,12 +120,12 @@
     </template>
     <template #before-input="props">
       <div
-        @click.shift="clickAndShift(props.node)"
-        @click.exact="selectedTasks = {}"
         :id="props.node.info.uid"
         class="group task-node flex-col items-center w-full bg-white p-2 rounded-xl dark:bg-gray-900 dark:border-gray-700 border border-gray-300 my-0.5 relative"
         :style="{ backgroundColor: colors[props.node.info.uid_marker] ? colors[props.node.info.uid_marker].back_color : '' }"
         :class="{ 'bg-gray-200 dark:bg-gray-800': (props.node.info.status == 1 || props.node.info.status == 7) && props.node.info.uid_marker == '00000000-0000-0000-0000-000000000000' }"
+        @click.shift="clickAndShift(props.node)"
+        @click.exact="selectedTasks = {}"
       >
         <!--
         DEBUG TASK INFO, don't remove this comment
@@ -195,7 +199,8 @@
                   <div
                     class="flex items-center py-0.5 px-1.5 rounded-xl"
                     :class="{ 'cursor-pointer': !copiedTasks[props.node.info.uid], 'hover:bg-gray-100 hover:dark:bg-stone-800': !copiedTasks[props.node.info.uid], 'text-gray-200': copiedTasks[props.node.info.uid] }"
-                    @click="copyTask(props.node.info)" >
+                    @click="copyTask(props.node.info)"
+                  >
                     <Icon
                       :path="copy.path"
                       class="text-gray-600 dark:text-white mr-3 cursor-pointer"
@@ -342,13 +347,13 @@
 
             <!-- Editable name -->
             <contenteditable
+              v-model="props.node.info.name"
               tag="div"
               class="taskName p-0.5 ring-0 outline-none"
               :contenteditable="props.node.info._isEditable"
-              v-model="props.node.info.name"
               placeholder="Enter task name"
-              :noNL="true"
-              :noHTML="true"
+              :no-n-l="true"
+              :no-h-t-m-l="true"
               :class="{ 'text-gray-500': props.node.info.status == 1 || props.node.info.status == 7, 'line-through': props.node.info.status == 1 || props.node.info.status == 7, 'font-extrabold': props.node.info.readed == 0 }"
               :style="{ color: colors[props.node.info.uid_marker] ? colors[props.node.info.uid_marker].fore_color : '' }"
               @dblclick.stop="editTaskName(props.node.id)"
@@ -364,20 +369,20 @@
         >
           <div
             v-if="props.node.info.uid_customer != '00000000-0000-0000-0000-000000000000' && employees[props.node.info.uid_customer] && props.node.info.uid_customer != user.current_user_uid"
-            class="p-1 px-2 text-xs text-white bg-red-500 rounded-lg mr-1 flex items-center"
+            class="customer p-1 px-2 text-xs text-white bg-red-500 rounded-lg mr-1 flex items-center"
             :class="{ 'bg-gray-400 dark:bg-gray-700': user.current_user_email != props.node.info.email_performer, 'bg-opacity-50': props.node.info.status == 1 || props.node.info.status == 7 }"
           >
             {{ employees[props.node.info.uid_customer].name }}
           </div>
           <div
             v-if="props.node.info.email_performer && employeesByEmail[props.node.info.email_performer] && user.current_user_email != props.node.info.email_performer && employees[props.node.info.uid_customer].email != props.node.info.email_performer"
-            class="p-1 px-2 text-xs text-white rounded-lg mr-1 flex items-center"
+            class="performer p-1 px-2 text-xs text-white rounded-lg mr-1 flex items-center"
             :class="{ 'bg-gray-400 dark:bg-gray-700': user.current_user_email != props.node.info.email_performer, 'bg-green-500': user.current_user_uid == props.node.info.uid_customer, 'bg-opacity-50': props.node.info.status == 1 || props.node.info.status == 7 }"
           >
             <Icon
               v-if="!props.node.info.performerreaded"
               :path="performerNotRead.path"
-              class="cursor-pointer text-white mr-1"
+              class="text-white mr-1"
               :box="performerNotRead.viewBox"
               :width="performerNotRead.width"
               :height="performerNotRead.height"
@@ -385,7 +390,7 @@
             <Icon
               v-if="props.node.info.performerreaded"
               :path="performerRead.path"
-              class="cursor-pointer text-white mr-1"
+              class="text-white mr-1"
               :box="performerRead.viewBox"
               :width="performerRead.width"
               :height="performerRead.height"
@@ -394,7 +399,7 @@
           </div>
           <div
             v-if="props.node.info.is_overdue"
-            class="p-1 px-2 text-xs text-red-600 bg-red-300 rounded-lg mr-1 opacity-70"
+            class="tag-overdue p-1 px-2 text-xs text-red-600 bg-red-300 rounded-lg mr-1 opacity-70"
           >
             Просрочено
           </div>
@@ -404,12 +409,12 @@
           >
             <div
               v-if="tags[tag]"
-              class="p-1 px-2 text-xs text-white rounded-lg mr-1 flex items-center"
+              class="tag-label p-1 px-2 text-xs text-white rounded-lg mr-1 flex items-center"
               :style="{ backgroundColor: tags[tag] ? tags[tag].back_color : '' }"
             >
               <Icon
                 :path="tagIcon.path"
-                class="cursor-pointer text-white mr-1"
+                class="text-white mr-1"
                 :box="tagIcon.viewBox"
                 :width="13"
                 :height="12"
@@ -419,12 +424,12 @@
           </div>
           <div
             v-if="props.node.info.uid_project != '00000000-0000-0000-0000-000000000000' && projects[props.node.info.uid_project] && props.node.info.uid_project !== taskListSource.param"
-            class="p-1 px-2 text-xs text-white bg-yellow-400 rounded-lg mr-1 flex items-center"
+            class="tag-label p-1 px-2 text-xs text-white bg-yellow-400 rounded-lg mr-1 flex items-center"
             :class="{ 'bg-opacity-50': props.node.info.status == 1 || props.node.info.status == 7 }"
           >
             <Icon
               :path="project.path"
-              class="cursor-pointer text-white mr-1"
+              class="text-white mr-1"
               :box="project.viewBox"
               :width="13"
               :height="12"
@@ -445,13 +450,15 @@
           >
             <Icon
               :path="clock.path"
-              class="cursor-pointer text-gray-600 dark:text-white"
+              class="text-gray-600 dark:text-white"
               :box="clock.viewBox"
               :width="13"
               :height="12"
             />
           </div>
-          <span class="mr-1 mt-1.5 text-sm text-gray-600 dark:text-white self-center">{{ props.node.info.term_customer }}</span>
+          <span class="term-tag mr-1 mt-1.5 text-sm text-gray-600 dark:text-white self-center">
+            {{ props.node.info.term_customer }}
+          </span>
           <div
             v-if="props.node.info.checklist"
             class="bg-gray-200 dark:bg-gray-700 rounded px-1.5 mr-1 mt-1.5"
@@ -459,7 +466,7 @@
           >
             <Icon
               :path="checklist.path"
-              class="cursor-pointer text-gray-600 dark:text-white"
+              class="text-gray-600 dark:text-white"
               :box="checklist.viewBox"
               :width="13"
               :height="12"
@@ -467,7 +474,7 @@
           </div>
           <span
             v-if="props.node.info.checklist"
-            class="mr-1 mt-1.5 text-sm text-gray-600 dark:text-white self-center"
+            class="checklist-tag mr-1 mt-1.5 text-sm text-gray-600 dark:text-white self-center"
           >
             {{ countChecklist(props.node.info.checklist).done }} / {{ countChecklist(props.node.info.checklist).undone }}
           </span>
@@ -491,7 +498,7 @@
           >
             <Icon
               :path="file.path"
-              class="cursor-pointer text-gray-600 dark:text-white"
+              class="text-gray-600 dark:text-white"
               :box="file.viewBox"
               :width="13"
               :height="12"
@@ -504,7 +511,7 @@
           >
             <Icon
               :path="msgs.path"
-              class="cursor-pointer text-gray-600 dark:text-white"
+              class="text-gray-600 dark:text-white"
               :box="msgs.viewBox"
               :width="13"
               :height="12"
@@ -517,7 +524,7 @@
           >
             <Icon
               :path="taskcomment.path"
-              class="cursor-pointer text-gray-600 dark:text-white"
+              class="text-gray-600 dark:text-white"
               :box="taskcomment.viewBox"
               :width="13"
               :height="12"
@@ -530,7 +537,7 @@
           >
             <Icon
               :path="taskfocus.path"
-              class="cursor-pointer text-red-600 dark:text-white my-auto"
+              class="text-red-600 dark:text-white my-auto"
               :box="taskfocus.viewBox"
               :width="13"
               :height="12"
@@ -624,7 +631,8 @@ export default {
     draggables.forEach(node => {
       node.addEventListener('drag', e => {
         stop.value = true
-        if (e.originalEvent.clientY < 150) {
+        console.log(e.originalEvent.clientY)
+        if (e.originalEvent.clientY < 300) {
           stop.value = false
           scroll(-1)
         }
@@ -633,7 +641,20 @@ export default {
           scroll(1)
         }
       })
+      node.addEventListener('dragend', e => {
+        stop.value = true
+      })
     })
+
+    const scroll = (step) => {
+      const scrollY = window.scrollTop()
+      window.scrollTop(scrollY + step)
+      if (!stop.value) {
+        setTimeout(() => {
+          scroll(step)
+        }, 20)
+      }
+    }
 
     const SHOW_TASK_INPUT_UIDS = {
       '901841d9-0016-491d-ad66-8ee42d2b496b': TASK.TASKS_REQUEST, // get today's day
@@ -1120,6 +1141,10 @@ export default {
   flex: 1
 }
 
+.taskName, .tag-label, .tag-overdue, .performer, .customer, .checklist-tag, .term-tag{
+  cursor: default;
+}
+
 .icon-wrapper {
   padding: 0;
   min-width: 0;
@@ -1165,7 +1190,7 @@ export default {
   border-color: #00000042
 }
 
-.checkbox-wrapper. checked:after {
+.checkbox-wrapper, checked:after {
   transform: translate(.25em, .3365384615em) rotate(-45deg);
   width: .7em;
   height: .3em;
@@ -1177,7 +1202,7 @@ export default {
 .checkbox-wrapper.indeterminate:after {
   transform: translate(.25em, .3365384615em) rotate(0);
   width: .7em;
-  height: . 3em;
+  height: .3em;
   border: .125em solid #fff;
   border-top-style: none;
   border-right-style: none;

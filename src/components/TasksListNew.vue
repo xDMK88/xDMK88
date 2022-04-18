@@ -364,185 +364,94 @@
 
         <!-- Tags, Overdue, Customer, Performer -->
         <div
-          v-if="props.node.info.uid_customer == '00000000-0000-0000-0000-000000000000' || props.node.info.email_performer || props.node.info.is_overdue || props.node.info.tags || props.node.info.uid_project == '00000000-0000-0000-0000-000000000000'"
+          v-if="props.node.info.uid_customer == '00000000-0000-0000-0000-000000000000' || props.node.info.email_performer || props.node.info.is_overdue || props.node.info.tags || props.node.info.uid_project == '00000000-0000-0000-0000-000000000000' || props.node.info.term_customer || props.node.info.checklist || props.node.info.has_files || props.node.info.has_msgs || props.node.info.comment || props.node.info.focus"
           class="flex items-center mt-1.5"
         >
-          <div
+          <!-- Customer -->
+          <TaskListTagLabel
             v-if="props.node.info.uid_customer != '00000000-0000-0000-0000-000000000000' && employees[props.node.info.uid_customer] && props.node.info.uid_customer != user.current_user_uid"
-            class="customer p-1 px-2 text-xs text-white bg-red-500 rounded-lg mr-1 flex items-center"
-            :class="{ 'bg-gray-400 dark:bg-gray-700': user.current_user_email != props.node.info.email_performer, 'bg-opacity-50': props.node.info.status == 1 || props.node.info.status == 7 }"
-          >
-            {{ employees[props.node.info.uid_customer].name }}
-          </div>
-          <div
+            :text="employees[props.node.info.uid_customer].name"
+            :color-bg-class="{ 'bg-gray-400': user.current_user_email != props.node.info.email_performer, 'bg-opacity-50': props.node.info.status == 1 || props.node.info.status == 7 }"
+          />
+          <!-- Performer -->
+          <TaskListTagLabel
             v-if="props.node.info.email_performer && employeesByEmail[props.node.info.email_performer] && user.current_user_email != props.node.info.email_performer && employees[props.node.info.uid_customer].email != props.node.info.email_performer"
-            class="performer p-1 px-2 text-xs text-white rounded-lg mr-1 flex items-center"
-            :class="{ 'bg-gray-400 dark:bg-gray-700': user.current_user_email != props.node.info.email_performer, 'bg-green-500': user.current_user_uid == props.node.info.uid_customer, 'bg-opacity-50': props.node.info.status == 1 || props.node.info.status == 7 }"
-          >
-            <Icon
-              v-if="!props.node.info.performerreaded"
-              :path="performerNotRead.path"
-              class="text-white mr-1"
-              :box="performerNotRead.viewBox"
-              :width="performerNotRead.width"
-              :height="performerNotRead.height"
-            />
-            <Icon
-              v-if="props.node.info.performerreaded"
-              :path="performerRead.path"
-              class="text-white mr-1"
-              :box="performerRead.viewBox"
-              :width="performerRead.width"
-              :height="performerRead.height"
-            />
-            {{ employeesByEmail[props.node.info.email_performer].name }}
-          </div>
-          <div
+            :text="employeesByEmail[props.node.info.email_performer].name"
+            :icon-width="props.node.info.performerreaded ? performerRead.width : performerNotRead.width"
+            :icon-height="props.node.info.performerreaded ? performerRead.height : performerNotRead.height"
+            :icon-box="props.node.info.performerreaded ? performerRead.viewBox : performerNotRead.viewBox"
+            :icon-path="props.node.info.performerreaded ? performerRead.path : performerNotRead.path"
+            :color-bg-class="{ 'bg-gray-400': user.current_user_email != props.node.info.email_performer, 'bg-green-500': user.current_user_uid == props.node.info.uid_customer, 'bg-opacity-50': props.node.info.status == 1 || props.node.info.status == 7 }"
+          />
+          <!-- Overdue -->
+          <TaskListTagLabel
             v-if="props.node.info.is_overdue"
-            class="tag-overdue p-1 px-2 text-xs text-red-600 bg-red-300 rounded-lg mr-1 opacity-70"
-          >
-            Просрочено
-          </div>
-          <div
+            text="Просрочено"
+            color-text-class="text-red-600"
+            color-bg-class="bg-red-300 opacity-70"
+          />
+          <!-- Tags -->
+          <template
             v-for="(tag, index) in props.node.info.tags"
             :key="index"
           >
-            <div
+            <TaskListTagLabel
               v-if="tags[tag]"
-              class="tag-label p-1 px-2 text-xs text-white rounded-lg mr-1 flex items-center"
-              :style="{ backgroundColor: tags[tag] ? tags[tag].back_color : '' }"
-            >
-              <Icon
-                :path="tagIcon.path"
-                class="text-white mr-1"
-                :box="tagIcon.viewBox"
-                :width="13"
-                :height="12"
-              />
-              {{ tags[tag].name }}
-            </div>
-          </div>
-          <div
+              :icon-path="tagIcon.path"
+              :icon-box="tagIcon.viewBox"
+              :text="tags[tag].name"
+              :color-bg-style="{ backgroundColor: tags[tag].back_color }"
+            />
+          </template>
+          <!-- Project -->
+          <TaskListTagLabel
             v-if="props.node.info.uid_project != '00000000-0000-0000-0000-000000000000' && projects[props.node.info.uid_project] && props.node.info.uid_project !== taskListSource.param"
-            class="tag-label p-1 px-2 text-xs text-white bg-yellow-400 rounded-lg mr-1 flex items-center"
-            :class="{ 'bg-opacity-50': props.node.info.status == 1 || props.node.info.status == 7 }"
-          >
-            <Icon
-              :path="project.path"
-              class="text-white mr-1"
-              :box="project.viewBox"
-              :width="13"
-              :height="12"
-            />
-            {{ projects[props.node.info.uid_project].name }}
-          </div>
-        </div>
-
-        <!-- Icons, Access, Messages, Files, Data, Checklist, Focus -->
-        <div
-          v-if="props.node.info.term_customer || props.node.info.checklist || props.node.info.has_files || props.node.info.has_msgs || props.node.info.comment || props.node.info.focus"
-          class="flex"
-        >
-          <div
+            :icon-path="project.path"
+            :icon-box="project.viewBox"
+            :text="projects[props.node.info.uid_project].name"
+            :color-bg-class="{ 'bg-yellow-400': true, 'bg-opacity-50': props.node.info.status == 1 || props.node.info.status == 7 }"
+          />
+          <!-- Icons, Access, Messages, Files, Data, Checklist, Focus -->
+          <TaskListIconLabel
             v-if="props.node.info.term_customer"
-            class="bg-gray-200 dark:bg-gray-700 rounded px-1.5 mr-1 mt-1.5"
-            :style="{ backgroundColor: colors[props.node.info.uid_marker] ? colors[props.node.info.uid_marker].back_color : '' }"
-          >
-            <Icon
-              :path="clock.path"
-              class="text-gray-600 dark:text-white"
-              :box="clock.viewBox"
-              :width="13"
-              :height="12"
-            />
-          </div>
-          <span class="term-tag mr-1 mt-1.5 text-sm text-gray-600 dark:text-white self-center">
-            {{ props.node.info.term_customer }}
-          </span>
-          <div
+            :icon-path="clock.path"
+            :icon-box="clock.viewBox"
+            :text="props.node.info.term_customer"
+          />
+          <TaskListIconLabel
             v-if="props.node.info.checklist"
-            class="bg-gray-200 dark:bg-gray-700 rounded px-1.5 mr-1 mt-1.5"
-            :style="{ backgroundColor: colors[props.node.info.uid_marker] ? colors[props.node.info.uid_marker].back_color : '' }"
-          >
-            <Icon
-              :path="checklist.path"
-              class="text-gray-600 dark:text-white"
-              :box="checklist.viewBox"
-              :width="13"
-              :height="12"
-            />
-          </div>
-          <span
-            v-if="props.node.info.checklist"
-            class="checklist-tag mr-1 mt-1.5 text-sm text-gray-600 dark:text-white self-center"
-          >
-            {{ countChecklist(props.node.info.checklist).done }} / {{ countChecklist(props.node.info.checklist).undone }}
-          </span>
-          <div
+            :icon-path="checklist.path"
+            :icon-box="checklist.viewBox"
+            :text="`${countChecklist(props.node.info.checklist).done} / ${countChecklist(props.node.info.checklist).undone}`"
+          />
+          <TaskListIconLabel
             v-if="props.node.info.emails"
-            class="bg-gray-200 dark:bg-gray-700 rounded px-1.5 mr-1 mt-1.5 flex items-center justify-center"
-            :style="{ backgroundColor: colors[props.node.info.uid_marker] ? colors[props.node.info.uid_marker].back_color : '' }"
-          >
-            <Icon
-              :path="inaccess.path"
-              class="text-gray-600 dark:text-white"
-              :box="inaccess.viewBox"
-              :width="14"
-              :height="14"
-            />
-          </div>
-          <div
+            :icon-path="inaccess.path"
+            :icon-box="inaccess.viewBox"
+            icon-width="14"
+            icon-height="14"
+          />
+          <TaskListIconLabel
             v-if="props.node.info.has_files"
-            class="bg-gray-200 dark:bg-gray-700 rounded px-1.5 mr-1 mt-1.5"
-            :style="{ backgroundColor: colors[props.node.info.uid_marker] ? colors[props.node.info.uid_marker].back_color : '' }"
-          >
-            <Icon
-              :path="file.path"
-              class="text-gray-600 dark:text-white"
-              :box="file.viewBox"
-              :width="13"
-              :height="12"
-            />
-          </div>
-          <div
+            :icon-path="file.path"
+            :icon-box="file.viewBox"
+          />
+          <TaskListIconLabel
             v-if="props.node.info.has_msgs"
-            class="bg-gray-200 dark:bg-gray-700 rounded px-1.5 mr-1 mt-1.5"
-            :style="{ backgroundColor: colors[props.node.info.uid_marker] ? colors[props.node.info.uid_marker].back_color : '' }"
-          >
-            <Icon
-              :path="msgs.path"
-              class="text-gray-600 dark:text-white"
-              :box="msgs.viewBox"
-              :width="13"
-              :height="12"
-            />
-          </div>
-          <div
+            :icon-path="msgs.path"
+            :icon-box="msgs.viewBox"
+          />
+          <TaskListIconLabel
             v-if="props.node.info.comment.replace(/\r?\n|\r/g, '')"
-            class="bg-gray-200 dark:bg-gray-700 rounded px-1.5 mr-1 mt-1.5"
-            :style="{backgroundColor: colors[props.node.info.uid_marker] ? colors[props.node.info.uid_marker].back_color : '' }"
-          >
-            <Icon
-              :path="taskcomment.path"
-              class="text-gray-600 dark:text-white"
-              :box="taskcomment.viewBox"
-              :width="13"
-              :height="12"
-            />
-          </div>
-          <div
+            :icon-path="taskcomment.path"
+            :icon-box="taskcomment.viewBox"
+          />
+          <TaskListIconLabel
             v-if="props.node.info.focus"
-            class="bg-gray-200 dark:bg-gray-700 rounded px-1.5 mr-1 mt-1.5"
-            :style="{backgroundColor: colors[props.node.info.uid_marker] ? colors[props.node.info.uid_marker].back_color : '' }"
-          >
-            <Icon
-              :path="taskfocus.path"
-              class="text-red-600 dark:text-white my-auto"
-              :box="taskfocus.viewBox"
-              :width="13"
-              :height="12"
-            />
-          </div>
+            :icon-path="taskfocus.path"
+            :icon-box="taskfocus.viewBox"
+            icon-class="text-red-600"
+          />
         </div>
       </div>
     </template>
@@ -559,6 +468,8 @@ import EmptyTasksListPics from '@/components/EmptyTasksListPics.vue'
 import Popper from 'vue3-popper'
 import ModalBoxConfirm from '@/components/modals/ModalBoxConfirm.vue'
 import contenteditable from 'vue-contenteditable'
+import TaskListIconLabel from '@/components/TasksList/TaskListIconLabel.vue'
+import TaskListTagLabel from '@/components/TasksList/TaskListTagLabel.vue'
 
 import * as TASK from '@/store/actions/tasks'
 
@@ -593,6 +504,8 @@ export default {
   components: {
     tree: treeview,
     Icon,
+    TaskListIconLabel,
+    TaskListTagLabel,
     Control,
     Popper,
     ModalBoxConfirm,

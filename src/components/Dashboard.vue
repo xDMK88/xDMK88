@@ -69,8 +69,6 @@ const icons = {
 const iconsKeys = Object.keys(icons)
 
 const typeofTasks = ['Непрочитанные задачи', 'В работе', 'В фокусе', 'Просрочено', 'Неразобранное', 'Готово к сдаче']
-
-alert('test')
 </script>
 
 <template>

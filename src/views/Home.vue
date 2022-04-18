@@ -151,6 +151,10 @@ const getNavigator = () => {
 
               // nested lookup for shared and private projects
               if (navStack.value[navStack.value.length - 1].greedPath === 'projects_children') {
+                // Requests project's tasks
+                store.dispatch(UID_TO_ACTION[navStack.value[navStack.value.length - 1].global_property_uid], navStack.value[navStack.value.length - 1].uid)
+                store.commit('basic', { key: 'taskListSource', value: { uid: navStack.value[navStack.value.length - 1].global_property_uid, param: navStack.value[navStack.value.length - 1].uid } })
+
                 visitChildren(storeNavigator.value.new_private_projects[0].items, value => {
                   if (value.uid === navStack.value[navStack.value.length - 1].uid) {
                     store.commit('basic', { key: navStack.value[navStack.value.length - 1].key, value: value.children })

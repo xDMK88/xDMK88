@@ -32,10 +32,7 @@ let modalOneActive = ref(false)
 // Serves as linkage between requests from storage and tree view navigator
 const UID_TO_ACTION = {
   '2bad1413-a373-4926-8a3c-58677a680714': [
-    TASK.TASKS_REQUEST,
-    TASK.OPENED_TASKS_REQUEST,
-    TASK.UNSORTED_TASKS_REQUEST,
-    TASK.OVERDUE_TASKS_REQUEST,
+    TASK.UNREAD_TASKS_REQUEST,
     TASK.IN_WORK_TASKS_REQUEST,
     TASK.IN_FOCUS_TASKS_REQUEST
   ],
@@ -121,14 +118,14 @@ const menuClick = (event, item) => {
 
   // desktop check
   if (item.uid === '2bad1413-a373-4926-8a3c-58677a680714') {
-    store.commit('basic', { key: 'mainSectionState', value: 'greed' })
-    store.commit('basic', { key: 'greedPath', value: 'dashboard' })
     const navElem = {
       name: 'Рабочий стол',
       key: 'greedSoure',
       uid: '2bad1413-a373-4926-8a3c-58677a680714'
     }
     store.commit('updateStackWithInitValue', navElem)
+    store.commit('basic', { key: 'mainSectionState', value: 'greed' })
+    store.commit('basic', { key: 'greedPath', value: 'dashboard' })
     return
   }
 

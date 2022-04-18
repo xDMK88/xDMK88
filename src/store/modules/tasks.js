@@ -21,6 +21,8 @@ const state = {
   tasks: false,
   unread: '',
   inWork: '',
+  inFocus: '',
+  overdue: '',
   unreadCustomersUid: [],
   customersTasks: {},
   tags: {},
@@ -216,6 +218,7 @@ const actions = {
       axios({ url: url, method: 'GET' })
         .then(resp => {
           commit(TASK.TASKS_SUCCESS, resp)
+          commit(TASK.OVERDUE_TASKS_REQUEST, resp)
           if (resp.data.anothers_tags.length) {
             commit(TASK.ADD_TASK_TAGS, resp.data.anothers_tags)
           }
@@ -299,6 +302,7 @@ const actions = {
       axios({ url: url, method: 'GET' })
         .then(resp => {
           commit(TASK.TASKS_SUCCESS, resp)
+          commit(TASK.IN_FOCUS_TASKS_REQUEST, resp)
           if (resp.data.anothers_tags.length) {
             commit(TASK.ADD_TASK_TAGS, resp.data.anothers_tags)
           }
@@ -1007,14 +1011,9 @@ const mutations = {
   },
   [TASK.IN_WORK_TASKS_REQUEST]: (state, resp) => {
     state.inWork = resp.data
-    // console.log(resp.data)
   },
   [TASK.UNREAD_TASKS_REQUEST]: (state, resp) => {
-    state.unread = resp.data.tasks.length
-    for (let i = 0; i < state.unread; i++) {
-      state.unreadCustomersUid.push(resp.data.tasks[i].uid_customer)
-      // state.customersTasks[state.unreadCustomersUid[i]] = state.employees.employees
-    }
+    state.unread = resp.data
   },
   [TASK.TASKS_REQUEST]: state => {
     state.status = 'loading'
@@ -1072,6 +1071,9 @@ const mutations = {
     for (const tag of tags) {
       state.tags[tag.uid] = tag
     }
+  },
+  [TASK.OVERDUE_TASKS_REQUEST]: (state, resp) => {
+    state.overdue = resp.data
   },
   [TASK.UPDATE_NEW_TASK_LIST]: (state, tasks) => {
     for (const task of tasks) {
@@ -1191,8 +1193,8 @@ const mutations = {
   [TASK.CHANGE_TASK_ACCESS]: (state, data) => {
     state.access.push(data.value)
   },
-  [TASK.IN_FOCUS_TASKS_REQUEST]: (state, data) => {
-    state.focus = data
+  [TASK.IN_FOCUS_TASKS_REQUEST]: (state, resp) => {
+    state.inFocus = resp.data
   },
   [TASK.CHANGE_TASK_FOCUS]: (state, data) => {
     state.focus = data.value

@@ -59,7 +59,7 @@
           </p>
         </div>
       </div>
-      <control
+      <TaskListEdit
         ref="root"
         v-model="createTaskText"
         class="w-full text-white"
@@ -354,7 +354,7 @@
               placeholder="Enter task name"
               :no-n-l="true"
               :no-h-t-m-l="true"
-              :class="{ 'text-gray-500': props.node.info.status == 1 || props.node.info.status == 7, 'line-through': props.node.info.status == 1 || props.node.info.status == 7, 'font-extrabold': props.node.info.readed == 0 }"
+              :class="{ 'uppercase': !props.node.info._isEditable && colors[props.node.info.uid_marker] && colors[props.node.info.uid_marker].uppercase, 'text-gray-500': props.node.info.status == 1 || props.node.info.status == 7, 'line-through': props.node.info.status == 1 || props.node.info.status == 7, 'font-extrabold': props.node.info.readed == 0 }"
               :style="{ color: colors[props.node.info.uid_marker] ? colors[props.node.info.uid_marker].fore_color : '' }"
               @dblclick.stop="editTaskName(props.node.id)"
               @keyup.enter="updateTask($event, props.node.info); props.node.info._isEditable = false;"
@@ -371,7 +371,7 @@
           <TaskListTagLabel
             v-if="props.node.info.uid_customer != '00000000-0000-0000-0000-000000000000' && employees[props.node.info.uid_customer] && props.node.info.uid_customer != user.current_user_uid"
             :text="employees[props.node.info.uid_customer].name"
-            :color-bg-class="{ 'bg-gray-400': user.current_user_email != props.node.info.email_performer, 'bg-opacity-50': props.node.info.status == 1 || props.node.info.status == 7 }"
+            :color-bg-class="{ 'bg-red-500': user.current_user_email == props.node.info.email_performer, 'bg-gray-400': user.current_user_email != props.node.info.email_performer, 'bg-opacity-50': props.node.info.status == 1 || props.node.info.status == 7 }"
           />
           <!-- Performer -->
           <TaskListTagLabel
@@ -463,13 +463,13 @@ import { computed, ref, nextTick } from 'vue'
 import treeview from 'vue3-treeview'
 import { useStore } from 'vuex'
 import Icon from '@/components/Icon.vue'
-import Control from '@/components/Control.vue'
 import EmptyTasksListPics from '@/components/EmptyTasksListPics.vue'
 import Popper from 'vue3-popper'
 import ModalBoxConfirm from '@/components/modals/ModalBoxConfirm.vue'
 import contenteditable from 'vue-contenteditable'
 import TaskListIconLabel from '@/components/TasksList/TaskListIconLabel.vue'
 import TaskListTagLabel from '@/components/TasksList/TaskListTagLabel.vue'
+import TaskListEdit from '@/components/TasksList/TaskListEdit.vue'
 
 import * as TASK from '@/store/actions/tasks'
 
@@ -506,7 +506,7 @@ export default {
     Icon,
     TaskListIconLabel,
     TaskListTagLabel,
-    Control,
+    TaskListEdit,
     Popper,
     ModalBoxConfirm,
     EmptyTasksListPics,

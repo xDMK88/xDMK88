@@ -1003,7 +1003,7 @@ fieldset[disabled] .btn {
   width: 100%;
   height: auto;
   margin: auto;
-  overflow: auto;
+  overflow: visible;
   justify-content: flex-start;
 }
 
@@ -1527,8 +1527,7 @@ label
 }
 .breadcrumbs
 {
-  background-color: white;
-  padding: 10px;
+  padding: 7px 3px;
   display: table;
 }
 .nopadding {

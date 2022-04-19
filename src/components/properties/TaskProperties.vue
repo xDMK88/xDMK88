@@ -1,4 +1,5 @@
 <script>
+
 import Popper from 'vue3-popper'
 import { computed, ref, watch } from 'vue'
 import { DatePicker } from 'v-calendar'
@@ -17,6 +18,7 @@ import linkify from 'vue-linkify'
 import ModalBoxConfirm from '@/components/modals/ModalBoxConfirm.vue'
 import { maska } from 'maska'
 import ChatLoader from '@/components/properties/ChatLoader'
+
 export default {
   components: {
     ChatLoader,
@@ -842,6 +844,7 @@ export default {
       selectedTaskcomment: selectedTask.value.comment,
       ActiveSelect: selectedTask.value.SeriesMonthType,
       ActiveYartype: selectedTask.value.SeriesYearType,
+      showOnlyFiles: false,
       checklisteditable: false,
       timeEditStart: false,
       timeEditEnd: false,
@@ -2442,7 +2445,20 @@ export default {
             >
               Добавить чек-лист
             </router-link>-->
-              <router-link
+            <router-link
+                to="/"
+                @click="showOnlyFiles = !showOnlyFiles"
+                ref="targetcopy"
+                class="
+            block
+            px-4
+            py-2
+            text-sm
+          "
+              >
+                {{showOnlyFiles ? 'Показать весь чат' : 'Показать только файлы'}}
+            </router-link>
+            <router-link
                 to="/"
                 @click="copyurl"
                 ref="targetcopy"
@@ -2569,7 +2585,7 @@ export default {
             </div>
 
             <!-- Chat message interlocutor -->
-            <div v-if="key.uid_creator !== cusers.current_user_uid && !key.uid_file">
+            <div v-if="key.uid_creator !== cusers.current_user_uid && !key.uid_file && !showOnlyFiles">
               <div
                 v-if="value == 0 || (taskMessages[value - 1] && taskMessages[value - 1].uid_creator != key.uid_creator)"
                 class="flex"
@@ -2639,7 +2655,7 @@ export default {
 
             <!-- Chat message from myself -->
             <div
-              v-if="key.uid_creator == cusers.current_user_uid && !key.uid_file"
+              v-if="key.uid_creator == cusers.current_user_uid && !key.uid_file && !showOnlyFiles"
             >
               <div class="table-cell float-right">
                 <div

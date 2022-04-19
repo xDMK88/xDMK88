@@ -1,5 +1,5 @@
 <script setup>
-import { computed, watch } from 'vue'
+import { computed, watch, ref } from 'vue'
 import { visitChildren } from '@/store/helpers/functions'
 import { useStore } from 'vuex'
 import {
@@ -12,9 +12,12 @@ import Icon from '@/components/Icon.vue'
 import Popper from 'vue3-popper'
 import NavBarSearch from '@/components/NavBarSearch.vue'
 import properties from '@/icons/properties.js'
+import arrowForward from '@/icons/arrow-forward.js'
+import arrowDown from '@/icons/arrow-down.js'
 
 import * as TASK from '@/store/actions/tasks'
 import { PATCH_SETTINGS } from '@/store/actions/navigator.js'
+import { SELECT_PROJECT } from '@/store/actions/projects'
 
 const UID_TO_ACTION = {
   '901841d9-0016-491d-ad66-8ee42d2b496b': TASK.TASKS_REQUEST, // get today's day
@@ -35,9 +38,6 @@ const UID_TO_ACTION = {
 }
 
 const store = useStore()
-const closeProperties = () => {
-  store.dispatch('asidePropertiesToggle', false)
-}
 
 defineProps({
   item: {
@@ -50,20 +50,31 @@ defineProps({
   }
 })
 
+const closeProperties = () => {
+  store.dispatch('asidePropertiesToggle', false)
+}
+
 const localization = computed(() => store.state.localization.localization)
+const isTaskHoverPopperActive = ref(false)
 const settings = computed(() => {
   return store.state.navigator.navigator.settings
 })
+// const isTaskStatusPopperActive = ref(false)
+const toggleTaskHoverPopper = (val) => {
+  isTaskHoverPopperActive.value = val
+}
 
 watch(settings, () => {
   settings.value.show_completed_tasks = !!settings.value.show_completed_tasks
 })
 const isNavBarVisible = computed(() => !store.state.isFullScreen)
 
+const user = computed(() => store.state.user.user)
 const isAsideMobileExpanded = computed(() => store.state.isAsideMobileExpanded)
 const isPropertiesMobileExpanded = computed(() => store.state.isPropertiesMobileExpanded)
 
 const navStack = computed(() => store.state.navbar.navStack)
+const projects = computed(() => store.state.projects.projects)
 const storeNavigator = computed(() => store.state.navigator.navigator)
 
 const menuToggleMobileIcon = computed(() => isAsideMobileExpanded.value ? mdiBackburger : mdiForwardburger)
@@ -136,6 +147,40 @@ const clickOnGridCard = (item, index) => {
     store.commit('basic', { key: item.key, value: storeNavigator.value[item.greedPath].items })
   }
 }
+
+const openProjectProperties = (project, parentProjectUid = '') => {
+  if (!isPropertiesMobileExpanded.value) {
+    store.dispatch('asidePropertiesToggle', true)
+  }
+
+  store.commit('basic', { key: 'propertiesState', value: 'project' })
+
+  // create empty instanse of project
+  if (!project || parentProjectUid) {
+    project = {
+      uid_parent: parentProjectUid,
+      color: '',
+      comment: '',
+      plugin: '',
+      collapsed: 0,
+      isclosed: 0,
+      order: 0,
+      group: 0,
+      show: 0,
+      favorite: 0,
+      quiet: 0,
+      email_creator: user.value.current_user_email,
+      members: [user.value.current_user_email],
+      children: [],
+      uid: '',
+      name: '',
+      bold: 0
+    }
+  } else {
+    project = projects.value[project]
+  }
+  store.commit(SELECT_PROJECT, project)
+}
 </script>
 
 <template>
@@ -173,11 +218,70 @@ const clickOnGridCard = (item, index) => {
       >
         <span
           v-if="navItem && navItem.name"
-          class="bg-white text-black dark:bg-gray-700 dark:text-gray-100 rounded-lg breadcrumbs"
-          @click="clickOnGridCard(navItem, index), closeProperties()"
+          class="text-black dark:bg-gray-700 dark:text-gray-100 rounded-lg breadcrumbs hover:bg-gray-50"
+          :class="{ 'bg-white': index === navStack.length - 1 }"
+          @click.stop="clickOnGridCard(navItem, index), closeProperties()"
         >
           {{ navItem.name.length > 15 ? navItem.name.slice(0, 15) + '...' : navItem.name }}
+          <Popper
+            class="items-center"
+            :class="isDark ? 'dark' : 'light'"
+            placement="bottom"
+            @click.stop="toggleTaskHoverPopper(true)"
+            @open:popper="toggleTaskHoverPopper(true)"
+            @close:popper="toggleTaskHoverPopper(false)"
+          >
+          <template #content>
+            <div class="flex flex-col text-sm w-60">
+              <div
+                class="flex cursor-pointer items-center hover:bg-gray-100 hover:dark:bg-stone-800 py-0.5 px-1 rounded-md"
+                @click="openProjectProperties(navItem.uid)"
+              >
+                <icon
+                  class="mr-2 text-gray-500"
+                  :path="properties.path"
+                  :width="properties.width"
+                  :height="properties.height"
+                  :box="properties.viewBox"
+                />
+                Открыть свойства проекта
+              </div>
+              <div
+                class="flex cursor-pointer items-center hover:bg-gray-100 hover:dark:bg-stone-800 py-0.5 px-1 rounded-md"
+                v-if="projects[navItem.uid] && projects[navItem.uid].email_creator === user.current_user_email"
+                @click="openProjectProperties(false, navItem.uid)"
+              >
+                <icon
+                  class="mr-2 text-gray-500"
+                  :path="properties.path"
+                  :width="properties.width"
+                  :height="properties.height"
+                  :box="properties.viewBox"
+                />
+                Добавить подпроект
+              </div>
+            </div>
+          </template>
+          <icon
+            v-if="navItem.greedPath === 'projects_children'"
+            class="ml-0.5 text-gray-500"
+            :path="arrowDown.path"
+            :width="10"
+            :height="10"
+            :box="arrowDown.viewBox"
+          />
+          </Popper>
         </span>
+        <div>
+          <icon
+            v-if="index !== navStack.length - 1"
+            class="ml-2 text-gray-500"
+            :path="arrowForward.path"
+            :width="6"
+            :height="12"
+            :box="arrowForward.viewBox"
+          />
+        </div>
       </nav-bar-item>
     </div>
     <div class="flex-none items-stretch flex h-14">

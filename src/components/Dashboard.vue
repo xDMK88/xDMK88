@@ -4,7 +4,7 @@ import Icon from '@/components/Icon.vue'
 // import focus from '@/icons/focus.js'
 import * as TASK from '@/store/actions/tasks.js'
 import unread from '@/icons/unread.js'
-import project from '@/icons/project.js'
+import project from '@/icons/projectDesktop.js'
 import focus from '@/icons/focus.js'
 import inwork from '@/icons/inprogress.js'
 import overdue from '@/icons/overdue.js'
@@ -140,8 +140,8 @@ const typeofTasks = ['Непрочитанные задачи', 'В работе
             <div class="p-1 order-last" v-if="task.uid_project !== '00000000-0000-0000-0000-000000000000'">
               <icon
                 :path="project.path"
-                :height="project.height - 15"
-                :width="project.width - 15"
+                :height="project.height"
+                :width="project.width"
                 :viewBox="project.viewBox">
               </icon>
               {{ projects[task.uid_project].name}}

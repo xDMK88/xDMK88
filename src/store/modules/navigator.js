@@ -3,7 +3,6 @@ import assignment from '@/icons/assignment.js'
 import calendar from '@/icons/calendar.js'
 import desktop from '@/icons/desktop.js'
 import employee from '@/icons/employee.js'
-import focus from '@/icons/focus.js'
 import project from '@/icons/project.js'
 import axios from 'axios'
 import { notify } from 'notiwind'
@@ -189,19 +188,6 @@ const mutations = {
     state.menu.push('separator')
     state.menu.push([
       {
-        label: localization.value.Today,
-        uid: resp.data.tasks.items[0].uid,
-        bold: resp.data.tasks.items[0].bold,
-        icon: calendar.path,
-        width: calendar.width,
-        height: calendar.height,
-        iconBox: calendar.viewBox,
-        type: 'uid',
-        iconBackgroundClass: 'bg-blue-400'
-      }
-    ])
-    state.menu.push([
-      {
         label: 'Рабочий стол',
         uid: '2bad1413-a373-4926-8a3c-58677a680714',
         bold: 0,
@@ -215,15 +201,15 @@ const mutations = {
     ])
     state.menu.push([
       {
-        label: localization.value.in_focus,
-        uid: resp.data.tasks.items[6].uid,
-        bold: resp.data.tasks.items[6].bold,
-        icon: focus.path,
-        iconBox: focus.viewBox,
-        width: focus.width,
-        height: focus.height,
+        label: localization.value.Today,
+        uid: resp.data.tasks.items[0].uid,
+        bold: resp.data.tasks.items[0].bold,
+        icon: calendar.path,
+        width: calendar.width,
+        height: calendar.height,
+        iconBox: calendar.viewBox,
         type: 'uid',
-        iconBackgroundClass: 'bg-red-500'
+        iconBackgroundClass: 'bg-blue-400'
       }
     ])
     state.menu.push('separator')

@@ -111,7 +111,8 @@ const typeofTasks = ['Непрочитанные задачи', 'В работе
             :path="icons[iconsKeys[idx]].path"
             :height="icons[iconsKeys[idx]].height"
             :width="icons[iconsKeys[idx]].width"
-            :viewBox="icons[iconsKeys[idx]].viewBox">
+            :viewBox="icons[iconsKeys[idx]].viewBox"
+            class="text-gray-500">
           </icon>
         </template>
       </tasksblock>

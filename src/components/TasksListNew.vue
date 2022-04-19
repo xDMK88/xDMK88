@@ -76,24 +76,10 @@
   />
 
   <!-- Skeleton -->
-  <div
+  <TasksSkeleton
     v-if="status == 'loading'"
-    class="animate-pulse flex pr-4 mt-0.5"
     :class="newConfig.listHasChildren ? 'pl-8' : 'pl-0'"
-  >
-    <div class="flex-col w-full">
-      <div class="animate-pulse h-20 dark:bg-slate-900 bg-white my-1 border border-gray-300 dark:border-gray-700 rounded-xl" />
-      <div class="animate-pulse h-20 dark:bg-slate-900 bg-white my-1 border border-gray-300 dark:border-gray-700 rounded-xl" />
-      <div class="animate-pulse h-10 dark:bg-slate-900 bg-white my-1 border border-gray-300 dark:border-gray-700 rounded-xl" />
-      <div class="animate-pulse h-20 dark:bg-slate-900 bg-white my-1 border border-gray-300 dark:border-gray-700 rounded-xl" />
-      <div class="animate-pulse h-40 dark:bg-slate-900 bg-white my-1 border border-gray-300 dark:border-gray-700 rounded-xl" />
-      <div class="animate-pulse h-20 dark:bg-slate-900 bg-white my-1 border border-gray-300 dark:border-gray-700 rounded-xl" />
-      <div class="animate-pulse h-20 dark:bg-slate-900 bg-white my-1 border border-gray-300 dark:border-gray-700 rounded-xl" />
-      <div class="animate-pulse h-20 dark:bg-slate-900 bg-white my-1 border border-gray-300 dark:border-gray-700 rounded-xl" />
-      <div class="animate-pulse h-10 dark:bg-slate-900 bg-white my-1 border border-gray-300 dark:border-gray-700 rounded-xl" />
-      <div class="animate-pulse h-10 dark:bg-slate-900 bg-white my-1 border border-gray-300 dark:border-gray-700 rounded-xl" />
-    </div>
-  </div>
+  />
 
   <!--
   <pre class="text-[10px] leading-none font-bold text-pink-500">newConfig: {{ newConfig }}</pre>
@@ -470,6 +456,7 @@ import contenteditable from 'vue-contenteditable'
 import TaskListIconLabel from '@/components/TasksList/TaskListIconLabel.vue'
 import TaskListTagLabel from '@/components/TasksList/TaskListTagLabel.vue'
 import TaskListEdit from '@/components/TasksList/TaskListEdit.vue'
+import TasksSkeleton from '@/components/TasksList/TasksSkeleton.vue'
 
 import * as TASK from '@/store/actions/tasks'
 
@@ -507,6 +494,7 @@ export default {
     TaskListIconLabel,
     TaskListTagLabel,
     TaskListEdit,
+    TasksSkeleton,
     Popper,
     ModalBoxConfirm,
     EmptyTasksListPics,

@@ -994,7 +994,7 @@ fieldset[disabled] .btn {
 }
 .column-resize
 {
-  height: calc(98vh - 60px);
+  height: calc(100vh - 105px);
   overflow-y: auto;
   position: relative;
 }
@@ -1003,7 +1003,8 @@ fieldset[disabled] .btn {
   width: 100%;
   height: auto;
   margin: auto;
-  overflow: visible;
+  overflow-x: auto;
+  overflow-y: visible!important;
   justify-content: flex-start;
 }
 

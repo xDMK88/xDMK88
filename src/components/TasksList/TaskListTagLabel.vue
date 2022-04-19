@@ -1,6 +1,6 @@
 <template>
   <div
-    class="tag-label cursor-default p-1 px-2 text-xs rounded-lg mr-1 flex items-center"
+    class="tag-label cursor-default p-1 px-2 text-xs whitespace-nowrap rounded-lg mr-1 flex items-center"
     :class="[colorTextClass, colorBgClass]"
     :style="colorBgStyle"
   >

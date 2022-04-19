@@ -101,7 +101,7 @@ const typeofTasks = ['Непрочитанные задачи', 'В работе
 </script>
 <template>
   <div class="flex flex-wrap">
-    <div class="flex flex-col w-1/4 bg-white rounded-xl h-1/3 mb-8 max-h-[500px] max-w-screen-sm scroll-style mr-3 p-2 shadow-lg font-SfProTextNormal" v-for="(elem, key, idx) in testObj" :key="testObj[key]">
+    <div class="flex flex-col lg:w-1/4 sm:w-4/4 bg-white rounded-xl h-1/3 mb-8 max-h-[500px] max-w-screen-sm scroll-style mr-3 p-2 shadow-lg font-SfProTextNormal" v-for="(elem, key, idx) in testObj" :key="testObj[key]">
       <tasksblock>
         <template v-slot:block-name>
           <span>{{ typeofTasks[idx] }}</span>
@@ -111,7 +111,8 @@ const typeofTasks = ['Непрочитанные задачи', 'В работе
             :path="icons[iconsKeys[idx]].path"
             :height="icons[iconsKeys[idx]].height"
             :width="icons[iconsKeys[idx]].width"
-            :viewBox="icons[iconsKeys[idx]].viewBox">
+            :viewBox="icons[iconsKeys[idx]].viewBox"
+            class="text-gray-500">
           </icon>
         </template>
       </tasksblock>
@@ -127,24 +128,24 @@ const typeofTasks = ['Непрочитанные задачи', 'В работе
             </details>
           </div> -->
           <div class="flex items-center text-xs">
-            <div class="p-1">
+            <div class="pl-1">
               <img class="w-5 h-5 border-solid border-2 border-lime-500 rounded-md" :src="employees[task.uid_customer].fotolink">
             </div>
-            <div class="tag-label cursor-default p-1 text-xs mr-1 flex items-center">{{ task.customer_name }}</div>
+            <div class="tag-label cursor-default p-1 text-xs flex items-center">{{ task.customer_name }}</div>
             <div
               class="tag-label cursor-default p-1 px-2 text-xs rounded-lg mr-1 flex items-center text-white bg-gray-400 order-first"
               :style="{ backgroundColor: tags[testObj[key][taskIdx].tags[j - 1]].back_color }"
               v-for="j in testObj[key][taskIdx].tags.length" :key="j">
               {{ tags[testObj[key][taskIdx].tags[j - 1]].name }}
             </div>
-            <div class="p-1 order-last" v-if="task.uid_project !== '00000000-0000-0000-0000-000000000000'">
+            <div class="p-1 order-last flex align-items justify-around" v-if="task.uid_project !== '00000000-0000-0000-0000-000000000000'">
               <icon
                 :path="project.path"
                 :height="project.height"
                 :width="project.width"
                 :viewBox="project.viewBox">
               </icon>
-              {{ projects[task.uid_project].name}}
+              <span class="ml-1">{{ projects[task.uid_project].name}}</span>
             </div>
           </div>
         </div>

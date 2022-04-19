@@ -97,7 +97,7 @@ const gotoChildren = (value) => {
 <template class="w-full">
   <div
     class="grid gap-4 mt-3"
-    :class="{ 'md:grid-cols-2 lg:grid-cols-4': isGridView, 'grid-cols-1': !isGridView, 'grid-cols-1': isPropertiesMobileExpanded && !isGridView, 'lg:grid-cols-2': isPropertiesMobileExpanded && isGridView }"
+    :class="{ 'md:grid-cols-2 lg:grid-cols-4': isGridView, 'grid-cols-1': !isGridView, 'grid-cols-1': isPropertiesMobileExpanded && !isGridView, 'lg:grid-cols-2': isPropertiesMobileExpanded && isGridView, 'pl-8': newConfig.listHasChildren }"
   >
     <template
       v-for="(project, pindex) in projects"

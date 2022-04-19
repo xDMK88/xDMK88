@@ -76,24 +76,10 @@
   />
 
   <!-- Skeleton -->
-  <div
+  <TasksSkeleton
     v-if="status == 'loading'"
-    class="animate-pulse flex pr-4 mt-0.5"
     :class="newConfig.listHasChildren ? 'pl-8' : 'pl-0'"
-  >
-    <div class="flex-col w-full">
-      <div class="animate-pulse h-20 dark:bg-slate-900 bg-white my-1 border border-gray-300 dark:border-gray-700 rounded-xl" />
-      <div class="animate-pulse h-20 dark:bg-slate-900 bg-white my-1 border border-gray-300 dark:border-gray-700 rounded-xl" />
-      <div class="animate-pulse h-10 dark:bg-slate-900 bg-white my-1 border border-gray-300 dark:border-gray-700 rounded-xl" />
-      <div class="animate-pulse h-20 dark:bg-slate-900 bg-white my-1 border border-gray-300 dark:border-gray-700 rounded-xl" />
-      <div class="animate-pulse h-40 dark:bg-slate-900 bg-white my-1 border border-gray-300 dark:border-gray-700 rounded-xl" />
-      <div class="animate-pulse h-20 dark:bg-slate-900 bg-white my-1 border border-gray-300 dark:border-gray-700 rounded-xl" />
-      <div class="animate-pulse h-20 dark:bg-slate-900 bg-white my-1 border border-gray-300 dark:border-gray-700 rounded-xl" />
-      <div class="animate-pulse h-20 dark:bg-slate-900 bg-white my-1 border border-gray-300 dark:border-gray-700 rounded-xl" />
-      <div class="animate-pulse h-10 dark:bg-slate-900 bg-white my-1 border border-gray-300 dark:border-gray-700 rounded-xl" />
-      <div class="animate-pulse h-10 dark:bg-slate-900 bg-white my-1 border border-gray-300 dark:border-gray-700 rounded-xl" />
-    </div>
-  </div>
+  />
 
   <!--
   <pre class="text-[10px] leading-none font-bold text-pink-500">newConfig: {{ newConfig }}</pre>
@@ -400,7 +386,7 @@
               :icon-path="tagIcon.path"
               :icon-box="tagIcon.viewBox"
               :text="tags[tag].name"
-              :color-bg-style="{ backgroundColor: tags[tag].back_color }"
+              :color-bg-style="{ backgroundColor: tags[tag] ? tags[tag].back_color : '' }"
             />
           </template>
           <!-- Project -->
@@ -463,13 +449,14 @@ import { computed, ref, nextTick } from 'vue'
 import treeview from 'vue3-treeview'
 import { useStore } from 'vuex'
 import Icon from '@/components/Icon.vue'
-import EmptyTasksListPics from '@/components/EmptyTasksListPics.vue'
+import EmptyTasksListPics from '@/components/TasksList/EmptyTasksListPics.vue'
 import Popper from 'vue3-popper'
 import ModalBoxConfirm from '@/components/modals/ModalBoxConfirm.vue'
 import contenteditable from 'vue-contenteditable'
 import TaskListIconLabel from '@/components/TasksList/TaskListIconLabel.vue'
 import TaskListTagLabel from '@/components/TasksList/TaskListTagLabel.vue'
 import TaskListEdit from '@/components/TasksList/TaskListEdit.vue'
+import TasksSkeleton from '@/components/TasksList/TasksSkeleton.vue'
 
 import * as TASK from '@/store/actions/tasks'
 
@@ -507,6 +494,7 @@ export default {
     TaskListIconLabel,
     TaskListTagLabel,
     TaskListEdit,
+    TasksSkeleton,
     Popper,
     ModalBoxConfirm,
     EmptyTasksListPics,
@@ -833,6 +821,9 @@ export default {
         uid_customer: user.value.current_user_uid,
         email_performer: parent.email_performer,
         name: '',
+        comment: '',
+        tags: [],
+        uid_marker: '',
         status: 0,
         uid_parent: parent.uid,
         uid_project: parent.uid_project !== '00000000-0000-0000-0000-000000000000' ? parent.uid_project : '00000000-0000-0000-0000-000000000000',

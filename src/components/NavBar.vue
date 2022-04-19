@@ -12,6 +12,7 @@ import Icon from '@/components/Icon.vue'
 import Popper from 'vue3-popper'
 import NavBarSearch from '@/components/NavBarSearch.vue'
 import properties from '@/icons/properties.js'
+import add from '@/icons/add.js'
 import arrowForward from '@/icons/arrow-forward.js'
 import arrowDown from '@/icons/arrow-down.js'
 
@@ -214,12 +215,11 @@ const openProjectProperties = (project, parentProjectUid = '') => {
       <nav-bar-item
         v-for="(navItem, index) in navStack"
         :key="index"
-        class="px-1"
+        class="px-1 group"
       >
         <span
           v-if="navItem && navItem.name"
-          class="text-black dark:bg-gray-700 dark:text-gray-100 rounded-lg breadcrumbs hover:bg-gray-50"
-          :class="{ 'bg-white': index === navStack.length - 1 }"
+          class="text-black dark:bg-gray-700 dark:text-gray-100 rounded-lg breadcrumbs"
           @click.stop="clickOnGridCard(navItem, index), closeProperties()"
         >
           {{ navItem.name.length > 15 ? navItem.name.slice(0, 15) + '...' : navItem.name }}
@@ -238,10 +238,10 @@ const openProjectProperties = (project, parentProjectUid = '') => {
                 @click="openProjectProperties(navItem.uid)"
               >
                 <icon
-                  class="mr-2 text-gray-500"
+                  class="mr-2 text-gray-500 p-1"
                   :path="properties.path"
-                  :width="properties.width"
-                  :height="properties.height"
+                  :width="20"
+                  :height="20"
                   :box="properties.viewBox"
                 />
                 Открыть свойства проекта
@@ -252,11 +252,11 @@ const openProjectProperties = (project, parentProjectUid = '') => {
                 @click="openProjectProperties(false, navItem.uid)"
               >
                 <icon
-                  class="mr-2 text-gray-500"
-                  :path="properties.path"
-                  :width="properties.width"
-                  :height="properties.height"
-                  :box="properties.viewBox"
+                  class="mr-2 text-gray-500 p-1"
+                  :path="add.path"
+                  :width="20"
+                  :height="20"
+                  :box="add.viewBox"
                 />
                 Добавить подпроект
               </div>
@@ -264,7 +264,7 @@ const openProjectProperties = (project, parentProjectUid = '') => {
           </template>
           <icon
             v-if="navItem.greedPath === 'projects_children'"
-            class="ml-0.5 text-gray-500"
+            class="invisible ml-0.5 text-gray-500 group-hover:visible"
             :path="arrowDown.path"
             :width="10"
             :height="10"

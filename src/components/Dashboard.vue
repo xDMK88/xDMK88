@@ -101,7 +101,7 @@ const typeofTasks = ['Непрочитанные задачи', 'В работе
 </script>
 <template>
   <div class="flex flex-wrap">
-    <div class="flex flex-col lg:w-1/4 sm:w-4/4 bg-white rounded-xl h-1/3 mb-8 max-h-[500px] max-w-screen-sm scroll-style mr-3 p-2 shadow-lg font-SfProTextNormal" v-for="(elem, key, idx) in testObj" :key="testObj[key]">
+    <div class="flex flex-col lg:w-1/4 sm:w-4/4 bg-white dark:bg-slate-900 rounded-xl h-1/3 mb-8 max-h-[500px] max-w-screen-sm scroll-style mr-3 p-2 shadow-lg font-SfProTextNormal" v-for="(elem, key, idx) in testObj" :key="testObj[key]">
       <tasksblock>
         <template v-slot:block-name>
           <span>{{ typeofTasks[idx] }}</span>

@@ -1,3 +1,18 @@
+@font-face {
+  font-family: 'SFProDisplayBold';
+  src: url('tailwind/fonts/SFProDisplay/SFPRODISPLAYBOLD.OTF');
+}
+
+@font-face {
+  font-family: 'SFProDisplayNormal';
+  src: url('tailwind/fonts/SFProDisplay/SFPRODISPLAYREGULAR.OTF');
+}
+
+@font-face {
+  font-family: 'SFProTextNormal';
+  src: url('tailwind/fonts/SFProText/SF-Pro-Text-Regular.otf');
+}
+
 body {
   @apply pt-14 xl:pl-80;
 }

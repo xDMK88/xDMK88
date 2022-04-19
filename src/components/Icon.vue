@@ -15,8 +15,7 @@ const props = defineProps({
     default: ''
   },
   box: {
-    type: String,
-    default: '0 0 24 24'
+    type: String
   },
   width: {
     type: [String, Number],

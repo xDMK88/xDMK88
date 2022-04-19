@@ -20,7 +20,11 @@ function pad2 (n) {
 const state = {
   tasks: false,
   unread: '',
-  inWork: {},
+  inWork: '',
+  inFocus: '',
+  overdue: '',
+  unsorted: '',
+  ready: '',
   unreadCustomersUid: [],
   customersTasks: {},
   tags: {},
@@ -192,6 +196,7 @@ const actions = {
       axios({ url: url, method: 'GET' })
         .then(resp => {
           commit(TASK.TASKS_SUCCESS, resp)
+          commit(TASK.UNSORTED_TASKS_REQUEST, resp)
           if (resp.data.anothers_tags.length) {
             commit(TASK.ADD_TASK_TAGS, resp.data.anothers_tags)
           }
@@ -216,6 +221,7 @@ const actions = {
       axios({ url: url, method: 'GET' })
         .then(resp => {
           commit(TASK.TASKS_SUCCESS, resp)
+          commit(TASK.OVERDUE_TASKS_REQUEST, resp)
           if (resp.data.anothers_tags.length) {
             commit(TASK.ADD_TASK_TAGS, resp.data.anothers_tags)
           }
@@ -299,6 +305,7 @@ const actions = {
       axios({ url: url, method: 'GET' })
         .then(resp => {
           commit(TASK.TASKS_SUCCESS, resp)
+          commit(TASK.IN_FOCUS_TASKS_REQUEST, resp)
           if (resp.data.anothers_tags.length) {
             commit(TASK.ADD_TASK_TAGS, resp.data.anothers_tags)
           }
@@ -326,6 +333,7 @@ const actions = {
       axios({ url: url, method: 'GET' })
         .then(resp => {
           commit(TASK.TASKS_SUCCESS, resp)
+          commit(TASK.READY_FOR_COMPLITION_TASKS_REQUEST, resp)
           if (resp.data.anothers_tags.length) {
             commit(TASK.ADD_TASK_TAGS, resp.data.anothers_tags)
           }
@@ -1009,11 +1017,7 @@ const mutations = {
     state.inWork = resp.data
   },
   [TASK.UNREAD_TASKS_REQUEST]: (state, resp) => {
-    state.unread = resp.data.tasks.length
-    for (let i = 0; i < state.unread; i++) {
-      state.unreadCustomersUid.push(resp.data.tasks[i].uid_customer)
-      // state.customersTasks[state.unreadCustomersUid[i]] = state.employees.employees
-    }
+    state.unread = resp.data
   },
   [TASK.TASKS_REQUEST]: state => {
     state.status = 'loading'
@@ -1072,6 +1076,12 @@ const mutations = {
       state.tags[tag.uid] = tag
     }
   },
+  [TASK.OVERDUE_TASKS_REQUEST]: (state, resp) => {
+    state.overdue = resp.data
+  },
+  [TASK.UNSORTED_TASKS_REQUEST]: (state, resp) => {
+    state.unsorted = resp.data
+  },
   [TASK.UPDATE_NEW_TASK_LIST]: (state, tasks) => {
     for (const task of tasks) {
       if (!task.has_children) {
@@ -1094,6 +1104,9 @@ const mutations = {
   },
   [TASK.CHANGE_TASK_STATUS]: (state, data) => {
     state.newtasks[data.uid].info.status = data.value
+  },
+  [TASK.READY_FOR_COMPLITION_TASKS_REQUEST]: (state, resp) => {
+    state.ready = resp.data
   },
   [TASK.ADD_TASK]: (state, task) => {
     if (!task._justCreated) {
@@ -1190,8 +1203,8 @@ const mutations = {
   [TASK.CHANGE_TASK_ACCESS]: (state, data) => {
     state.access.push(data.value)
   },
-  [TASK.IN_FOCUS_TASKS_REQUEST]: (state, data) => {
-    state.focus = data
+  [TASK.IN_FOCUS_TASKS_REQUEST]: (state, resp) => {
+    state.inFocus = resp.data
   },
   [TASK.CHANGE_TASK_FOCUS]: (state, data) => {
     state.focus = data.value

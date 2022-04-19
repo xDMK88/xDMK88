@@ -5,6 +5,9 @@ html,  #aside, .scroll-style {
 html::-webkit-scrollbar, #aside::-webkit-scrollbar, .scroll-style::-webkit-scrollbar {
   width: 6px;
   height: 6px;
+}
+
+html::-webkit-scrollbar, #aside::-webkit-scrollbar{
   scrollbar-color: #9ca3af #e5e7eb;
 }
 
@@ -17,7 +20,7 @@ html, .scroll-style {
   scrollbar-color: #9ca3af #e5e7eb;
 }
 
-html::-webkit-scrollbar-track, .scroll-style::-webkit-scrollbar-track {
+html::-webkit-scrollbar-track {
   @apply bg-gray-100;
 }
 

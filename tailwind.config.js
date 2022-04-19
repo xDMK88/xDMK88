@@ -33,6 +33,11 @@ module.exports = {
       animation: {
         fadeOut: 'fadeOut 250ms ease-in-out',
         fadeIn: 'fadeIn 250ms ease-in-out'
+      },
+      fontFamily: {
+        SfProDisplayBold: ['SFProDisplayBold'],
+        SfProDisplayNormal: ['SFProDisplayNormal'],
+        SfProTextNormal: ['SFProTextNormal']
       }
     }
   },

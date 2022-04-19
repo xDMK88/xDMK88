@@ -354,7 +354,7 @@
               placeholder="Enter task name"
               :no-n-l="true"
               :no-h-t-m-l="true"
-              :class="{ 'text-gray-500': props.node.info.status == 1 || props.node.info.status == 7, 'line-through': props.node.info.status == 1 || props.node.info.status == 7, 'font-extrabold': props.node.info.readed == 0 }"
+              :class="{ 'uppercase': !props.node.info._isEditable && colors[props.node.info.uid_marker] && colors[props.node.info.uid_marker].uppercase, 'text-gray-500': props.node.info.status == 1 || props.node.info.status == 7, 'line-through': props.node.info.status == 1 || props.node.info.status == 7, 'font-extrabold': props.node.info.readed == 0 }"
               :style="{ color: colors[props.node.info.uid_marker] ? colors[props.node.info.uid_marker].fore_color : '' }"
               @dblclick.stop="editTaskName(props.node.id)"
               @keyup.enter="updateTask($event, props.node.info); props.node.info._isEditable = false;"

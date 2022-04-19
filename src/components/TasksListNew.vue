@@ -400,7 +400,7 @@
               :icon-path="tagIcon.path"
               :icon-box="tagIcon.viewBox"
               :text="tags[tag].name"
-              :color-bg-style="{ backgroundColor: tags[tag].back_color }"
+              :color-bg-style="{ backgroundColor: tags[tag] ? tags[tag].back_color : '' }"
             />
           </template>
           <!-- Project -->
@@ -833,6 +833,9 @@ export default {
         uid_customer: user.value.current_user_uid,
         email_performer: parent.email_performer,
         name: '',
+        comment: '',
+        tags: [],
+        uid_marker: '',
         status: 0,
         uid_parent: parent.uid,
         uid_project: parent.uid_project !== '00000000-0000-0000-0000-000000000000' ? parent.uid_project : '00000000-0000-0000-0000-000000000000',

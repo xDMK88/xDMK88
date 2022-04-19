@@ -59,7 +59,7 @@
           </p>
         </div>
       </div>
-      <control
+      <TaskListEdit
         ref="root"
         v-model="createTaskText"
         class="w-full text-white"
@@ -463,13 +463,13 @@ import { computed, ref, nextTick } from 'vue'
 import treeview from 'vue3-treeview'
 import { useStore } from 'vuex'
 import Icon from '@/components/Icon.vue'
-import Control from '@/components/Control.vue'
 import EmptyTasksListPics from '@/components/EmptyTasksListPics.vue'
 import Popper from 'vue3-popper'
 import ModalBoxConfirm from '@/components/modals/ModalBoxConfirm.vue'
 import contenteditable from 'vue-contenteditable'
 import TaskListIconLabel from '@/components/TasksList/TaskListIconLabel.vue'
 import TaskListTagLabel from '@/components/TasksList/TaskListTagLabel.vue'
+import TaskListEdit from '@/components/TasksList/TaskListEdit.vue'
 
 import * as TASK from '@/store/actions/tasks'
 
@@ -506,7 +506,7 @@ export default {
     Icon,
     TaskListIconLabel,
     TaskListTagLabel,
-    Control,
+    TaskListEdit,
     Popper,
     ModalBoxConfirm,
     EmptyTasksListPics,

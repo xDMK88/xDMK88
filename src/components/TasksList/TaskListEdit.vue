@@ -116,7 +116,7 @@ const inputElClass = computed(() => {
     // 'focus:border-stone-500 focus:bg-amber-50',
     'focus:border-gray-300',
     'dark:placeholder-gray-400',
-    computedType.value === 'textarea' ? 'h-24' : 'h-10',
+    computedType.value === 'textarea' ? 'h-24' : 'h-10 white-cursor',
     props.borderless ? 'border-0' : 'border-2',
     props.transparent ? 'bg-transparent' : 'bg-white dark:bg-gray-800',
     props.valid ? 'border-stone-500 bg-amber-50' : ''
@@ -170,3 +170,9 @@ if (props.ctrlKFocus) {
   })
 }
 </script>
+
+<style scoped>
+.white-cursor {
+  cursor: url(@/icons/white-text.cur), auto;
+}
+</style>

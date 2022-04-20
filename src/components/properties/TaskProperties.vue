@@ -329,7 +329,7 @@ export default {
           selectedTask.value.SeriesAfterType = 0
           selectedTask.value.SeriesAfterCount = 0
           selectedTask.value.SeriesWeekCount = 0
-          selectedTask.value.SeriesWeekMon = 0
+          selectedTask.value.SeriesWeekMon = 1
           selectedTask.value.SeriesWeekTue = 0
           selectedTask.value.SeriesWeekWed = 0
           selectedTask.value.SeriesWeekThu = 0
@@ -346,6 +346,11 @@ export default {
           selectedTask.value.SeriesYearMonthDay = 0
           selectedTask.value.SeriesYearWeekType = 0
           selectedTask.value.SeriesYearDayOfWeek = 0
+          this.noRepeat = true
+          this.everyDayRepeat = false
+          this.everyWeekRepeat = false
+          this.everyMonthRepeat = false
+          this.everyYearRepeat = false
         })
     }
     const copyurl = (e) => {
@@ -361,10 +366,12 @@ export default {
     }
     const changeEveryMonthType = (value) => {
       this.ActiveSelect = value
-      this.SeriesMonthDay = ''
+      this.SeriesMonthDay = 0
     }
     const changeEveryYearType = (value) => {
       this.ActiveYartype = value
+      this.SeriesYearMonth = 0
+      this.SeriesYearMonthDay = 0
     }
     const addsubmit = () => {
       this.applybutton = true
@@ -531,6 +538,7 @@ export default {
       })
     }
     const SaveRepeat = () => {
+      console.log(selectedTask.value.Tasks)
       if (this.$refs.SeriesType.value === '0') {
         const data = {
           uid: selectedTask.value.uid
@@ -549,27 +557,37 @@ export default {
         store.dispatch(TASK.EVERY_DAY_CHANGE, data).then(
           resp => {
             selectedTask.value.SeriesType = 1
-            console.log(this.SeriesAfterCount + '-' + this.SeriesAfterType)
-            selectedTask.value.SeriesAfterType = this.SeriesAfterType
-            selectedTask.value.SeriesAfterCount = this.SeriesAfterCount
+            console.log(resp.data.SeriesAfterCount + '-' + resp.data.SeriesAfterType)
+            selectedTask.value.SeriesAfterType = resp.data.SeriesAfterType
+            selectedTask.value.SeriesAfterCount = resp.data.SeriesAfterCount
           })
       }
       if (this.$refs.SeriesType.value === '2') {
-        this.dayWeekMassive.push(this.$refs.SeriesWeek.value)
+        this.dayWeekMassive.push(this.SeriesWeek)
+        console.log(this.SeriesWeek)
         const data = {
           uid: selectedTask.value.uid,
-          days: this.dayWeekMassive,
+          days: this.SeriesWeek,
           every_value: this.$refs.SeriesWeekCount.value
         }
         store.dispatch(TASK.EVERY_WEEK_CHANGE, data).then(
           resp => {
+            console.log(resp.data)
             selectedTask.value.SeriesType = 2
-            selectedTask.value.SeriesWeek = this.$refs.SeriesWeek.innerText
-            selectedTask.value.SeriesWeekCount = this.$refs.SeriesWeekCount.value
+            selectedTask.value.SeriesWeekFri = resp.data.SeriesWeekFri
+            selectedTask.value.SeriesWeekMon = resp.data.SeriesWeekMon
+            selectedTask.value.SeriesWeekSat = resp.data.SeriesWeekSat
+            selectedTask.value.SeriesWeekSun = resp.data.SeriesWeekSun
+            selectedTask.value.SeriesWeekThu = resp.data.SeriesWeekThu
+            selectedTask.value.SeriesWeekTue = resp.data.SeriesWeekTue
+            selectedTask.value.SeriesWeekWed = resp.data.SeriesWeekWed
+            selectedTask.value.SeriesWeekCount = resp.data.SeriesWeekCount
           })
       }
       if (this.$refs.SeriesType.value === '3') {
-        if (this.SeriesMonthDay !== 0) {
+        console.log(selectedTask.value.uid)
+        console.log(this.SeriesMonthType + ' or ' + this.SeriesMonthWeekType)
+        if (this.SeriesMonthDay > 0) {
           const data = {
             uid: selectedTask.value.uid,
             num_day: this.SeriesMonthDay,
@@ -579,56 +597,75 @@ export default {
           store.dispatch(TASK.EVERY_MONTH_CHANGE, data).then(
             resp => {
               selectedTask.value.SeriesType = 3
-              selectedTask.value.SeriesMonthDay = 1
-              selectedTask.value.SeriesMonthWeekType = this.SeriesMonthWeekType
-              selectedTask.value.SeriesMonthDayOfWeek = this.SeriesMonthDayOfWeek
+              selectedTask.value.SeriesMonthCount = resp.data.SeriesMonthCount
+              selectedTask.value.SeriesMonthDay = resp.data.SeriesMonthDay
+              selectedTask.value.SeriesMonthDayOfWeek = resp.data.SeriesMonthDayOfWeek
+              selectedTask.value.SeriesMonthType = resp.data.SeriesMonthType
+              selectedTask.value.SeriesMonthDay = resp.data.SeriesMonthDay
+              selectedTask.value.SeriesMonthWeekType = resp.data.SeriesMonthWeekType
             })
         }
+        console.log(this.SeriesMonthDay)
         if (this.SeriesMonthDay === 0) {
           const data = {
             uid: selectedTask.value.uid,
             every_value: this.SeriesMonthCount,
             num_day: this.SeriesMonthDay,
-            mwt: this.SeriesMonthWeekType,
+            mwt: this.SeriesMonthType - 1,
             mdw: this.SeriesMonthDayOfWeek
           }
           store.dispatch(TASK.EVERY_MONTH_CHANGE, data).then(
             resp => {
               selectedTask.value.SeriesType = 3
-              selectedTask.value.SeriesMonthWeekType = this.SeriesMonthWeekType
-              selectedTask.value.SeriesMonthDayOfWeek = this.SeriesMonthDayOfWeek
+              selectedTask.value.SeriesMonthCount = resp.data.SeriesMonthCount
+              selectedTask.value.SeriesMonthDay = resp.data.SeriesMonthDay
+              selectedTask.value.SeriesMonthDayOfWeek = resp.data.SeriesMonthDayOfWeek
+              selectedTask.value.SeriesMonthType = resp.data.SeriesMonthType
+              selectedTask.value.SeriesMonthDay = resp.data.SeriesMonthDay
+              selectedTask.value.SeriesMonthWeekType = resp.data.SeriesMonthWeekType
             })
         }
       }
       if (this.$refs.SeriesType.value === '4') {
-        if (this.SeriesYearMonthDay !== 0) {
+        console.log(selectedTask.value.uid)
+        console.log(this.SeriesYearType + ' or ' + this.SeriesMonthWeekType)
+        console.log(this.SeriesYearMonthDay)
+        if (this.SeriesYearMonthDay > 0) {
           const data = {
             uid: selectedTask.value.uid,
             num_day: this.SeriesYearMonthDay,
-            every_value: this.SeriesMonthCount
+            every_value: this.SeriesYearMonth
           }
-
           store.dispatch(TASK.EVERY_YEAR_CHANGE, data).then(
             resp => {
+              console.log(resp.data)
               selectedTask.value.SeriesType = 4
-              selectedTask.value.SeriesYearMonthDay = 1
-              selectedTask.value.SeriesMonthWeekType = this.SeriesYearWeekType
-              selectedTask.value.SeriesMonthDayOfWeek = this.SeriesYearDayOfWeek
+              selectedTask.value.SeriesYearDayOfWeek = resp.data.SeriesYearDayOfWeek
+              selectedTask.value.SeriesYearMonth = resp.data.SeriesYearMonth
+              selectedTask.value.SeriesYearType = resp.data.SeriesYearType
+              selectedTask.value.SeriesYearMonthDay = resp.data.SeriesYearMonthDay
+              selectedTask.value.SeriesMonthWeekType = resp.data.SeriesYearWeekType
+              selectedTask.value.SeriesMonthDayOfWeek = resp.data.SeriesYearDayOfWeek
             })
         }
         if (this.SeriesYearMonthDay === 0) {
           const data = {
             uid: selectedTask.value.uid,
-            every_value: this.SeriesYearMonthDay,
-            num_day: 0,
-            mwt: this.SeriesYearWeekType,
+            every_value: this.SeriesYearMonth,
+            num_day: this.SeriesYearMonthDay,
+            mwt: this.SeriesYearWeekType - 1,
             mdw: this.SeriesYearDayOfWeek
           }
           store.dispatch(TASK.EVERY_YEAR_CHANGE, data).then(
             resp => {
+              console.log(resp.data)
               selectedTask.value.SeriesType = 4
-              selectedTask.value.SeriesYearWeekType = this.SeriesYearWeekType
-              selectedTask.value.SeriesYearDayOfWeek = this.SeriesYearDayOfWeek
+              selectedTask.value.SeriesYearDayOfWeek = resp.data.SeriesYearDayOfWeek
+              selectedTask.value.SeriesYearMonth = resp.data.SeriesYearMonth
+              selectedTask.value.SeriesYearType = resp.data.SeriesYearType
+              selectedTask.value.SeriesYearMonthDay = resp.data.SeriesYearMonthDay
+              selectedTask.value.SeriesMonthWeekType = resp.data.SeriesYearWeekType
+              selectedTask.value.SeriesMonthDayOfWeek = resp.data.SeriesYearDayOfWeek
             })
         }
       }
@@ -682,6 +719,7 @@ export default {
         this.everyMonthRepeat = false
         this.everyYearRepeat = false
         selectedTask.value.SeriesType = 2
+        selectedTask.value.SeriesWeekMon = 1
       }
       if (event.target.value === '3') {
         this.noRepeat = false
@@ -834,12 +872,12 @@ export default {
       SeriesAfterCount: selectedTask.value.SeriesAfterCount,
       SeriesAfterType: selectedTask.value.SeriesAfterType,
       SeriesWeekCount: selectedTask.value.SeriesWeekCount,
-      SeriesMonthType: selectedTask.value.SeriesMonthType,
+      SeriesMonthType: selectedTask.value.SeriesMonthType === 1 ? selectedTask.value.SeriesMonthType : selectedTask.value.SeriesMonthWeekType,
       SeriesMonthCount: selectedTask.value.SeriesMonthCount,
       SeriesMonthDay: selectedTask.value.SeriesMonthDay,
       SeriesMonthWeekType: selectedTask.value.SeriesMonthWeekType,
       SeriesMonthDayOfWeek: selectedTask.value.SeriesMonthDayOfWeek,
-      SeriesYearType: selectedTask.value.SeriesYearType,
+      SeriesYearType: selectedTask.value.SeriesYearType === 1 ? selectedTask.value.SeriesYearType : selectedTask.value.SeriesYearWeekType,
       SeriesYearMonth: selectedTask.value.SeriesYearMonth,
       SeriesYearMonthDay: selectedTask.value.SeriesYearMonthDay,
       SeriesYearWeekType: selectedTask.value.SeriesYearWeekType,
@@ -1891,7 +1929,7 @@ export default {
                       >
                         <label>По</label>
                         <select
-                          ref="SeriesWeek"
+                          ref="SeriesWeek" v-model="SeriesWeek"
                           class="form-control form-control-select-repeat"
                           multiple
                         >
@@ -2059,7 +2097,7 @@ export default {
                           ref="SeriesYearType"
                           v-model="SeriesYearType"
                           class="form-control form-control-select-repeat"
-                          name="SeriesYearWeekType"
+                          name="SeriesYearType"
                           @change="changeEveryYearType(SeriesYearType)"
                         >
                           <option value="1">
@@ -2084,7 +2122,7 @@ export default {
                       </div>
                       <div
                         class="everyyeartype"
-                        :class="{showselect:ActiveYartype==1}"
+                        :class="{showselect:ActiveYartype == 1}"
                       >
                         <div class="form-group">
                           <select
@@ -2128,7 +2166,7 @@ export default {
                   <div class="everyyear-content">
                     <div
                       class="everyyeartype"
-                      :class="{showselect:ActiveYartype==1}"
+                      :class="{showselect:ActiveYartype == 1}"
                     >
                       <div class="form-group">
                         <div class="form-everyyear-container">
@@ -2143,6 +2181,7 @@ export default {
                               v-model="SeriesYearMonthDay"
                               type="radio"
                               name="radio"
+                              :value="day"
                               :checked="selectedTask.SeriesYearMonthDay===day"
                             >
                             <label :for="'y1_' + day">{{ day }}</label>

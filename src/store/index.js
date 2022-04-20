@@ -129,7 +129,7 @@ export default createStore({
           }
         })
         .catch(error => {
-          alert(error.message)
+          console.log(error)
         })
     }
   },

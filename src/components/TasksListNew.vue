@@ -120,7 +120,6 @@
         <p class="text-[10px] leading-none mb-5">order_new: <strong>{{ props.node.info.order_new }}</strong></p>
         <pre class="text-[10px] leading-none font-bold text-green-900">state: {{ props.node.info }}</pre>
         -->
-
         <Transition>
           <div
             class="absolute hidden group-hover:flex right-2 top-2 bg-gray-200 dark:bg-gray-800 rounded-lg items-cetner justify-center py-0.5 px-3"
@@ -327,7 +326,7 @@
           </template>
           <!-- Project -->
           <TaskListTagLabel
-            v-if="props.node.info.uid_project != '00000000-0000-0000-0000-000000000000' && projects[props.node.info.uid_project] && props.node.info.uid_project !== taskListSource.param"
+            v-if="taskListSource && props.node.info.uid_project != '00000000-0000-0000-0000-000000000000' && projects[props.node.info.uid_project] && props.node.info.uid_project !== taskListSource.param"
             :icon-path="project.path"
             :icon-box="project.viewBox"
             :text="projects[props.node.info.uid_project].name"

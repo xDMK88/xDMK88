@@ -381,17 +381,17 @@ export default {
       }
     }
     const editcomment = () => {
-      if (!selectedTask.value._isEditable) return
+      if (selectedTask.value.type !== 1 && selectedTask.value.type !== 2) return
       this.isEditable = true
     }
     const removeeditcomment = () => {
-      if (!selectedTask.value._isEditable) return
+      if (selectedTask.value.type !== 1 && selectedTask.value.type !== 2) return
       this.isEditable = false
       const message = event.target.innerText
       selectedTask.value.comment = message
     }
     const changeComment = (event) => {
-      if (!selectedTask.value._isEditable) return
+      if (selectedTask.value.type !== 1 && selectedTask.value.type !== 2) return
       const message = event.target.innerText
       console.log(event.target.innerText)
       setCursorPosition(event.target.id, 0, 100)

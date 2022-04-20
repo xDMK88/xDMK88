@@ -342,7 +342,6 @@
           />
           <TaskListIconLabel
             v-if="props.node.info.type !== 1 && props.node.info.type !== 2 && props.node.info.term_customer"
-            :test="print(props.node.info)"
             :icon-path="clock.path"
             :icon-box="clock.viewBox"
             :text="props.node.info.term_customer"
@@ -467,10 +466,6 @@ export default {
     const showConfirm = ref(false)
     const isTaskHoverPopperActive = ref(false)
     const isTaskStatusPopperActive = ref(false)
-
-    const print = (obj) => {
-      console.log(obj)
-    }
 
     const clickAndShift = (arg) => {
       selectedTasks.value[arg.id] = arg.info
@@ -849,7 +844,6 @@ export default {
       newConfig,
       showConfirm,
       selectedTasks,
-      print,
       clickAndShift,
       nodeDragEnd,
       isDark,

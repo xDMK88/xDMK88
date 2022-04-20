@@ -4,7 +4,6 @@ import App from './App.vue'
 import router from './router'
 import store from './store'
 import Notifications from 'notiwind'
-import { darkModeKey } from '@/config.js'
 
 import './css/main.css'
 
@@ -33,13 +32,6 @@ if (navStack) {
   for (const navElem of navStack) {
     store.commit('pushIntoNavStack', navElem)
   }
-}
-
-/* Dark mode */
-const localStorageDarkModeValue = localStorage.getItem(darkModeKey)
-
-if ((localStorageDarkModeValue === null && window.matchMedia('(prefers-color-scheme: dark)').matches) || localStorageDarkModeValue === '1') {
-  store.dispatch('darkMode')
 }
 
 /* Default title tag */

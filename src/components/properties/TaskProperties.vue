@@ -384,17 +384,17 @@ export default {
       }
     }
     const editcomment = () => {
-      if (selectedTask.value.type !== 1 && selectedTask.value.type !== 2) return
+      if (!this.canEditComment) return
       this.isEditable = true
     }
     const removeeditcomment = () => {
-      if (selectedTask.value.type !== 1 && selectedTask.value.type !== 2) return
+      if (!this.canEditComment) return
       this.isEditable = false
       const message = event.target.innerText
       selectedTask.value.comment = message
     }
     const changeComment = (event) => {
-      if (selectedTask.value.type !== 1 && selectedTask.value.type !== 2) return
+      if (!this.canEditComment) return
       const message = event.target.innerText
       console.log(event.target.innerText)
       setCursorPosition(event.target.id, 0, 100)
@@ -900,6 +900,15 @@ export default {
       everyYearRepeat: false,
       SeriesWeek: ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun']
       // Модели selectedTask.value.SeriesWeekMon selectedTask.SeriesWeekTue selectedTask.SeriesWeekWed selectedTask.SeriesWeekThu selectedTask.SeriesWeekFri selectedTask.SeriesWeekSat selectedTask.SeriesWeekSun
+    }
+  },
+  computed: {
+    canEditComment () {
+      return (this.selectedTask.type === 1 || this.selectedTask.type === 2)
+    },
+    placeholderComment () {
+      if (this.canEditComment) return 'Добавить заметку...'
+      return ''
     }
   },
   mounted () {
@@ -3043,7 +3052,7 @@ export default {
           v-linkify:options="{ className: 'text-blue-600'}"
           class="dark:text-gray-100"
           :contenteditable="isEditable"
-          data-placeholder="Добавить заметку..."
+          :data-placeholder="placeholderComment"
           @blur="changeComment($event)"
           @keyup="changeComment($event)"
           @focus="$refs.comment.focus()"

@@ -340,7 +340,7 @@ const openProjectProperties = (project, parentProjectUid = '') => {
             </div>
           </template>
           <icon
-            v-if="navItem.greedPath === 'projects_children'"
+            v-if="navItem.greedPath === 'projects_children' && index === (navStack.length - 1)"
             class="invisible ml-0.5 text-gray-500 group-hover:visible"
             :path="arrowDown.path"
             :width="10"

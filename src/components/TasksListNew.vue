@@ -397,19 +397,29 @@
             :text="projects[props.node.info.uid_project].name"
             :color-bg-class="{ 'bg-yellow-400': true, 'bg-opacity-50': props.node.info.status == 1 || props.node.info.status == 7 }"
           />
-          <!-- Icons, Access, Messages, Files, Data, Checklist, Focus -->
+          <!-- Data -->
           <TaskListIconLabel
-            v-if="props.node.info.term_customer"
+            v-if="props.node.info.term_user"
+            :icon-path="clock.path"
+            :icon-box="clock.viewBox"
+            :text="props.node.info.term_user"
+          />
+          <TaskListIconLabel
+            v-if="props.node.info.type !== 1 && props.node.info.type !== 2 && props.node.info.term_customer"
+            :test="print(props.node.info)"
             :icon-path="clock.path"
             :icon-box="clock.viewBox"
             :text="props.node.info.term_customer"
+            icon-class="text-red-600"
           />
+          <!-- Checklist -->
           <TaskListIconLabel
             v-if="props.node.info.checklist"
             :icon-path="checklist.path"
             :icon-box="checklist.viewBox"
             :text="`${countChecklist(props.node.info.checklist).done} / ${countChecklist(props.node.info.checklist).undone}`"
           />
+          <!-- Access -->
           <TaskListIconLabel
             v-if="props.node.info.emails"
             :icon-path="inaccess.path"
@@ -417,21 +427,25 @@
             icon-width="14"
             icon-height="14"
           />
+          <!-- Files -->
           <TaskListIconLabel
             v-if="props.node.info.has_files"
             :icon-path="file.path"
             :icon-box="file.viewBox"
           />
+          <!-- Messages -->
           <TaskListIconLabel
             v-if="props.node.info.has_msgs"
             :icon-path="msgs.path"
             :icon-box="msgs.viewBox"
           />
+          <!-- Comment -->
           <TaskListIconLabel
             v-if="props.node.info.comment.replace(/\r?\n|\r/g, '')"
             :icon-path="taskcomment.path"
             :icon-box="taskcomment.viewBox"
           />
+          <!-- Focus -->
           <TaskListIconLabel
             v-if="props.node.info.focus"
             :icon-path="taskfocus.path"
@@ -521,6 +535,10 @@ export default {
     const showConfirm = ref(false)
     const isTaskHoverPopperActive = ref(false)
     const isTaskStatusPopperActive = ref(false)
+
+    const print = (obj) => {
+      console.log(obj)
+    }
 
     const clickAndShift = (arg) => {
       selectedTasks.value[arg.id] = arg.info
@@ -933,6 +951,7 @@ export default {
       newConfig,
       showConfirm,
       selectedTasks,
+      print,
       clickAndShift,
       nodeDragEnter,
       nodeDragLeave,

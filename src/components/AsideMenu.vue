@@ -261,7 +261,7 @@ const tarifS = () => {
         id="Maincalendar"
         v-model="navigatorMenu.currentDate"
         class="border-none text-xs px-3 calendar-custom calendar-nav-custom"
-        style="border: none!important;"
+        style="border: none;!important; "
         :style="{ backgroundColor: datePickerBG }"
         show-weeknumbers="left"
         days="-1"

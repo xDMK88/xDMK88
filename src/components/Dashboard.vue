@@ -11,6 +11,7 @@ import overdue from '@/icons/overdue.js'
 import unsorted from '@/icons/unsorted'
 import ready from '@/icons/ready.js'
 import Tasksblock from '@/components/DashboardComponents/Tasksblock.vue'
+import TaskStatus from '@/components/TasksList/TaskStatus'
 import { computed, reactive, onBeforeMount } from 'vue'
 import { useStore } from 'vuex'
 
@@ -98,10 +99,12 @@ const icons = {
 const iconsKeys = Object.keys(icons)
 
 const typeofTasks = ['Непрочитанные задачи', 'В работе', 'В фокусе', 'Просрочено', 'Неразобранное', 'Готово к сдаче']
+
+// Aside menu logic
 </script>
 <template>
   <div class="flex flex-wrap">
-    <div class="flex flex-col lg:w-1/4 sm:w-4/4 bg-white rounded-xl h-1/3 mb-8 max-h-[500px] max-w-screen-sm scroll-style mr-3 p-2 shadow-lg font-SfProTextNormal" v-for="(elem, key, idx) in testObj" :key="testObj[key]">
+    <div class="flex flex-col lg:w-1/4 sm:w-4/4 bg-white dark:bg-slate-900 rounded-xl h-1/3 mb-8 max-h-[500px] max-w-screen-sm scroll-style mr-3 p-2 shadow-lg font-SfProTextNormal" @click="menuClick" v-for="(elem, key, idx) in testObj" :key="testObj[key]">
       <tasksblock>
         <template v-slot:block-name>
           <span>{{ typeofTasks[idx] }}</span>
@@ -118,8 +121,13 @@ const typeofTasks = ['Непрочитанные задачи', 'В работе
       </tasksblock>
       <div class="max-h-[500px] scroll-style">
         <div class="p-2 rounded-xl" v-for="(task, taskIdx) in testObj[key]" :key="task.uid" :style="task.uid_marker !== '00000000-0000-0000-0000-000000000000' ? {backgroundColor: colors[task.uid_marker].back_color} : ''">
-          <div class="font-normal">
-            <span class="max-w-full break-words">{{ task.name }}</span>
+          <div class="flex">
+            <div class="flex order-first">
+              <task-status :task="task"></task-status>
+            </div>
+            <div class="font-normal">
+              <span class="max-w-full break-words">{{ task.name }}</span>
+            </div>
           </div>
           <!-- <div v-show="task.comment.length">
             <details v-show="task.comment.length">
@@ -128,7 +136,7 @@ const typeofTasks = ['Непрочитанные задачи', 'В работе
             </details>
           </div> -->
           <div class="flex items-center text-xs">
-            <div class="pl-1">
+            <div>
               <img class="w-5 h-5 border-solid border-2 border-lime-500 rounded-md" :src="employees[task.uid_customer].fotolink">
             </div>
             <div class="tag-label cursor-default p-1 text-xs flex items-center">{{ task.customer_name }}</div>

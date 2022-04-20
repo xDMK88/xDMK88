@@ -767,7 +767,6 @@ const actions = {
   },
   [TASK.CHANGE_TASK_FOCUS]: ({ commit, dispatch }, data) => {
     return new Promise((resolve, reject) => {
-      commit(TASK.IN_FOCUS_TASKS_REQUEST)
       const url = 'https://web.leadertask.com/api/v1/task/focus?uid=' + data.uid + '&value=' + data.value
       axios({
         url: url,
@@ -1229,7 +1228,7 @@ const mutations = {
     state.access.push(data.value)
   },
   [TASK.IN_FOCUS_TASKS_REQUEST]: (state, resp) => {
-    state.inFocus = resp.data
+    state.inFocus = resp.data.value
   },
   [TASK.CHANGE_TASK_FOCUS]: (state, data) => {
     state.focus = data.value

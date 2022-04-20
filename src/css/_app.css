@@ -232,6 +232,9 @@ input:focus {outline: 0;}
 {
   resize: none;
   overflow: hidden;
+  height: 40px;
+
+  box-sizing: border-box;
 }
 .list-files-custom
 {

@@ -248,6 +248,33 @@ export default {
         })
       taskMsg.value = ''
     }
+    const cursorPosition = () => {
+      this.taskMsg += '\n'
+      var textarea = document.querySelector('textarea')
+      textarea.addEventListener('keyup', function () {
+        if (this.scrollTop > 0) {
+          this.style.height = this.scrollHeight + 'px'
+        }
+        console.log(this.scrollTop)
+        if (this.value.length === 0) {
+          this.style.height = '40px'
+        }
+      })
+    }
+    const moveCursorToEnd = (obj) => {
+      if (!(obj.updating)) {
+        obj.updating = true
+        var oldValue = obj.value
+        obj.value = ''
+        setTimeout(function () { obj.value = oldValue; obj.updating = false }, 100)
+      }
+      var textarea = document.querySelector('textarea')
+      textarea.addEventListener('keyup', function () {
+        if (this.scrollTop > 0) {
+          this.style.height = this.scrollHeight + 'px'
+        }
+      })
+    }
     const deleteTaskMsg = (uid) => {
       store.dispatch(DELETE_MESSAGE_REQUEST, { uid: uid })
     }
@@ -738,6 +765,7 @@ export default {
 
     return {
       //  ресет Повтор
+      moveCursorToEnd,
       dayWeekMassive: [],
       SaveRepeat,
       tabChanged,
@@ -770,6 +798,7 @@ export default {
       unchecked,
       changeName,
       createTaskMsg,
+      cursorPosition,
       deleteTaskMsg,
       createTaskFile,
       closeProperties,
@@ -3044,7 +3073,6 @@ export default {
           data-placeholder="Добавить заметку..."
           @blur="changeComment($event)"
           @keyup="changeComment($event)"
-          @focus="$refs.comment.focus()"
           @focusout="removeeditcomment($event)"
           v-html="selectedTask.comment ? selectedTask.comment.replaceAll('\n','<br/>') : ''"
         />
@@ -3284,9 +3312,11 @@ export default {
         v-model="taskMsg"
         class="form-control text-group-design task-msg dark:bg-gray-800 dark:text-gray-100"
         placeholder="Введите сообщение"
+        rows="58"
         @click="copypastefile"
+        ref="taskMsg"
         @keydown.enter.exact.prevent="createTaskMsg"
-        @keydown.enter.shift.exact.prevent="taskMsg += '\n'"
+        @keydown.enter.shift.exact.prevent="cursorPosition(this)"
       />
       <span class="input-group-addon input-group-btn-send dark:bg-gray-800 dark:text-gray-100">
         <button

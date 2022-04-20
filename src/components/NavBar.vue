@@ -107,7 +107,84 @@ const updateSettings = () => {
       cal_work_week: settings.value.cal_work_week,
       compact_mode: settings.value.compact_mode
     }
-  )
+  ).then(() => {
+    requestLastVisitedNav()
+  })
+}
+
+// Copypasted from Home.vue
+// TODO: DRY
+const requestLastVisitedNav = () => {
+  if (store.state.auth.token) {
+    // Process saved last visited nav
+    if (navStack.value.length && navStack.value.length > 0) {
+      if (navStack.value[navStack.value.length - 1].key === 'taskListSource') {
+        store.dispatch(UID_TO_ACTION[navStack.value[navStack.value.length - 1].value.uid], navStack.value[navStack.value.length - 1].value.param)
+        store.commit('basic', { key: 'mainSectionState', value: 'tasks' })
+        store.commit('basic', { key: navStack.value[navStack.value.length - 1].key, value: navStack.value[navStack.value.length - 1].value })
+      }
+    } else {
+      store.commit('basic', { key: 'taskListSource', value: { uid: '901841d9-0016-491d-ad66-8ee42d2b496b', param: null } })
+      // TODO: here we need localization
+      store.commit(
+        'updateStackWithInitValue',
+        { name: 'Today', key: 'taskListSource', value: { uid: '901841d9-0016-491d-ad66-8ee42d2b496b', param: null } }
+      )
+
+      store.dispatch(TASK.TASKS_REQUEST, new Date())
+        .then(() => {
+          store.commit(TASK.CLEAN_UP_LOADED_TASKS)
+        })
+        .catch((err) => console.log(err))
+    }
+  }
+  // After navigator is loaded we are trying to set up last visited navElement
+  // Checking if last navElement is a gridSource
+  if (navStack.value.length && navStack.value.length > 0) {
+    if (navStack.value[navStack.value.length - 1].key === 'greedSource') {
+      store.commit('basic', { key: 'greedPath', value: navStack.value[navStack.value.length - 1].greedPath })
+      store.commit('basic', { key: 'mainSectionState', value: 'greed' })
+
+      // If last navElement is related to processed navigator instance with 'new_' prefix
+      // then we pass entire object from storeNavigator
+      if (['new_private_projects', 'new_emps', 'new_delegate'].includes(navStack.value[navStack.value.length - 1].greedPath)) {
+        store.commit('basic', { key: navStack.value[navStack.value.length - 1].key, value: storeNavigator.value[navStack.value[navStack.value.length - 1].greedPath] })
+
+      // if last visited navElemen is in nested in children, then we trying to find these children with visitChildren fucntion
+      // from storeNavigator
+      } else if (['tags_children', 'projects_children'].includes(navStack.value[navStack.value.length - 1].greedPath)) {
+        if (navStack.value[navStack.value.length - 1].greedPath === 'tags_children') {
+          // nested lookup for tags
+          visitChildren(storeNavigator.value.tags.items, value => {
+            if (value.uid === navStack.value[navStack.value.length - 1].uid) {
+              store.commit('basic', { key: navStack.value[navStack.value.length - 1].key, value: value.children })
+            }
+          })
+        }
+
+        // nested lookup for shared and private projects
+        if (navStack.value[navStack.value.length - 1].greedPath === 'projects_children') {
+          // Requests project's tasks
+          store.dispatch(UID_TO_ACTION[navStack.value[navStack.value.length - 1].global_property_uid], navStack.value[navStack.value.length - 1].uid)
+          store.commit('basic', { key: 'taskListSource', value: { uid: navStack.value[navStack.value.length - 1].global_property_uid, param: navStack.value[navStack.value.length - 1].uid } })
+
+          visitChildren(storeNavigator.value.new_private_projects[0].items, value => {
+            if (value.uid === navStack.value[navStack.value.length - 1].uid) {
+              store.commit('basic', { key: navStack.value[navStack.value.length - 1].key, value: value.children })
+            }
+          })
+          visitChildren(storeNavigator.value.new_private_projects[1].items, value => {
+            if (value.uid === navStack.value[navStack.value.length - 1].uid) {
+              store.commit('basic', { key: navStack.value[navStack.value.length - 1].key, value: value.children })
+            }
+          })
+        }
+      // colors
+      } else {
+        store.commit('basic', { key: navStack.value[navStack.value.length - 1].key, value: storeNavigator.value[navStack.value[navStack.value.length - 1].greedPath].items })
+      }
+    }
+  }
 }
 
 const clickOnGridCard = (item, index) => {
@@ -263,7 +340,7 @@ const openProjectProperties = (project, parentProjectUid = '') => {
             </div>
           </template>
           <icon
-            v-if="navItem.greedPath === 'projects_children'"
+            v-if="navItem.greedPath === 'projects_children' && index === (navStack.length - 1)"
             class="invisible ml-0.5 text-gray-500 group-hover:visible"
             :path="arrowDown.path"
             :width="10"

@@ -1,57 +1,61 @@
 <template>
-  <div class="mt-3 tags-custom any-list-custom relative">
-    <svg
-      style="width: 24px; height: 24px"
-      viewBox="0 0 24 24"
-    >
-      <path
-        fill="currentColor"
-        d="M12,16A2,2 0 0,1 14,18A2,2 0 0,1 12,20A2,2 0 0,1 10,18A2,2 0 0,1 12,16M12,10A2,2 0 0,1 14,12A2,2 0 0,1 12,14A2,2 0 0,1 10,12A2,2 0 0,1 12,10M12,4A2,2 0 0,1 14,6A2,2 0 0,1 12,8A2,2 0 0,1 10,6A2,2 0 0,1 12,4Z"
-      />
-    </svg>
-    <span class="rounded" />
-    <Transition>
-      <div class="absolute custom-dropdown py-2 mt-2 rounded-md shadow-xl w-44">
-        <div class="block px-4 py-2 text-sm text-gray-400">
+  <Popper
+    arrow
+    class="light"
+    placement="bottom"
+  >
+    <div class="mt-3 tags-custom">
+      <svg
+        style="width: 24px; height: 24px"
+        viewBox="0 0 24 24"
+      >
+        <path
+          fill="currentColor"
+          d="M12,16A2,2 0 0,1 14,18A2,2 0 0,1 12,20A2,2 0 0,1 10,18A2,2 0 0,1 12,16M12,10A2,2 0 0,1 14,12A2,2 0 0,1 12,14A2,2 0 0,1 10,12A2,2 0 0,1 12,10M12,4A2,2 0 0,1 14,6A2,2 0 0,1 12,8A2,2 0 0,1 10,6A2,2 0 0,1 12,4Z"
+        />
+      </svg>
+    </div>
+    <template #content="{ close }">
+      <div
+        class="flex flex-col"
+        @click="close"
+      >
+        <div class="popper-item text-gray-400">
           Дата создания
         </div>
-        <div class="block px-4 py-2 text-sm text-gray-400">
+        <div class="popper-item text-gray-400">
           {{ dateCreateText }}
         </div>
-        <router-link
-          to="/"
-          class="block px-4 py-2 text-sm"
+        <div
+          class="popper-item popper-clickable"
           @click="selectItem('toggleFiles')"
         >
           {{ onlyFiles ? 'Показать весь чат' : 'Показать только файлы' }}
-        </router-link>
-        <router-link
-          to="/"
-          class="block px-4 py-2 text-sm"
+        </div>
+        <div
+          class="popper-item popper-clickable"
           @click="selectItem('copyUrl')"
         >
           Копировать как ссылку
-        </router-link>
-        <router-link
-          v-if="showDelete"
-          to="/"
-          class="block px-4 py-2 text-sm"
+        </div>
+        <div
+          class="popper-item popper-clickable"
           @click="selectItem('deleteTask')"
         >
           Удалить
-        </router-link>
+        </div>
       </div>
-    </Transition>
-  </div>
+    </template>
+  </Popper>
 </template>
 
 <script>
-// import Popper from 'vue3-popper'
+import Popper from 'vue3-popper'
 
 export default {
-  // components: {
-  //   Popper
-  // },
+  components: {
+    Popper
+  },
   props: {
     dateCreate: {
       type: String,
@@ -81,4 +85,36 @@ export default {
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+.popper-item {
+  @apply flex;
+  @apply items-center;
+  @apply py-0.5;
+  @apply px-1.5;
+}
+.popper-clickable {
+  @apply cursor-pointer;
+  @apply hover:bg-gray-100;
+  @apply hover:dark:bg-stone-800;
+  @apply rounded-xl;
+}
+.tags-custom {
+  border-radius: 5px;
+  background: #f4f5f7;
+  padding: 4px 0px 4px 0px;
+  margin: 2px 2px 2px 2px;
+  position: relative;
+  float: none;
+  display: flex;
+  cursor: pointer;
+}
+.tags-custom svg {
+  position: relative;
+  float: left;
+  display: flex;
+  margin-right: 5px;
+  left: 3px;
+  top: 0;
+  color: #A6A6A6;
+}
+</style>

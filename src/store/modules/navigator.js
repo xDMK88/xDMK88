@@ -358,16 +358,15 @@ const mutations = {
       !project.uid_parent ||
       project.uid_parent === '00000000-0000-0000-0000-000000000000'
     ) {
-      // state.navigator.new_private_projects[0].items = arrayRemove(state.navigator.new_private_projects[0].items, project)
       for (
         let i = 0;
-        i < state.navigator.new_private_projects[1].items.length;
+        i < state.navigator.new_private_projects[0].items.length;
         i++
       ) {
         if (
-          state.navigator.new_private_projects[1].items[i].uid === project.uid
+          state.navigator.new_private_projects[0].items[i].uid === project.uid
         ) {
-          state.navigator.new_private_projects[1].items.splice(i, 1)
+          state.navigator.new_private_projects[0].items.splice(i, 1)
         }
       }
     } else {

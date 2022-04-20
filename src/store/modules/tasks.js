@@ -1228,7 +1228,7 @@ const mutations = {
     state.access.push(data.value)
   },
   [TASK.IN_FOCUS_TASKS_REQUEST]: (state, resp) => {
-    state.inFocus = resp.data.value
+    state.inFocus = resp.data
   },
   [TASK.CHANGE_TASK_FOCUS]: (state, data) => {
     state.focus = data.value

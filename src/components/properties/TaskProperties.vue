@@ -349,7 +349,8 @@ export default {
         })
     }
     const copyurl = (e) => {
-      copyText('lt://planning?{' + selectedTask.value.uid.toUpperCase() + '}', undefined, (error, event) => {
+      copyText(`${window.location.origin}/task/${selectedTask.value.uid}`, undefined, (error, event) => {
+      // copyText('lt://planning?{' + selectedTask.value.uid.toUpperCase() + '}', undefined, (error, event) => {
         if (error) {
           alert('Can not copy')
           console.log(error)
@@ -1927,7 +1928,8 @@ export default {
                       >
                         <label>По</label>
                         <select
-                          ref="SeriesWeek" v-model="SeriesWeek"
+                          ref="SeriesWeek"
+                          v-model="SeriesWeek"
                           class="form-control form-control-select-repeat"
                           multiple
                         >

@@ -1074,7 +1074,7 @@ export default {
             <!-- <p class="text-center">{{ localization.Labels }}</p>-->
             <!-- Поручить (личное сообщение) -->
             <div
-              v-if="selectedTask.uid_customer === cusers.current_user_uid"
+              v-if="selectedTask.uid_customer === cusers.current_user_uid && !selectedTask.email_performer"
               ref="btnRefEmployee"
               class="mt-3 tags-custom dark:bg-gray-800 dark:text-gray-100 active project-hover-close"
             >

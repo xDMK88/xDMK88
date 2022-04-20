@@ -25,8 +25,6 @@ const state = {
   overdue: '',
   unsorted: '',
   ready: '',
-  unreadCustomersUid: [],
-  customersTasks: {},
   tags: {},
   selectedTag: null,
   subtasks: false,
@@ -85,6 +83,33 @@ const actions = {
       const year = chosenDate.getFullYear()
       const formattedDate = day + '-' + month + '-' + year
       const url = 'https://web.leadertask.com/api/v1/tasks/withdate?value=' + formattedDate
+      axios({ url: url, method: 'GET' })
+        .then(resp => {
+          commit(TASK.TASKS_SUCCESS, resp)
+          if (resp.data.anothers_tags.length) {
+            commit(TASK.ADD_TASK_TAGS, resp.data.anothers_tags)
+          }
+          if (resp.data.anothers_markers.length) {
+            commit(PUSH_COLOR, resp.data.anothers_markers)
+          }
+          resolve(resp)
+        }).catch(err => {
+          notify({
+            group: 'api',
+            title: 'REST API Error, please make screenshot',
+            action: TASK.TASKS_REQUEST,
+            text: err.response.data
+          }, 15000)
+          commit(TASK.TASKS_ERROR, err)
+          dispatch(AUTH_LOGOUT)
+          reject(err)
+        })
+    })
+  },
+  [TASK.ONE_TASK_REQUEST]: ({ commit, dispatch }, uid) => {
+    return new Promise((resolve, reject) => {
+      commit(TASK.TASKS_REQUEST)
+      const url = 'https://web.leadertask.com/api/v1/tasks/entity?uid=' + uid
       axios({ url: url, method: 'GET' })
         .then(resp => {
           commit(TASK.TASKS_SUCCESS, resp)

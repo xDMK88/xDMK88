@@ -18,9 +18,11 @@ import linkify from 'vue-linkify'
 import ModalBoxConfirm from '@/components/modals/ModalBoxConfirm.vue'
 import { maska } from 'maska'
 import ChatLoader from '@/components/properties/ChatLoader'
+import TaskPropsButtonDots from '@/components/TaskProperties/TaskPropsButtonDots.vue'
 
 export default {
   components: {
+    TaskPropsButtonDots,
     ChatLoader,
     DatePicker,
     TreeItem,
@@ -33,12 +35,6 @@ export default {
   directives: {
     linkify,
     maska
-  },
-  filters: {
-    shorten: (val, words = 2) => val.split(' ').slice(0, words).join(' ')
-  },
-  props: {
-    selectTags: Array
   },
   data () {
     const showAllMessages = false
@@ -60,7 +56,6 @@ export default {
     const employeesByEmail = computed(() => store.state.employees.employeesByEmail)
     const isDark = computed(() => store.state.darkMode)
     const getfiles = computed(() => store.state.taskfilesandmessages.file)
-    //  const test2 = toRef(this.props, 'selectTags')
     const closeProperties = () => {
       store.dispatch('asidePropertiesToggle', false)
     }
@@ -381,17 +376,17 @@ export default {
       }
     }
     const editcomment = () => {
-      if (!selectedTask.value._isEditable) return
+      if (selectedTask.value.type !== 1 && selectedTask.value.type !== 2) return
       this.isEditable = true
     }
     const removeeditcomment = () => {
-      if (!selectedTask.value._isEditable) return
+      if (selectedTask.value.type !== 1 && selectedTask.value.type !== 2) return
       this.isEditable = false
       const message = event.target.innerText
       selectedTask.value.comment = message
     }
     const changeComment = (event) => {
-      if (!selectedTask.value._isEditable) return
+      if (selectedTask.value.type !== 1 && selectedTask.value.type !== 2) return
       const message = event.target.innerText
       console.log(event.target.innerText)
       setCursorPosition(event.target.id, 0, 100)
@@ -871,6 +866,9 @@ export default {
   mounted () {
   },
   methods: {
+    print: function (value) {
+      console.log(value)
+    },
     HtmlRender: function (text) {
       const ur = text.split('lt://').pop()
       console.log(ur)
@@ -2949,96 +2947,14 @@ export default {
           <span class="rounded"> В фокус</span>
         </div>
         <!-- Три точки -->
-        <div
-          class="mt-3 tags-custom dark:bg-gray-800 dark:text-gray-100 any-list-custom relative"
-        >
-          <svg
-            style="width:24px;height:24px"
-            viewBox="0 0 24 24"
-          >
-            <path
-              fill="currentColor"
-              d="M12,16A2,2 0 0,1 14,18A2,2 0 0,1 12,20A2,2 0 0,1 10,18A2,2 0 0,1 12,16M12,10A2,2 0 0,1 14,12A2,2 0 0,1 12,14A2,2 0 0,1 10,12A2,2 0 0,1 12,10M12,4A2,2 0 0,1 14,6A2,2 0 0,1 12,8A2,2 0 0,1 10,6A2,2 0 0,1 12,4Z"
-            />
-          </svg>
-          <span class="rounded" />
-          <Transition>
-            <div
-              class="
-          absolute
-          custom-dropdown
-          py-2
-          mt-2
-          rounded-md
-          shadow-xl
-          w-44
-        "
-            >
-              <!--   <router-link v-if="selectedTask.checklist"
-              to="/"
-              class="
-            block
-            px-4
-            py-2
-            text-sm
-                    "
-            >
-              Добавить чек-лист
-            </router-link>-->
-              <router-link
-                ref="targetcopy"
-                to="/"
-                class="
-            block
-            px-4
-            py-2
-            text-sm
-          "
-                @click="showOnlyFiles = !showOnlyFiles"
-              >
-                {{ showOnlyFiles ? 'Показать весь чат' : 'Показать только файлы' }}
-              </router-link>
-              <router-link
-                ref="targetcopy"
-                to="/"
-                class="
-            block
-            px-4
-            py-2
-            text-sm
-          "
-                @click="copyurl"
-              >
-                Копировать как ссылку
-              </router-link>
-              <!-- <router-link
-              to="/"
-              class="
-            block
-            px-4
-            py-2
-            text-sm
-
-          "
-            >
-             Показать только файлы
-            </router-link>-->
-              <router-link
-                v-if="selectedTask.type===1"
-                to="/"
-                class="
-            block
-            px-4
-            py-2
-            text-sm
-          "
-                @click="showConfirm = true;"
-              >
-                Удалить
-              </router-link>
-            </div>
-          </Transition>
-        </div>
+        <TaskPropsButtonDots
+          :show-delete="selectedTask.type === 1"
+          :date-create="selectedTask.date_create"
+          :only-files="showOnlyFiles"
+          @copyUrl="copyurl"
+          @deleteTask="showConfirm = true"
+          @toggleFiles="showOnlyFiles = !showOnlyFiles"
+        />
       </div>
       <!--
       <div

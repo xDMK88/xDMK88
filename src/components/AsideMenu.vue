@@ -112,7 +112,6 @@ const asideLgClose = () => {
 // TODO: clean up messy logic
 
 const menuClick = (event, item) => {
-  console.log(item)
   if (isPropertiesMobileExpanded.value) {
     store.dispatch('asidePropertiesToggle', false)
   }

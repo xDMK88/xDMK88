@@ -92,9 +92,6 @@
     class="mt-0.5"
     @nodeOpened="nodeExpanding"
     @nodeFocus="nodeSelected"
-    @nodeDragenter="nodeDragEnter"
-    @nodeDragleave="nodeDragLeave"
-    @nodeOver="nodeOver"
     @nodeDragend="nodeDragEnd"
   >
     <template #loading-slot>
@@ -123,7 +120,6 @@
         <p class="text-[10px] leading-none mb-5">order_new: <strong>{{ props.node.info.order_new }}</strong></p>
         <pre class="text-[10px] leading-none font-bold text-green-900">state: {{ props.node.info }}</pre>
         -->
-
         <Transition>
           <div
             class="absolute hidden group-hover:flex right-2 top-2 bg-gray-200 dark:bg-gray-800 rounded-lg items-cetner justify-center py-0.5 px-3"
@@ -266,70 +262,9 @@
           <div
             class="flex items-center"
           >
-            <!-- Status popper -->
-            <Popper
-              arrow
-              :class="isDark ? 'dark' : 'light'"
-              placement="left"
-              :disabled="props.node.info.type == 4"
-              @click.stop="toggleTaskStatusPopper(true)"
-              @open:popper="toggleTaskStatusPopper(true)"
-              @close:popper="toggleTaskStatusPopper(false)"
-            >
-              <template #content="{ close }">
-                <div class="flex flex-col">
-                  <div
-                    v-for="taskStatus in 10"
-                    :key="taskStatus"
-                    @click="close"
-                  >
-                    <div
-                      v-if="showStatusOrNot(props.node.info.type, taskStatus - 1) && props.node.info.status != taskStatus - 1"
-                      class="flex cursor-pointer items-center hover:bg-gray-100 hover:dark:bg-stone-800 py-0.5 px-1.5 rounded-xl"
-                      @click="changeTaskStatus(props.node.info.uid, taskStatus - 1)"
-                    >
-                      <div
-                        class="border-2 border-gray-300 rounded-md mr-1 flex items-center justify-center"
-                        style="min-width:20px; min-height: 20px;"
-                      >
-                        <Icon
-                          v-if="statuses[taskStatus-1]"
-                          :path="statuses[taskStatus-1].path"
-                          :class="statusColor[taskStatus-1] ? statusColor[taskStatus-1] : 'text-gray-500 dark:text-gray-100'"
-                          :box="statuses[taskStatus-1].viewBox"
-                          :width="statuses[taskStatus-1].width"
-                          :height="statuses[taskStatus-1].height"
-                        />
-                      </div>
-                      {{ localization[statusesLabels[taskStatus-1]] }}
-                    </div>
-                  </div>
-                </div>
-              </template>
-              <div
-                class="relative border-2 border-gray-300 rounded-md mr-1 flex items-center justify-center mt-0.5"
-                :class="{ 'cursor-pointer': [1, 2, 3].includes(props.node.info.type), 'cursor-not-allowed': props.node.info.type == 4 }"
-                style="min-width:20px; min-height: 20px;"
-              >
-                <Icon
-                  v-if="statuses[props.node.info.status]"
-                  :path="statuses[props.node.info.status].path"
-                  :class="statusColor[props.node.info.status] ? statusColor[props.node.info.status] : 'text-gray-500 dark:text-gray-100'"
-                  :style="{ color: colors[props.node.info.uid_marker] ? colors[props.node.info.uid_marker].fore_color : '' }"
-                  :box="statuses[props.node.info.status].viewBox"
-                  :width="statuses[props.node.info.status].width"
-                  :height="statuses[props.node.info.status].height"
-                />
-                <Icon
-                  v-if="props.node.info.SeriesType != 0"
-                  :path="repeat.path"
-                  class="text-blue-500 bg-white absolute -bottom-1.5 -right-1.5 p-0.5 rounded-full"
-                  :box="repeat.viewBox"
-                  :width="repeat.width"
-                  :height="repeat.height"
-                />
-              </div>
-            </Popper>
+            <TaskStatus
+              :task="props.node.info"
+            />
 
             <!-- Editable name -->
             <contenteditable
@@ -391,25 +326,34 @@
           </template>
           <!-- Project -->
           <TaskListTagLabel
-            v-if="props.node.info.uid_project != '00000000-0000-0000-0000-000000000000' && projects[props.node.info.uid_project] && props.node.info.uid_project !== taskListSource.param"
+            v-if="taskListSource && props.node.info.uid_project != '00000000-0000-0000-0000-000000000000' && projects[props.node.info.uid_project] && props.node.info.uid_project !== taskListSource.param"
             :icon-path="project.path"
             :icon-box="project.viewBox"
             :text="projects[props.node.info.uid_project].name"
             :color-bg-class="{ 'bg-yellow-400': true, 'bg-opacity-50': props.node.info.status == 1 || props.node.info.status == 7 }"
           />
-          <!-- Icons, Access, Messages, Files, Data, Checklist, Focus -->
+          <!-- Data -->
           <TaskListIconLabel
-            v-if="props.node.info.term_customer"
+            v-if="props.node.info.term_user"
+            :icon-path="clock.path"
+            :icon-box="clock.viewBox"
+            :text="props.node.info.term_user"
+          />
+          <TaskListIconLabel
+            v-if="props.node.info.type !== 1 && props.node.info.type !== 2 && props.node.info.term_customer"
             :icon-path="clock.path"
             :icon-box="clock.viewBox"
             :text="props.node.info.term_customer"
+            icon-class="text-red-600"
           />
+          <!-- Checklist -->
           <TaskListIconLabel
             v-if="props.node.info.checklist"
             :icon-path="checklist.path"
             :icon-box="checklist.viewBox"
             :text="`${countChecklist(props.node.info.checklist).done} / ${countChecklist(props.node.info.checklist).undone}`"
           />
+          <!-- Access -->
           <TaskListIconLabel
             v-if="props.node.info.emails"
             :icon-path="inaccess.path"
@@ -417,21 +361,25 @@
             icon-width="14"
             icon-height="14"
           />
+          <!-- Files -->
           <TaskListIconLabel
             v-if="props.node.info.has_files"
             :icon-path="file.path"
             :icon-box="file.viewBox"
           />
+          <!-- Messages -->
           <TaskListIconLabel
             v-if="props.node.info.has_msgs"
             :icon-path="msgs.path"
             :icon-box="msgs.viewBox"
           />
+          <!-- Comment -->
           <TaskListIconLabel
             v-if="props.node.info.comment.replace(/\r?\n|\r/g, '')"
             :icon-path="taskcomment.path"
             :icon-box="taskcomment.viewBox"
           />
+          <!-- Focus -->
           <TaskListIconLabel
             v-if="props.node.info.focus"
             :icon-path="taskfocus.path"
@@ -449,6 +397,7 @@ import { computed, ref, nextTick } from 'vue'
 import treeview from 'vue3-treeview'
 import { useStore } from 'vuex'
 import Icon from '@/components/Icon.vue'
+import TaskStatus from '@/components/TasksList/TaskStatus.vue'
 import EmptyTasksListPics from '@/components/TasksList/EmptyTasksListPics.vue'
 import Popper from 'vue3-popper'
 import ModalBoxConfirm from '@/components/modals/ModalBoxConfirm.vue'
@@ -466,17 +415,11 @@ import inaccess from '@/icons/inaccess.js'
 import msgs from '@/icons/msgs.js'
 import taskcomment from '@/icons/taskcomment.js'
 import checklist from '@/icons/checklist.js'
-import readyStatus from '@/icons/ready-status.js'
-import inwork from '@/icons/inwork.js'
-import canceled from '@/icons/canceled.js'
-import pause from '@/icons/pause.js'
-import note from '@/icons/note.js'
 import project from '@/icons/project.js'
 import tagIcon from '@/icons/tag.js'
 import performerRead from '@/icons/performer-read.js'
 import performerNotRead from '@/icons/performer-not-read.js'
 import taskfocus from '@/icons/taskfocus.js'
-import improve from '@/icons/improve.js'
 import clock from '@/icons/clock.js'
 import subtask from '@/icons/subtask.js'
 import taskoptions from '@/icons/taskoptions.js'
@@ -498,6 +441,7 @@ export default {
     Popper,
     ModalBoxConfirm,
     EmptyTasksListPics,
+    TaskStatus,
     contenteditable
   },
   setup (props) {
@@ -573,10 +517,6 @@ export default {
       isTaskHoverPopperActive.value = val
     }
 
-    const toggleTaskStatusPopper = (val) => {
-      isTaskStatusPopperActive.value = val
-    }
-
     const editTaskName = (uid) => {
       storeTasks.value[uid].info._isEditable = user.value.current_user_uid === storeTasks.value[uid].info.uid_customer
       document.getElementById(uid).parentNode.draggable = false
@@ -623,18 +563,6 @@ export default {
         }
       }
       return data
-    }
-
-    const showStatusOrNot = (type, status) => {
-      if (type === 1 && [0, 1, 3, 4, 6, 7].includes(status)) {
-        return true
-      } else if (type === 2 && [0, 1, 3, 4, 6, 7, 9].includes(status)) {
-        return true
-      } else if (type === 3 && [0, 4, 5, 6, 8].includes(status)) {
-        return true
-      } else {
-        return false
-      }
     }
 
     function uuidv4 () {
@@ -798,10 +726,6 @@ export default {
       store.dispatch(TASK.REMOVE_TASK, uid)
     }
 
-    const changeTaskStatus = (uid, status) => {
-      store.dispatch(TASK.CHANGE_TASK_STATUS, { uid: uid, value: status })
-    }
-
     const gotoNode = (uid) => {
       document.getElementById(uid).parentElement.focus({ preventScroll: false })
       const taskName = document.getElementById(uid).querySelector('.taskName')
@@ -864,25 +788,11 @@ export default {
       }
     }
 
-    const nodeDragEnter = (node) => {
-      // console.log('drag enter')
-      // console.log(node)
-    }
-
-    const nodeOver = (node) => {
-      // console.log('drag over')
-      // console.log(node)
-    }
-
-    const nodeDragLeave = (node) => {
-      // console.log('drag leave')
-      // console.log(node)
-    }
-
     const nodeDragEnd = (node) => {
       console.log('drag end')
       console.log(node)
       console.log('new parent ', storeTasks.value[node.target.node])
+
       if (storeTasks.value[node.dragged.node.id]) {
         // change order in children
         if (storeTasks.value[node.dragged.node.id].parent) {
@@ -934,9 +844,6 @@ export default {
       showConfirm,
       selectedTasks,
       clickAndShift,
-      nodeDragEnter,
-      nodeDragLeave,
-      nodeOver,
       nodeDragEnd,
       isDark,
       status,
@@ -947,10 +854,8 @@ export default {
       isTaskStatusPopperActive,
       projects,
       toggleTaskHoverPopper,
-      toggleTaskStatusPopper,
       nodeExpanding,
       nodeSelected,
-      showStatusOrNot,
       lastSelectedTaskUid,
       countChecklist,
       createTask,
@@ -962,7 +867,6 @@ export default {
       removeTask,
       copyTaskName,
       moveTaskTomorrow,
-      changeTaskStatus,
       addSubtask,
       createTaskText,
       taskListSource,
@@ -974,13 +878,7 @@ export default {
       taskcomment,
       checklist,
       colors: computed(() => store.state.colors.colors),
-      localization,
-      statusColor: {
-        4: 'text-green-600',
-        5: 'text-red-600',
-        8: 'text-red-600',
-        9: 'text-blue-500'
-      }
+      localization
     }
   },
   data () {
@@ -992,34 +890,8 @@ export default {
       'd35fe0bc-1747-4eb1-a1b2-3411e07a92a0': TASK.READY_FOR_COMPLITION_TASKS_REQUEST,
       '511d871c-c5e9-43f0-8b4c-e8c447e1a823': TASK.DELEGATED_TO_USER_TASKS_REQUEST
     }
-    const statusesLabels = [
-      'status_not_begin',
-      'status_ready',
-      'task_by_link',
-      'status_note',
-      'status_in_work',
-      'status_task_ready',
-      'status_paused',
-      'status_cancelled',
-      'status_reject',
-      'status_refine'
-    ]
-    const statuses = [
-      undefined,
-      readyStatus,
-      readyStatus,
-      note,
-      inwork,
-      readyStatus,
-      pause,
-      canceled,
-      canceled,
-      improve
-    ]
     return {
       DONT_SHOW_TASK_INPUT_UIDS,
-      statuses,
-      statusesLabels,
       project,
       tagIcon,
       performerNotRead,

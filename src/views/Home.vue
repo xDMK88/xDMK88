@@ -1,6 +1,7 @@
 <script setup>
 import { onBeforeMount, onMounted, computed } from 'vue'
 import { useStore } from 'vuex'
+import { useRouter } from 'vue-router'
 import { visitChildren } from '@/store/helpers/functions'
 import TasksListNew from '@/components/TasksListNew.vue'
 import MainSection from '@/components/MainSection.vue'
@@ -17,6 +18,7 @@ import { USER_REQUEST } from '@/store/actions/user'
 import * as TASK from '@/store/actions/tasks'
 
 const store = useStore()
+const router = useRouter()
 const mainSectionState = computed(() => store.state.mainSectionState)
 const greedPath = computed(() => store.state.greedPath)
 const greedSource = computed(() => store.state.greedSource)
@@ -53,6 +55,12 @@ onMounted(() => {
   document.head.appendChild(fm)
   document.head.appendChild(websync)
 })
+
+const getOneTask = (uid) => {
+  if (store.state.auth.token) {
+    store.dispatch(TASK.ONE_TASK_REQUEST, uid)
+  }
+}
 
 const getTasks = () => {
   if (store.state.auth.token) {
@@ -177,9 +185,13 @@ const getNavigator = () => {
 }
 
 onBeforeMount(() => {
-  getNavigator()
-  getTasks()
   store.dispatch(USER_REQUEST)
+  if (router.currentRoute.value.params.id) {
+    getOneTask(router.currentRoute.value.params.id)
+  } else {
+    getTasks()
+  }
+  getNavigator()
 })
 </script>
 

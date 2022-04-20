@@ -252,7 +252,7 @@ const openProjectProperties = (project, parentProjectUid = '') => {
                 @click="openProjectProperties(false, navItem.uid)"
               >
                 <icon
-                  class="mr-2 text-gray-500 p-1"
+                  class="mr-2 text-gray-500 p-2"
                   :path="add.path"
                   :width="20"
                   :height="20"

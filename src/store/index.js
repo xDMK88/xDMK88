@@ -106,9 +106,7 @@ export default createStore({
 
     darkMode ({ commit, state }) {
       const value = !state.darkMode
-
       document.documentElement.classList[value ? 'add' : 'remove']('dark')
-
       localStorage.setItem(darkModeKey, value ? '1' : '0')
 
       commit('basic', {
@@ -129,7 +127,7 @@ export default createStore({
           }
         })
         .catch(error => {
-          alert(error.message)
+          console.log(error)
         })
     }
   },

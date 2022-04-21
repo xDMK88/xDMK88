@@ -54,9 +54,9 @@ const isAsideLgActive = computed(() => store.state.isAsideLgActive)
 const isDark = computed(() => store.state.darkMode)
 const navStack = computed(() => store.state.navbar.navStack)
 
-const datePickerBG = computed(() => {
-  return isDark.value ? 'rgb(31 41 55)' : 'rgb(243 244 246)'
-})
+// const datePickerBG = computed(() => {
+//   return isDark.value ? 'rgb(31 41 55)' : 'rgb(243 244 246)'
+// })
 const attrs = computed(() => store.state.calendar.calendar)
 const user = computed(() => store.state.user.user)
 const storeNavigator = computed(() => store.state.navigator.navigator)
@@ -128,8 +128,8 @@ const menuClick = (event, item) => {
   if (item.uid === '2bad1413-a373-4926-8a3c-58677a680714') {
     const navElem = {
       name: 'Рабочий стол',
-      key: 'greedSoure',
-      uid: '2bad1413-a373-4926-8a3c-58677a680714'
+      key: 'greedSource',
+      value: { uid: '2bad1413-a373-4926-8a3c-58677a680714', param: null }
     }
     store.commit('updateStackWithInitValue', navElem)
     store.commit('basic', { key: 'mainSectionState', value: 'greed' })
@@ -268,10 +268,8 @@ const tarifS = () => {
         id="Maincalendar"
         ref="calendarclass"
         v-model="navigatorMenu.currentDate"
-        dot="true"
-        class="border-none text-xs px-3 calendar-custom calendar-nav-custom"
+        class="border-none text-xs px-3 calendar-custom calendar-nav-custom bg-slate-100"
         style="border: none;!important; "
-        :style="{ backgroundColor: datePickerBG }"
         show-weeknumbers="left"
         days="-1"
         color="#CCC"

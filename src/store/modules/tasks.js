@@ -1255,9 +1255,13 @@ const mutations = {
   },
   [TASK.IN_WORK_TASKS_REQUEST]: (state, resp) => {
     state.inWork = resp.data
+    state.inWork.title = 'В работе'
+    state.inWork.link = '2a5cae4b-e877-4339-8ca1-bd61426864ec'
   },
   [TASK.UNREAD_TASKS_REQUEST]: (state, resp) => {
     state.unread = resp.data
+    state.unread.title = 'Непрочитанное'
+    state.unread.link = 'fa042915-a3d2-469c-bd5a-708cf0339b89'
   },
   [TASK.TASKS_REQUEST]: (state) => {
     state.status = 'loading'
@@ -1324,9 +1328,13 @@ const mutations = {
   },
   [TASK.OVERDUE_TASKS_REQUEST]: (state, resp) => {
     state.overdue = resp.data
+    state.overdue.title = 'Просрочено'
+    state.overdue.link = '46418722-a720-4c9e-b255-16db4e590c34'
   },
   [TASK.UNSORTED_TASKS_REQUEST]: (state, resp) => {
     state.unsorted = resp.data
+    state.unsorted.title = 'Неразобранное'
+    state.unsorted.link = '5183b619-3968-4c3a-8d87-3190cfaab014'
   },
   [TASK.UPDATE_NEW_TASK_LIST]: (state, tasks) => {
     for (const task of tasks) {
@@ -1353,6 +1361,8 @@ const mutations = {
   },
   [TASK.READY_FOR_COMPLITION_TASKS_REQUEST]: (state, resp) => {
     state.ready = resp.data
+    state.ready.title = 'Готово к сдаче'
+    state.ready.link = 'd35fe0bc-1747-4eb1-a1b2-3411e07a92a0'
   },
   [TASK.ADD_TASK]: (state, task) => {
     if (!task._justCreated) {
@@ -1463,7 +1473,9 @@ const mutations = {
     state.access.push(data.value)
   },
   [TASK.IN_FOCUS_TASKS_REQUEST]: (state, resp) => {
-    state.inFocus = resp.data.value
+    state.inFocus = resp.data
+    state.inFocus.title = 'В фокусе'
+    state.inFocus.link = '6fc44cc6-9d45-4052-917e-25b1189ab141'
   },
   [TASK.CHANGE_TASK_FOCUS]: (state, data) => {
     state.focus = data.value

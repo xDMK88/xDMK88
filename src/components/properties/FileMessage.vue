@@ -28,7 +28,7 @@ const getImgUrl = (uid, extension, filename) => {
     myImage.src = fileURL
     document.getElementById(uid).appendChild(myImage)
     document.getElementById(uid).setAttribute('href', fileURL)
-    document.getElementById(uid).setAttribute('download', filename + '.' + extension)
+    document.getElementById(uid).setAttribute('download', filename)
     isImageLoaded.value = true
     return myImage
   })

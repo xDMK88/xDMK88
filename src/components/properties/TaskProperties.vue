@@ -44,7 +44,7 @@ export default {
     const taskFiles = computed(() => store.state.taskfilesandmessages.files)
     const myFiles = computed(() => store.state.taskfilesandmessages.files.myFiles)
     const selectedTask = computed(() => store.state.tasks.selectedTask)
-
+    const isPropertiesMobileExpanded = computed(() => store.state.isPropertiesMobileExpanded)
     watch(selectedTask, (currentValue, oldValue) => {
       this.showAllMessages = false
       this.checklistshow = false
@@ -56,6 +56,7 @@ export default {
     const employeesByEmail = computed(() => store.state.employees.employeesByEmail)
     const isDark = computed(() => store.state.darkMode)
     const getfiles = computed(() => store.state.taskfilesandmessages.file)
+    const cusers = computed(() => store.state.user.user)
     const closeProperties = () => {
       store.dispatch('asidePropertiesToggle', false)
     }
@@ -92,16 +93,30 @@ export default {
         }
         store.dispatch(TASK.CHANGE_TASK_PERFORMER, data).then(
           resp => {
-            console.log(resp.data)
+            console.log(resp.data.email_performer)
             selectedTask.value.email_performer = resp.data.email_performer
             selectedTask.value.type = 2
           }
         )
       }
     }
+    const ispolnit = () => {
+      const data = {
+        uid: selectedTask.value.uid,
+        value: cusers.value.current_user_email.toLowerCase()
+      }
+      store.dispatch(TASK.CHANGE_TASK_PERFORMER, data).then(
+        resp => {
+          console.log(resp.data.email_performer)
+          selectedTask.value.email_performer = resp.data.email_performer
+          selectedTask.value.type = 3
+        }
+      )
+    }
     const resetEmployes = () => {
       store.dispatch(TASK.CHANGE_TASK_PERFORMER, { uid: selectedTask.value.uid, value: '' }).then(
         resp => {
+          console.log(resp.data)
           selectedTask.value.email_performer = ''
           selectedTask.value.type = 1
         }
@@ -216,12 +231,14 @@ export default {
 
     }
     const delTask = () => {
+      if (isPropertiesMobileExpanded.value) {
+        store.dispatch('asidePropertiesToggle', false)
+      }
       const data = {
         uid: selectedTask.value.uid
       }
       store.dispatch(TASK.REMOVE_TASK, data.uid).then(
         resp => {
-          store.dispatch('asidePropertiesToggle', false)
         })
     }
 
@@ -474,16 +491,7 @@ export default {
     const audio = ['mp3', 'wav', 'm4a']
     const handlercontextmenu = () => {
     }
-    const resetfocusv = () => {
-      this.showpastefile = false
-    }
     const copypastefile = (uid) => {
-      if (this.selectedTaskFiles === uid) {
-        console.log('true')
-      } else {
-        console.log('false')
-      }
-      console.log(this.selectedTaskFiles === uid)
       this.showpastefile = true
       window.addEventListener('paste', function (e) {
         const items = (e.clipboardData || e.originalEvent.clipboardData).items
@@ -728,6 +736,7 @@ export default {
     }
     const onDayClick = () => {
       this.timeStartActive = true
+      this.timeStart = '00:00'
     }
     const tabChanged = (event) => {
       console.log(event.target.value)
@@ -779,6 +788,7 @@ export default {
     return {
       //  ресет Повтор
       moveCursorToEnd,
+      ispolnit,
       dayWeekMassive: [],
       SaveRepeat,
       tabChanged,
@@ -828,7 +838,6 @@ export default {
       resetTags,
       resetAccess,
       resetEmployes,
-      resetfocusv,
       resetCalendar,
       massel: '',
       viewMenu: false,
@@ -861,7 +870,7 @@ export default {
       localization: computed(() => store.state.localization.localization),
       colors: computed(() => store.state.colors.colors),
       mycolors: computed(() => store.state.colors.mycolors),
-      cusers: computed(() => store.state.user.user),
+      cusers: cusers,
       newArray: taskMessages.value.concat(taskFiles.value),
       months: ['Января', 'Февраля', 'Марта', 'Апреля', 'Мая', 'Июня', 'Июля', 'Августа', 'Сентября', 'Октября', 'Ноября', 'Декабря'],
       days: ['', 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота', 'Воскресенье'],
@@ -1114,7 +1123,7 @@ export default {
         <!-- Всплывающее окно сотрудник -->
         <Popper
           class="popper-employees"
-          :disabled="selectedTask.uid_customer !== cusers.current_user_uid"
+          :disabled="selectedTask.type === 5"
           arrow
           :class="isDark ? 'dark' : 'light'"
           placement="bottom"
@@ -1123,7 +1132,7 @@ export default {
             <!-- <p class="text-center">{{ localization.Labels }}</p>-->
             <!-- Поручить (личное сообщение) -->
             <div
-              v-if="selectedTask.uid_customer === cusers.current_user_uid && !selectedTask.email_performer"
+              v-if="selectedTask.type === 1 || selectedTask.uid_customer === cusers.current_user_uid && !selectedTask.email_performer"
               ref="btnRefEmployee"
               class="mt-3 tags-custom dark:bg-gray-800 dark:text-gray-100 active project-hover-close"
             >
@@ -1148,7 +1157,7 @@ export default {
             </div>
             <!-- Поручено на email -->
             <div
-              v-else-if="selectedTask.type === 2 || cusers.owner_email !== selectedTask.email_performer.toLowerCase()"
+              v-else-if="selectedTask.type === 2 && cusers.owner_email.toLowerCase() !== selectedTask.email_performer.toLowerCase()"
               ref="btnRefEmployee"
               class="mt-3 tags-custom dark:bg-gray-800 dark:text-gray-100 project-hover-close"
             >
@@ -1192,7 +1201,6 @@ export default {
               ref="btnRefEmployee"
               class="mt-3 tags-custom dark:bg-gray-800 dark:text-gray-100 active project-hover-close"
             >
-
               <svg
                 width="24"
                 height="24"
@@ -1228,9 +1236,50 @@ export default {
               </button>
             </div>
             <!-- Взять на исполнение -->
-            <div
-              v-else-if="selectedTask.type===4"
+           <div
+              v-else-if="selectedTask.type === 10"
               ref="btnRefEmployee"
+              class="mt-3 tags-custom dark:bg-gray-800 dark:text-gray-100 active project-hover-close"
+            >
+
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 96 96"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M83.7121 54.9882C80.8778 52.5882 77.4767 50.3294 73.5087 48.6353C71.8081 47.9294 69.8241 48.6353 69.1156 50.3294C68.407 52.0235 69.1156 54 70.8161 54.7059C74.0756 56.1177 76.9098 57.9529 79.319 59.9294C82.1533 62.4706 83.8538 66 83.8538 69.8118V84.9177C83.8538 86.7529 82.295 88.1647 80.5944 88.1647H15.4058C13.5636 88.1647 12.1464 86.6118 12.1464 84.9177V69.8118C12.1464 66 13.847 62.3294 16.6813 59.9294C20.0824 56.9647 29.8607 50.1882 48.0001 50.1882C61.6047 50.1882 72.5167 39.1765 72.5167 25.7647C72.5167 12.2118 61.6047 1.2 48.0001 1.2C34.3956 1.2 23.4836 12.2118 23.4836 25.6235C23.4836 33.5294 27.3098 40.5882 33.1201 44.9647C22.4916 47.3647 15.831 51.7412 12.2881 54.8471C7.89498 58.6588 5.48584 64.1647 5.48584 69.8118V84.9177C5.48584 90.4235 10.0207 94.8 15.4058 94.8H80.5944C86.1213 94.8 90.5144 90.2824 90.5144 84.9177V69.8118C90.5144 64.1647 88.1053 58.6588 83.7121 54.9882ZM30.0024 25.6235C30.0024 15.7412 38.0801 7.69412 48.0001 7.69412C57.9201 7.69412 65.9978 15.7412 65.9978 25.6235C65.9978 35.5059 57.9201 43.5529 48.0001 43.5529C38.0801 43.5529 30.0024 35.5059 30.0024 25.6235Z"
+                  fill="white"
+                  fill-opacity="1"
+                />
+              </svg>
+              <span
+                class="rounded"
+              >Взять на исполнение</span>
+              <button
+                class="btn-close-popover"
+                @click="resetEmployes"
+              ><svg
+                width="5"
+                height="5"
+                viewBox="0 0 16 15"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M14.8483 2.34833C15.317 1.8797 15.317 1.11991 14.8483 0.651277C14.3797 0.182647 13.6199 0.182647 13.1513 0.651277L7.99981 5.80275L2.84833 0.651277C2.3797 0.182647 1.61991 0.182647 1.15128 0.651277C0.682647 1.11991 0.682647 1.8797 1.15128 2.34833L6.30275 7.4998L1.15128 12.6513C0.682647 13.1199 0.682647 13.8797 1.15128 14.3483C1.61991 14.817 2.3797 14.817 2.84833 14.3483L7.99981 9.19686L13.1513 14.3483C13.6199 14.817 14.3797 14.817 14.8483 14.3483C15.317 13.8797 15.317 13.1199 14.8483 12.6513L9.69686 7.4998L14.8483 2.34833Z"
+                  fill="black"
+                  fill-opacity="0.5"
+                />
+              </svg>
+              </button>
+            </div>
+            <!-- Взять на исполнение -->
+            <div
+              v-else-if="selectedTask.type === 5"
+              ref="btnRefEmployee"  @click="ispolnit"
               class="mt-3 tags-custom dark:bg-gray-800 dark:text-gray-100 active project-hover-close"
             >
 
@@ -1285,7 +1334,7 @@ export default {
                       <div
                         v-if="key.uid !== cusers.current_user_uid"
                         class="list-employee-access"
-                        @click="changeEmployee(selectedTask.uid, key.email.toLowerCase())"
+                        @click="changeEmployee(selectedTask.uid, key.email)"
                       >
                         <img
                           :src="key.fotolink"
@@ -3074,15 +3123,15 @@ export default {
     </div>
   </div>
   <div class="form-send-message">
+    <div v-if="showpastefile = this.selectedTaskFiles === selectedTask.uid"
+         :id="'copypaste_' + selectedTask.uid"
+         ref="pastefile"
+         class="сopypastefiles"
+    ></div>
     <img
       v-if="isloading"
       src="/ajaxloader.gif"
     >
-    <div v-if="showpastefile"
-      :id="'copypaste_' + selectedTask.uid"
-      ref="pastefile"
-      class="сopypastefiles"
-    ></div>
     <div class="input-group">
       <span class="input-group-addon input-group-attach dark:bg-gray-800 dark:text-gray-100">
         <div class="example-1">

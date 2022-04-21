@@ -136,15 +136,14 @@ function redirect (title, uid) {
     </div>
   </div>
   <div class="flex flex-wrap">
-    <div
-      v-for="(elem, key, idx) in testObj"
-      :key="testObj[key]"
-      class="flex flex-col lg:w-1/4 sm:w-4/4 bg-white dark:bg-slate-900 rounded-xl h-1/3 mb-8 max-h-[500px] max-w-screen-sm scroll-style mr-3 p-2 shadow-lg font-SfProTextNormal"
-      @click="menuClick"
-    >
-      <tasksblock>
-        <template #block-name>
-          <span>{{ typeofTasks[idx] }}</span>
+    <div class="flex flex-col lg:w-1/4 sm:w-4/4 bg-white dark:bg-slate-900 rounded-xl h-1/3 mb-8 max-h-[500px] max-w-screen-sm scroll-style mr-3 p-2 shadow-lg font-SfProTextNormal" :id="key" v-for="(elem, key, idx) in testObj" :key="testObj[key]">
+      <taskhead>
+        <template v-slot:block-name>
+          <span
+            class="hover:cursor-pointer"
+            @click="redirect(store.state.tasks[key].title, store.state.tasks[key].link)">
+              {{ store.state.tasks[key].title }}
+          </span>
         </template>
         <template #icon>
           <icon
@@ -173,9 +172,6 @@ function redirect (title, uid) {
           </div>
           <div class="flex items-center text-xs">
             <div>
-<<<<<<< HEAD
-              <img class="w-5 h-5 border-solid border-2 border-lime-500 rounded-md" :src="employees[task.uid_customer] === undefined ? '' : employees[task.uid_customer].fotolink">
-=======
               <img
                 class="w-5 h-5 border-solid border-2 border-lime-500 rounded-md"
                 :src="employees[task.uid_customer].fotolink"
@@ -183,7 +179,6 @@ function redirect (title, uid) {
             </div>
             <div class="tag-label cursor-default p-1 text-xs flex items-center">
               {{ task.customer_name }}
->>>>>>> 3f97e865abeb1f4781a37b9f7516f5b94d9f264b
             </div>
             <div
               v-for="j in testObj[key][taskIdx].tags.length"
@@ -201,15 +196,9 @@ function redirect (title, uid) {
                 :path="project.path"
                 :height="project.height"
                 :width="project.width"
-<<<<<<< HEAD
-                :viewBox="project.viewBox">
-              </icon>
-              <span class="ml-1">{{ projects[task.uid_project] === undefined ? '' : projects[task.uid_project].name }}</span>
-=======
                 :viewBox="project.viewBox"
               />
               <span class="ml-1">{{ projects[task.uid_project].name }}</span>
->>>>>>> 3f97e865abeb1f4781a37b9f7516f5b94d9f264b
             </div>
           </div>
         </div>

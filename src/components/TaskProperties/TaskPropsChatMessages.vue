@@ -23,17 +23,15 @@
         >
           <p class="text-xs text-gray-500 dark:text-gray-300 my-3">
             {{
-              new Date(message.date_create).toLocaleString(
-                'default',
-                { weekday: 'long' }
-              )
+              new Date(message.date_create).toLocaleString('default', {
+                weekday: 'long'
+              })
             }},
             {{ new Date(message.date_create).getDate() }}
             {{
-              new Date(message.date_create).toLocaleString(
-                'default',
-                { month: 'short' }
-              )
+              new Date(message.date_create).toLocaleString('default', {
+                month: 'short'
+              })
             }}
           </p>
         </div>
@@ -73,9 +71,7 @@
                 v-if="message.date_create"
                 class="time-chat dark:text-gray-300"
               >
-                {{ message.date_create.split('T')[1].split(':')[0] }}:{{
-                  message.date_create.split('T')[1].split(':')[1]
-                }}
+                {{ getMessageTimeString(message.date_create) }}
               </div>
             </div>
           </div>
@@ -112,11 +108,7 @@
                   class="mt-1 flex justify-between text-gray-400 dark:text-gray-300 text-xs"
                 >
                   <p>{{ formatBytes(message.file_size) }}</p>
-                  <p>
-                    {{ message.date_create.split('T')[1].split(':')[0] }}:{{
-                      message.date_create.split('T')[1].split(':')[1]
-                    }}
-                  </p>
+                  <p>{{ getMessageTimeString(message.date_create) }}</p>
                 </div>
               </div>
             </div>
@@ -126,7 +118,9 @@
         <!-- Chat message from myself -->
         <div
           v-if="
-            message.uid_creator == currentUserUid && !message.uid_file && !showOnlyFiles
+            message.uid_creator == currentUserUid &&
+              !message.uid_file &&
+              !showOnlyFiles
           "
         >
           <div class="table-cell float-right">
@@ -159,9 +153,7 @@
                 v-if="message.date_create"
                 class="time-chat dark:text-gray-300"
               >
-                {{ message.date_create.split('T')[1].split(':')[0] }}:{{
-                  message.date_create.split('T')[1].split(':')[1]
-                }}
+                {{ getMessageTimeString(message.date_create) }}
               </div>
             </div>
           </div>
@@ -199,11 +191,7 @@
                   class="mt-1 flex justify-between text-gray-400 dark:text-gray-300 text-xs"
                 >
                   <p>{{ formatBytes(message.file_size) }}</p>
-                  <p>
-                    {{ message.date_create.split('T')[1].split(':')[0] }}:{{
-                      message.date_create.split('T')[1].split(':')[1]
-                    }}
-                  </p>
+                  <p>{{ getMessageTimeString(message.date_create) }}</p>
                 </div>
               </div>
             </div>
@@ -257,6 +245,14 @@ export default {
     print (val) {
       console.log(val)
     },
+    getMessageTimeString (dateCreate) {
+      // добавляем Z в конец, чтобы он посчитал что это UTC время
+      const date = new Date(dateCreate + 'Z')
+      return date.toLocaleString('default', {
+        hour: 'numeric',
+        minute: 'numeric'
+      })
+    },
     formatBytes (bytes, decimals = 2) {
       if (bytes === 0) return '0 Bytes'
       const k = 1024
@@ -270,51 +266,45 @@ export default {
 </script>
 
 <style scoped>
-.name-chat-custom
-{
-  font-size:13px;
-  color:#A6A6A6;
+.name-chat-custom {
+  font-size: 13px;
+  color: #a6a6a6;
 }
-.chat-author-custom-right
-{
+.chat-author-custom-right {
   text-align: right;
   float: right;
   /* width: 100%; */
   display: flex;
 }
-.chat-main
-{
+.chat-main {
   width: 100%;
   display: inline-block;
 }
-.msg-custom-chat-left
-{
+.msg-custom-chat-left {
   float: left;
   padding: 8px 10px;
-  min-height:40px ;
+  min-height: 40px;
   display: table-cell;
   max-width: 85%;
   min-width: 150px;
-  border-top-right-radius:10px ;
-  border-bottom-right-radius:10px ;
-  border-bottom-left-radius:10px ;
+  border-top-right-radius: 10px;
+  border-bottom-right-radius: 10px;
+  border-bottom-left-radius: 10px;
 }
-.msg-custom-chat-right
-{
+.msg-custom-chat-right {
   float: right;
   padding: 8px 10px;
-  min-height:40px ;
+  min-height: 40px;
   display: table-cell;
   max-width: 85%;
   min-width: 150px;
-  border-top-left-radius:10px ;
-  border-bottom-right-radius:10px ;
-  border-bottom-left-radius:10px ;
+  border-top-left-radius: 10px;
+  border-bottom-right-radius: 10px;
+  border-bottom-left-radius: 10px;
 }
-.time-chat
-{
+.time-chat {
   text-align: right;
-  font-size:12px;
-  color:#A8AFCA;
+  font-size: 12px;
+  color: #a8afca;
 }
 </style>

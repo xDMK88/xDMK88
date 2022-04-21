@@ -60,22 +60,9 @@ export default {
       store.dispatch('asidePropertiesToggle', false)
     }
     const taskMsg = ref('')
-    // TODO: we use these functions at 2 components
-    // should move them to data helpers or to the store module
+
     const pad2 = (n) => {
       return (n < 10 ? '0' : '') + n
-    }
-    const getTodaysDate = (val = null) => {
-      if (val == null) {
-        val = new Date()
-      }
-      const month = pad2(val.getMonth() + 1)
-      const day = pad2(val.getDate())
-      const year = pad2(val.getFullYear())
-      const hours = pad2(val.getHours())
-      const minutes = pad2(val.getMinutes())
-      const seconds = pad2(val.getSeconds())
-      return year + '-' + month + '-' + day + 'T' + hours + ':' + minutes + ':' + seconds
     }
 
     function uuidv4 () {
@@ -227,11 +214,21 @@ export default {
 
     const createTaskMsg = (event) => {
       console.log(taskMsg.value)
+      //
+      const date = new Date()
+      const month = pad2(date.getUTCMonth() + 1)
+      const day = pad2(date.getUTCDate())
+      const year = pad2(date.getUTCFullYear())
+      const hours = pad2(date.getUTCHours())
+      const minutes = pad2(date.getUTCMinutes())
+      const seconds = pad2(date.getUTCSeconds())
+      const dateCreate = year + '-' + month + '-' + day + 'T' + hours + ':' + minutes + ':' + seconds
+      //
       const data = {
         uid_task: selectedTask.value.uid,
         uid_creator: user.value.current_user_uid,
         uid_msg: uuidv4(),
-        date_create: getTodaysDate(),
+        date_create: dateCreate,
         text: taskMsg.value,
         msg: taskMsg.value
       }

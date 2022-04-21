@@ -136,30 +136,36 @@ function redirect (title, uid) {
     </div>
   </div>
   <div class="flex flex-wrap">
-    <div class="flex flex-col lg:w-1/4 sm:w-4/4 bg-white dark:bg-slate-900 rounded-xl h-1/3 mb-8 max-h-[500px] max-w-screen-sm scroll-style mr-3 p-2 shadow-lg font-SfProTextNormal" :id="key" v-for="(elem, key, idx) in testObj" :key="testObj[key]">
-      <taskhead>
-        <template v-slot:block-name>
-          <span
-            class="hover:cursor-pointer"
-            @click="redirect(store.state.tasks[key].title, store.state.tasks[key].link)">
-              {{ store.state.tasks[key].title }}
-          </span>
+    <div
+      v-for="(elem, key, idx) in testObj"
+      :key="testObj[key]"
+      class="flex flex-col lg:w-1/4 sm:w-4/4 bg-white dark:bg-slate-900 rounded-xl h-1/3 mb-8 max-h-[500px] max-w-screen-sm scroll-style mr-3 p-2 shadow-lg font-SfProTextNormal"
+      @click="menuClick"
+    >
+      <tasksblock>
+        <template #block-name>
+          <span>{{ typeofTasks[idx] }}</span>
         </template>
-        <template v-slot:icon>
+        <template #icon>
           <icon
             :path="icons[iconsKeys[idx]].path"
             :height="icons[iconsKeys[idx]].height"
             :width="icons[iconsKeys[idx]].width"
             :viewBox="icons[iconsKeys[idx]].viewBox"
-            class="text-gray-500">
-          </icon>
+            class="text-gray-500"
+          />
         </template>
       </taskhead>
       <div class="max-h-[500px] scroll-style">
-        <div class="p-2 rounded-xl" v-for="(task, taskIdx) in testObj[key]" :key="task.uid" :style="task.uid_marker !== '00000000-0000-0000-0000-000000000000' ? {backgroundColor: colors[task.uid_marker].back_color} : ''">
+        <div
+          v-for="(task, taskIdx) in testObj[key]"
+          :key="task.uid"
+          class="p-2 rounded-xl"
+          :style="task.uid_marker !== '00000000-0000-0000-0000-000000000000' ? {backgroundColor: colors[task.uid_marker].back_color} : ''"
+        >
           <div class="flex">
             <div class="flex order-first">
-              <task-status :task="task"></task-status>
+              <task-status :task="task" />
             </div>
             <div class="font-normal">
               <span class="max-w-full break-words">{{ task.name }}</span>
@@ -167,29 +173,52 @@ function redirect (title, uid) {
           </div>
           <div class="flex items-center text-xs">
             <div>
+<<<<<<< HEAD
               <img class="w-5 h-5 border-solid border-2 border-lime-500 rounded-md" :src="employees[task.uid_customer] === undefined ? '' : employees[task.uid_customer].fotolink">
+=======
+              <img
+                class="w-5 h-5 border-solid border-2 border-lime-500 rounded-md"
+                :src="employees[task.uid_customer].fotolink"
+              >
             </div>
-            <div class="tag-label cursor-default p-1 text-xs flex items-center">{{ task.customer_name }}</div>
+            <div class="tag-label cursor-default p-1 text-xs flex items-center">
+              {{ task.customer_name }}
+>>>>>>> 3f97e865abeb1f4781a37b9f7516f5b94d9f264b
+            </div>
             <div
+              v-for="j in testObj[key][taskIdx].tags.length"
+              :key="j"
               class="tag-label cursor-default p-1 px-2 text-xs rounded-lg mr-1 flex items-center text-white bg-gray-400 order-first"
               :style="{ backgroundColor: tags[testObj[key][taskIdx].tags[j - 1]].back_color }"
-              v-for="j in testObj[key][taskIdx].tags.length" :key="j">
+            >
               {{ tags[testObj[key][taskIdx].tags[j - 1]].name }}
             </div>
-            <div class="p-1 order-last flex align-items justify-around" v-if="task.uid_project !== '00000000-0000-0000-0000-000000000000'">
+            <div
+              v-if="task.uid_project !== '00000000-0000-0000-0000-000000000000'"
+              class="p-1 order-last flex align-items justify-around"
+            >
               <icon
                 :path="project.path"
                 :height="project.height"
                 :width="project.width"
+<<<<<<< HEAD
                 :viewBox="project.viewBox">
               </icon>
               <span class="ml-1">{{ projects[task.uid_project] === undefined ? '' : projects[task.uid_project].name }}</span>
+=======
+                :viewBox="project.viewBox"
+              />
+              <span class="ml-1">{{ projects[task.uid_project].name }}</span>
+>>>>>>> 3f97e865abeb1f4781a37b9f7516f5b94d9f264b
             </div>
           </div>
         </div>
-        <div class="m-2 p-2" v-if="!testObj[key].length">
+        <div
+          v-if="!testObj[key].length"
+          class="m-2 p-2"
+        >
           <div class="font-normal">
-              У вас пока нет задач этой категории!
+            У вас пока нет задач этой категории!
           </div>
         </div>
       </div>

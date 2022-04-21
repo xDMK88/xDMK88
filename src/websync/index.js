@@ -53,7 +53,7 @@ export default function initWebSync () {
 
         parseObject(obj)
       } catch (e) {
-        console.log('error in get Data Json')
+        console.log(e)
       }
     }
   })

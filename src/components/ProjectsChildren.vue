@@ -125,8 +125,8 @@ const gotoChildren = (value) => {
         <div>
           <div class="flex items-center relative">
             <div
-              class="min-w-[15px] min-h-[15px] absolute rounded-full bg-gray-500 -top-2 -left-2 flex items-center justify-center"
               v-if="project.children && project.children.length"
+              class="min-w-[15px] min-h-[15px] absolute rounded-full bg-gray-500 -top-2 -left-2 flex items-center justify-center"
             >
               <span
                 class="text-white text-xs"
@@ -184,9 +184,9 @@ const gotoChildren = (value) => {
     </div>
   </div>
   <div class="mt-5">
-  <TasksListNew
-    :store-tasks="storeTasks"
-    :new-config="newConfig"
-  />
+    <TasksListNew
+      :store-tasks="storeTasks"
+      :new-config="newConfig"
+    />
   </div>
 </template>

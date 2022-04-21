@@ -127,6 +127,7 @@ const updateChecklist = (index) => {
           >
         </div>
         <contenteditable
+          :id="'check_' + index"
           v-model="check.text"
           tag="div"
           style="max-width: 90%;"
@@ -134,9 +135,8 @@ const updateChecklist = (index) => {
           class="focus:ring focus:ring-blue-300"
           :class="{ 'text-gray-500 line-through': check.checked }"
           :contenteditable="store.state.tasks.newtasks[props.taskUid].info.uid_customer === user.current_user_uid"
-          :id="'check_' + index"
-          :noNL="true"
-          :noHTML="true"
+          :no-n-l="true"
+          :no-h-t-m-l="true"
           @keyup.enter="updateChecklist(index)"
           @blur="saveChecklist(index)"
         />
@@ -152,8 +152,8 @@ const updateChecklist = (index) => {
       </div>
     </div>
     <button
-      class="mt-2 text-sm border border-gray-500 p-1 px-2 rounded-lg"
       v-if="store.state.tasks.newtasks[props.taskUid].info.uid_customer === user.current_user_uid"
+      class="mt-2 text-sm border border-gray-500 p-1 px-2 rounded-lg"
       @click="addEmptyChecklist(false)"
     >
       Добавить

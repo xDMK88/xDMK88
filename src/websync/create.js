@@ -1,6 +1,7 @@
 import * as TYPES from '@/websync/types.js'
 import { createMessage } from '@/websync/task_message.js'
 import { createTask } from '@/websync/task.js'
+import { notify } from 'notiwind'
 
 export default function processCreate (obj) {
   switch (obj.type) {
@@ -30,6 +31,11 @@ export default function processCreate (obj) {
     case TYPES.TYPE_OBJECT_TASK_FILE:
       break
     case TYPES.TYPE_OBJECT_TASK_MSG:
+      notify({
+        group: 'top',
+        title: 'REST API Error, please make screenshot',
+        text: obj.obj.msg
+      }, 30000)
       createMessage(obj)
       break
     case TYPES.TYPE_OBJECT_TASK_TAG:

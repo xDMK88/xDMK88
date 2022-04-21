@@ -61,22 +61,9 @@ export default {
       store.dispatch('asidePropertiesToggle', false)
     }
     const taskMsg = ref('')
-    // TODO: we use these functions at 2 components
-    // should move them to data helpers or to the store module
+
     const pad2 = (n) => {
       return (n < 10 ? '0' : '') + n
-    }
-    const getTodaysDate = (val = null) => {
-      if (val == null) {
-        val = new Date()
-      }
-      const month = pad2(val.getMonth() + 1)
-      const day = pad2(val.getDate())
-      const year = pad2(val.getFullYear())
-      const hours = pad2(val.getHours())
-      const minutes = pad2(val.getMinutes())
-      const seconds = pad2(val.getSeconds())
-      return year + '-' + month + '-' + day + 'T' + hours + ':' + minutes + ':' + seconds
     }
 
     function uuidv4 () {
@@ -244,11 +231,21 @@ export default {
 
     const createTaskMsg = (event) => {
       console.log(taskMsg.value)
+      //
+      const date = new Date()
+      const month = pad2(date.getUTCMonth() + 1)
+      const day = pad2(date.getUTCDate())
+      const year = pad2(date.getUTCFullYear())
+      const hours = pad2(date.getUTCHours())
+      const minutes = pad2(date.getUTCMinutes())
+      const seconds = pad2(date.getUTCSeconds())
+      const dateCreate = year + '-' + month + '-' + day + 'T' + hours + ':' + minutes + ':' + seconds
+      //
       const data = {
         uid_task: selectedTask.value.uid,
         uid_creator: user.value.current_user_uid,
         uid_msg: uuidv4(),
-        date_create: getTodaysDate(),
+        date_create: dateCreate,
         text: taskMsg.value,
         msg: taskMsg.value
       }
@@ -433,32 +430,25 @@ export default {
       if (!this.canEditComment) return
       this.isEditable = true
     }
-    const removeeditcomment = () => {
+    const removeeditcomment = (event) => {
       if (!this.canEditComment) return
       this.isEditable = false
-      const message = event.target.innerText
+      // чтобы у нас в интерфейсе поменялось
+      // потому что на changeComment он только
+      // на сервер отправляет и всё
+      const message = event.target.innerText.trim()
       selectedTask.value.comment = message
     }
     const changeComment = (event) => {
       if (!this.canEditComment) return
-      const message = event.target.innerText
-      console.log(event.target.innerText)
+      const message = event.target.innerText.trim()
+      console.log('changeComment', event.target.innerText, message)
       setCursorPosition(event.target.id, 0, 100)
-      if (message !== '') {
-        const data = {
-          uid: selectedTask.value.uid,
-          value: message
-        }
-        store.dispatch(TASK.CHANGE_TASK_COMMENT, data).then(
-          resp => {
-            //  selectedTask.value.comment = message
-          })
+      const data = {
+        uid: selectedTask.value.uid,
+        value: message
       }
-      if (message === '') {
-        selectedTask.value.comment = ''
-      }
-    }
-    const updatecomment = (event) => {
+      store.dispatch(TASK.CHANGE_TASK_COMMENT, data)
     }
     const editTaskName = () => {
       this.isEditableTaskName = true
@@ -800,7 +790,6 @@ export default {
       TimeActiveStart,
       calendarTimeStartChange,
       calendarTimeEndChange,
-      updatecomment,
       copypastefile,
       handlercontextmenu,
       createChecklist,
@@ -2037,7 +2026,8 @@ export default {
                         <select
                           ref="SeriesWeek"
                           v-model="SeriesWeek"
-                          class="form-control form-control-select-repeat" style="height: 40px"
+                          class="form-control form-control-select-repeat"
+                          style="height: 40px"
                           multiple
                         >
                           <option value="mon">
@@ -3123,15 +3113,15 @@ export default {
     </div>
   </div>
   <div class="form-send-message">
-    <div v-if="showpastefile = this.selectedTaskFiles === selectedTask.uid"
-         :id="'copypaste_' + selectedTask.uid"
-         ref="pastefile"
-         class="сopypastefiles"
-    ></div>
     <img
       v-if="isloading"
       src="/ajaxloader.gif"
     >
+    <div v-if="showpastefile"
+      :id="'copypaste_' + selectedTask.uid"
+      ref="pastefile"
+      class="сopypastefiles"
+    ></div>
     <div class="input-group">
       <span class="input-group-addon input-group-attach dark:bg-gray-800 dark:text-gray-100">
         <div class="example-1">

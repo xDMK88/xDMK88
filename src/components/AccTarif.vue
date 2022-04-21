@@ -10,7 +10,7 @@ const user = computed(() => store.state.user.user)
 
 </script>
 <template>
-    <form class="px-5 text-lg">
+  <form class="px-5 text-lg">
     <br>
     <strong>{{ localization.owner_license }}</strong>
     <br>
@@ -36,10 +36,16 @@ const user = computed(() => store.state.user.user)
     <br>
     <span>синхронизация</span>
     <br>
-</form>
-    <form class="text-center text-lg" action="https://www.leadertask.ru/market">
-        <button type="submit" class="bg-gray-100 hover:bg-gray-200 rounded-xl px-6 p-1">
-          Продлить лицензию
-        </button>
-    </form>
+  </form>
+  <form
+    class="text-center text-lg"
+    action="https://www.leadertask.ru/market"
+  >
+    <button
+      type="submit"
+      class="bg-gray-100 hover:bg-gray-200 rounded-xl px-6 p-1"
+    >
+      Продлить лицензию
+    </button>
+  </form>
 </template>

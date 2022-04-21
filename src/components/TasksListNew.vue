@@ -105,7 +105,7 @@
       <div
         :id="props.node.info.uid"
         class="group task-node flex-col items-center w-full bg-white p-2 rounded-xl dark:bg-gray-900 dark:border-gray-700 border border-gray-300 my-0.5 relative"
-        :style="{ backgroundColor: colors[props.node.info.uid_marker] ? colors[props.node.info.uid_marker].back_color : '' }"
+        :style="{ backgroundColor: getValidBackColor(colors[props.node.info.uid_marker]?.back_color) }"
         :class="{ 'bg-gray-200 dark:bg-gray-800': (props.node.info.status == 1 || props.node.info.status == 7) && props.node.info.uid_marker == '00000000-0000-0000-0000-000000000000' }"
         @click.shift="clickAndShift(props.node)"
         @click.exact="selectedTasks = {}"
@@ -123,14 +123,14 @@
         <Transition>
           <div
             class="absolute hidden group-hover:flex right-2 top-2 bg-gray-200 dark:bg-gray-800 rounded-lg items-cetner justify-center py-0.5 px-3"
-            :style="{ backgroundColor: colors[props.node.info.uid_marker] ? colors[props.node.info.uid_marker].back_color : '' }"
+            :style="{ backgroundColor: getValidBackColor(colors[props.node.info.uid_marker]?.back_color) }"
           >
             <Icon
               :path="subtask.path"
               class="text-gray-600 dark:text-white mr-3 cursor-pointer"
               :box="subtask.viewBox"
               :width="subtask.width"
-              :style="{ color: colors[props.node.info.uid_marker] ? colors[props.node.info.uid_marker].fore_color : '' }"
+              :style="{ color: getValidForeColor(colors[props.node.info.uid_marker]?.fore_color) }"
               :height="subtask.height"
               @click.stop="addSubtask(props.node.info);"
             />
@@ -248,7 +248,7 @@
                 class="text-gray-600 dark:text-white cursor-pointer h-full"
                 :box="taskoptions.viewBox"
                 :width="taskoptions.width"
-                :style="{ color: colors[props.node.info.uid_marker] ? colors[props.node.info.uid_marker].fore_color : '' }"
+                :style="{ color: getValidForeColor(colors[props.node.info.uid_marker]?.fore_color) }"
                 :height="taskoptions.height"
               />
             </Popper>
@@ -276,7 +276,7 @@
               :no-n-l="true"
               :no-h-t-m-l="true"
               :class="{ 'uppercase': !props.node.info._isEditable && colors[props.node.info.uid_marker] && colors[props.node.info.uid_marker].uppercase, 'text-gray-500': props.node.info.status == 1 || props.node.info.status == 7, 'line-through': props.node.info.status == 1 || props.node.info.status == 7, 'font-extrabold': props.node.info.readed == 0 }"
-              :style="{ color: colors[props.node.info.uid_marker] ? colors[props.node.info.uid_marker].fore_color : '' }"
+              :style="{ color: getValidForeColor(colors[props.node.info.uid_marker]?.fore_color) }"
               @dblclick.stop="editTaskName(props.node.id)"
               @keyup.enter="updateTask($event, props.node.info); props.node.info._isEditable = false;"
             />
@@ -909,6 +909,17 @@ export default {
     }
   },
   methods: {
+    print (value) {
+      console.log(value)
+    },
+    getValidForeColor (foreColor) {
+      if (foreColor && foreColor !== '#A998B6') return foreColor
+      return ''
+    },
+    getValidBackColor (backColor) {
+      if (backColor && backColor !== '#A998B6') return backColor
+      return ''
+    }
   }
 }
 </script>

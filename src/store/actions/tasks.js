@@ -34,6 +34,7 @@ export const CHANGE_TASK_TAGS = 'CHANGE_TASK_TAGS'
 export const CHANGE_TASK_DATE = 'CHANGE_TASK_DATE'
 export const CHANGE_TASK_PARENT_AND_ORDER = 'CHANGE_TASK_PARENT_AND_ORDER'
 export const REMOVE_TASK = 'REMOVE_TASK'
+export const UPDATE_TASK = 'UPDATE_TASK'
 
 // Tasks inner processes and events
 export const TASKS_SUCCESS = 'TASKS_SUCCESS'

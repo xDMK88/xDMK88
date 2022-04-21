@@ -87,13 +87,19 @@ export default {
     }
     const changeEmployee = (uid, email) => {
       console.log(email)
-      store.dispatch(TASK.CHANGE_TASK_PERFORMER, { uid: uid, value: email.toLowerCase() }).then(
-        resp => {
-          console.log(resp.data)
-          selectedTask.value.email_performer = email
-          selectedTask.value.type = 2
+      if (email !== '') {
+        const data = {
+          uid: selectedTask.value.uid,
+          value: email.toLowerCase()
         }
-      )
+        store.dispatch(TASK.CHANGE_TASK_PERFORMER, data).then(
+          resp => {
+            console.log(resp.data)
+            selectedTask.value.email_performer = resp.data.email_performer
+            selectedTask.value.type = 2
+          }
+        )
+      }
     }
     const resetEmployes = () => {
       store.dispatch(TASK.CHANGE_TASK_PERFORMER, { uid: selectedTask.value.uid, value: '' }).then(
@@ -202,7 +208,7 @@ export default {
             this.Files.onload()
             const img = new Image()
             img.onload = function () {
-              document.getElementById('copypaste').appendChild(this)
+              document.getElementById('copypaste_' + selectedTask.value.uid).appendChild(this)
             }
             console.log(resp.data)
             store.dispatch(GETFILES, resp.data.uid_file).then(respon => {
@@ -223,7 +229,10 @@ export default {
       const data = {
         uid: selectedTask.value.uid
       }
-      store.dispatch(TASK.REMOVE_TASK, data.uid)
+      store.dispatch(TASK.REMOVE_TASK, data.uid).then(
+        resp => {
+          store.dispatch('asidePropertiesToggle', false)
+        })
     }
 
     const createTaskMsg = (event) => {
@@ -325,7 +334,7 @@ export default {
     }
     const handleInput = () => {
       const timestart = this.timeStart === '' ? 'T00:00:00' : 'T' + this.timeStart
-      const timeend = this.timeEnd === '' && this.timeStart !== '' ? timestart : this.timeEnd === '' ? 'T23:59:59' : 'T' + this.timeEnd + ':00'
+      const timeend = this.timeEnd === '' && this.timeStart !== '' ? timestart : this.timeEnd === '' ? '' : 'T' + this.timeEnd + ':00'
       console.log(new Date(this.range.start).getFullYear() + '-' + (pad2(new Date(this.range.start).getMonth() + 1)) + '-' + new Date(this.range.start).getDate() + timestart)
       const starttime = new Date(this.range.start).getFullYear() + '-' + (pad2(new Date(this.range.start).getMonth() + 1)) + '-' + pad2(new Date(this.range.start).getDate()) + timestart
       const startend = new Date(this.range.end).getFullYear() + '-' + (pad2(new Date(this.range.start).getMonth() + 1)) + '-' + pad2(new Date(this.range.end).getDate()) + timeend
@@ -474,13 +483,22 @@ export default {
     const audio = ['mp3', 'wav', 'm4a']
     const handlercontextmenu = () => {
     }
-    const copypastefile = () => {
+    const resetfocusv = () => {
+      this.showpastefile = false
+    }
+    const copypastefile = (uid) => {
+      if (this.selectedTaskFiles === uid) {
+        console.log('true')
+      } else {
+        console.log('false')
+      }
+      console.log(this.selectedTaskFiles === uid)
+      this.showpastefile = true
       window.addEventListener('paste', function (e) {
         const items = (e.clipboardData || e.originalEvent.clipboardData).items
         for (const index in items) {
           const item = items[index]
           if (item.kind === 'file') {
-            console.log(index)
             const blob = item.getAsFile()
             const div = document.createElement('div')
             div.className = 'lineloadfile'
@@ -499,7 +517,7 @@ export default {
               href.appendChild(img)
               href.innerHTML += '<span class="img-title-custom">' + blob.name + '</span>'
               div.appendChild(href)
-              document.getElementById('copypaste').appendChild(div)
+              document.getElementById('copypaste_' + uid).appendChild(div)
             } else if (movies.includes(blob.name.split('.').pop())) {
               const fileURL = URL.createObjectURL(blob)
               div.className = 'lineloadfile'
@@ -508,7 +526,7 @@ export default {
               href.setAttribute('href', fileURL)
               href.setAttribute('download', blob.name + '.' + blob.name.split('.').pop())
               div.appendChild(href)
-              document.getElementById('copypaste').appendChild(div)
+              document.getElementById('copypaste_' + uid).appendChild(div)
             } else if (docs.includes(blob.name.split('.').pop())) {
               const fileURL = URL.createObjectURL(blob)
               div.className = 'lineloadfile'
@@ -516,7 +534,7 @@ export default {
               href.setAttribute('href', fileURL)
               href.setAttribute('download', blob.name + '.' + blob.name.split('.').pop())
               div.appendChild(href)
-              document.getElementById('copypaste').appendChild(div)
+              document.getElementById('copypaste_' + uid).appendChild(div)
             } else if (audio.includes(blob.name.split('.').pop())) {
               div.className = 'lineloadfile'
               const fileURL = URL.createObjectURL(blob)
@@ -528,7 +546,7 @@ export default {
               hrefaudio.setAttribute('src', fileURL)
               hrefaudio.setAttribute('controls', 'true')
               div.appendChild(hrefaudio)
-              document.getElementById('copypaste').appendChild(div)
+              document.getElementById('copypaste_' + uid).appendChild(div)
             } else {
               const fileURL = URL.createObjectURL(blob)
               div.className = 'lineloadfile'
@@ -537,6 +555,7 @@ export default {
               href.setAttribute('href', fileURL)
               href.setAttribute('download', blob.name + '.' + blob.name.split('.').pop())
               div.appendChild(href)
+              document.getElementById('copypaste_' + uid).appendChild(div)
             }
             const formData = new FormData()
             formData.append('files', blob)
@@ -678,7 +697,7 @@ export default {
             uid: selectedTask.value.uid,
             every_value: this.SeriesYearMonth,
             num_day: this.SeriesYearMonthDay,
-            mwt: this.SeriesYearWeekType - 1,
+            mwt: this.SeriesYearType - 1,
             mdw: this.SeriesYearDayOfWeek
           }
           store.dispatch(TASK.EVERY_YEAR_CHANGE, data).then(
@@ -687,9 +706,8 @@ export default {
               selectedTask.value.SeriesType = 4
               selectedTask.value.SeriesYearDayOfWeek = resp.data.SeriesYearDayOfWeek
               selectedTask.value.SeriesYearMonth = resp.data.SeriesYearMonth
-              selectedTask.value.SeriesYearType = resp.data.SeriesYearType
               selectedTask.value.SeriesYearMonthDay = resp.data.SeriesYearMonthDay
-              selectedTask.value.SeriesMonthWeekType = resp.data.SeriesYearWeekType
+              selectedTask.value.SeriesYearWeekType = resp.data.SeriesYearWeekType
               selectedTask.value.SeriesMonthDayOfWeek = resp.data.SeriesYearDayOfWeek
             })
         }
@@ -818,6 +836,7 @@ export default {
       resetTags,
       resetAccess,
       resetEmployes,
+      resetfocusv,
       resetCalendar,
       massel: '',
       viewMenu: false,
@@ -837,6 +856,7 @@ export default {
       selectedTask,
       taskMessages,
       uploadStarted,
+      selectedTaskFiles: selectedTask.value.uid,
       taskFiles: taskFiles,
       myFiles: myFiles,
       tasks: tasks,
@@ -905,7 +925,7 @@ export default {
       SeriesMonthWeekType: selectedTask.value.SeriesMonthWeekType,
       SeriesMonthDayOfWeek: selectedTask.value.SeriesMonthDayOfWeek,
       SeriesYearType: selectedTask.value.SeriesYearType === 1 ? selectedTask.value.SeriesYearType : selectedTask.value.SeriesYearWeekType,
-      SeriesYearMonth: selectedTask.value.SeriesYearMonth,
+      SeriesYearMonth: selectedTask.value.SeriesYearMonth === 0 ? '1' : selectedTask.value.SeriesYearMonth,
       SeriesYearMonthDay: selectedTask.value.SeriesYearMonthDay,
       SeriesYearWeekType: selectedTask.value.SeriesYearWeekType,
       SeriesYearDayOfWeek: selectedTask.value.SeriesYearDayOfWeek,
@@ -929,6 +949,7 @@ export default {
       everyWeekRepeat: false,
       everyMonthRepeat: false,
       everyYearRepeat: false,
+      showpastefile: false,
       SeriesWeek: ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun']
       // Модели selectedTask.value.SeriesWeekMon selectedTask.SeriesWeekTue selectedTask.SeriesWeekWed selectedTask.SeriesWeekThu selectedTask.SeriesWeekFri selectedTask.SeriesWeekSat selectedTask.SeriesWeekSun
     }
@@ -1029,6 +1050,7 @@ export default {
     has-cancel
     button-label="Delete"
     @confirm="delTask"
+    @click="delTask"
   >
     <p class="text-center">
       Do you really wanna delete this task?
@@ -1038,7 +1060,7 @@ export default {
     <div
       id="generalscroll"
       class="column-resize"
-      @focusin="copypastefile"
+      @focusin="copypastefile(selectedTask.uid)"
     >
       <div />
       <div
@@ -1080,6 +1102,7 @@ export default {
             @keyup="changeName($event)"
             @focus="$refs.TaskName.focus()"
             @focusout="removeEditTaskName($event)"
+            @keydown.enter.prevent
             v-html="selectedTask.name.replaceAll('\n','<br/>')"
           />
         </strong>
@@ -1550,7 +1573,7 @@ export default {
                   @dayclick="onDayClick"
                 >
                   <template #footer>
-                    <div v-if="timeStartActive">
+                    <div v-if="timeStartActive = timeStart !== ''">
                       <div class="timestamp-custom">
                         Установить напоминание
                       </div>
@@ -1791,7 +1814,7 @@ export default {
           </template>
           <a class="mt-3 tags-custom dark:bg-gray-800 dark:text-gray-100 any-calendar project-hover-close">
             <span
-              v-if="selectedTask.term_customer!=='' && selectedTask.term_customer!=null"
+              v-if="selectedTask.term_customer!==''"
               class="flex"
             >
               <button
@@ -1973,7 +1996,7 @@ export default {
                         <select
                           ref="SeriesWeek"
                           v-model="SeriesWeek"
-                          class="form-control form-control-select-repeat"
+                          class="form-control form-control-select-repeat" style="height: 40px"
                           multiple
                         >
                           <option value="mon">
@@ -2048,7 +2071,7 @@ export default {
                           name=""
                         >
                           <option
-                            v-for="item in 365"
+                            v-for="item in 12"
                             :key="item"
                             :value="item"
                           >
@@ -2067,9 +2090,9 @@ export default {
                             class="form-control form-control-select-repeat"
                           >
                             <option
-                              v-for="(item, value) in days"
+                              v-for="(item, value) in days.filter(v=>v !== '')"
                               :key="value>0"
-                              :value="value"
+                              :value="value+1"
                             >
                               {{ item }}
                             </option>
@@ -2088,7 +2111,7 @@ export default {
                         name=""
                       >
                         <option
-                          v-for="item in 365"
+                          v-for="item in 12"
                           :key="item"
                           :value="item"
                         >
@@ -2195,9 +2218,9 @@ export default {
                             class="form-control form-control-select-repeat"
                           >
                             <option
-                              v-for="(item, value) in days"
+                              v-for="(item, value) in days.filter(v=>v!=='')"
                               :key="value"
-                              :value="value"
+                              :value="value+1"
                             >
                               {{ item }}
                             </option>
@@ -3235,11 +3258,11 @@ export default {
       v-if="isloading"
       src="/ajaxloader.gif"
     >
-    <div
-      id="copypaste"
+    <div v-if="showpastefile"
+      :id="'copypaste_' + selectedTask.uid"
       ref="pastefile"
       class="сopypastefiles"
-    />
+    ></div>
     <div class="input-group">
       <span class="input-group-addon input-group-attach dark:bg-gray-800 dark:text-gray-100">
         <div class="example-1">
@@ -3273,7 +3296,7 @@ export default {
         class="form-control text-group-design task-msg dark:bg-gray-800 dark:text-gray-100"
         placeholder="Введите сообщение"
         rows="58"
-        @click="copypastefile"
+        @click="copypastefile(selectedTask.uid)"
         @keydown.enter.exact.prevent="createTaskMsg"
         @keydown.enter.shift.exact.prevent="cursorPosition(this)"
       />

@@ -68,6 +68,14 @@ const lastVisitedDate = ref(navStack.value && navStack.value.length && navStack.
 const currentDate = computed({
   get: () => lastVisitedDate.value,
   set: val => {
+    if (val === null) return
+    // Если кто найдет предыдущую выбранную дату на которую в данный
+    // момент отображаются данные то вставьте в lastVal
+    // чтобы не грузилось по одной и тоже дате два раза
+    // const lastVal = ?
+    // if (val.getDate() === lastVal?.getDate() &&
+    //     val.getMonth() === lastVal?.getMonth() &&
+    //     val.getFullYear() === lastVal?.getFullYear()) return
     if (isPropertiesMobileExpanded.value) { store.dispatch('asidePropertiesToggle', false) }
     store.commit('basic', { key: 'mainSectionState', value: 'tasks' })
     store.dispatch(TASK.TASKS_REQUEST, val)
@@ -257,16 +265,15 @@ const tarifS = () => {
     </div>
     <nav-bar-item class="rounded-b-3xl pt-0 mt-0">
       <DatePicker
-        dot="true"
         id="Maincalendar"
+        ref="calendarclass"
         v-model="navigatorMenu.currentDate"
         class="border-none text-xs px-3 calendar-custom calendar-nav-custom bg-slate-100"
         style="border: none;!important; "
         show-weeknumbers="left"
         days="-1"
         color="#CCC"
-        ref="calendarclass"
-        weekFromEnd="6"
+        week-from-end="6"
         from-page="fromPage"
         to-page="toPage"
         is-expanded
@@ -276,9 +283,9 @@ const tarifS = () => {
         :is-dark="isDark"
         mode="single"
         is-inline
-        inNextMonth="true"
-        inMonth="true"
-        inPrevMonth="true"
+        in-next-month="true"
+        in-month="true"
+        in-prev-month="true"
         select-attribute="dates"
       />
     </nav-bar-item>

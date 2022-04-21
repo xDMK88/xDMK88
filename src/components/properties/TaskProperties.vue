@@ -413,32 +413,25 @@ export default {
       if (!this.canEditComment) return
       this.isEditable = true
     }
-    const removeeditcomment = () => {
+    const removeeditcomment = (event) => {
       if (!this.canEditComment) return
       this.isEditable = false
-      const message = event.target.innerText
+      // чтобы у нас в интерфейсе поменялось
+      // потому что на changeComment он только
+      // на сервер отправляет и всё
+      const message = event.target.innerText.trim()
       selectedTask.value.comment = message
     }
     const changeComment = (event) => {
       if (!this.canEditComment) return
-      const message = event.target.innerText
-      console.log(event.target.innerText)
+      const message = event.target.innerText.trim()
+      console.log('changeComment', event.target.innerText, message)
       setCursorPosition(event.target.id, 0, 100)
-      if (message !== '') {
-        const data = {
-          uid: selectedTask.value.uid,
-          value: message
-        }
-        store.dispatch(TASK.CHANGE_TASK_COMMENT, data).then(
-          resp => {
-            //  selectedTask.value.comment = message
-          })
+      const data = {
+        uid: selectedTask.value.uid,
+        value: message
       }
-      if (message === '') {
-        selectedTask.value.comment = ''
-      }
-    }
-    const updatecomment = (event) => {
+      store.dispatch(TASK.CHANGE_TASK_COMMENT, data)
     }
     const editTaskName = () => {
       this.isEditableTaskName = true
@@ -787,7 +780,6 @@ export default {
       TimeActiveStart,
       calendarTimeStartChange,
       calendarTimeEndChange,
-      updatecomment,
       copypastefile,
       handlercontextmenu,
       createChecklist,
@@ -1985,7 +1977,8 @@ export default {
                         <select
                           ref="SeriesWeek"
                           v-model="SeriesWeek"
-                          class="form-control form-control-select-repeat" style="height: 40px"
+                          class="form-control form-control-select-repeat"
+                          style="height: 40px"
                           multiple
                         >
                           <option value="mon">
@@ -3075,11 +3068,12 @@ export default {
       v-if="isloading"
       src="/ajaxloader.gif"
     >
-    <div v-if="showpastefile"
+    <div
+      v-if="showpastefile"
       :id="'copypaste_' + selectedTask.uid"
       ref="pastefile"
       class="сopypastefiles"
-    ></div>
+    />
     <div class="input-group">
       <span class="input-group-addon input-group-attach dark:bg-gray-800 dark:text-gray-100">
         <div class="example-1">

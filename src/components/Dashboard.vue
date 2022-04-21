@@ -18,7 +18,7 @@ import { useStore } from 'vuex'
 const store = useStore()
 
 const testObj = reactive({
-  unreadTasks: '',
+  unread: '',
   inWork: '',
   inFocus: '',
   overdue: '',
@@ -28,7 +28,7 @@ const testObj = reactive({
 
 onBeforeMount(() => {
   store.dispatch(TASK.UNREAD_TASKS_REQUEST).then(() => {
-    testObj.unreadTasks = store.state.tasks.unread.tasks
+    testObj.unread = store.state.tasks.unread.tasks
   })
   store.dispatch(TASK.IN_WORK_TASKS_REQUEST).then(() => {
     testObj.inWork = store.state.tasks.inWork.tasks
@@ -46,7 +46,6 @@ onBeforeMount(() => {
     testObj.ready = store.state.tasks.ready.tasks
   })
 })
-
 // const unreadTasks = computed(() => {
 //   return store.state.tasks.unread.tasks
 // })
@@ -98,25 +97,8 @@ const icons = {
 
 const iconsKeys = Object.keys(icons)
 
-const typeofTasks = reactive({
-  'Непрочитанные задачи': 'fa042915-a3d2-469c-bd5a-708cf0339b89',
-  'В работе': '2a5cae4b-e877-4339-8ca1-bd61426864ec',
-  'В фокусе': '6fc44cc6-9d45-4052-917e-25b1189ab141',
-  'Просрочено ': '46418722-a720-4c9e-b255-16db4e590c34',
-  'Неразобранное ': '5183b619-3968-4c3a-8d87-3190cfaab014',
-  'Готово к сдаче': 'd35fe0bc-1747-4eb1-a1b2-3411e07a92a0'
-})
-
-const tasksTitles = Object.keys(typeofTasks)
-
 // link logic
 const UID_TO_ACTION = {
-  '2bad1413-a373-4926-8a3c-58677a680714': [
-    TASK.UNREAD_TASKS_REQUEST,
-    TASK.IN_WORK_TASKS_REQUEST,
-    TASK.IN_FOCUS_TASKS_REQUEST
-  ],
-  '901841d9-0016-491d-ad66-8ee42d2b496b': TASK.TASKS_REQUEST, // get today's day
   '46418722-a720-4c9e-b255-16db4e590c34': TASK.OVERDUE_TASKS_REQUEST,
   '017a3e8c-79ac-452c-abb7-6652deecbd1c': TASK.OPENED_TASKS_REQUEST,
   '5183b619-3968-4c3a-8d87-3190cfaab014': TASK.UNSORTED_TASKS_REQUEST,
@@ -127,6 +109,7 @@ const UID_TO_ACTION = {
 }
 
 function redirect (title, uid) {
+  store.commit(TASK.CLEAN_UP_LOADED_TASKS)
   store.dispatch(UID_TO_ACTION[uid])
   const navElem = {
     name: title,
@@ -141,10 +124,10 @@ function redirect (title, uid) {
 </script>
 <template>
   <div class="flex flex-wrap">
-    <div class="flex flex-col lg:w-1/4 sm:w-4/4 bg-white dark:bg-slate-900 rounded-xl h-1/3 mb-8 max-h-[500px] max-w-screen-sm scroll-style mr-3 p-2 shadow-lg font-SfProTextNormal" @click="redirect(tasksTitles[idx], typeofTasks[tasksTitles[idx]])" v-for="(elem, key, idx) in testObj" :key="testObj[key]">
+    <div class="flex flex-col lg:w-1/4 sm:w-4/4 bg-white dark:bg-slate-900 rounded-xl h-1/3 mb-8 max-h-[500px] max-w-screen-sm scroll-style mr-3 p-2 shadow-lg font-SfProTextNormal" v-for="(elem, key, idx) in testObj" :key="testObj[key]">
       <tasksblock>
         <template v-slot:block-name>
-          <span>{{ tasksTitles[idx] }}</span>
+          <span @click="redirect(store.state.tasks[key].title, store.state.tasks[key].link)">{{ store.state.tasks[key].title }}</span>
         </template>
         <template v-slot:icon>
           <icon

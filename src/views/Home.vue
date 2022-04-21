@@ -137,9 +137,14 @@ const getNavigator = () => {
         // Checking if last navElement is a gridSource
         if (navStack.value.length && navStack.value.length > 0) {
           if (navStack.value[navStack.value.length - 1].key === 'greedSource') {
-            store.commit('basic', { key: 'greedPath', value: navStack.value[navStack.value.length - 1].greedPath })
-            store.commit('basic', { key: 'mainSectionState', value: 'greed' })
-
+            // desktop check
+            if (navStack.value[0].name === 'Рабочий стол') {
+              store.commit('basic', { key: 'mainSectionState', value: 'greed' })
+              store.commit('basic', { key: 'greedPath', value: 'dashboard' })
+            } else {
+              store.commit('basic', { key: 'greedPath', value: navStack.value[navStack.value.length - 1].greedPath })
+              store.commit('basic', { key: 'mainSectionState', value: 'greed' })
+            }
             // If last navElement is related to processed navigator instance with 'new_' prefix
             // then we pass entire object from storeNavigator
             if (['new_private_projects', 'new_emps', 'new_delegate'].includes(navStack.value[navStack.value.length - 1].greedPath)) {

@@ -120,8 +120,8 @@ const menuClick = (event, item) => {
   if (item.uid === '2bad1413-a373-4926-8a3c-58677a680714') {
     const navElem = {
       name: 'Рабочий стол',
-      key: 'greedSoure',
-      uid: '2bad1413-a373-4926-8a3c-58677a680714'
+      key: 'greedSource',
+      value: { uid: '2bad1413-a373-4926-8a3c-58677a680714', param: null }
     }
     store.commit('updateStackWithInitValue', navElem)
     store.commit('basic', { key: 'mainSectionState', value: 'greed' })

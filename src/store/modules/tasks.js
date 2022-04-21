@@ -1241,6 +1241,11 @@ const actions = {
 }
 
 const mutations = {
+  [TASK.UPDATE_TASK]: (state, task) => {
+    if (state.newtasks[task.uid]) {
+      state.newtasks[task.uid].info = task
+    }
+  },
   [TASK.REMOVE_TASK_FROM_LEAVES]: (state, taskUid) => {
     for (let i = 0; i < state.newConfig.leaves.length; i++) {
       if (taskUid === state.newConfig.leaves[i]) {

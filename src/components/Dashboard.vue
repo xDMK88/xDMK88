@@ -124,6 +124,7 @@ function redirect (title, uid) {
 
 </script>
 <template>
+  <!-- <pre>{{ store.state.tasks }}</pre> -->
   <div class="flex justify-end">
     <div class="font-SfProDisplayBold text-white bg-gray-800 rounded-xl p-2">
       <icon
@@ -167,7 +168,7 @@ function redirect (title, uid) {
           </div>
           <div class="flex items-center text-xs">
             <div>
-              <img class="w-5 h-5 border-solid border-2 border-lime-500 rounded-md" :src="employees[task.uid_customer].fotolink">
+              <img class="w-5 h-5 border-solid border-2 border-lime-500 rounded-md" :src="employees[task.uid_customer] === undefined ? '' : employees[task.uid_customer].fotolink">
             </div>
             <div class="tag-label cursor-default p-1 text-xs flex items-center">{{ task.customer_name }}</div>
             <div
@@ -183,7 +184,7 @@ function redirect (title, uid) {
                 :width="project.width"
                 :viewBox="project.viewBox">
               </icon>
-              <span class="ml-1">{{ projects[task.uid_project].name}}</span>
+              <span class="ml-1">{{ projects[task.uid_project] === undefined ? '' : projects[task.uid_project].name }}</span>
             </div>
           </div>
         </div>

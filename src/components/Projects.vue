@@ -152,9 +152,9 @@ const gotoChildren = (value) => {
             class="w-full h-4 absolute top-0 right-0 rounded-t-xl"
           />
           <div class="relative">
-           <div
-              class="min-w-[15px] min-h-[15px] absolute rounded-full bg-gray-500 -top-2 -left-2 flex items-center justify-center"
+            <div
               v-if="project.children && project.children.length"
+              class="min-w-[15px] min-h-[15px] absolute rounded-full bg-gray-500 -top-2 -left-2 flex items-center justify-center"
             >
               <span
                 class="text-white text-xs"

@@ -123,16 +123,19 @@ export default {
         />
       </svg>
       <input
+        :id="model.uid"
         ref="check_tags"
+        v-model="selectTags"
         type="checkbox"
         name="check_tags"
         class="check-custom-empployee custom-checkbox"
         :value="model.uid"
-        :id="model.uid"
-        v-model="selectTags"
         @click="changetags(model.uid)"
       >
-      <label class="break-words" :for="model.uid">{{ model.name.substring(0, 15) }}</label>
+      <label
+        class="break-words"
+        :for="model.uid"
+      >{{ model.name.substring(0, 15) }}</label>
     </div>
     <ul
       v-show="isOpen"

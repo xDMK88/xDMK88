@@ -308,45 +308,45 @@ const openProjectProperties = (project, parentProjectUid = '') => {
             @open:popper="toggleTaskHoverPopper(true)"
             @close:popper="toggleTaskHoverPopper(false)"
           >
-          <template #content>
-            <div class="flex flex-col text-sm w-60">
-              <div
-                class="flex cursor-pointer items-center hover:bg-gray-100 hover:dark:bg-stone-800 py-0.5 px-1 rounded-md"
-                @click="openProjectProperties(navItem.uid)"
-              >
-                <icon
-                  class="mr-2 text-gray-500 p-1"
-                  :path="properties.path"
-                  :width="20"
-                  :height="20"
-                  :box="properties.viewBox"
-                />
-                Открыть свойства проекта
+            <template #content>
+              <div class="flex flex-col text-sm w-60">
+                <div
+                  class="flex cursor-pointer items-center hover:bg-gray-100 hover:dark:bg-stone-800 py-0.5 px-1 rounded-md"
+                  @click="openProjectProperties(navItem.uid)"
+                >
+                  <icon
+                    class="mr-2 text-gray-500 p-1"
+                    :path="properties.path"
+                    :width="20"
+                    :height="20"
+                    :box="properties.viewBox"
+                  />
+                  Открыть свойства проекта
+                </div>
+                <div
+                  v-if="projects[navItem.uid] && projects[navItem.uid].email_creator === user.current_user_email"
+                  class="flex cursor-pointer items-center hover:bg-gray-100 hover:dark:bg-stone-800 py-0.5 px-1 rounded-md"
+                  @click="openProjectProperties(false, navItem.uid)"
+                >
+                  <icon
+                    class="mr-2 text-gray-500 p-2"
+                    :path="add.path"
+                    :width="20"
+                    :height="20"
+                    :box="add.viewBox"
+                  />
+                  Добавить подпроект
+                </div>
               </div>
-              <div
-                class="flex cursor-pointer items-center hover:bg-gray-100 hover:dark:bg-stone-800 py-0.5 px-1 rounded-md"
-                v-if="projects[navItem.uid] && projects[navItem.uid].email_creator === user.current_user_email"
-                @click="openProjectProperties(false, navItem.uid)"
-              >
-                <icon
-                  class="mr-2 text-gray-500 p-2"
-                  :path="add.path"
-                  :width="20"
-                  :height="20"
-                  :box="add.viewBox"
-                />
-                Добавить подпроект
-              </div>
-            </div>
-          </template>
-          <icon
-            v-if="navItem.greedPath === 'projects_children' && index === (navStack.length - 1)"
-            class="invisible ml-0.5 text-gray-500 group-hover:visible"
-            :path="arrowDown.path"
-            :width="10"
-            :height="10"
-            :box="arrowDown.viewBox"
-          />
+            </template>
+            <icon
+              v-if="navItem.greedPath === 'projects_children' && index === (navStack.length - 1)"
+              class="invisible ml-0.5 text-gray-500 group-hover:visible"
+              :path="arrowDown.path"
+              :width="10"
+              :height="10"
+              :box="arrowDown.viewBox"
+            />
           </Popper>
         </span>
         <div>
@@ -374,11 +374,13 @@ const openProjectProperties = (project, parentProjectUid = '') => {
               class="w-60 flex flex-col"
             >
               <div class="flex items-center justify-between">
-                <p class="text-sm font-semibold mr-1">{{ localization.show_completed_tasks }}</p>
+                <p class="text-sm font-semibold mr-1">
+                  {{ localization.show_completed_tasks }}
+                </p>
                 <input
                   v-if="settings"
-                  class="w-6 h-6"
                   v-model="settings.show_completed_tasks"
+                  class="w-6 h-6"
                   type="checkbox"
                   @change="updateSettings"
                 >

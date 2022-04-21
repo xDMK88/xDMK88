@@ -5,7 +5,6 @@ import { computed, ref, watch } from 'vue'
 import { DatePicker } from 'v-calendar'
 import { useStore } from 'vuex'
 import TreeItem from '@/components/TreeItem.vue'
-import FileMessage from '@/components/properties/FileMessage.vue'
 import Checklist from '@/components/properties/Checklist.vue'
 import close from '@/icons/close.js'
 import TreeTagsItem from '@/components/TreeTagsItem.vue'
@@ -17,20 +16,19 @@ import sanitizeHtml from 'sanitize-html'
 import linkify from 'vue-linkify'
 import ModalBoxConfirm from '@/components/modals/ModalBoxConfirm.vue'
 import { maska } from 'maska'
-import ChatLoader from '@/components/properties/ChatLoader'
 import TaskPropsButtonDots from '@/components/TaskProperties/TaskPropsButtonDots.vue'
 import TaskPropsButtonFocus from '@/components/TaskProperties/TaskPropsButtonFocus.vue'
+import TaskPropsChatMessages from '@/components/TaskProperties/TaskPropsChatMessages.vue'
 
 export default {
   components: {
     TaskPropsButtonDots,
     TaskPropsButtonFocus,
-    ChatLoader,
+    TaskPropsChatMessages,
     DatePicker,
     TreeItem,
     TreeTagsItem,
     Popper,
-    FileMessage,
     Checklist,
     ModalBoxConfirm
   },
@@ -3035,188 +3033,16 @@ export default {
       >
         Show all messages
       </p>
-      <!-- /Show all -->
-      <div
-        v-if="taskMessages"
+      <!-- Chat messages -->
+      <TaskPropsChatMessages
+        v-if="taskMessages?.length"
         id="content"
-        class="mt-3 messages"
-      >
-        <div
-          v-for="(key,value) in taskMessages"
-          :key="value"
-          class="message"
-        >
-          <div
-            v-if="(value == taskMessages.length - 1 || value == taskMessages.length - 2) || showAllMessages"
-          >
-            <div
-              v-if="value == 0 || (taskMessages[value] && new Date(taskMessages[value - 1].date_create).toDateString() != new Date(taskMessages[value].date_create).toDateString())"
-              class="text-center"
-            >
-              <p
-                class="text-xs text-gray-500 dark:text-gray-300 my-3"
-              >
-                {{ new Date(taskMessages[value].date_create).toLocaleString('default', { weekday: 'long' }) }},
-                {{ new Date(taskMessages[value].date_create).getDate() }}
-                {{ new Date(taskMessages[value].date_create).toLocaleString('default', { month: 'short' }) }}
-              </p>
-            </div>
-
-            <!-- Chat message interlocutor -->
-            <div v-if="key.uid_creator !== cusers.current_user_uid && !key.uid_file && !showOnlyFiles">
-              <div
-                v-if="value == 0 || (taskMessages[value - 1] && taskMessages[value - 1].uid_creator != key.uid_creator)"
-                class="flex"
-              >
-                <p
-                  v-if="employees[key.uid_creator]"
-                  class="name-chat-custom dark:text-gray-100"
-                >
-                  {{ employees[key.uid_creator].name }}
-                </p>
-              </div>
-              <div
-                class="chat-main"
-              >
-                <div
-                  class="mt-1 msg-custom-chat-left text-sm bg-[#EDF7ED] dark:bg-gray-800 dark:text-gray-100"
-                  @contextmenu="handlercontextmenu"
-                >
-                  <div
-                    v-linkify:options="{ className: 'text-blue-600' }"
-                    v-html="key.msg.replaceAll('\n', '<br/>')"
-                  />
-                  <div
-                    v-if="key.date_create"
-                    class="time-chat dark:text-gray-300"
-                  >
-                    {{ key.date_create.split('T')[1].split(":")[0] }}:{{ key.date_create.split('T')[1].split(":")[1] }}
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Chat file interlocutor -->
-            <div v-if="key.uid_creator !== cusers.current_user_uid && key.uid_file">
-              <div
-                v-if="value == 0 || (taskMessages[value - 1] && taskMessages[value - 1].uid_creator != key.uid_creator)"
-                class="flex"
-              >
-                <p
-                  v-if="employees[key.uid_creator]"
-                  class="name-chat-custom"
-                >
-                  {{ employees[key.uid_creator].name }}
-                </p>
-              </div>
-              <div
-                class="chat-main"
-              >
-                <div
-                  class="mt-1 msg-custom-chat-left bg-[#EDF7ED] dark:bg-gray-800 text-sm items-center"
-                >
-                  <FileMessage
-                    :file="key"
-                  />
-                  <div>
-                    <div>
-                      {{ key.msg }}
-                    </div>
-                    <div
-                      v-if="key.date_create"
-                      class="mt-1 flex items center justify-between text-gray-400 dark:text-gray-300 text-xs"
-                    >
-                      <p>{{ formatBytes(key.file_size) }}</p>
-                      <p>{{ key.date_create.split('T')[1].split(":")[0] }}:{{ key.date_create.split('T')[1].split(":")[1] }}</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Chat message from myself -->
-            <div
-              v-if="key.uid_creator == cusers.current_user_uid && !key.uid_file && !showOnlyFiles"
-            >
-              <div class="table-cell float-right">
-                <div
-                  v-if="value == 0 || (taskMessages[value - 1] && taskMessages[value - 1].uid_creator != key.uid_creator)"
-                  class="chat-author-custom-right"
-                >
-                  <p
-                    v-if="employees[key.uid_creator]"
-                    class="name-chat-custom dark:text-gray-100"
-                  >
-                    {{ employees[key.uid_creator].name }}
-                  </p>
-                </div>
-              </div>
-              <div
-                class="chat-main"
-              >
-                <div
-                  class="mt-1 msg-custom-chat-right bg-[#FCEAEA] dark:bg-gray-800 text-sm dark:text-gray-100"
-                  @contextmenu="handlercontextmenu"
-                >
-                  <ChatLoader v-if="uploadStarted && key.loading" />
-                  <div
-                    v-linkify
-                    v-html="key.msg.replaceAll('\n', '<br/>')"
-                  />
-                  <div
-                    v-if="key.date_create"
-                    class="time-chat dark:text-gray-300"
-                  >
-                    {{ key.date_create.split('T')[1].split(":")[0] }}:{{ key.date_create.split('T')[1].split(":")[1] }}
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- File message from myself -->
-            <div
-              v-if="key.uid_creator == cusers.current_user_uid && key.uid_file"
-            >
-              <div class="table-cell float-right">
-                <div
-                  v-if="value == 0 || (taskMessages[value - 1] && taskMessages[value - 1].uid_creator != key.uid_creator)"
-                  class="chat-author-custom-right"
-                >
-                  <p
-                    v-if="employees[key.uid_creator]"
-                    class="name-chat-custom dark:text-gray-100"
-                  >
-                    {{ employees[key.uid_creator].name }}
-                  </p>
-                </div>
-              </div>
-              <div
-                class="chat-main"
-              >
-                <div
-                  class="mt-1 msg-custom-chat-right bg-[#FCEAEA] dark:bg-gray-800 text-sm"
-                >
-                  <FileMessage
-                    :file="key"
-                  />
-                  <div>
-                    <div>
-                      {{ key.msg }}
-                    </div>
-                    <div
-                      v-if="key.date_create && key.file_size"
-                      class="mt-1 flex items center justify-between text-gray-400 dark:text-gray-300 text-xs"
-                    >
-                      <p>{{ formatBytes(key.file_size) }}</p>
-                      <p>{{ key.date_create.split('T')[1].split(":")[0] }}:{{ key.date_create.split('T')[1].split(":")[1] }}</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+        class="mt-3"
+        :task-messages="taskMessages"
+        :current-user-uid="cusers.current_user_uid"
+        :show-all-messages="showAllMessages"
+        :show-only-files="showOnlyFiles"
+      />
     </div>
   </div>
   <div class="form-send-message">

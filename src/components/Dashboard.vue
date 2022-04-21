@@ -127,7 +127,11 @@ function redirect (title, uid) {
     <div class="flex flex-col lg:w-1/4 sm:w-4/4 bg-white dark:bg-slate-900 rounded-xl h-1/3 mb-8 max-h-[500px] max-w-screen-sm scroll-style mr-3 p-2 shadow-lg font-SfProTextNormal" v-for="(elem, key, idx) in testObj" :key="testObj[key]">
       <tasksblock>
         <template v-slot:block-name>
-          <span @click="redirect(store.state.tasks[key].title, store.state.tasks[key].link)">{{ store.state.tasks[key].title }}</span>
+          <span
+            class="hover:cursor-pointer"
+            @click="redirect(store.state.tasks[key].title, store.state.tasks[key].link)">
+              {{ store.state.tasks[key].title }}
+          </span>
         </template>
         <template v-slot:icon>
           <icon

@@ -5,12 +5,13 @@ import Icon from '@/components/Icon.vue'
 import * as TASK from '@/store/actions/tasks.js'
 import unread from '@/icons/unread.js'
 import project from '@/icons/projectDesktop.js'
+import gear from '@/icons/gear.js'
 import focus from '@/icons/focus.js'
 import inwork from '@/icons/inprogress.js'
 import overdue from '@/icons/overdue.js'
 import unsorted from '@/icons/unsorted'
 import ready from '@/icons/ready.js'
-import Tasksblock from '@/components/DashboardComponents/Tasksblock.vue'
+import Taskhead from '@/components/DashboardComponents/Taskhead.vue'
 import TaskStatus from '@/components/TasksList/TaskStatus'
 import { computed, reactive, onBeforeMount } from 'vue'
 import { useStore } from 'vuex'
@@ -123,9 +124,20 @@ function redirect (title, uid) {
 
 </script>
 <template>
+  <div class="flex justify-end">
+    <div class="font-SfProDisplayBold text-white bg-gray-800 rounded-xl p-2">
+      <icon
+        :path="gear.path"
+        :width="gear.width"
+        :height="gear.height"
+        :viewBox="gear.viewBox">
+      </icon>
+      <button>Настроить</button>
+    </div>
+  </div>
   <div class="flex flex-wrap">
-    <div class="flex flex-col lg:w-1/4 sm:w-4/4 bg-white dark:bg-slate-900 rounded-xl h-1/3 mb-8 max-h-[500px] max-w-screen-sm scroll-style mr-3 p-2 shadow-lg font-SfProTextNormal" v-for="(elem, key, idx) in testObj" :key="testObj[key]">
-      <tasksblock>
+    <div class="flex flex-col lg:w-1/4 sm:w-4/4 bg-white dark:bg-slate-900 rounded-xl h-1/3 mb-8 max-h-[500px] max-w-screen-sm scroll-style mr-3 p-2 shadow-lg font-SfProTextNormal" :id="key" v-for="(elem, key, idx) in testObj" :key="testObj[key]">
+      <taskhead>
         <template v-slot:block-name>
           <span
             class="hover:cursor-pointer"
@@ -142,7 +154,7 @@ function redirect (title, uid) {
             class="text-gray-500">
           </icon>
         </template>
-      </tasksblock>
+      </taskhead>
       <div class="max-h-[500px] scroll-style">
         <div class="p-2 rounded-xl" v-for="(task, taskIdx) in testObj[key]" :key="task.uid" :style="task.uid_marker !== '00000000-0000-0000-0000-000000000000' ? {backgroundColor: colors[task.uid_marker].back_color} : ''">
           <div class="flex">
@@ -153,12 +165,6 @@ function redirect (title, uid) {
               <span class="max-w-full break-words">{{ task.name }}</span>
             </div>
           </div>
-          <!-- <div v-show="task.comment.length">
-            <details v-show="task.comment.length">
-              <summary>Описание</summary>
-              <p>{{ task.comment }}</p>
-            </details>
-          </div> -->
           <div class="flex items-center text-xs">
             <div>
               <img class="w-5 h-5 border-solid border-2 border-lime-500 rounded-md" :src="employees[task.uid_customer].fotolink">

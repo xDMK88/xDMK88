@@ -5,7 +5,6 @@ import { computed, ref, watch } from 'vue'
 import { DatePicker } from 'v-calendar'
 import { useStore } from 'vuex'
 import TreeItem from '@/components/TreeItem.vue'
-import FileMessage from '@/components/properties/FileMessage.vue'
 import Checklist from '@/components/properties/Checklist.vue'
 import close from '@/icons/close.js'
 import TreeTagsItem from '@/components/TreeTagsItem.vue'
@@ -17,20 +16,19 @@ import sanitizeHtml from 'sanitize-html'
 import linkify from 'vue-linkify'
 import ModalBoxConfirm from '@/components/modals/ModalBoxConfirm.vue'
 import { maska } from 'maska'
-import ChatLoader from '@/components/properties/ChatLoader'
 import TaskPropsButtonDots from '@/components/TaskProperties/TaskPropsButtonDots.vue'
 import TaskPropsButtonFocus from '@/components/TaskProperties/TaskPropsButtonFocus.vue'
+import TaskPropsChatMessages from '@/components/TaskProperties/TaskPropsChatMessages.vue'
 
 export default {
   components: {
     TaskPropsButtonDots,
     TaskPropsButtonFocus,
-    ChatLoader,
+    TaskPropsChatMessages,
     DatePicker,
     TreeItem,
     TreeTagsItem,
     Popper,
-    FileMessage,
     Checklist,
     ModalBoxConfirm
   },
@@ -62,22 +60,9 @@ export default {
       store.dispatch('asidePropertiesToggle', false)
     }
     const taskMsg = ref('')
-    // TODO: we use these functions at 2 components
-    // should move them to data helpers or to the store module
+
     const pad2 = (n) => {
       return (n < 10 ? '0' : '') + n
-    }
-    const getTodaysDate = (val = null) => {
-      if (val == null) {
-        val = new Date()
-      }
-      const month = pad2(val.getMonth() + 1)
-      const day = pad2(val.getDate())
-      const year = pad2(val.getFullYear())
-      const hours = pad2(val.getHours())
-      const minutes = pad2(val.getMinutes())
-      const seconds = pad2(val.getSeconds())
-      return year + '-' + month + '-' + day + 'T' + hours + ':' + minutes + ':' + seconds
     }
 
     function uuidv4 () {
@@ -87,13 +72,19 @@ export default {
     }
     const changeEmployee = (uid, email) => {
       console.log(email)
-      store.dispatch(TASK.CHANGE_TASK_PERFORMER, { uid: uid, value: email.toLowerCase() }).then(
-        resp => {
-          console.log(resp.data)
-          selectedTask.value.email_performer = email
-          selectedTask.value.type = 2
+      if (email !== '') {
+        const data = {
+          uid: selectedTask.value.uid,
+          value: email.toLowerCase()
         }
-      )
+        store.dispatch(TASK.CHANGE_TASK_PERFORMER, data).then(
+          resp => {
+            console.log(resp.data)
+            selectedTask.value.email_performer = resp.data.email_performer
+            selectedTask.value.type = 2
+          }
+        )
+      }
     }
     const resetEmployes = () => {
       store.dispatch(TASK.CHANGE_TASK_PERFORMER, { uid: selectedTask.value.uid, value: '' }).then(
@@ -188,14 +179,19 @@ export default {
             }
           }
           selectedTask.value.has_files = true
-          this.Files.onload()
-          const img = new Image()
-          img.onload = function () {
-            document.getElementById('copypaste').appendChild(this)
+          if (selectedTask.value.uid_customer === user.value.current_user_uid && (selectedTask.value.status === 5 || selectedTask.value.status === 7)) {
+            // to refine
+            selectedTask.value.status = 9
+            this.Files.onload()
+            const img = new Image()
+            img.onload = function () {
+              document.getElementById('copypaste_' + selectedTask.value.uid).appendChild(this)
+            }
+            console.log(resp.data)
+            store.dispatch(GETFILES, resp.data.uid_file).then(respon => {
+              img.src = URL.createObjectURL(new Blob([respon.data]))
+            })
           }
-          store.dispatch(GETFILES, resp.data.uid_file).then(respon => {
-            img.src = URL.createObjectURL(new Blob([respon.data]))
-          })
         })
       this.infoComplete = true
       setTimeout(() => {
@@ -210,16 +206,29 @@ export default {
       const data = {
         uid: selectedTask.value.uid
       }
-      store.dispatch(TASK.REMOVE_TASK, data.uid)
+      store.dispatch(TASK.REMOVE_TASK, data.uid).then(
+        resp => {
+          store.dispatch('asidePropertiesToggle', false)
+        })
     }
 
     const createTaskMsg = (event) => {
       console.log(taskMsg.value)
+      //
+      const date = new Date()
+      const month = pad2(date.getUTCMonth() + 1)
+      const day = pad2(date.getUTCDate())
+      const year = pad2(date.getUTCFullYear())
+      const hours = pad2(date.getUTCHours())
+      const minutes = pad2(date.getUTCMinutes())
+      const seconds = pad2(date.getUTCSeconds())
+      const dateCreate = year + '-' + month + '-' + day + 'T' + hours + ':' + minutes + ':' + seconds
+      //
       const data = {
         uid_task: selectedTask.value.uid,
         uid_creator: user.value.current_user_uid,
         uid_msg: uuidv4(),
-        date_create: getTodaysDate(),
+        date_create: dateCreate,
         text: taskMsg.value,
         msg: taskMsg.value
       }
@@ -313,7 +322,7 @@ export default {
     }
     const handleInput = () => {
       const timestart = this.timeStart === '' ? 'T00:00:00' : 'T' + this.timeStart
-      const timeend = this.timeEnd === '' && this.timeStart !== '' ? timestart : this.timeEnd === '' ? 'T23:59:59' : 'T' + this.timeEnd + ':00'
+      const timeend = this.timeEnd === '' && this.timeStart !== '' ? timestart : this.timeEnd === '' ? '' : 'T' + this.timeEnd + ':00'
       console.log(new Date(this.range.start).getFullYear() + '-' + (pad2(new Date(this.range.start).getMonth() + 1)) + '-' + new Date(this.range.start).getDate() + timestart)
       const starttime = new Date(this.range.start).getFullYear() + '-' + (pad2(new Date(this.range.start).getMonth() + 1)) + '-' + pad2(new Date(this.range.start).getDate()) + timestart
       const startend = new Date(this.range.end).getFullYear() + '-' + (pad2(new Date(this.range.start).getMonth() + 1)) + '-' + pad2(new Date(this.range.end).getDate()) + timeend
@@ -462,13 +471,22 @@ export default {
     const audio = ['mp3', 'wav', 'm4a']
     const handlercontextmenu = () => {
     }
-    const copypastefile = () => {
+    const resetfocusv = () => {
+      this.showpastefile = false
+    }
+    const copypastefile = (uid) => {
+      if (this.selectedTaskFiles === uid) {
+        console.log('true')
+      } else {
+        console.log('false')
+      }
+      console.log(this.selectedTaskFiles === uid)
+      this.showpastefile = true
       window.addEventListener('paste', function (e) {
         const items = (e.clipboardData || e.originalEvent.clipboardData).items
         for (const index in items) {
           const item = items[index]
           if (item.kind === 'file') {
-            console.log(index)
             const blob = item.getAsFile()
             const div = document.createElement('div')
             div.className = 'lineloadfile'
@@ -487,7 +505,7 @@ export default {
               href.appendChild(img)
               href.innerHTML += '<span class="img-title-custom">' + blob.name + '</span>'
               div.appendChild(href)
-              document.getElementById('copypaste').appendChild(div)
+              document.getElementById('copypaste_' + uid).appendChild(div)
             } else if (movies.includes(blob.name.split('.').pop())) {
               const fileURL = URL.createObjectURL(blob)
               div.className = 'lineloadfile'
@@ -496,7 +514,7 @@ export default {
               href.setAttribute('href', fileURL)
               href.setAttribute('download', blob.name + '.' + blob.name.split('.').pop())
               div.appendChild(href)
-              document.getElementById('copypaste').appendChild(div)
+              document.getElementById('copypaste_' + uid).appendChild(div)
             } else if (docs.includes(blob.name.split('.').pop())) {
               const fileURL = URL.createObjectURL(blob)
               div.className = 'lineloadfile'
@@ -504,7 +522,7 @@ export default {
               href.setAttribute('href', fileURL)
               href.setAttribute('download', blob.name + '.' + blob.name.split('.').pop())
               div.appendChild(href)
-              document.getElementById('copypaste').appendChild(div)
+              document.getElementById('copypaste_' + uid).appendChild(div)
             } else if (audio.includes(blob.name.split('.').pop())) {
               div.className = 'lineloadfile'
               const fileURL = URL.createObjectURL(blob)
@@ -516,7 +534,7 @@ export default {
               hrefaudio.setAttribute('src', fileURL)
               hrefaudio.setAttribute('controls', 'true')
               div.appendChild(hrefaudio)
-              document.getElementById('copypaste').appendChild(div)
+              document.getElementById('copypaste_' + uid).appendChild(div)
             } else {
               const fileURL = URL.createObjectURL(blob)
               div.className = 'lineloadfile'
@@ -525,6 +543,7 @@ export default {
               href.setAttribute('href', fileURL)
               href.setAttribute('download', blob.name + '.' + blob.name.split('.').pop())
               div.appendChild(href)
+              document.getElementById('copypaste_' + uid).appendChild(div)
             }
             const formData = new FormData()
             formData.append('files', blob)
@@ -667,7 +686,7 @@ export default {
             uid: selectedTask.value.uid,
             every_value: this.SeriesYearMonth,
             num_day: this.SeriesYearMonthDay,
-            mwt: this.SeriesYearWeekType - 1,
+            mwt: this.SeriesYearType - 1,
             mdw: this.SeriesYearDayOfWeek
           }
           store.dispatch(TASK.EVERY_YEAR_CHANGE, data).then(
@@ -676,9 +695,8 @@ export default {
               selectedTask.value.SeriesType = 4
               selectedTask.value.SeriesYearDayOfWeek = resp.data.SeriesYearDayOfWeek
               selectedTask.value.SeriesYearMonth = resp.data.SeriesYearMonth
-              selectedTask.value.SeriesYearType = resp.data.SeriesYearType
               selectedTask.value.SeriesYearMonthDay = resp.data.SeriesYearMonthDay
-              selectedTask.value.SeriesMonthWeekType = resp.data.SeriesYearWeekType
+              selectedTask.value.SeriesYearWeekType = resp.data.SeriesYearWeekType
               selectedTask.value.SeriesMonthDayOfWeek = resp.data.SeriesYearDayOfWeek
             })
         }
@@ -807,6 +825,7 @@ export default {
       resetTags,
       resetAccess,
       resetEmployes,
+      resetfocusv,
       resetCalendar,
       massel: '',
       viewMenu: false,
@@ -826,6 +845,7 @@ export default {
       selectedTask,
       taskMessages,
       uploadStarted,
+      selectedTaskFiles: selectedTask.value.uid,
       taskFiles: taskFiles,
       myFiles: myFiles,
       tasks: tasks,
@@ -894,7 +914,7 @@ export default {
       SeriesMonthWeekType: selectedTask.value.SeriesMonthWeekType,
       SeriesMonthDayOfWeek: selectedTask.value.SeriesMonthDayOfWeek,
       SeriesYearType: selectedTask.value.SeriesYearType === 1 ? selectedTask.value.SeriesYearType : selectedTask.value.SeriesYearWeekType,
-      SeriesYearMonth: selectedTask.value.SeriesYearMonth,
+      SeriesYearMonth: selectedTask.value.SeriesYearMonth === 0 ? '1' : selectedTask.value.SeriesYearMonth,
       SeriesYearMonthDay: selectedTask.value.SeriesYearMonthDay,
       SeriesYearWeekType: selectedTask.value.SeriesYearWeekType,
       SeriesYearDayOfWeek: selectedTask.value.SeriesYearDayOfWeek,
@@ -918,6 +938,7 @@ export default {
       everyWeekRepeat: false,
       everyMonthRepeat: false,
       everyYearRepeat: false,
+      showpastefile: false,
       SeriesWeek: ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun']
       // Модели selectedTask.value.SeriesWeekMon selectedTask.SeriesWeekTue selectedTask.SeriesWeekWed selectedTask.SeriesWeekThu selectedTask.SeriesWeekFri selectedTask.SeriesWeekSat selectedTask.SeriesWeekSun
     }
@@ -1018,6 +1039,7 @@ export default {
     has-cancel
     button-label="Delete"
     @confirm="delTask"
+    @click="delTask"
   >
     <p class="text-center">
       Do you really wanna delete this task?
@@ -1027,7 +1049,7 @@ export default {
     <div
       id="generalscroll"
       class="column-resize"
-      @focusin="copypastefile"
+      @focusin="copypastefile(selectedTask.uid)"
     >
       <div />
       <div
@@ -1069,6 +1091,7 @@ export default {
             @keyup="changeName($event)"
             @focus="$refs.TaskName.focus()"
             @focusout="removeEditTaskName($event)"
+            @keydown.enter.prevent
             v-html="selectedTask.name.replaceAll('\n','<br/>')"
           />
         </strong>
@@ -1539,7 +1562,7 @@ export default {
                   @dayclick="onDayClick"
                 >
                   <template #footer>
-                    <div v-if="timeStartActive">
+                    <div v-if="timeStartActive = timeStart !== ''">
                       <div class="timestamp-custom">
                         Установить напоминание
                       </div>
@@ -1780,7 +1803,7 @@ export default {
           </template>
           <a class="mt-3 tags-custom dark:bg-gray-800 dark:text-gray-100 any-calendar project-hover-close">
             <span
-              v-if="selectedTask.term_customer!=='' && selectedTask.term_customer!=null"
+              v-if="selectedTask.term_customer!==''"
               class="flex"
             >
               <button
@@ -1962,7 +1985,7 @@ export default {
                         <select
                           ref="SeriesWeek"
                           v-model="SeriesWeek"
-                          class="form-control form-control-select-repeat"
+                          class="form-control form-control-select-repeat" style="height: 40px"
                           multiple
                         >
                           <option value="mon">
@@ -2037,7 +2060,7 @@ export default {
                           name=""
                         >
                           <option
-                            v-for="item in 365"
+                            v-for="item in 12"
                             :key="item"
                             :value="item"
                           >
@@ -2056,9 +2079,9 @@ export default {
                             class="form-control form-control-select-repeat"
                           >
                             <option
-                              v-for="(item, value) in days"
+                              v-for="(item, value) in days.filter(v=>v !== '')"
                               :key="value>0"
-                              :value="value"
+                              :value="value+1"
                             >
                               {{ item }}
                             </option>
@@ -2077,7 +2100,7 @@ export default {
                         name=""
                       >
                         <option
-                          v-for="item in 365"
+                          v-for="item in 12"
                           :key="item"
                           :value="item"
                         >
@@ -2184,9 +2207,9 @@ export default {
                             class="form-control form-control-select-repeat"
                           >
                             <option
-                              v-for="(item, value) in days"
+                              v-for="(item, value) in days.filter(v=>v!=='')"
                               :key="value"
-                              :value="value"
+                              :value="value+1"
                             >
                               {{ item }}
                             </option>
@@ -3035,188 +3058,16 @@ export default {
       >
         Show all messages
       </p>
-      <!-- /Show all -->
-      <div
-        v-if="taskMessages"
+      <!-- Chat messages -->
+      <TaskPropsChatMessages
+        v-if="taskMessages?.length"
         id="content"
-        class="mt-3 messages"
-      >
-        <div
-          v-for="(key,value) in taskMessages"
-          :key="value"
-          class="message"
-        >
-          <div
-            v-if="(value == taskMessages.length - 1 || value == taskMessages.length - 2) || showAllMessages"
-          >
-            <div
-              v-if="value == 0 || (taskMessages[value] && new Date(taskMessages[value - 1].date_create).toDateString() != new Date(taskMessages[value].date_create).toDateString())"
-              class="text-center"
-            >
-              <p
-                class="text-xs text-gray-500 dark:text-gray-300 my-3"
-              >
-                {{ new Date(taskMessages[value].date_create).toLocaleString('default', { weekday: 'long' }) }},
-                {{ new Date(taskMessages[value].date_create).getDate() }}
-                {{ new Date(taskMessages[value].date_create).toLocaleString('default', { month: 'short' }) }}
-              </p>
-            </div>
-
-            <!-- Chat message interlocutor -->
-            <div v-if="key.uid_creator !== cusers.current_user_uid && !key.uid_file && !showOnlyFiles">
-              <div
-                v-if="value == 0 || (taskMessages[value - 1] && taskMessages[value - 1].uid_creator != key.uid_creator)"
-                class="flex"
-              >
-                <p
-                  v-if="employees[key.uid_creator]"
-                  class="name-chat-custom dark:text-gray-100"
-                >
-                  {{ employees[key.uid_creator].name }}
-                </p>
-              </div>
-              <div
-                class="chat-main"
-              >
-                <div
-                  class="mt-1 msg-custom-chat-left text-sm bg-[#EDF7ED] dark:bg-gray-800 dark:text-gray-100"
-                  @contextmenu="handlercontextmenu"
-                >
-                  <div
-                    v-linkify:options="{ className: 'text-blue-600' }"
-                    v-html="key.msg.replaceAll('\n', '<br/>')"
-                  />
-                  <div
-                    v-if="key.date_create"
-                    class="time-chat dark:text-gray-300"
-                  >
-                    {{ key.date_create.split('T')[1].split(":")[0] }}:{{ key.date_create.split('T')[1].split(":")[1] }}
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Chat file interlocutor -->
-            <div v-if="key.uid_creator !== cusers.current_user_uid && key.uid_file">
-              <div
-                v-if="value == 0 || (taskMessages[value - 1] && taskMessages[value - 1].uid_creator != key.uid_creator)"
-                class="flex"
-              >
-                <p
-                  v-if="employees[key.uid_creator]"
-                  class="name-chat-custom"
-                >
-                  {{ employees[key.uid_creator].name }}
-                </p>
-              </div>
-              <div
-                class="chat-main"
-              >
-                <div
-                  class="mt-1 msg-custom-chat-left bg-[#EDF7ED] dark:bg-gray-800 text-sm items-center"
-                >
-                  <FileMessage
-                    :file="key"
-                  />
-                  <div>
-                    <div>
-                      {{ key.msg }}
-                    </div>
-                    <div
-                      v-if="key.date_create"
-                      class="mt-1 flex items center justify-between text-gray-400 dark:text-gray-300 text-xs"
-                    >
-                      <p>{{ formatBytes(key.file_size) }}</p>
-                      <p>{{ key.date_create.split('T')[1].split(":")[0] }}:{{ key.date_create.split('T')[1].split(":")[1] }}</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Chat message from myself -->
-            <div
-              v-if="key.uid_creator == cusers.current_user_uid && !key.uid_file && !showOnlyFiles"
-            >
-              <div class="table-cell float-right">
-                <div
-                  v-if="value == 0 || (taskMessages[value - 1] && taskMessages[value - 1].uid_creator != key.uid_creator)"
-                  class="chat-author-custom-right"
-                >
-                  <p
-                    v-if="employees[key.uid_creator]"
-                    class="name-chat-custom dark:text-gray-100"
-                  >
-                    {{ employees[key.uid_creator].name }}
-                  </p>
-                </div>
-              </div>
-              <div
-                class="chat-main"
-              >
-                <div
-                  class="mt-1 msg-custom-chat-right bg-[#FCEAEA] dark:bg-gray-800 text-sm dark:text-gray-100"
-                  @contextmenu="handlercontextmenu"
-                >
-                  <ChatLoader v-if="uploadStarted && key.loading" />
-                  <div
-                    v-linkify
-                    v-html="key.msg.replaceAll('\n', '<br/>')"
-                  />
-                  <div
-                    v-if="key.date_create"
-                    class="time-chat dark:text-gray-300"
-                  >
-                    {{ key.date_create.split('T')[1].split(":")[0] }}:{{ key.date_create.split('T')[1].split(":")[1] }}
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- File message from myself -->
-            <div
-              v-if="key.uid_creator == cusers.current_user_uid && key.uid_file"
-            >
-              <div class="table-cell float-right">
-                <div
-                  v-if="value == 0 || (taskMessages[value - 1] && taskMessages[value - 1].uid_creator != key.uid_creator)"
-                  class="chat-author-custom-right"
-                >
-                  <p
-                    v-if="employees[key.uid_creator]"
-                    class="name-chat-custom dark:text-gray-100"
-                  >
-                    {{ employees[key.uid_creator].name }}
-                  </p>
-                </div>
-              </div>
-              <div
-                class="chat-main"
-              >
-                <div
-                  class="mt-1 msg-custom-chat-right bg-[#FCEAEA] dark:bg-gray-800 text-sm"
-                >
-                  <FileMessage
-                    :file="key"
-                  />
-                  <div>
-                    <div>
-                      {{ key.msg }}
-                    </div>
-                    <div
-                      v-if="key.date_create && key.file_size"
-                      class="mt-1 flex items center justify-between text-gray-400 dark:text-gray-300 text-xs"
-                    >
-                      <p>{{ formatBytes(key.file_size) }}</p>
-                      <p>{{ key.date_create.split('T')[1].split(":")[0] }}:{{ key.date_create.split('T')[1].split(":")[1] }}</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+        class="mt-3"
+        :task-messages="taskMessages"
+        :current-user-uid="cusers.current_user_uid"
+        :show-all-messages="showAllMessages"
+        :show-only-files="showOnlyFiles"
+      />
     </div>
   </div>
   <div class="form-send-message">
@@ -3224,11 +3075,11 @@ export default {
       v-if="isloading"
       src="/ajaxloader.gif"
     >
-    <div
-      id="copypaste"
+    <div v-if="showpastefile"
+      :id="'copypaste_' + selectedTask.uid"
       ref="pastefile"
       class="сopypastefiles"
-    />
+    ></div>
     <div class="input-group">
       <span class="input-group-addon input-group-attach dark:bg-gray-800 dark:text-gray-100">
         <div class="example-1">
@@ -3262,7 +3113,7 @@ export default {
         class="form-control text-group-design task-msg dark:bg-gray-800 dark:text-gray-100"
         placeholder="Введите сообщение"
         rows="58"
-        @click="copypastefile"
+        @click="copypastefile(selectedTask.uid)"
         @keydown.enter.exact.prevent="createTaskMsg"
         @keydown.enter.shift.exact.prevent="cursorPosition(this)"
       />

@@ -143,22 +143,9 @@ export default {
         tags: selectedTask.value.tags
       }
       store.dispatch(TASK.CHANGE_TASK_TAGS, data)
-        .then(() => {
-          if (selectedTask.value.uid_customer === user.value.current_user_uid && (selectedTask.value.status === 5 || selectedTask.value.status === 7)) {
-            // to refine
-            selectedTask.value.status = 9
-          }
-        })
-      console.log(data)
 
       setTimeout(() => {
         store.dispatch(TASK.CHANGE_TASK_TAGS, data)
-          .then(() => {
-            if (selectedTask.value.uid_customer === user.value.current_user_uid) {
-              // to refine
-              selectedTask.value.status = 9
-            }
-          })
       }, 100)
     }
     const resetTags = (key) => {
@@ -195,20 +182,20 @@ export default {
 
       store.dispatch(CREATE_FILES_REQUEST, data).then(
         resp => {
-          selectedTask.value.has_files = true
-          if (selectedTask.value.uid_customer === user.value.current_user_uid && (selectedTask.value.status === 5 || selectedTask.value.status === 7)) {
-            // to refine
-            selectedTask.value.status = 9
-            this.Files.onload()
-            const img = new Image()
-            img.onload = function () {
-              document.getElementById('copypaste').appendChild(this)
+          if (selectedTask.value.type === 2 || selectedTask.value.type === 3) {
+            if ([1, 5, 7, 8].includes(selectedTask.value.status)) {
+              selectedTask.value.status = 9
             }
-            console.log(resp.data)
-            store.dispatch(GETFILES, resp.data.uid_file).then(respon => {
-              img.src = URL.createObjectURL(new Blob([respon.data]))
-            })
           }
+          selectedTask.value.has_files = true
+          this.Files.onload()
+          const img = new Image()
+          img.onload = function () {
+            document.getElementById('copypaste').appendChild(this)
+          }
+          store.dispatch(GETFILES, resp.data.uid_file).then(respon => {
+            img.src = URL.createObjectURL(new Blob([respon.data]))
+          })
         })
       this.infoComplete = true
       setTimeout(() => {
@@ -239,9 +226,10 @@ export default {
       store.dispatch(CREATE_MESSAGE_REQUEST, data).then(
         resp => {
           selectedTask.value.has_msgs = true
-          if (selectedTask.value.uid_customer === user.value.current_user_uid && (selectedTask.value.status === 5 || selectedTask.value.status === 7)) {
-            // to refine
-            selectedTask.value.status = 9
+          if (selectedTask.value.type === 2 || selectedTask.value.type === 3) {
+            if ([1, 5, 7, 8].includes(selectedTask.value.status)) {
+              selectedTask.value.status = 9
+            }
           }
           selectedTask.value.msg = decodeURIComponent(taskMsg.value)
           this.infoComplete = true
@@ -547,10 +535,11 @@ export default {
             this.isloading = true
             store.dispatch(CREATE_FILES_REQUEST, data).then(
               resp => {
-                if (selectedTask.value.uid_customer === user.value.current_user_uid && selectedTask.value.status === 5) {
-                  // to refine
-                  this.isloading = false
-                  selectedTask.value.status = 9
+                this.isloading = false
+                if (selectedTask.value.type === 2 || selectedTask.value.type === 3) {
+                  if ([1, 5, 7, 8].includes(selectedTask.value.status)) {
+                    selectedTask.value.status = 9
+                  }
                 }
               })
           }

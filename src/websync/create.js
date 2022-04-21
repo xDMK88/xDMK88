@@ -4,6 +4,8 @@ import { createTask } from '@/websync/task.js'
 import { notify } from 'notiwind'
 
 export default function processCreate (obj) {
+  const nt = new Audio(require('@/assets/sounds/notification.mp3'))
+  nt.volume = 0.5
   switch (obj.type) {
     case TYPES.TYPE_OBJECT_TAG:
       break
@@ -33,9 +35,11 @@ export default function processCreate (obj) {
     case TYPES.TYPE_OBJECT_TASK_MSG:
       notify({
         group: 'top',
-        title: 'REST API Error, please make screenshot',
+        title: 'Новое сообщение',
+        obj: obj,
         text: obj.obj.msg
       }, 30000)
+      nt.play()
       createMessage(obj)
       break
     case TYPES.TYPE_OBJECT_TASK_TAG:

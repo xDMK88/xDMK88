@@ -1,4 +1,11 @@
 <script setup>
+import { useStore } from 'vuex'
+import { computed } from 'vue'
+import Employee from '@/components/Notifications/Employee'
+
+const store = useStore()
+const employees = computed(() => store.state.employees.employees)
+
 </script>
 <template>
   <NotificationGroup group="top">
@@ -43,6 +50,12 @@
                   <p class="font-semibold text-gray-800">
                     {{ notification.title }}
                   </p>
+                  <Employee
+                    v-if="employees[notification.obj.obj.uid_creator]"
+                    class="mt-1"
+                    :fotolink="employees[notification.obj.obj.uid_creator].fotolink"
+                    :name="employees[notification.obj.obj.uid_creator].name"
+                  />
                   <p class="text-sm font-semibold text-gray-500">
                     {{ notification.text }}
                   </p>

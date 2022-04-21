@@ -124,7 +124,6 @@ function redirect (title, uid) {
 
 </script>
 <template>
-  <!-- <pre>{{ store.state.tasks }}</pre> -->
   <div class="flex justify-end">
     <div class="font-SfProDisplayBold text-white bg-gray-800 rounded-xl p-2">
       <icon

@@ -271,7 +271,7 @@ export default {
       const textarea = document.querySelector('textarea')
       textarea.addEventListener('keyup', function () {
         if (this.scrollTop > 0) {
-          this.style.height = this.scrollHeight + 'px'
+          //  this.style.height = this.scrollHeight + 'px'
         }
         console.log(this.scrollTop)
         if (this.value.length === 0) {

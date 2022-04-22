@@ -231,7 +231,6 @@ input:focus {outline: 0;}
 .task-msg
 {
   resize: none;
-  overflow: hidden;
   height: 40px;
 
   box-sizing: border-box;
@@ -1204,7 +1203,6 @@ label
   border:none;
   padding: 9px 3px;
   width: 100% !important;
-  display: table !important;
 }
 .input-group-btn-send
 {

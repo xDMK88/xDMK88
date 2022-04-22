@@ -703,13 +703,11 @@ const actions = {
         data.value = 'Task name'
       }
       const url =
-        'https://web.leadertask.com/api/v1/task/name?uid=' +
-        data.uid +
-        '&value=' +
-        data.value
+        'https://web.leadertask.com/api/v1/task/name?uid=' + data.uid
       axios({
         url: url,
-        method: 'PATCH'
+        method: 'PATCH',
+        data: { name: data.value }
       })
         .then((resp) => {
           resolve(resp)

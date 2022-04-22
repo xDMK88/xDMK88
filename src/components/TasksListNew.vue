@@ -262,8 +262,8 @@
               class="taskName p-0.5 ring-0 outline-none"
               :contenteditable="props.node.info._isEditable"
               placeholder="Enter task name"
-              :no-n-l="true"
-              :no-h-t-m-l="true"
+              :no-nl="true"
+              :no-html="true"
               :class="{ 'uppercase': !props.node.info._isEditable && colors[props.node.info.uid_marker] && colors[props.node.info.uid_marker].uppercase, 'text-gray-500': props.node.info.status == 1 || props.node.info.status == 7, 'line-through': props.node.info.status == 1 || props.node.info.status == 7, 'font-extrabold': props.node.info.readed == 0 }"
               :style="{ color: getValidForeColor(colors[props.node.info.uid_marker]?.fore_color) }"
               @dblclick.stop="editTaskName(props.node.id)"
@@ -461,7 +461,6 @@ export default {
 
     const stop = ref(true)
     const draggables = document.querySelectorAll('.draggable')
-
     draggables.forEach(node => {
       node.addEventListener('drag', e => {
         stop.value = true
@@ -651,7 +650,6 @@ export default {
       const data = handleTaskSource()
       store.dispatch(TASK.CREATE_TASK, data)
         .then(() => {
-          // gotoNode(data.uid)
           lastSelectedTaskUid.value = data.uid
         })
       createTaskText.value = ''

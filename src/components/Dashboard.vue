@@ -202,7 +202,10 @@ function redirect (title, uid) {
                 :src="employees[task.uid_customer].fotolink"
               >
             </div>
-            <div class="tag-label cursor-default p-1 text-xs flex items-center">
+            <div
+              class="tag-label cursor-default p-1 text-xs flex items-center"
+              :style="task.uid_marker !== '00000000-0000-0000-0000-000000000000' ? {color: colors[task.uid_marker].fore_color} : ''"
+            >
               {{ task.customer_name }}
             </div>
             <div
@@ -216,6 +219,7 @@ function redirect (title, uid) {
             <div
               v-if="task.uid_project !== '00000000-0000-0000-0000-000000000000'"
               class="p-1 order-last flex align-items justify-around"
+              :style="task.uid_marker !== '00000000-0000-0000-0000-000000000000' ? {color: colors[task.uid_marker].fore_color} : ''"
             >
               <icon
                 :path="project.path"

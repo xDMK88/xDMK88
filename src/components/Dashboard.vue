@@ -6,6 +6,7 @@ import * as TASK from '@/store/actions/tasks.js'
 import unread from '@/icons/dashboardicons/unread.js'
 import project from '@/icons/projectDesktop.js'
 import gear from '@/icons/dashboardicons/gear.js'
+import today from '@/icons/calendar.js'
 import focus from '@/icons/dashboardicons/focus.js'
 import inwork from '@/icons/dashboardicons/inwork.js'
 import overdue from '@/icons/dashboardicons/overdue.js'
@@ -19,6 +20,7 @@ import { useStore } from 'vuex'
 const store = useStore()
 
 const testObj = reactive({
+  today: '',
   unread: '',
   inWork: '',
   inFocus: '',
@@ -28,6 +30,9 @@ const testObj = reactive({
 })
 
 onBeforeMount(() => {
+  store.dispatch(TASK.TASKS_REQUEST, new Date()).then(() => {
+    testObj.today = store.state.tasks.today.tasks
+  })
   store.dispatch(TASK.UNREAD_TASKS_REQUEST).then(() => {
     testObj.unread = store.state.tasks.unread.tasks
   })
@@ -88,6 +93,7 @@ const colors = reactive(computed(() => {
 }))
 
 const icons = {
+  today,
   unread,
   inwork,
   focus,
@@ -100,6 +106,7 @@ const iconsKeys = Object.keys(icons)
 
 // link logic
 const UID_TO_ACTION = {
+  '901841d9-0016-491d-ad66-8ee42d2b496b': TASK.TASKS_REQUEST,
   '46418722-a720-4c9e-b255-16db4e590c34': TASK.OVERDUE_TASKS_REQUEST,
   '017a3e8c-79ac-452c-abb7-6652deecbd1c': TASK.OPENED_TASKS_REQUEST,
   '5183b619-3968-4c3a-8d87-3190cfaab014': TASK.UNSORTED_TASKS_REQUEST,
@@ -122,6 +129,7 @@ function redirect (title, uid) {
   store.commit('basic', { key: 'mainSectionState', value: 'tasks' })
 }
 
+// setInterval(() => console.log(store.state.tasks), 10000)
 </script>
 <template>
   <div class="flex justify-end">
@@ -134,7 +142,23 @@ function redirect (title, uid) {
       </icon>
       <button>Настроить</button>
     </div>
+<!-- filter block -->
+    <div
+      class="w-1/12 h-2/6 absolute bg-white drop-shadow-lg mt-10 rounded-xl"
+    >
+      <div class="flex flex-col justify-center">
+        <div class="mt-3">
+          <div class="flex pl-8 pt-2" v-for="i in 5" :key="i">
+            <label>
+              <input class="mr-1" type="checkbox" checked>Сегодня
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </div>
+
   <div class="flex flex-wrap">
     <div class="flex flex-col lg:w-1/4 sm:w-4/4 bg-white dark:bg-slate-900 rounded-xl h-1/3 mb-8 max-h-[500px] max-w-screen-sm scroll-style mr-3 p-2 shadow-lg font-SfProTextNormal" :id="key" v-for="(elem, key, idx) in testObj" :key="testObj[key]">
       <taskhead>
@@ -167,7 +191,9 @@ function redirect (title, uid) {
               <task-status :task="task" />
             </div>
             <div class="font-normal">
-              <span class="max-w-full break-words">{{ task.name }}</span>
+              <span
+                class="max-w-full break-words"
+                :style="task.uid_marker !== '00000000-0000-0000-0000-000000000000' ? {color: colors[task.uid_marker].fore_color} : ''">{{ task.name }}</span>
             </div>
           </div>
           <div class="flex items-center text-xs">

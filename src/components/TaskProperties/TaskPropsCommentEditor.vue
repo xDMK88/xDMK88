@@ -35,8 +35,17 @@ export default {
   },
   emits: ['changeComment', 'endChangeComment'],
   data: () => ({
-    isEditable: false
+    isEditable: false,
+    prevText: ''
   }),
+  watch: {
+    comment: {
+      immediate: true,
+      handler: function (val) {
+        this.prevText = val
+      }
+    }
+  },
   methods: {
     getFixedCommentText () {
       return this.comment.replaceAll('\n', '<br/>')
@@ -62,6 +71,8 @@ export default {
     changeComment (e) {
       if (!this.canEdit) return
       const message = e.target.innerText.trim()
+      if (message === this.prevText) return
+      this.prevText = message
       this.$emit('changeComment', message)
     }
   }
@@ -69,16 +80,15 @@ export default {
 </script>
 
 <style scoped>
-.description-content
-{
-  width:100%;
-  font-size:14px;
+.description-content {
+  width: 100%;
+  font-size: 14px;
   padding-right: 5px;
   min-height: 100px;
   display: inline-block;
 }
 .description-content div:empty:before {
-  content:attr(data-placeholder);
-  color:gray
+  content: attr(data-placeholder);
+  color: gray;
 }
 </style>

@@ -1,6 +1,7 @@
 import * as TYPES from '@/websync/types.js'
 import { createMessage } from '@/websync/task_message.js'
 import { createTask } from '@/websync/task.js'
+import { createProject } from '@/websync/project.js'
 import { notify } from 'notiwind'
 
 export default function processCreate (obj) {
@@ -10,8 +11,23 @@ export default function processCreate (obj) {
     case TYPES.TYPE_OBJECT_TAG:
       break
     case TYPES.TYPE_OBJECT_PROJECT:
+      notify({
+        group: 'top',
+        title: 'Новый проект',
+        obj: obj,
+        text: obj.obj.name
+      }, 30000)
+      nt.play()
+      createProject(obj)
       break
     case TYPES.TYPE_OBJECT_TASK:
+      notify({
+        group: 'top',
+        title: 'Новая задача',
+        obj: obj,
+        text: obj.obj.name
+      }, 30000)
+      nt.play()
       createTask(obj)
       break
     case TYPES.TYPE_OBJECT_CONTACT:

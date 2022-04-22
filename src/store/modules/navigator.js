@@ -425,6 +425,16 @@ const mutations = {
       }
     }
   },
+  NAVIGATOR_UPDATE_PROJECT: (state, project) => {
+    visitChildren(
+      state.navigator.new_private_projects[0].items,
+      (value, index) => {
+        if (value.uid === project.uid) {
+          Object.assign(value, project)
+        }
+      }
+    )
+  },
   [NAVIGATOR_ERROR]: (state) => {
     state.status = 'error'
     state.hasLoadedOnce = true

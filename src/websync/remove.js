@@ -1,11 +1,13 @@
 import * as TYPES from '@/websync/types.js'
 import { removeTask } from '@/websync/task.js'
+import { removeProject } from '@/websync/project.js'
 
 export default function processRemove (obj) {
   switch (obj.type) {
     case TYPES.TYPE_OBJECT_TAG:
       break
     case TYPES.TYPE_OBJECT_PROJECT:
+      removeProject(obj)
       break
     case TYPES.TYPE_OBJECT_TASK:
       removeTask(obj.uid)

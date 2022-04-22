@@ -35,8 +35,17 @@ export default {
   },
   emits: ['changeComment', 'endChangeComment'],
   data: () => ({
-    isEditable: false
+    isEditable: false,
+    currText: ''
   }),
+  watch: {
+    comment: {
+      immediate: true,
+      handler: function (val) {
+        this.currText = val
+      }
+    }
+  },
   methods: {
     getFixedCommentText () {
       return this.comment.replaceAll('\n', '<br/>')
@@ -46,9 +55,29 @@ export default {
       return ''
     },
     editComment () {
-      console.log('editComment', this.canEdit, this.comment, this)
       if (!this.canEdit) return
       this.isEditable = true
+    },
+    /**
+     * @param {Element} el
+     * @returns {String}
+     */
+    getElementText (el) {
+      // пытаемся достать текст из едита браузера
+      // в котором сейчас идет ввод через Selection
+      if (typeof window.getSelection !== 'undefined') {
+        const sel = window.getSelection()
+        const tempRange = sel.getRangeAt(0)
+        sel.removeAllRanges()
+        const range = document.createRange()
+        range.selectNodeContents(el)
+        sel.addRange(range)
+        const text = sel.toString()
+        sel.removeAllRanges()
+        sel.addRange(tempRange)
+        return text.trim()
+      }
+      return el.innerText.trim()
     },
     removeEditComment (e) {
       if (!this.canEdit) return
@@ -56,29 +85,29 @@ export default {
       // чтобы у нас в интерфейсе поменялось
       // потому что на changeComment он только
       // на сервер отправляет и всё
-      const message = e.target.innerText.trim()
-      this.$emit('endChangeComment', message)
+      this.$emit('endChangeComment', this.currText)
     },
     changeComment (e) {
       if (!this.canEdit) return
-      const message = e.target.innerText.trim()
-      this.$emit('changeComment', message)
+      const text = this.getElementText(e.target)
+      if (text === this.currText) return
+      this.currText = text
+      this.$emit('changeComment', text)
     }
   }
 }
 </script>
 
 <style scoped>
-.description-content
-{
-  width:100%;
-  font-size:14px;
+.description-content {
+  width: 100%;
+  font-size: 14px;
   padding-right: 5px;
   min-height: 100px;
   display: inline-block;
 }
 .description-content div:empty:before {
-  content:attr(data-placeholder);
-  color:gray
+  content: attr(data-placeholder);
+  color: gray;
 }
 </style>

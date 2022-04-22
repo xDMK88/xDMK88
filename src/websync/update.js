@@ -1,11 +1,13 @@
 import * as TYPES from '@/websync/types.js'
 import { updateTask } from '@/websync/task.js'
+import { updateProject } from '@/websync/project.js'
 
 export default function processUpdate (obj) {
   switch (obj.type) {
     case TYPES.TYPE_OBJECT_TAG:
       break
     case TYPES.TYPE_OBJECT_PROJECT:
+      updateProject(obj)
       break
     case TYPES.TYPE_OBJECT_TASK:
       updateTask(obj)

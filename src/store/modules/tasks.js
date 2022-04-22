@@ -26,6 +26,7 @@ function pad2 (n) {
 const state = {
   tasks: false,
   unread: '',
+  today: '',
   inWork: '',
   inFocus: '',
   overdue: '',
@@ -93,6 +94,11 @@ const actions = {
       axios({ url: url, method: 'GET' })
         .then((resp) => {
           commit(TASK.TASKS_SUCCESS, resp)
+
+          state.today = resp.data
+          state.today.title = 'Сегодня'
+          state.today.link = '901841d9-0016-491d-ad66-8ee42d2b496b'
+
           if (resp.data.anothers_tags.length) {
             commit(TASK.ADD_TASK_TAGS, resp.data.anothers_tags)
           }
@@ -703,13 +709,11 @@ const actions = {
         data.value = 'Task name'
       }
       const url =
-        'https://web.leadertask.com/api/v1/task/name?uid=' +
-        data.uid +
-        '&value=' +
-        data.value
+        'https://web.leadertask.com/api/v1/task/name?uid=' + data.uid
       axios({
         url: url,
-        method: 'PATCH'
+        method: 'PATCH',
+        data: { name: data.value }
       })
         .then((resp) => {
           resolve(resp)

@@ -80,10 +80,6 @@
     v-if="status == 'loading'"
     :class="newConfig.listHasChildren ? 'pl-8' : 'pl-0'"
   />
-
-  <!--
-  <pre class="text-[10px] leading-none font-bold text-pink-500">newConfig: {{ newConfig }}</pre>
-  -->
   <!-- vue3-treeview -->
   <tree
     v-if="status == 'success'"
@@ -94,19 +90,12 @@
     @nodeFocus="nodeSelected"
     @nodeDragend="nodeDragEnd"
   >
-    <template #loading-slot>
-      <div class="flex-col w-full">
-        <div class="animate-pulse h-20 dark:bg-slate-900 bg-white my-1 border border-gray-300 dark:border-gray-700 rounded-xl" />
-        <div class="animate-pulse h-10 dark:bg-slate-900 bg-white my-1 border border-gray-300 dark:border-gray-700 rounded-xl" />
-        <div class="animate-pulse h-10 dark:bg-slate-900 bg-white my-1 border border-gray-300 dark:border-gray-700 rounded-xl" />
-      </div>
-    </template>
     <template #before-input="props">
       <div
         :id="props.node.info.uid"
         class="group task-node flex-col items-center w-full bg-white p-2 rounded-xl dark:bg-gray-900 dark:border-gray-700 border border-gray-300 my-0.5 relative"
         :style="{ backgroundColor: getValidBackColor(colors[props.node.info.uid_marker]?.back_color) }"
-        :class="{ 'bg-gray-200 dark:bg-gray-800': (props.node.info.status == 1 || props.node.info.status == 7) && props.node.info.uid_marker == '00000000-0000-0000-0000-000000000000' }"
+        :class="{ 'bg-gray-200 dark:bg-gray-800': (props.node.info.status == 1 || props.node.info.status == 7) && props.node.info.uid_marker == '00000000-0000-0000-0000-000000000000', 'ring-2 ring-orange-400 border border-orange-400': props.node.id === lastSelectedTaskUid }"
         @click.shift="clickAndShift(props.node)"
         @click.exact="selectedTasks = {}"
       >
@@ -273,8 +262,8 @@
               class="taskName p-0.5 ring-0 outline-none"
               :contenteditable="props.node.info._isEditable"
               placeholder="Enter task name"
-              :no-n-l="true"
-              :no-h-t-m-l="true"
+              :no-nl="true"
+              :no-html="true"
               :class="{ 'uppercase': !props.node.info._isEditable && colors[props.node.info.uid_marker] && colors[props.node.info.uid_marker].uppercase, 'text-gray-500': props.node.info.status == 1 || props.node.info.status == 7, 'line-through': props.node.info.status == 1 || props.node.info.status == 7, 'font-extrabold': props.node.info.readed == 0 }"
               :style="{ color: getValidForeColor(colors[props.node.info.uid_marker]?.fore_color) }"
               @dblclick.stop="editTaskName(props.node.id)"
@@ -472,7 +461,6 @@ export default {
 
     const stop = ref(true)
     const draggables = document.querySelectorAll('.draggable')
-
     draggables.forEach(node => {
       node.addEventListener('drag', e => {
         stop.value = true
@@ -534,7 +522,6 @@ export default {
 
     const nodeExpanding = (arg) => {
       if (loadedTasks.value[arg.id]) return
-      arg.state.isLoading = true
       store.dispatch(TASK.SUBTASKS_REQUEST, arg.id)
         .then(() => {
           store.commit(TASK.ADD_LOADED_TASK, arg.id)
@@ -550,7 +537,6 @@ export default {
           for (const task of store.state.tasks.subtasks.tasks) {
             arg.children.push(task.uid)
           }
-          arg.state.isLoading = false
         })
     }
 
@@ -664,7 +650,6 @@ export default {
       const data = handleTaskSource()
       store.dispatch(TASK.CREATE_TASK, data)
         .then(() => {
-          // gotoNode(data.uid)
           lastSelectedTaskUid.value = data.uid
         })
       createTaskText.value = ''

@@ -31,11 +31,6 @@ defineProps({
 let modalOneActive = ref(false)
 // Serves as linkage between requests from storage and tree view navigator
 const UID_TO_ACTION = {
-  '2bad1413-a373-4926-8a3c-58677a680714': [
-    TASK.UNREAD_TASKS_REQUEST,
-    TASK.IN_WORK_TASKS_REQUEST,
-    TASK.IN_FOCUS_TASKS_REQUEST
-  ],
   '901841d9-0016-491d-ad66-8ee42d2b496b': TASK.TASKS_REQUEST, // get today's day
   '46418722-a720-4c9e-b255-16db4e590c34': TASK.OVERDUE_TASKS_REQUEST,
   '017a3e8c-79ac-452c-abb7-6652deecbd1c': TASK.OPENED_TASKS_REQUEST,
@@ -54,9 +49,9 @@ const isAsideLgActive = computed(() => store.state.isAsideLgActive)
 const isDark = computed(() => store.state.darkMode)
 const navStack = computed(() => store.state.navbar.navStack)
 
-// const datePickerBG = computed(() => {
-//   return isDark.value ? 'rgb(31 41 55)' : 'rgb(243 244 246)'
-// })
+const datePickerBG = computed(() => {
+  return isDark.value ? 'rgb(31 41 55)' : 'rgb(243 244 246)'
+})
 const attrs = computed(() => store.state.calendar.calendar)
 const user = computed(() => store.state.user.user)
 const storeNavigator = computed(() => store.state.navigator.navigator)
@@ -68,14 +63,6 @@ const lastVisitedDate = ref(navStack.value && navStack.value.length && navStack.
 const currentDate = computed({
   get: () => lastVisitedDate.value,
   set: val => {
-    if (val === null) return
-    // Если кто найдет предыдущую выбранную дату на которую в данный
-    // момент отображаются данные то вставьте в lastVal
-    // чтобы не грузилось по одной и тоже дате два раза
-    // const lastVal = ?
-    // if (val.getDate() === lastVal?.getDate() &&
-    //     val.getMonth() === lastVal?.getMonth() &&
-    //     val.getFullYear() === lastVal?.getFullYear()) return
     if (isPropertiesMobileExpanded.value) { store.dispatch('asidePropertiesToggle', false) }
     store.commit('basic', { key: 'mainSectionState', value: 'tasks' })
     store.dispatch(TASK.TASKS_REQUEST, val)
@@ -118,7 +105,6 @@ const asideLgClose = () => {
 }
 
 // TODO: clean up messy logic
-
 const menuClick = (event, item) => {
   if (isPropertiesMobileExpanded.value) {
     store.dispatch('asidePropertiesToggle', false)
@@ -126,12 +112,6 @@ const menuClick = (event, item) => {
 
   // desktop check
   if (item.uid === '2bad1413-a373-4926-8a3c-58677a680714') {
-    const navElem = {
-      name: 'Рабочий стол',
-      key: 'greedSource',
-      value: { uid: '2bad1413-a373-4926-8a3c-58677a680714', param: null }
-    }
-    store.commit('updateStackWithInitValue', navElem)
     store.commit('basic', { key: 'mainSectionState', value: 'greed' })
     store.commit('basic', { key: 'greedPath', value: 'dashboard' })
     return
@@ -265,15 +245,17 @@ const tarifS = () => {
     </div>
     <nav-bar-item class="rounded-b-3xl pt-0 mt-0">
       <DatePicker
+        dot="true"
         id="Maincalendar"
-        ref="calendarclass"
         v-model="navigatorMenu.currentDate"
-        class="border-none text-xs px-3 calendar-custom calendar-nav-custom bg-slate-100"
-        style="border: none;!important; "
+        class="border-none text-xs px-3 calendar-custom calendar-nav-custom"
+        style="border: none!important;"
+        :style="{ backgroundColor: datePickerBG }"
         show-weeknumbers="left"
         days="-1"
         color="#CCC"
-        week-from-end="6"
+        ref="calendarclass"
+        weekFromEnd="6"
         from-page="fromPage"
         to-page="toPage"
         is-expanded
@@ -283,9 +265,9 @@ const tarifS = () => {
         :is-dark="isDark"
         mode="single"
         is-inline
-        in-next-month="true"
-        in-month="true"
-        in-prev-month="true"
+        inNextMonth="true"
+        inMonth="true"
+        inPrevMonth="true"
         select-attribute="dates"
       />
     </nav-bar-item>

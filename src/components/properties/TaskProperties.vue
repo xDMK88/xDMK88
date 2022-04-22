@@ -19,6 +19,7 @@ import { maska } from 'maska'
 import TaskPropsButtonDots from '@/components/TaskProperties/TaskPropsButtonDots.vue'
 import TaskPropsButtonFocus from '@/components/TaskProperties/TaskPropsButtonFocus.vue'
 import TaskPropsChatMessages from '@/components/TaskProperties/TaskPropsChatMessages.vue'
+import TaskPropsCommentEditor from '@/components/TaskProperties/TaskPropsCommentEditor.vue'
 
 export default {
   components: {
@@ -30,7 +31,8 @@ export default {
     TreeTagsItem,
     Popper,
     Checklist,
-    ModalBoxConfirm
+    ModalBoxConfirm,
+    TaskPropsCommentEditor
   },
   directives: {
     linkify,
@@ -961,6 +963,19 @@ export default {
     print: function (value) {
       console.log(value)
     },
+    onChangeComment: function (text) {
+      const data = {
+        uid: this.selectedTask.uid,
+        value: text
+      }
+      this.$store.dispatch(TASK.CHANGE_TASK_COMMENT, data)
+    },
+    endChangeComment: function (text) {
+      // чтобы у нас в интерфейсе поменялось
+      // потому что на changeComment он только
+      // на сервер отправляет и всё
+      this.selectedTask.comment = text
+    },
     HtmlRender: function (text) {
       const ur = text.split('lt://').pop()
       console.log(ur)
@@ -1231,7 +1246,7 @@ export default {
               </button>
             </div>
             <!-- Взять на исполнение -->
-           <div
+            <div
               v-else-if="selectedTask.type === 10"
               ref="btnRefEmployee"
               class="mt-3 tags-custom dark:bg-gray-800 dark:text-gray-100 active project-hover-close"
@@ -1274,8 +1289,9 @@ export default {
             <!-- Взять на исполнение -->
             <div
               v-else-if="selectedTask.type === 5"
-              ref="btnRefEmployee"  @click="ispolnit"
+              ref="btnRefEmployee"
               class="mt-3 tags-custom dark:bg-gray-800 dark:text-gray-100 active project-hover-close"
+              @click="ispolnit"
             >
 
               <svg
@@ -3079,24 +3095,14 @@ export default {
         :task-uid="selectedTask.uid"
         :checklist="selectedTask.checklist"
       />
-      <div
-        class="mt-3 description-content"
-        @click="editcomment"
-      >
-        <div
-          id="comment"
-          ref="comment"
-          v-linkify:options="{ className: 'text-blue-600'}"
-          class="dark:text-gray-100"
-          :contenteditable="isEditable"
-          :data-placeholder="placeholderComment"
-          @blur="changeComment($event)"
-          @keyup="changeComment($event)"
-          @focusout="removeeditcomment($event)"
-          v-html="selectedTask.comment ? selectedTask.comment.replaceAll('\n','<br/>') : ''"
-        />
-      </div>
-
+      <!-- Comment -->
+      <TaskPropsCommentEditor
+        class="mt-3"
+        :comment="selectedTask.comment ?? ''"
+        :can-edit="canEditComment"
+        @endChangeComment="endChangeComment"
+        @changeComment="onChangeComment"
+      />
       <!-- Show all -->
       <p
         v-if="taskMessages.length > 2 && !showAllMessages"
@@ -3123,7 +3129,8 @@ export default {
       v-if="isloading"
       src="/ajaxloader.gif"
     >
-    <div v-if="showpastefile"
+    <div
+      v-if="showpastefile"
       :id="'copypaste_' + selectedTask.uid"
       ref="pastefile"
       class="сopypastefiles"

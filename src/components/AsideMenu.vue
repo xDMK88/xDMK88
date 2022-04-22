@@ -112,6 +112,12 @@ const menuClick = (event, item) => {
 
   // desktop check
   if (item.uid === '2bad1413-a373-4926-8a3c-58677a680714') {
+    const navElem = {
+      name: item.label,
+      key: 'greedSource',
+      value: { uid: item.uid, param: null }
+    }
+    store.commit('updateStackWithInitValue', navElem)
     store.commit('basic', { key: 'mainSectionState', value: 'greed' })
     store.commit('basic', { key: 'greedPath', value: 'dashboard' })
     return

@@ -5,7 +5,7 @@ import Icon from '@/components/Icon.vue'
 import * as TASK from '@/store/actions/tasks.js'
 import unread from '@/icons/dashboardicons/unread.js'
 import project from '@/icons/projectDesktop.js'
-import gear from '@/icons/dashboardicons/gear.js'
+// import gear from '@/icons/dashboardicons/gear.js'
 import today from '@/icons/calendar.js'
 import focus from '@/icons/dashboardicons/focus.js'
 import inwork from '@/icons/dashboardicons/inwork.js'
@@ -96,9 +96,9 @@ const icons = {
   today,
   unread,
   inwork,
-  focus,
-  overdue,
   unsorted,
+  overdue,
+  focus,
   ready
 }
 
@@ -131,35 +131,8 @@ function redirect (title, uid) {
 // setInterval(() => console.log(store.state.tasks), 10000)
 </script>
 <template>
-  <div class="flex justify-end">
-    <div class="font-SfProDisplayBold text-white bg-gray-800 rounded-xl p-2">
-      <icon
-        :path="gear.path"
-        :width="gear.width"
-        :height="gear.height"
-        :viewBox="gear.viewBox">
-      </icon>
-      <button>Настроить</button>
-    </div>
-<!-- filter block -->
-    <!-- <div
-      class="w-1/12 h-2/6 absolute bg-white drop-shadow-lg mt-10 rounded-xl invisible"
-    >
-      <div class="flex flex-col justify-center">
-        <div class="mt-3">
-          <div class="flex pl-8 pt-2" v-for="i in 5" :key="i">
-            <label>
-              <input class="mr-1" :name="i" type="checkbox" checked>Сегодня
-            </label>
-          </div>
-        </div>
-      </div>
-    </div> -->
-
-  </div>
-
-  <div class="flex flex-wrap">
-    <div class="flex flex-col lg:w-1/4 sm:w-4/4 bg-white dark:bg-slate-900 rounded-xl h-1/3 mb-8 max-h-[500px] max-w-screen-sm scroll-style mr-3 p-2 shadow-lg font-SfProTextNormal" :id="key" v-for="(elem, key, idx) in testObj" :key="testObj[key]">
+  <div class="grid grid-rows-2 grid-flow-col max-h-[85vh]">
+    <div class="flex flex-col bg-white dark:bg-slate-900 rounded-xl min-w-[380px] mb-4 max-w-screen-sm scroll-style mr-3 px-2 pt-2 shadow-sm font-SfProTextNormal" :id="key" v-for="(elem, key, idx) in testObj" :key="testObj[key]">
       <taskhead>
         <template v-slot:block-name>
           <span
@@ -178,7 +151,7 @@ function redirect (title, uid) {
           />
         </template>
       </taskhead>
-      <div class="max-h-[500px] scroll-style">
+      <div class="scroll-style">
         <div
           v-for="(task, taskIdx) in testObj[key]"
           :key="task.uid"
@@ -191,14 +164,14 @@ function redirect (title, uid) {
             </div>
             <div class="font-normal">
               <span
-                class="max-w-full break-words"
+                class="max-w-full break-words text-sm"
                 :style="task.uid_marker !== '00000000-0000-0000-0000-000000000000' ? {color: colors[task.uid_marker].fore_color} : ''">{{ task.name }}</span>
             </div>
           </div>
           <div class="flex items-center text-xs">
             <div>
               <img
-                class="w-5 h-5 border-solid border-2 border-lime-500 rounded-md"
+                class="w-[22px] h-[22px] border-solid border-2 border-lime-500 rounded-md"
                 :src="employees[task.uid_customer].fotolink"
               >
             </div>
@@ -242,4 +215,32 @@ function redirect (title, uid) {
       </div>
     </div>
   </div>
+
+  <!--
+  <div class="">
+    <div class="font-SfProDisplayBold text-white bg-gray-800 rounded-xl p-2">
+      <icon
+        :path="gear.path"
+        :width="gear.width"
+        :height="gear.height"
+        :viewBox="gear.viewBox">
+      </icon>
+      <button>Настроить</button>
+    </div>
+    -->
+    <!-- <div
+      class="w-1/12 h-2/6 absolute bg-white drop-shadow-lg mt-10 rounded-xl invisible"
+    >
+      <div class="flex flex-col justify-center">
+        <div class="mt-3">
+          <div class="flex pl-8 pt-2" v-for="i in 5" :key="i">
+            <label>
+              <input class="mr-1" :name="i" type="checkbox" checked>Сегодня
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  -->
 </template>

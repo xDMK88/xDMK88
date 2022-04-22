@@ -50,7 +50,7 @@ const isDark = computed(() => store.state.darkMode)
 const navStack = computed(() => store.state.navbar.navStack)
 
 const datePickerBG = computed(() => {
-  return isDark.value ? 'rgb(31 41 55)' : 'rgb(243 244 246)'
+  return isDark.value ? 'rgb(31 41 55)' : 'rgb(241, 245, 249)'
 })
 const attrs = computed(() => store.state.calendar.calendar)
 const user = computed(() => store.state.user.user)
@@ -201,7 +201,7 @@ const tarifS = () => {
   <aside
     v-show="!isFullScreen"
     id="aside"
-    class="w-80 fixed top-0 z-40 h-screen transition-position lg:left-0"
+    class="w-80 fixed top-0 z-40 h-screen transition-position lg:left-0 bg-slate-100"
     :class="[ isAsideMobileExpanded ? 'left-0' : '-left-80', isAsideLgActive ? 'block' : 'lg:hidden xl:block' ]"
   >
     <div class="flex flex-row w-full text-dark flex-1 h-12 items-center">

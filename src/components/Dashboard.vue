@@ -128,7 +128,6 @@ function redirect (title, uid) {
   store.commit('basic', { key: 'taskListSource', value: { uid: uid, param: null } })
   store.commit('basic', { key: 'mainSectionState', value: 'tasks' })
 }
-
 // setInterval(() => console.log(store.state.tasks), 10000)
 </script>
 <template>
@@ -143,19 +142,19 @@ function redirect (title, uid) {
       <button>Настроить</button>
     </div>
 <!-- filter block -->
-    <div
-      class="w-1/12 h-2/6 absolute bg-white drop-shadow-lg mt-10 rounded-xl"
+    <!-- <div
+      class="w-1/12 h-2/6 absolute bg-white drop-shadow-lg mt-10 rounded-xl invisible"
     >
       <div class="flex flex-col justify-center">
         <div class="mt-3">
           <div class="flex pl-8 pt-2" v-for="i in 5" :key="i">
             <label>
-              <input class="mr-1" type="checkbox" checked>Сегодня
+              <input class="mr-1" :name="i" type="checkbox" checked>Сегодня
             </label>
           </div>
         </div>
       </div>
-    </div>
+    </div> -->
 
   </div>
 

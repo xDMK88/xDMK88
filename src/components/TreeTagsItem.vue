@@ -135,7 +135,7 @@ export default {
       <label
         class="break-words"
         :for="model.uid"
-      >{{ model.name.substring(0, 15) }}</label>
+      >{{ model.name }}</label>
     </div>
     <ul
       v-show="isOpen"

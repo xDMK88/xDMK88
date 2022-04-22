@@ -7,6 +7,7 @@ import {
 } from '../actions/auth'
 import { RESET_STATE_NAVIGATOR } from '../actions/navigator'
 import { RESET_STATE_TASKS } from '../actions/tasks'
+import { RESET_STATE_PROJECT } from '../actions/projects'
 import { notify } from 'notiwind'
 import axios from 'axios'
 
@@ -73,9 +74,12 @@ const actions = {
   [AUTH_LOGOUT]: ({ commit }) => {
     return new Promise((resolve, reject) => {
       commit(AUTH_LOGOUT)
+      localStorage.removeItem('user-token')
+      localStorage.removeItem('user-refresh-token')
       const url = 'https://web.leadertask.com/api/v1/account/exit'
       commit(RESET_STATE_NAVIGATOR)
       commit(RESET_STATE_TASKS)
+      commit(RESET_STATE_PROJECT)
       axios.get(url)
         .then(resp => {
           resolve(resp)
@@ -89,8 +93,6 @@ const actions = {
           }, 15000)
           reject(err)
         })
-      localStorage.removeItem('user-token')
-      localStorage.removeItem('user-refresh-token')
     })
   }
 }

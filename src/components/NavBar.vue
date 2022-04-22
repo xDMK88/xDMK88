@@ -308,6 +308,7 @@ const openProjectProperties = (project, parentProjectUid = '') => {
             @open:popper="toggleTaskHoverPopper(true)"
             @close:popper="toggleTaskHoverPopper(false)"
           >
+
             <template #content>
               <div class="flex flex-col text-sm w-60">
                 <div
@@ -328,6 +329,7 @@ const openProjectProperties = (project, parentProjectUid = '') => {
                   class="flex cursor-pointer items-center hover:bg-gray-100 hover:dark:bg-stone-800 py-0.5 px-1 rounded-md"
                   @click="openProjectProperties(false, navItem.uid)"
                 >
+
                   <icon
                     class="mr-2 text-gray-500 p-2"
                     :path="add.path"

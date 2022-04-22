@@ -644,6 +644,7 @@ export default {
           data.tags = [taskListSource.value.param]
           break
       }
+      console.log(data)
       return data
     }
 
@@ -656,7 +657,6 @@ export default {
         const data = handleTaskSource(copiedTasks.value[uid], uidParent)
         store.dispatch(TASK.CREATE_TASK, data)
       }
-
       store.commit(TASK.RESET_COPY_TASK)
     }
 

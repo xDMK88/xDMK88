@@ -71,7 +71,7 @@ export default {
         (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
       )
     }
-    const changeEmployee = (uid, email) => {
+    const changeEmployee = (email) => {
       console.log(email)
       if (email !== '') {
         const data = {
@@ -339,8 +339,8 @@ export default {
     }
     const handleInput = () => {
       const timestart = this.timeStart === '' ? 'T00:00:00' : 'T' + this.timeStart
-      const timeend = this.timeEnd === '' && this.timeStart !== '' ? timestart : this.timeEnd === '' ? '' : 'T' + this.timeEnd + ':00'
-      console.log(new Date(this.range.start).getFullYear() + '-' + (pad2(new Date(this.range.start).getMonth() + 1)) + '-' + new Date(this.range.start).getDate() + timestart)
+      console.log(timestart)
+      const timeend = this.timeEnd === '' ? '' : 'T' + this.timeEnd + ':00'
       const starttime = new Date(this.range.start).getFullYear() + '-' + (pad2(new Date(this.range.start).getMonth() + 1)) + '-' + pad2(new Date(this.range.start).getDate()) + timestart
       const startend = new Date(this.range.end).getFullYear() + '-' + (pad2(new Date(this.range.start).getMonth() + 1)) + '-' + pad2(new Date(this.range.end).getDate()) + timeend
       const data = {
@@ -356,6 +356,30 @@ export default {
           this.timeEnd = timeend !== '' ? '' : timeend
           this.timeStartActive = true
         })
+    }
+    const TimeSelectStart = () => {
+      this.timeEditStart = !this.timeEditStart
+    }
+    const TimeSelectEnd = () => {
+      this.timeEditEnd = !this.timeEditEnd
+    }
+    const TimeActiveStart = (event) => {
+      if (event.target.value.length > 1) {
+        this.timeEndRange = true
+      } else {
+        this.timeEndRange = false
+      }
+    }
+    const calendarTimeStartChange = (event) => {
+      const timeStartValue = event.target.value
+      this.$refs.inputTimeStart.value = timeStartValue
+    }
+    const calendarTimeEndChange = (event) => {
+      const timeEndValue = event.target.value
+      this.$refs.inputTimeEnd.value = timeEndValue
+    }
+    const onDayClick = () => {
+      this.timeStartActive = true
     }
     const resetRepeat = () => {
       const data = {
@@ -703,31 +727,6 @@ export default {
         }
       }
     }
-    const TimeSelectStart = () => {
-      this.timeEditStart = !this.timeEditStart
-    }
-    const TimeSelectEnd = () => {
-      this.timeEditEnd = !this.timeEditEnd
-    }
-    const TimeActiveStart = (event) => {
-      if (event.target.value.length > 1) {
-        this.timeEndRange = true
-      } else {
-        this.timeEndRange = false
-      }
-    }
-    const calendarTimeStartChange = (event) => {
-      const timeStartValue = event.target.value
-      this.$refs.inputTimeStart.value = timeStartValue
-    }
-    const calendarTimeEndChange = (event) => {
-      const timeEndValue = event.target.value
-      this.$refs.inputTimeEnd.value = timeEndValue
-    }
-    const onDayClick = () => {
-      this.timeStartActive = true
-      this.timeStart = '00:00'
-    }
     const tabChanged = (event) => {
       console.log(event.target.value)
       if (event.target.value === '0') {
@@ -1040,10 +1039,17 @@ export default {
     has-cancel
     button-label="Delete"
     @confirm="delTask"
-    @click="delTask"
   >
-    <p class="text-center">
-      Do you really wanna delete this task?
+    <p
+      v-if="tasks[selectedTask.uid]"
+      class="text-center"
+    >
+      Do you really wanna delete <strong>"{{ selectedTask.name }}"</strong> task?
+      <span
+        v-if="selectedTask.has_children"
+      >
+        Children will also be affected!
+      </span>
     </p>
   </modal-box-confirm>
   <div class="break-words">
@@ -1323,7 +1329,7 @@ export default {
                       <div
                         v-if="key.uid !== cusers.current_user_uid"
                         class="list-employee-access"
-                        @click="changeEmployee(selectedTask.uid, key.email)"
+                        @click="changeEmployee(key.email)"
                       >
                         <img
                           :src="key.fotolink"
@@ -1363,7 +1369,7 @@ export default {
                           :checked="selectedTask.email_performer!=='' && selectedTask.email_performer===key.email"
                           style="display: none"
                           @click="unchecked"
-                          @change="changeEmployee(selectedTask.uid, key.email)"
+                          @change="changeEmployee(key.email)"
                         >
                       </div>
                     </div>
@@ -1603,7 +1609,7 @@ export default {
                   @dayclick="onDayClick"
                 >
                   <template #footer>
-                    <div v-if="timeStartActive = timeStart !== ''">
+                    <div v-if="timeStartActive">
                       <div class="timestamp-custom">
                         Установить напоминание
                       </div>
@@ -3122,6 +3128,8 @@ export default {
       ref="pastefile"
       class="сopypastefiles"
     ></div>
+    <div class="quote-request">
+    </div>
     <div class="input-group">
       <span class="input-group-addon input-group-attach dark:bg-gray-800 dark:text-gray-100">
         <div class="example-1">
@@ -3159,6 +3167,7 @@ export default {
         @keydown.enter.exact.prevent="createTaskMsg"
         @keydown.enter.shift.exact.prevent="cursorPosition(this)"
       />
+      <editor-content :editor="editor" />
       <span class="input-group-addon input-group-btn-send dark:bg-gray-800 dark:text-gray-100">
         <button
           type="button"

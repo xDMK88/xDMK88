@@ -39,7 +39,7 @@
       class="bg-orange-500 px-2 rounded-xl text-white mr-1 hover:bg-orange-500 bg-opacity-70"
       @click="showInspector = true"
     >
-      Delegate
+      Поручить
     </button>
     <div
       class="flex items-center bg-gray-600 dark:bg-gray-700 bg-opacity-70 rounded-xl w-full"

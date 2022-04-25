@@ -51,7 +51,7 @@ const cancel = () => confirmCancel('cancel')
       v-show="value"
       has-table
       :title="title"
-      class="shadow-xl border border-gray-300 w-50 max-h-modal md:w-4/5 lg:w-4/5 z-50 p-5 rounded-2xl"
+      class="shadow-xl border border-gray-300 w-50 max-h-modal md:w-4/5 lg:w-1/5 z-50 p-5 rounded-2xl"
       @header-icon-click="cancel"
       @header-icon2-click="logout"
     >

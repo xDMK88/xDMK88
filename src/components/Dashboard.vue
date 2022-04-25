@@ -208,10 +208,8 @@ function redirect (title, uid) {
       class="flex flex-col bg-white dark:bg-slate-900 rounded-xl min-w-[380px] mb-4 max-w-screen-sm scroll-style mr-3 px-2 pt-2 shadow-sm font-SfProTextNormal"
       :id="key"
       v-for="(elem, key, idx) in testObj"
-      :style="{ display: checkboxes[key] }"
       :key="elem"
     >
-      <pre>{{ checkboxes[key] }}</pre>
       <taskhead>
         <template v-slot:block-name>
           <span

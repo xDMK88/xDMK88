@@ -1,12 +1,9 @@
+import store from '@/store/index.js'
 import { createProject } from '@/websync/project.js'
 import { createTask } from '@/websync/task.js'
 import { createMessage } from '@/websync/task_message.js'
 import * as TYPES from '@/websync/types.js'
 import { notify } from 'notiwind'
-
-import store from '@/store/index.js'
-import { computed } from 'vue'
-const user = computed(() => store.state.user.user)
 
 function showNotify (notification) {
   notify(notification, 30000)
@@ -15,22 +12,32 @@ function showNotify (notification) {
   nt.play()
 }
 
+function currentUserUid () {
+  return store?.state?.user?.user?.current_user_uid
+}
+
+function currentUserEmail () {
+  return store?.state?.user?.user?.current_user_email
+}
+
 export default function processCreate (obj) {
-  console.log(user.value.current_user_uid)
   switch (obj.type) {
     case TYPES.TYPE_OBJECT_TAG:
       break
     case TYPES.TYPE_OBJECT_PROJECT:
-      showNotify({
-        group: 'top',
-        title: 'Новый проект',
-        obj: obj,
-        text: obj.obj.name
-      })
+      console.log('TYPE_OBJECT_PROJECT', obj)
+      if (obj.obj.email_creator !== currentUserEmail()) {
+        showNotify({
+          group: 'top',
+          title: 'Новый проект',
+          obj: obj,
+          text: obj.obj.name
+        })
+      }
       createProject(obj)
       break
     case TYPES.TYPE_OBJECT_TASK:
-      if (obj.obj.type !== 1 && obj.obj.type !== 2) {
+      if (obj.obj.uid_customer !== currentUserUid()) {
         showNotify({
           group: 'top',
           title: 'Новая задача',
@@ -59,13 +66,14 @@ export default function processCreate (obj) {
     case TYPES.TYPE_OBJECT_TASK_FILE:
       break
     case TYPES.TYPE_OBJECT_TASK_MSG:
-      console.log('TYPE_OBJECT_TASK_MSG', obj)
-      showNotify({
-        group: 'top',
-        title: 'Новое сообщение',
-        obj: obj,
-        text: obj.obj.msg
-      })
+      if (obj.obj.uid_creator !== currentUserUid()) {
+        showNotify({
+          group: 'top',
+          title: 'Новое сообщение',
+          obj: obj,
+          text: obj.obj.msg
+        })
+      }
       createMessage(obj)
       break
     case TYPES.TYPE_OBJECT_TASK_TAG:

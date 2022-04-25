@@ -4,6 +4,10 @@ import { createMessage } from '@/websync/task_message.js'
 import * as TYPES from '@/websync/types.js'
 import { notify } from 'notiwind'
 
+import store from '@/store/index.js'
+import { computed } from 'vue'
+const user = computed(() => store.state.user.user)
+
 function showNotify (notification) {
   notify(notification, 30000)
   const nt = new Audio(require('@/assets/sounds/notification.mp3'))
@@ -12,6 +16,7 @@ function showNotify (notification) {
 }
 
 export default function processCreate (obj) {
+  console.log(user.value.current_user_uid)
   switch (obj.type) {
     case TYPES.TYPE_OBJECT_TAG:
       break

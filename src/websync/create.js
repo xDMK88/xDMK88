@@ -1,33 +1,38 @@
-import * as TYPES from '@/websync/types.js'
-import { createMessage } from '@/websync/task_message.js'
-import { createTask } from '@/websync/task.js'
 import { createProject } from '@/websync/project.js'
+import { createTask } from '@/websync/task.js'
+import { createMessage } from '@/websync/task_message.js'
+import * as TYPES from '@/websync/types.js'
 import { notify } from 'notiwind'
 
-export default function processCreate (obj) {
+function showNotify (notification) {
+  notify(notification, 30000)
   const nt = new Audio(require('@/assets/sounds/notification.mp3'))
   nt.volume = 0.5
+  nt.play()
+}
+
+export default function processCreate (obj) {
   switch (obj.type) {
     case TYPES.TYPE_OBJECT_TAG:
       break
     case TYPES.TYPE_OBJECT_PROJECT:
-      notify({
+      showNotify({
         group: 'top',
         title: 'Новый проект',
         obj: obj,
         text: obj.obj.name
-      }, 30000)
-      nt.play()
+      })
       createProject(obj)
       break
     case TYPES.TYPE_OBJECT_TASK:
-      notify({
-        group: 'top',
-        title: 'Новая задача',
-        obj: obj,
-        text: obj.obj.name
-      }, 30000)
-      nt.play()
+      if (obj.obj.type !== 1 && obj.obj.type !== 2) {
+        showNotify({
+          group: 'top',
+          title: 'Новая задача',
+          obj: obj,
+          text: obj.obj.name
+        })
+      }
       createTask(obj)
       break
     case TYPES.TYPE_OBJECT_CONTACT:
@@ -49,13 +54,13 @@ export default function processCreate (obj) {
     case TYPES.TYPE_OBJECT_TASK_FILE:
       break
     case TYPES.TYPE_OBJECT_TASK_MSG:
-      notify({
+      console.log('TYPE_OBJECT_TASK_MSG', obj)
+      showNotify({
         group: 'top',
         title: 'Новое сообщение',
         obj: obj,
         text: obj.obj.msg
-      }, 30000)
-      nt.play()
+      })
       createMessage(obj)
       break
     case TYPES.TYPE_OBJECT_TASK_TAG:

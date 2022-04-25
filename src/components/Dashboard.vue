@@ -49,35 +49,27 @@ const testObj = reactive({
 onBeforeMount(() => {
   store.dispatch(TASK.OPENED_TASKS_REQUEST).then(() => {
     testObj.open = store.state.tasks.open.tasks
-    testObj.open.isVisible = true
   })
   store.dispatch(TASK.TASKS_REQUEST, new Date()).then(() => {
     testObj.today = store.state.tasks.today.tasks
-    testObj.today.isVisible = true
   })
   store.dispatch(TASK.UNREAD_TASKS_REQUEST).then(() => {
     testObj.unread = store.state.tasks.unread.tasks
-    testObj.unread.isVisible = true
   })
   store.dispatch(TASK.IN_WORK_TASKS_REQUEST).then(() => {
     testObj.inWork = store.state.tasks.inWork.tasks
-    testObj.inWork.isVisible = true
   })
   store.dispatch(TASK.IN_FOCUS_TASKS_REQUEST).then(() => {
     testObj.inFocus = store.state.tasks.inFocus.tasks
-    testObj.inFocus.isVisible = true
   })
   store.dispatch(TASK.OVERDUE_TASKS_REQUEST).then(() => {
     testObj.overdue = store.state.tasks.overdue.tasks
-    testObj.overdue.isVisible = true
   })
   store.dispatch(TASK.UNSORTED_TASKS_REQUEST).then(() => {
     testObj.unsorted = store.state.tasks.unsorted.tasks
-    testObj.unsorted.isVisible = true
   })
   store.dispatch(TASK.READY_FOR_COMPLITION_TASKS_REQUEST).then(() => {
     testObj.ready = store.state.tasks.ready.tasks
-    testObj.ready.isVisible = true
   })
 })
 
@@ -112,43 +104,43 @@ const icons = {
 //   visible: false
 // })
 
-// let checkboxes = localStorage.getItem('activeCheckbox')
-// checkboxes = JSON.parse(checkboxes)
-
-// window.onload = function () {
-//   for (const elem in checkboxes) {
-//     if (checkboxes[elem] === 'flex') {
-//       document.getElementById(elem + 'checkbox').checked = true
-//     } else {
-//       document.getElementById(elem + 'checkbox').checked = false
-//     }
-//     document.getElementById(elem).display = checkboxes[elem]
+// for (const elem in checkboxes) {
+//   if (checkboxes[elem] === 'flex') {
+//     document.getElementById(elem + 'checkbox').checked = true
+//   } else {
+//     document.getElementById(elem + 'checkbox').checked = false
 //   }
+//   console.log(document.getElementById(elem + 'checkbox'))
 // }
 
 // const activeCheckbox = reactive({
 //   today: '',
 //   unread: '',
-//   inwork: '',
-//   unsorted: '',
+//   inWork: '',
+//   inFocus: '',
 //   overdue: '',
-//   focus: '',
+//   unsorted: '',
 //   ready: '',
 //   open: ''
 // })
 
 // function hide (cardId) {
-//   const elem = document.getElementById(cardId)
-//   // const elemClass = 'flex flex-col bg-white dark:bg-slate-900 rounded-xl min-w-[380px] mb-4 max-w-screen-sm scroll-style mr-3 px-2 pt-2 shadow-sm font-SfProTextNormal'
-//   if (elem.style.display === 'none') {
-//     elem.style.display = 'flex'
+//   if (document.getElementById(cardId).style.display === 'flex') {
+//     document.getElementById(cardId).style.display = 'none'
 //   } else {
-//     elem.style.display = 'none'
+//     document.getElementById(cardId).style.display = 'flex'
 //   }
-//   activeCheckbox[cardId] = elem.style.display
-
-//   // localStorage.setItem('activeCheckbox', JSON.stringify(activeCheckbox))
+//   console.log(activeCheckbox[cardId])
+//   activeCheckbox[cardId] = document.getElementById(cardId).style.display
+//   console.log(activeCheckbox[cardId])
+//   console.log(document.getElementById(cardId).style.display)
+//   localStorage.setItem('activeCheckbox', JSON.stringify(activeCheckbox))
 // }
+
+// const checkboxes = computed(() => {
+//   return JSON.parse(localStorage.getItem('activeCheckbox'))
+// })
+// console.log(localStorage)
 
 const iconsKeys = Object.keys(icons)
 
@@ -179,14 +171,16 @@ function redirect (title, uid) {
 // setInterval(() => console.log(store.state.tasks), 10000)
 </script>
 <template>
-  <!-- <div class="flex justify-end">
+  <!-- <pre>{{ activeCheckbox }}</pre>
+  <pre>{{ checkboxes }}</pre>
+  <div class="flex justify-end">
     <div class="flex-col items-center w-2/12 bg-gray-200">
       <div class="w-2/2">
         <button class="w-1/2 bg-gray-100" @click="cardMenu.visible ? cardMenu.visible = false : cardMenu.visible = true">Настроить</button>
       </div>
       <div
         class="flex-col absolute bg-green-100 w-[270px] h-[320px]"
-        :style="cardMenu.visible === false ? { opacity: '.1' } : { opacity: '1' }"
+        :style="cardMenu.visible === false ? { visibility: 'hidden' } : { visibility: 'visible' }"
       >
         <div class="pl-3.5">
           <div
@@ -194,7 +188,7 @@ function redirect (title, uid) {
             class="mt-3.5"
           >
             <label>
-              <input type="checkbox" :id="key + 'checkbox'" @click="hide(key)" checked>
+              <input type="checkbox" :id="key + 'checkbox'" @click="hide(key)" :checked="checkboxes[key] === 'flex' ? true : false ">
               {{ store.state.tasks[key].title }}
             </label>
           </div>
@@ -202,7 +196,6 @@ function redirect (title, uid) {
       </div>
     </div>
   </div> -->
-
   <div class="grid grid-rows-2 grid-flow-col max-h-[85vh]">
     <div
       class="flex flex-col bg-white dark:bg-slate-900 rounded-xl min-w-[380px] mb-4 max-w-screen-sm scroll-style mr-3 px-2 pt-2 shadow-sm font-SfProTextNormal"

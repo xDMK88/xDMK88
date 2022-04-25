@@ -7,6 +7,7 @@ import unread from '@/icons/dashboardicons/unread.js'
 import project from '@/icons/projectDesktop.js'
 // import gear from '@/icons/dashboardicons/gear.js'
 import today from '@/icons/calendar.js'
+import open from '@/icons/clock.js'
 import focus from '@/icons/dashboardicons/focus.js'
 import inwork from '@/icons/dashboardicons/inwork.js'
 import overdue from '@/icons/dashboardicons/overdue.js'
@@ -26,10 +27,14 @@ const testObj = reactive({
   inFocus: '',
   overdue: '',
   unsorted: '',
-  ready: ''
+  ready: '',
+  open: ''
 })
 
 onBeforeMount(() => {
+  store.dispatch(TASK.OPENED_TASKS_REQUEST).then(() => {
+    testObj.open = store.state.tasks.open.tasks
+  })
   store.dispatch(TASK.TASKS_REQUEST, new Date()).then(() => {
     testObj.today = store.state.tasks.today.tasks
   })
@@ -52,29 +57,6 @@ onBeforeMount(() => {
     testObj.ready = store.state.tasks.ready.tasks
   })
 })
-// const unreadTasks = computed(() => {
-//   return store.state.tasks.unread.tasks
-// })
-
-// const inWork = computed(() => {
-//   return store.state.tasks.inWork.tasks
-// })
-
-// const inFocus = computed(() => {
-//   return store.state.tasks.inFocus.tasks
-// })
-
-// const inOverdue = computed(() => {
-//   return store.state.tasks.overdue.tasks
-// })
-
-// const inUnsorted = computed(() => {
-//   return store.state.tasks.unsorted.tasks
-// })
-
-// const inReady = computed(() => {
-//   return store.state.tasks.ready.tasks
-// })
 
 const tags = reactive(computed(() => {
   return store.state.tasks.tags
@@ -99,7 +81,8 @@ const icons = {
   unsorted,
   overdue,
   focus,
-  ready
+  ready,
+  open
 }
 
 const iconsKeys = Object.keys(icons)

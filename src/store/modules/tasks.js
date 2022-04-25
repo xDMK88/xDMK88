@@ -32,6 +32,7 @@ const state = {
   overdue: '',
   unsorted: '',
   ready: '',
+  open: '',
   tags: {},
   selectedTag: null,
   subtasks: false,
@@ -224,6 +225,7 @@ const actions = {
       axios({ url: url, method: 'GET' })
         .then((resp) => {
           commit(TASK.TASKS_SUCCESS, resp)
+          commit(TASK.OPENED_TASKS_REQUEST, resp)
           if (resp.data.anothers_tags.length) {
             commit(TASK.ADD_TASK_TAGS, resp.data.anothers_tags)
           }
@@ -1445,6 +1447,11 @@ const mutations = {
       )
     }
     state.newtasks[task.uid_parent].state.opened = true
+  },
+  [TASK.OPENED_TASKS_REQUEST]: (state, resp) => {
+    state.open = resp.data
+    state.open.title = 'Открытые задачи'
+    state.open.link = '017a3e8c-79ac-452c-abb7-6652deecbd1c'
   },
   [TASK.SELECT_TAG]: (state, tag) => {
     state.selectedTag = tag

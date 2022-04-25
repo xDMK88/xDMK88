@@ -13,11 +13,11 @@ function showNotify (notification) {
 }
 
 function currentUserUid () {
-  return store?.state?.user?.user?.value?.current_user_uid
+  return store?.state?.user?.user?.current_user_uid
 }
 
 function currentUserEmail () {
-  return store?.state?.user?.user?.value?.current_user_email
+  return store?.state?.user?.user?.current_user_email
 }
 
 export default function processCreate (obj) {

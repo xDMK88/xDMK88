@@ -122,8 +122,9 @@ const changeTaskStatus = (uid, status) => {
         </div>
       </div>
     </template>
+    <!-- убрал класс realtive -->
     <div
-      class="relative border-2 border-gray-300 rounded-md mr-1 flex items-center justify-center mt-0.5"
+      class="border-2 border-gray-300 rounded-md mr-1 flex items-center justify-center mt-0.5"
       :class="{ 'cursor-pointer': [1, 2, 3].includes(props.task.type), 'cursor-not-allowed': props.task.type == 4 }"
       style="min-width:20px; min-height: 20px;"
     >

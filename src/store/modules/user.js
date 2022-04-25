@@ -46,6 +46,7 @@ const mutations = {
   [USER_SUCCESS]: (state, resp) => {
     state.status = 'success'
     state.user = resp.data
+    console.log(state.user)
     state.hasLoadedOnce = true
   },
   [USER_ERROR]: state => {

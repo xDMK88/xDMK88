@@ -20,15 +20,29 @@
       </span>
     </p>
   </modal-box-confirm>
+  <inspector-modal-box
+    v-model="showInspector"
+    button="warning"
+    has-button
+    has-cancel
+    button-label="Delete"
+  >
+  </inspector-modal-box>
 
   <!-- Add task input -->
   <div
     v-if="taskListSource && !DONT_SHOW_TASK_INPUT_UIDS[taskListSource.uid]"
-    class="fixed-create"
+    class="fixed-create flex"
     :class="newConfig.listHasChildren ? 'pl-8' : 'pl-0'"
   >
+    <button
+      class="bg-orange-500 px-2 rounded-xl text-white mr-1 hover:bg-orange-500 bg-opacity-70"
+      @click="showInspector = true"
+    >
+      Delegate
+    </button>
     <div
-      class="flex items-center bg-gray-600 dark:bg-gray-700 bg-opacity-70 rounded-xl"
+      class="flex items-center bg-gray-600 dark:bg-gray-700 bg-opacity-70 rounded-xl w-full"
     >
       <div
         class="flex items-center pl-3"
@@ -390,6 +404,7 @@ import TaskStatus from '@/components/TasksList/TaskStatus.vue'
 import EmptyTasksListPics from '@/components/TasksList/EmptyTasksListPics.vue'
 import Popper from 'vue3-popper'
 import ModalBoxConfirm from '@/components/modals/ModalBoxConfirm.vue'
+import InspectorModalBox from '@/components/Inspector/InspectorModalBox.vue'
 import contenteditable from 'vue-contenteditable'
 import TaskListIconLabel from '@/components/TasksList/TaskListIconLabel.vue'
 import TaskListTagLabel from '@/components/TasksList/TaskListTagLabel.vue'
@@ -429,6 +444,7 @@ export default {
     TasksSkeleton,
     Popper,
     ModalBoxConfirm,
+    InspectorModalBox,
     EmptyTasksListPics,
     TaskStatus,
     contenteditable
@@ -452,6 +468,7 @@ export default {
     const lastSelectedTaskUid = ref('')
     const selectedTasks = ref({})
     const showConfirm = ref(false)
+    const showInspector = ref(false)
     const isTaskHoverPopperActive = ref(false)
     const isTaskStatusPopperActive = ref(false)
 
@@ -828,6 +845,7 @@ export default {
       storeTasks,
       newConfig,
       showConfirm,
+      showInspector,
       selectedTasks,
       clickAndShift,
       nodeDragEnd,

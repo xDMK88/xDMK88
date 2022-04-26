@@ -363,7 +363,7 @@ const openProjectProperties = (project, parentProjectUid = '') => {
         </div>
       </nav-bar-item>
     </div>
-    <div class="flex-none items-stretch flex h-14">
+    <div class="flex-none items-stretch flex h-14" v-if="navStack[0].greedPath !== 'new_private_projects' && navStack[0].greedPath !== 'new_delegate' && navStack[0].name !== 'Рабочий стол'">
       <nav-bar-item class="px-3">
         <Popper
           class="items-center"

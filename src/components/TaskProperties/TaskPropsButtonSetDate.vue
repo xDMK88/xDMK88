@@ -5,6 +5,7 @@
     append-to-body="true"
     trigger="hover"
     placement="bottom"
+    @open:popper="onShowCalendar"
   >
     <template
       #content="{ close }"
@@ -15,7 +16,23 @@
           class="form-inline"
           style="width: 0; display: table"
         >
+          <div class="title-popover-main">
+            <button
+              class="btn-clear-popover"
+              @click="close"
+            >
+              Отменить
+            </button>
+            <button
+              class="btn-save-popover"
+              @click="onSave"
+              @click.stop="close"
+            >
+              Сохранить
+            </button>
+          </div>
           <DatePicker
+            ref="datePicker"
             v-model="datePickerDate"
             class="border-none text-xs calendar-properties"
             style="border: none !important"
@@ -76,17 +93,9 @@
                         :value="pad2(value) + ':00'"
                         name="radio"
                         :checked="
-                          pad2(
-                            new Date(
-                              dateBegin
-                            ).getHours()
-                          ) +
+                          pad2(new Date(dateBegin).getHours()) +
                             ':' +
-                            pad2(
-                              new Date(
-                                dateBegin
-                              ).getMinutes()
-                            ) ===
+                            pad2(new Date(dateBegin).getMinutes()) ===
                             pad2(value) + ':00'
                         "
                         @change="calendarTimeChange"
@@ -106,17 +115,9 @@
                         :value="pad2(value + 6) + ':00'"
                         name="radio"
                         :checked="
-                          pad2(
-                            new Date(
-                              dateBegin
-                            ).getHours()
-                          ) +
+                          pad2(new Date(dateBegin).getHours()) +
                             ':' +
-                            pad2(
-                              new Date(
-                                dateBegin
-                              ).getMinutes()
-                            ) ===
+                            pad2(new Date(dateBegin).getMinutes()) ===
                             pad2(value + 6) + ':00'
                         "
                         @change="calendarTimeChange"
@@ -138,17 +139,9 @@
                         :value="value + 12 + ':00'"
                         name="radio"
                         :checked="
-                          pad2(
-                            new Date(
-                              dateBegin
-                            ).getHours()
-                          ) +
+                          pad2(new Date(dateBegin).getHours()) +
                             ':' +
-                            pad2(
-                              new Date(
-                                dateBegin
-                              ).getMinutes()
-                            ) ===
+                            pad2(new Date(dateBegin).getMinutes()) ===
                             value + 12 + ':00'
                         "
                         @change="calendarTimeChange"
@@ -168,17 +161,9 @@
                         :value="value + 18 + ':00'"
                         name="radio"
                         :checked="
-                          pad2(
-                            new Date(
-                              dateBegin
-                            ).getHours()
-                          ) +
+                          pad2(new Date(dateBegin).getHours()) +
                             ':' +
-                            pad2(
-                              new Date(
-                                dateBegin
-                              ).getMinutes()
-                            ) ===
+                            pad2(new Date(dateBegin).getMinutes()) ===
                             value + 18 + ':00'
                         "
                         @change="calendarTimeChange"
@@ -187,15 +172,6 @@
                     </div>
                   </div>
                 </div>
-              </div>
-              <div>
-                <button
-                  class="btn-save-popover"
-                  @click="onSave"
-                  @click.stop="close"
-                >
-                  Сохранить
-                </button>
               </div>
             </template>
           </DatePicker>
@@ -229,7 +205,7 @@
         <span>{{ dateText }}</span>
         <button
           class="btn-close-popover"
-          @click="resetCalendar"
+          @click.stop="resetCalendar"
         >
           <svg
             width="5"
@@ -298,33 +274,76 @@ export default {
       default: ''
     }
   },
+  emits: ['changeDates'],
   data: () => ({
     datePickerDate: {
       date: new Date()
     },
+    date: null,
     time: '',
+    canEdit: true,
     showTimeSelector: false
   }),
-  watch: {
-    dateBegin: {
-      immediate: true,
-      handler: function (date) {
-        console.log('watch dateBegin', date)
-        if (date === '0001-01-01T00:00:00') {
-          this.datePickerDate = null
-          return
-        }
-        this.datePickerDate = { date: new Date(date) }
-        console.log('watch dateBegin set datePickerDate', this.datePickerDate)
-      }
-    }
-  },
   methods: {
     pad2 (n) {
-      return (n < 10 ? '0' : '') + n
+      return (n < 10 ? '0' : '') + n.toString()
     },
-    onDayClick () {
-      console.log('onDayClick', this.datePickerDate)
+    getDateValue () {
+      if (this.dateBegin !== '0001-01-01T00:00:00') {
+        return new Date(this.dateBegin)
+      }
+      return null
+    },
+    getTimeValue () {
+      if (
+        this.dateBegin !== '0001-01-01T00:00:00' &&
+        this.dateEnd !== '0001-01-01T00:00:00'
+      ) {
+        const begin = new Date(this.dateBegin)
+        const end = new Date(this.dateEnd)
+        if (
+          begin.getHours() !== 0 ||
+          begin.getMinutes() !== 0 ||
+          begin.getSeconds() !== 0 ||
+          end.getHours() !== 23 ||
+          end.getMinutes() !== 59 ||
+          end.getSeconds() !== 59
+        ) {
+          const hours = this.pad2(begin.getHours())
+          const minutes = this.pad2(begin.getMinutes())
+          return `${hours}:${minutes}`
+        }
+      }
+      return ''
+    },
+    getValidTimeString () {
+      const [hoursStr, minutesStr] = this.time.split(':')
+      if (
+        Number(hoursStr) >= 0 &&
+        Number(hoursStr) < 24 &&
+        Number(minutesStr) >= 0 &&
+        Number(minutesStr) < 60
+      ) {
+        const hours = this.pad2(Number(hoursStr))
+        const minutes = this.pad2(Number(minutesStr))
+        return `${hours}:${minutes}`
+      }
+      return ''
+    },
+    onShowCalendar () {
+      // устанавливаем выбранную дату в календарике
+      this.date = this.getDateValue()
+      const moveDate = this.date ? new Date(this.date) : new Date()
+      this.$refs.datePicker.move(moveDate)
+      this.$refs.datePicker.updateValue(new Date(this.date))
+      // устанавливаем время
+      this.time = this.getTimeValue()
+    },
+    onDayClick (day) {
+      // не даём развыделять календарь
+      if (this.datePickerDate === null) {
+        this.$refs.datePicker.updateValue(day.date)
+      }
     },
     toggleTimeSelector () {
       this.showTimeSelector = !this.showTimeSelector
@@ -334,10 +353,22 @@ export default {
       this.time = timeValue
     },
     onSave () {
-      console.log('onSave')
+      if (this.datePickerDate === null || !Number(this.datePickerDate)) return
+      const year = this.pad2(this.datePickerDate.getFullYear())
+      const month = this.pad2(this.datePickerDate.getMonth() + 1)
+      const day = this.pad2(this.datePickerDate.getDate())
+      const time = this.getValidTimeString()
+      const dateString = `${year}-${month}-${day}`
+      const timeBegin = time ? time + ':00' : '00:00:00'
+      const timeEnd = time ? time + ':00' : '23:59:59'
+      const begin = `${dateString}T${timeBegin}`
+      const end = `${dateString}T${timeEnd}`
+      this.$emit('changeDates', begin, end)
     },
     resetCalendar () {
-      console.log('resetCalendar')
+      const begin = '0001-01-01T00:00:00'
+      const end = '0001-01-01T00:00:00'
+      this.$emit('changeDates', begin, end)
     }
   }
 }

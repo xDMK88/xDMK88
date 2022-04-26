@@ -710,8 +710,7 @@ const actions = {
       if (data.value === '') {
         data.value = 'Task name'
       }
-      const url =
-        'https://web.leadertask.com/api/v1/task/name?uid=' + data.uid
+      const url = 'https://web.leadertask.com/api/v1/task/name?uid=' + data.uid
       axios({
         url: url,
         method: 'PATCH',
@@ -1015,15 +1014,12 @@ const actions = {
   },
   [TASK.CHANGE_TASK_DATE]: ({ commit, dispatch }, data) => {
     const dataSend = { ...data }
-    if (dataSend.str_date_end === '' || dataSend.str_date_end === null) {
-      dataSend.str_date_end = '0001-01-01T23:59:59'
-    }
     return new Promise((resolve, reject) => {
       const url = 'https://web.leadertask.com/api/v1/task/term'
       axios({ url: url, method: 'PATCH', data: dataSend })
         .then((resp) => {
-          resolve(resp)
-          commit(TASK.CHANGE_TASK_DATE, data)
+          dataSend.term = resp.data.term
+          resolve(dataSend)
         })
         .catch((err) => {
           notify(
@@ -1493,9 +1489,6 @@ const mutations = {
   },
   [TASK.CHANGE_TASK_TAGS]: (state, data) => {
     state.selectedTag = data.value
-  },
-  [TASK.CHANGE_TASK_DATE]: (state, data) => {
-    state.date.push(data.value)
   },
   [TASK.COPY_TASK]: (state, task) => {
     state.copiedTasks[task.uid] = task

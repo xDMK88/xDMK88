@@ -57,7 +57,7 @@ export default function initWebSync () {
         // никак не получить доступ к полю obj.obj.type
         // возвращает не то что там записано
         const obj = { ...JSON.parse(str) }
-        console.log(obj)
+        console.log('websync', obj)
 
         parseObject(obj)
       } catch (e) {

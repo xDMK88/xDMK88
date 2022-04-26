@@ -299,7 +299,7 @@ const openProjectProperties = (project, parentProjectUid = '') => {
           class="text-black dark:bg-gray-700 dark:text-gray-100 rounded-lg breadcrumbs"
           @click.stop="clickOnGridCard(navItem, index), closeProperties()"
         >
-          {{ navItem.name.length > 15 ? navItem.name.slice(0, 15) + '...' : navItem.name }}
+          {{ navItem.name.length > 15 ? navItem.name.slice(0, 15) + '...' : (navItem.name.includes(new Date().getDate()) ? 'Сегодня' : navItem.name) }}
           <Popper
             class="items-center"
             :class="isDark ? 'dark' : 'light'"
@@ -363,7 +363,7 @@ const openProjectProperties = (project, parentProjectUid = '') => {
         </div>
       </nav-bar-item>
     </div>
-    <div class="flex-none items-stretch flex h-14">
+    <div class="flex-none items-stretch flex h-14" v-if="navStack[0].greedPath !== 'new_private_projects' && navStack[0].greedPath !== 'new_delegate' && navStack[0].name !== 'Рабочий стол'">
       <nav-bar-item class="px-3">
         <Popper
           class="items-center"

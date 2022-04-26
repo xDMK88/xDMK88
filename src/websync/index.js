@@ -1,9 +1,9 @@
-import * as TYPES from '@/websync/types.js'
-import { computed } from 'vue'
 import store from '@/store/index.js'
 import processCreate from '@/websync/create.js'
 import processRemove from '@/websync/remove.js'
+import * as TYPES from '@/websync/types.js'
 import processUpdate from '@/websync/update.js'
+import { computed } from 'vue'
 
 const storeNavigator = computed(() => store.state.navigator.navigator)
 
@@ -23,7 +23,10 @@ function parseObject (obj) {
 
 export default function initWebSync () {
   const clientProperty = 'client'
-  const client = new window.fm.websync[clientProperty]('https://sync.leadertask.net/websync.ashx?uid_session=' + storeNavigator.value.push_channel)
+  const client = new window.fm.websync[clientProperty](
+    'https://sync.leadertask.net/websync.ashx?uid_session=' +
+      storeNavigator.value.push_channel
+  )
   client.connect({
     onSuccess: function (e) {
       console.log('websync connected success!')
@@ -32,7 +35,9 @@ export default function initWebSync () {
       console.log('websync onfailure connect fail ' + e.getException().message)
     },
     onStreamFailure: function (e) {
-      console.log('websync on stream failer connect fail ' + e.getException().message)
+      console.log(
+        'websync on stream failer connect fail ' + e.getException().message
+      )
     }
   })
 
@@ -48,8 +53,11 @@ export default function initWebSync () {
     onReceive: function (e) {
       try {
         const str = e.getDataJson()
-        const obj = JSON.parse(str)
-        console.log(obj)
+        // делаем копирование объекта, потому что
+        // никак не получить доступ к полю obj.obj.type
+        // возвращает не то что там записано
+        const obj = { ...JSON.parse(str) }
+        console.log('websync', obj)
 
         parseObject(obj)
       } catch (e) {

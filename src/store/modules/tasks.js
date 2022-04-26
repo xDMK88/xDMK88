@@ -32,6 +32,7 @@ const state = {
   overdue: '',
   unsorted: '',
   ready: '',
+  open: '',
   tags: {},
   selectedTag: null,
   subtasks: false,
@@ -224,6 +225,7 @@ const actions = {
       axios({ url: url, method: 'GET' })
         .then((resp) => {
           commit(TASK.TASKS_SUCCESS, resp)
+          commit(TASK.OPENED_TASKS_REQUEST, resp)
           if (resp.data.anothers_tags.length) {
             commit(TASK.ADD_TASK_TAGS, resp.data.anothers_tags)
           }
@@ -708,8 +710,7 @@ const actions = {
       if (data.value === '') {
         data.value = 'Task name'
       }
-      const url =
-        'https://web.leadertask.com/api/v1/task/name?uid=' + data.uid
+      const url = 'https://web.leadertask.com/api/v1/task/name?uid=' + data.uid
       axios({
         url: url,
         method: 'PATCH',
@@ -1013,15 +1014,12 @@ const actions = {
   },
   [TASK.CHANGE_TASK_DATE]: ({ commit, dispatch }, data) => {
     const dataSend = { ...data }
-    if (dataSend.str_date_end === '' || dataSend.str_date_end === null) {
-      dataSend.str_date_end = '0001-01-01T23:59:59'
-    }
     return new Promise((resolve, reject) => {
       const url = 'https://web.leadertask.com/api/v1/task/term'
       axios({ url: url, method: 'PATCH', data: dataSend })
         .then((resp) => {
-          resolve(resp)
-          commit(TASK.CHANGE_TASK_DATE, data)
+          dataSend.term = resp.data.term
+          resolve(dataSend)
         })
         .catch((err) => {
           notify(
@@ -1446,6 +1444,22 @@ const mutations = {
     }
     state.newtasks[task.uid_parent].state.opened = true
   },
+  [TASK.OPENED_TASKS_REQUEST]: (state, resp) => {
+    state.open = resp.data
+    state.open.title = 'Открытые задачи'
+    state.open.link = '017a3e8c-79ac-452c-abb7-6652deecbd1c'
+    setTimeout(() => {
+      for (const elem in state.open.tasks) {
+        if (state.open.tasks[elem].customer_date_end !== state.open.tasks[elem].customer_date_begin) {
+          if (new Date(state.open.tasks[elem].customer_date_end) > new Date()) {
+            state.today.tasks.push(state.open.tasks[elem])
+          } else {
+            state.overdue.tasks.push(state.open.tasks[elem])
+          }
+        }
+      }
+    }, 1500)
+  },
   [TASK.SELECT_TAG]: (state, tag) => {
     state.selectedTag = tag
   },
@@ -1486,9 +1500,6 @@ const mutations = {
   },
   [TASK.CHANGE_TASK_TAGS]: (state, data) => {
     state.selectedTag = data.value
-  },
-  [TASK.CHANGE_TASK_DATE]: (state, data) => {
-    state.date.push(data.value)
   },
   [TASK.COPY_TASK]: (state, task) => {
     state.copiedTasks[task.uid] = task

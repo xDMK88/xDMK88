@@ -4,6 +4,7 @@
     arrow
     trigger="hover"
     placement="bottom"
+    :disabled="!canEdit"
   >
     <template
       #content="{ close }"
@@ -12,9 +13,8 @@
       <div class="popper">
         <div
           class="opacity-75 font-semibold title-popover-main btn-access-popover"
-          :class="{ showb: showSaveButtons }"
+          @click="close"
         >
-          <div @click="close" />
           <button
             class="btn-clear-popover"
             @click="onCancel"
@@ -25,65 +25,61 @@
             class="btn-save-popover"
             @click="onSave"
           >
-            <span class="title-z-popover">Применить</span>
+            <span class="title-z-popover">Сохранить</span>
           </button>
         </div>
         <div>
           <div class="container-employee-popover">
-            <form>
+            <div
+              v-for="emp in employees"
+              :key="emp.uid"
+            >
               <div
-                v-for="(key, value, index) in employees"
-                :key="index"
+                v-if="emp.uid !== currentUserUid"
+                class="list-employee-access"
+                @click="showSaveButtons = true"
               >
-                <div
-                  v-if="key.uid !== currentUserUid"
-                  class="list-employee-access"
-                  @click="showSaveButtons = true"
+                <img
+                  :src="emp.fotolink"
+                  class="mr-1 border-fotolink border-solid border-2 border-sky-500"
+                  width="30"
+                  height="30"
                 >
-                  <img
-                    :src="key.fotolink"
-                    class="mr-1 border-fotolink border-solid border-2 border-sky-500"
-                    width="30"
-                    height="30"
-                  >
-                  <input
-                    :id="key.uid"
-                    type="checkbox"
-                    name="check_access_employee"
-                    class="custom-checkbox"
-                    :checked="checkEmails.includes(key.email)"
-                    @click="onCheckEmail(key.email)"
-                  >
-                  <label
-                    class="employee-name-custom"
-                    :for="key.uid"
-                  >
-                    <div class="popover-employee-email">
-                      <div style="color: black">{{ key.name }}</div>
-                      {{ key.email }}
-                    </div>
-                  </label>
-                </div>
+                <input
+                  :id="emp.uid"
+                  type="checkbox"
+                  name="check_access_employee"
+                  class="custom-checkbox"
+                  :checked="isCheckedEmail(emp.email)"
+                  @click="onCheckEmail(emp.email)"
+                >
+                <label
+                  class="employee-name-custom"
+                  :for="emp.uid"
+                >
+                  <div class="popover-employee-email">
+                    <div style="color: black">{{ emp.name }}</div>
+                    {{ emp.email }}
+                  </div>
+                </label>
               </div>
-            </form>
+            </div>
           </div>
         </div>
       </div>
     </template>
     <div
-      v-if="accessEmails.length"
+      v-if="accessEmails.length > 0"
       style="position: relative"
     >
-      <div
-        v-if="accessEmails.length > 1"
-      >
+      <div v-if="accessEmails.length > 1">
         <div
-          v-for="(key, value) in accessEmails.filter((n) => n)"
-          :key="value"
-          class="mt-3 tags-custom dark:bg-gray-800 dark:text-gray-100 project-hover-close"
+          v-for="(userEmail, index) in accessEmails"
+          :key="index"
+          class="mt-3 tags-custom-access dark:bg-gray-800 dark:text-gray-100 project-hover-close"
+          :class="{ 'cursor-pointer': canEdit, 'cursor-default': !canEdit }"
         >
           <svg
-            v-if="key !== 'null'"
             width="24"
             height="24"
             viewBox="0 0 91 92"
@@ -98,12 +94,11 @@
               fill-opacity="0.5"
             />
           </svg>
-          <span class="rounded">{{
-            employeesByEmail[key.toLowerCase()].name
-          }}</span>
+          <span class="rounded">{{ getEmpNameByEmail(userEmail) }}</span>
           <button
+            v-if="userEmail === currentUserEmail"
             class="btn-close-popover"
-            @click="removeAccess(key)"
+            @click="removeAccess(userEmail)"
           >
             <svg
               width="5"
@@ -123,7 +118,8 @@
       </div>
       <div v-else>
         <div
-          class="mt-3 tags-custom dark:bg-gray-800 dark:text-gray-100 project-hover-close"
+          class="mt-3 tags-custom-access dark:bg-gray-800 dark:text-gray-100 project-hover-close"
+          :class="{ 'cursor-pointer': canEdit, 'cursor-default': !canEdit }"
         >
           <svg
             v-if="key !== 'null'"
@@ -141,14 +137,11 @@
               fill-opacity="0.5"
             />
           </svg>
-          <span
-            class="rounded"
-          >
-            {{ employeesByEmail[accessEmails[0].toLowerCase()].name }}
-          </span>
+          <span class="rounded">{{ getEmpNameByEmail(accessEmails[0]) }}</span>
           <button
+            v-if="userEmail === currentUserEmail"
             class="btn-close-popover"
-            @click="removeAccess(accessEmails[0])"
+            @click="removeAccess(userEmail)"
           >
             <svg
               width="5"
@@ -170,7 +163,8 @@
     <div
       v-else
       ref="btnRef"
-      class="mt-3 tags-custom dark:bg-gray-800 dark:text-gray-100"
+      class="mt-3 tags-custom-access dark:bg-gray-800 dark:text-gray-100"
+      :class="{ 'cursor-pointer': canEdit, 'cursor-default': !canEdit }"
     >
       <svg
         width="24"
@@ -187,7 +181,7 @@
           fill-opacity="0.5"
         />
       </svg>
-      <span class="rounded"> Доступ</span>
+      <span class="rounded">Доступ</span>
     </div>
   </Popper>
 </template>
@@ -206,9 +200,11 @@ export default {
     },
     accessEmails: {
       type: Array,
-      default: () => ([])
-    }
+      default: () => []
+    },
+    canEdit: Boolean
   },
+  emits: ['changeAccess'],
   data: () => ({
     showSaveButtons: false,
     checkEmails: []
@@ -219,20 +215,51 @@ export default {
     },
     employeesByEmail () {
       return this.$store.state.employees.employeesByEmail
+    },
+    currentUserEmail () {
+      return this.employees[this.currentUserUid]?.email
+    }
+  },
+  watch: {
+    accessEmails: {
+      immediate: true,
+      handler: function (val) {
+        this.checkEmails = [...val]
+      }
     }
   },
   methods: {
+    print (val) {
+      console.log(val)
+    },
     onCancel () {
-      console.log('Access onCancel')
+      this.checkEmails = [...this.accessEmails]
     },
     onSave () {
-      console.log('Access onSave')
+      this.$emit('changeAccess', this.checkEmails)
+    },
+    getEmpNameByEmail (userEmail) {
+      return this.employeesByEmail[userEmail.toLowerCase()]?.name ?? userEmail
     },
     removeAccess (userEmail) {
-      console.log(`Access remove ${userEmail}`)
+      this.onCheckEmail(userEmail)
+      this.onSave()
+    },
+    isCheckedEmail (userEmail) {
+      const index = this.checkEmails.findIndex(
+        (email) => email.toLowerCase() === userEmail.toLowerCase()
+      )
+      return index !== -1
     },
     onCheckEmail (userEmail) {
-      console.log(`On check access ${userEmail}`)
+      const index = this.checkEmails.findIndex(
+        (email) => email.toLowerCase() === userEmail.toLowerCase()
+      )
+      if (index === -1) {
+        this.checkEmails.push(userEmail)
+      } else {
+        this.checkEmails.splice(index, 1)
+      }
     }
   }
 }
@@ -258,9 +285,6 @@ export default {
   margin: 0 auto;
 }
 .btn-access-popover {
-  display: none;
-}
-.btn-access-popover.showb {
   display: table;
 }
 .btn-clear-popover {
@@ -310,7 +334,6 @@ export default {
   margin-right: 5px;
   font-size: 12px;
 }
-.list-employee-access.active,
 .list-employee-access:hover {
   cursor: pointer;
 }
@@ -389,7 +412,7 @@ export default {
   line-height: 18px;
   margin-bottom: 0px;
 }
-.tags-custom {
+.tags-custom-access {
   padding: 4px 6px 4px 4px;
   border-radius: 5px;
   margin: 2px 2px 2px 2px;
@@ -399,16 +422,7 @@ export default {
   display: flex;
   background: #f4f5f7;
 }
-.tags-custom.active {
-  background-color: #977de3;
-  color: white;
-  cursor: pointer;
-}
-.tags-custom:hover,
-.tags-custom:hover svg {
-  cursor: pointer;
-}
-.tags-custom svg {
+.tags-custom-access svg {
   position: relative;
   top: 3px;
   float: left;
@@ -419,17 +433,37 @@ export default {
   margin-right: 5px;
   color: #9e9e9e;
 }
-.project-hover-close:hover .btn-close-popover {
+.btn-close-popover
+{
+  color: gray;
+  margin-right: 5px;
+  margin-left: 5px;
+  font-size: 11px;
+  display: none;
+  position: absolute;
+  right: 0;
+  width: 15px;
+  height: 15px;
+  top: 7px;
+  border-radius: 25px;
   -webkit-transition: all 0.7s ease;
   -moz-transition: all 0.7s ease;
   -o-transition: all 0.7s ease;
   transition: all 0.7s ease;
+  background: #F4F5F7;
   animation-delay: -2s;
-  display: block;
-  height: 15px;
+  opacity: 0;
   z-index: 9999;
-  animation: ani 0.4s forwards;
-  transform: translateX(30%);
-  opacity: 1;
+  animation: ani 2.5s forwards;
+}
+.btn-close-popover svg
+{
+  width: 15px;
+  height: 15px;
+  left: 0;
+  top: 0;
+  padding: 2px;
+  border-radius: 25px;
+  border: 1px solid gray;
 }
 </style>

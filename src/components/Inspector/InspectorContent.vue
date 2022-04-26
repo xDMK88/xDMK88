@@ -12,6 +12,18 @@ const props = defineProps({
   selectEmployee: {
     type: Function
   },
+  selectProject: {
+    type: Function
+  },
+  selectTag: {
+    type: Function
+  },
+  selectColor: {
+    type: Function
+  },
+  selectAccess: {
+    type: Function
+  },
   selectTime: {
     type: Function
   },
@@ -39,6 +51,10 @@ watch(props.messages, (oldValue, newValue) => {
         :type="message.type"
         :date="message.createDate"
         :selectEmployee="props.selectEmployee"
+        :selectProject="props.selectProject"
+        :selectTag="props.selectTag"
+        :selectColor="props.selectColor"
+        :selectAccess="props.selectAccess"
         :selectTime="props.selectTime"
         :actionConfirmNewParams="props.actionConfirmNewParams"
         :actionConfirmDelegate="props.actionConfirmDelegate"

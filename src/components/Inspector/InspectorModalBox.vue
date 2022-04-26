@@ -1,5 +1,5 @@
 <script setup>
-import { computed, ref } from 'vue'
+import { computed, ref, provide } from 'vue'
 import { useStore } from 'vuex'
 // import JbButton from '@/components/JbButton.vue'
 import CardComponent from '@/components/CardComponent.vue'
@@ -58,6 +58,9 @@ const messages = ref(
   ]
 )
 
+provide('inputMessage', inputMessage)
+provide('currentState', currentState)
+
 function uuidv4 () {
   return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
     (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
@@ -107,7 +110,7 @@ const addCustomerMessage = () => {
   if (currentState.value === 'task_name') {
     delegatedTask.name = inputMessage.value
     messages.value.push({
-      message: 'Отлично, теперь выберите исполнителя.',
+      message: 'Отлично, теперь выберите исполнителя. Если сотрудника нет в списке - начните вводить его имя, а я его найду.',
       messageFromInspector: true,
       type: 'employeeSelection',
       createDate: new Date().toISOString()
@@ -132,7 +135,88 @@ const selectEmployee = (emp) => {
       type: 'timeSelection',
       createDate: new Date().toISOString()
     })
+    inputMessage.value = ''
     currentState.value = 'timeSelection'
+  }
+}
+
+const selectProject = (project) => {
+  if (currentState.value !== 'projectSelection') return
+  messages.value.push({
+    message: project.name,
+    messageFromInspector: false,
+    createDate: new Date().toISOString()
+  })
+  if (currentState.value === 'projectSelection') {
+    delegatedTask.uid_project = project.uid
+    messages.value.push({
+      message: 'Супер, что на счет меток?',
+      messageFromInspector: true,
+      type: 'tagSelection',
+      createDate: new Date().toISOString()
+    })
+    inputMessage.value = ''
+    currentState.value = 'tagSelection'
+  }
+}
+
+const selectTag = (tag) => {
+  if (currentState.value !== 'tagSelection') return
+  messages.value.push({
+    message: tag.name,
+    messageFromInspector: false,
+    createDate: new Date().toISOString()
+  })
+  if (currentState.value === 'tagSelection') {
+    delegatedTask.tags = [tag.uid]
+    messages.value.push({
+      message: 'Какой цвет присвоить задаче?',
+      messageFromInspector: true,
+      type: 'colorSelection',
+      createDate: new Date().toISOString()
+    })
+    inputMessage.value = ''
+    currentState.value = 'colorSelection'
+  }
+}
+
+const selectColor = (color) => {
+  if (currentState.value !== 'colorSelection') return
+  messages.value.push({
+    message: color.name,
+    messageFromInspector: false,
+    createDate: new Date().toISOString()
+  })
+  if (currentState.value === 'colorSelection') {
+    delegatedTask.uid_marker = color.uid
+    messages.value.push({
+      message: 'Кто будет иметь доступ к задаче?',
+      messageFromInspector: true,
+      type: 'accessSelection',
+      createDate: new Date().toISOString()
+    })
+    inputMessage.value = ''
+    currentState.value = 'accessSelection'
+  }
+}
+
+const selectAccess = (emp) => {
+  if (currentState.value !== 'accessSelection') return
+  messages.value.push({
+    message: emp.name,
+    messageFromInspector: false,
+    createDate: new Date().toISOString()
+  })
+  if (currentState.value === 'accessSelection') {
+    delegatedTask.emails = emp.uid
+    messages.value.push({
+      message: 'На этом все, я поручу задачу?',
+      messageFromInspector: true,
+      type: 'confirmDelegate',
+      createDate: new Date().toISOString()
+    })
+    inputMessage.value = ''
+    currentState.value = 'confirmDelegate'
   }
 }
 
@@ -166,11 +250,12 @@ const actionConfirmNewParams = (confirmed) => {
       createDate: new Date().toISOString()
     })
     messages.value.push({
-      message: 'Здесь мы уже будет проставлять всякие параметры, но программист меня еще не доработал',
+      message: 'В какой проект поместить задачу?',
       messageFromInspector: true,
-      type: 'project',
+      type: 'projectSelection',
       createDate: new Date().toISOString()
     })
+    currentState.value = 'projectSelection'
   } else {
     messages.value.push({
       message: 'Нет',
@@ -229,7 +314,7 @@ const actionConfirmDelegate = (confirmed) => {
       v-show="value"
       has-table
       :title="title"
-      class="shadow-xl border border-gray-300 md:w-2/5 lg:w-2/7 z-50 p-1 rounded-2xl"
+      class="shadow-xl border border-gray-300 md:w-2/5 lg:w-3/12 z-50 px-1 pb-1 rounded-2xl"
       @header-icon-click="cancel"
       @header-icon2-click="logout"
     >
@@ -237,10 +322,14 @@ const actionConfirmDelegate = (confirmed) => {
         <InspectorContent
           :messages="messages"
           :selectEmployee="selectEmployee"
+          :selectProject="selectProject"
+          :selectTag="selectTag"
+          :selectColor="selectColor"
+          :selectAccess="selectAccess"
           :selectTime="selectTime"
           :actionConfirmNewParams="actionConfirmNewParams"
           :actionConfirmDelegate="actionConfirmDelegate"
-          class="max-h-[70vh] h-[70vh] overflow-scroll"
+          class="max-h-[40vh] h-[40vh] overflow-auto"
         />
         <slot />
       </div>

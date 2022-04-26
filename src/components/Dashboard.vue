@@ -47,9 +47,6 @@ const testObj = reactive({
 })
 
 onBeforeMount(() => {
-  store.dispatch(TASK.OPENED_TASKS_REQUEST).then(() => {
-    testObj.open = store.state.tasks.open.tasks
-  })
   store.dispatch(TASK.TASKS_REQUEST, new Date()).then(() => {
     testObj.today = store.state.tasks.today.tasks
   })
@@ -70,6 +67,9 @@ onBeforeMount(() => {
   })
   store.dispatch(TASK.READY_FOR_COMPLITION_TASKS_REQUEST).then(() => {
     testObj.ready = store.state.tasks.ready.tasks
+  })
+  store.dispatch(TASK.OPENED_TASKS_REQUEST).then(() => {
+    testObj.open = store.state.tasks.open.tasks
   })
 })
 

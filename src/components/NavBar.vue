@@ -299,7 +299,7 @@ const openProjectProperties = (project, parentProjectUid = '') => {
           class="text-black dark:bg-gray-700 dark:text-gray-100 rounded-lg breadcrumbs"
           @click.stop="clickOnGridCard(navItem, index), closeProperties()"
         >
-          {{ navItem.name.length > 15 ? navItem.name.slice(0, 15) + '...' : navItem.name }}
+          {{ navItem.name.length > 15 ? navItem.name.slice(0, 15) + '...' : (navItem.name.includes(new Date().getDate()) ? 'Сегодня' : navItem.name) }}
           <Popper
             class="items-center"
             :class="isDark ? 'dark' : 'light'"

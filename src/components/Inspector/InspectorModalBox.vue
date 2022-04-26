@@ -92,7 +92,6 @@ const createTask = () => {
   delegatedTask.uid = uuidv4()
   delegatedTask.uid_parent = '00000000-0000-0000-0000-000000000000'
   delegatedTask.uid_customer = user.value.current_user_uid
-  delegatedTask.uid_project = '00000000-0000-0000-0000-000000000000'
   delegatedTask.status = 0
   delegatedTask.type = 1
   delegatedTask.comment = ''
@@ -208,7 +207,7 @@ const selectAccess = (emp) => {
     createDate: new Date().toISOString()
   })
   if (currentState.value === 'accessSelection') {
-    delegatedTask.emails = emp.uid
+    delegatedTask.emails = emp.email
     messages.value.push({
       message: 'На этом все, я поручу задачу?',
       messageFromInspector: true,

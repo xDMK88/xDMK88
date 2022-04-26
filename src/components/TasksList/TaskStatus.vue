@@ -58,6 +58,7 @@ const store = useStore()
 const isTaskStatusPopperActive = ref(false)
 const isDark = computed(() => store.state.darkMode)
 const localization = computed(() => store.state.localization.localization)
+const storeNavigator = computed(() => store.state.navigator.navigator)
 const colors = computed(() => store.state.colors.colors)
 
 const toggleTaskStatusPopper = (val) => {
@@ -78,8 +79,10 @@ const showStatusOrNot = (type, status) => {
 
 const changeTaskStatus = (uid, status) => {
   store.dispatch(TASK.CHANGE_TASK_STATUS, { uid: uid, value: status })
+  if (!storeNavigator.value.settings.show_completed_tasks && [1, 5, 7, 8].includes(status)) {
+    store.commit(TASK.REMOVE_TASK, uid)
+  }
 }
-
 </script>
 
 <template>

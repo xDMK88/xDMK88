@@ -115,13 +115,13 @@
       >
         <!--
         DEBUG TASK INFO, don't remove this comment
+        <pre class="text-[10px] leading-none font-bold text-green-900">state: {{ props.node.info }}</pre>
         <p class="text-[10px] leading-none">parent: {{ props.node.parent }}</p>
-        <pre class="text-[10px] leading-none font-bold text-yellow-500">children: {{ props.node.children  }}</pre>
         <pre class="text-[10px] leading-none font-bold text-rose-500">state: {{ props.node.state }}</pre>
-        <p class="text-[10px] leading-none">id: <strong>{{ props.node.id  }}</strong></p>
         <p class="text-[10px] leading-none">type: {{ props.node.info.type }}</p>
         <p class="text-[10px] leading-none mb-5">order_new: <strong>{{ props.node.info.order_new }}</strong></p>
-        <pre class="text-[10px] leading-none font-bold text-green-900">state: {{ props.node.info }}</pre>
+        <p class="text-[10px] leading-none">id: <strong>{{ props.node.id  }}</strong></p>
+        <pre class="text-[10px] leading-none font-bold text-yellow-500">children: {{ props.node.children  }}</pre>
         -->
         <Transition>
           <div
@@ -546,7 +546,7 @@ export default {
 
           // remove fake-uid from children array if subtasks are loaded
           for (let i = 0; i < arg.children.length; i++) {
-            if (arg.children[i] === 'cfake-uid') {
+            if (arg.children[i] === 'fake-uid') {
               arg.children.splice(i, 1)
             }
           }
@@ -792,10 +792,6 @@ export default {
     }
 
     const nodeDragEnd = (node) => {
-      console.log('drag end')
-      console.log(node)
-      console.log('new parent ', storeTasks.value[node.target.node])
-
       if (storeTasks.value[node.dragged.node.id]) {
         // change order in children
         if (storeTasks.value[node.dragged.node.id].parent) {
@@ -830,6 +826,7 @@ export default {
           }
         }
       }
+
       store.dispatch(
         TASK.CHANGE_TASK_PARENT_AND_ORDER,
         {

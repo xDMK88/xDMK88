@@ -2084,7 +2084,7 @@ export default {
       class="сopypastefiles"
     />
     <div class="quote-request" />
-    <div class="input-group">
+    <div class="input-group bg-gray-100 rounded-3xl">
       <span class="input-group-addon input-group-attach dark:bg-gray-800 dark:text-gray-100">
         <div class="example-1">
           <label class="label">
@@ -2114,7 +2114,7 @@ export default {
       <textarea
         ref="taskMsg"
         v-model="taskMsg"
-        class="form-control text-group-design task-msg dark:bg-gray-800 dark:text-gray-100"
+        class="form-control text-group-design task-msg overflow-auto scroll-style dark:bg-gray-800 dark:text-gray-100"
         placeholder="Введите сообщение"
         rows="58"
         @click="copypastefile(selectedTask.uid)"

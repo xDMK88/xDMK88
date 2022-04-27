@@ -95,7 +95,9 @@ const createTask = () => {
   delegatedTask.status = 0
   delegatedTask.type = 1
   delegatedTask.comment = ''
-  store.dispatch('CREATE_TASK', delegatedTask)
+  store.dispatch('CREATE_TASK', delegatedTask).then(resp => {
+    store.dispatch('CREATE_INSPECTOR_TASK', { uid: delegatedTask.uid, uid_customer: delegatedTask.uid_customer, taskJson: JSON.stringify(resp.data) })
+  })
 }
 
 const addCustomerMessage = () => {

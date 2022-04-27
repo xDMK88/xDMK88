@@ -121,6 +121,7 @@
         <p class="text-[10px] leading-none mb-5">order_new: <strong>{{ props.node.info.order_new }}</strong></p>
         <p class="text-[10px] leading-none">id: <strong>{{ props.node.id  }}</strong></p>
         <pre class="text-[10px] leading-none font-bold text-yellow-500">children: {{ props.node.children  }}</pre>
+        <pre class="text-[10px] leading-none font-bold text-yellow-500">tags: {{ props.node.tags}}</pre>
         -->
         <Transition>
           <div

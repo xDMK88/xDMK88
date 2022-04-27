@@ -7,7 +7,7 @@ import TreeItem from '@/components/TreeItem.vue'
 import Checklist from '@/components/properties/Checklist.vue'
 import close from '@/icons/close.js'
 import { CREATE_MESSAGE_REQUEST, DELETE_MESSAGE_REQUEST } from '@/store/actions/taskmessages'
-import { CREATE_FILES_REQUEST, GETFILES } from '@/store/actions/taskfiles'
+import { CREATE_FILES_REQUEST } from '@/store/actions/taskfiles'
 import * as TASK from '@/store/actions/tasks'
 import { copyText } from 'vue3-clipboard'
 import linkify from 'vue-linkify'
@@ -201,15 +201,6 @@ export default {
           if (selectedTask.value.uid_customer === user.value.current_user_uid && (selectedTask.value.status === 5 || selectedTask.value.status === 7)) {
             // to refine
             selectedTask.value.status = 9
-            this.Files.onload()
-            const img = new Image()
-            img.onload = function () {
-              document.getElementById('copypaste_' + selectedTask.value.uid).appendChild(this)
-            }
-            console.log(resp.data)
-            store.dispatch(GETFILES, resp.data.uid_file).then(respon => {
-              img.src = URL.createObjectURL(new Blob([respon.data]))
-            })
           }
         })
       this.infoComplete = true
@@ -503,102 +494,6 @@ export default {
     const createChecklist = () => {
       this.checklistshow = true
     }
-    const pics = ['jpg', 'png', 'jpeg', 'git', 'bmp', 'gif', 'PNG', 'JPG', 'JPEG', 'BMP', 'GIF']
-    const movies = ['mov', 'mp4']
-    const docs = ['doc', 'xls', 'xlsx', 'txt', 'pdf', 'sql']
-    const audio = ['mp3', 'wav', 'm4a']
-    const handlercontextmenu = () => {
-    }
-    const copypastefile = (uid) => {
-      this.showpastefile = true
-      window.addEventListener('paste', function (e) {
-        const items = (e.clipboardData || e.originalEvent.clipboardData).items
-        for (const index in items) {
-          const item = items[index]
-          if (item.kind === 'file') {
-            const blob = item.getAsFile()
-            const div = document.createElement('div')
-            div.className = 'lineloadfile'
-            const href = document.createElement('a')
-            href.className = 'text-blue-600'
-            const img = document.createElement('img')
-            href.target = '_blank'
-            if (pics.includes(blob.name.split('.').pop())) {
-              const fileURL = URL.createObjectURL(blob)
-              div.className = 'lineloadfile'
-              img.src = URL.createObjectURL(blob)
-              img.title = blob.name
-              img.className = 'img-preview-custom'
-              img.src = URL.createObjectURL(blob)
-              href.setAttribute('href', fileURL)
-              href.appendChild(img)
-              href.innerHTML += '<span class="img-title-custom">' + blob.name + '</span>'
-              div.appendChild(href)
-              document.getElementById('copypaste_' + uid).appendChild(div)
-            } else if (movies.includes(blob.name.split('.').pop())) {
-              const fileURL = URL.createObjectURL(blob)
-              div.className = 'lineloadfile'
-              href.className = 'text-blue-600'
-              href.innerHTML = blob.name
-              href.setAttribute('href', fileURL)
-              href.setAttribute('download', blob.name + '.' + blob.name.split('.').pop())
-              div.appendChild(href)
-              document.getElementById('copypaste_' + uid).appendChild(div)
-            } else if (docs.includes(blob.name.split('.').pop())) {
-              const fileURL = URL.createObjectURL(blob)
-              div.className = 'lineloadfile'
-              href.innerHTML = blob.name
-              href.setAttribute('href', fileURL)
-              href.setAttribute('download', blob.name + '.' + blob.name.split('.').pop())
-              div.appendChild(href)
-              document.getElementById('copypaste_' + uid).appendChild(div)
-            } else if (audio.includes(blob.name.split('.').pop())) {
-              div.className = 'lineloadfile'
-              const fileURL = URL.createObjectURL(blob)
-              const myAudio = new Audio()
-              myAudio.src = fileURL
-              const hrefaudio = document.createElement('audio')
-              hrefaudio.innerHTML = 'Your browser does not support the\n' +
-                '      <code>audio</code> element.'
-              hrefaudio.setAttribute('src', fileURL)
-              hrefaudio.setAttribute('controls', 'true')
-              div.appendChild(hrefaudio)
-              document.getElementById('copypaste_' + uid).appendChild(div)
-            } else {
-              const fileURL = URL.createObjectURL(blob)
-              div.className = 'lineloadfile'
-              href.className = 'text-blue-600'
-              href.innerHTML = blob.name
-              href.setAttribute('href', fileURL)
-              href.setAttribute('download', blob.name + '.' + blob.name.split('.').pop())
-              div.appendChild(href)
-              document.getElementById('copypaste_' + uid).appendChild(div)
-            }
-            const formData = new FormData()
-            formData.append('files', blob)
-            const data = {
-              uid_task: selectedTask.value.uid,
-              name: formData
-            }
-            this.isloading = true
-            store.dispatch(CREATE_FILES_REQUEST, data).then(
-              resp => {
-                this.isloading = false
-                if (selectedTask.value.type === 2 || selectedTask.value.type === 3) {
-                  if ([1, 5, 7, 8].includes(selectedTask.value.status)) {
-                    selectedTask.value.status = 9
-                  }
-                }
-              })
-          }
-        }
-        setTimeout(() => {
-          const elmnt = document.getElementById('content').lastElementChild
-          elmnt.scrollIntoView({ behavior: 'smooth' })
-        }, 100)
-        //  console.log(blob.name.length)
-      })
-    }
     const SaveRepeat = () => {
       console.log(selectedTask.value.Tasks)
       if (this.$refs.SeriesType.value === '0') {
@@ -819,8 +714,6 @@ export default {
       TimeActiveStart,
       calendarTimeStartChange,
       calendarTimeEndChange,
-      copypastefile,
-      handlercontextmenu,
       createChecklist,
       scrollDown,
       editTaskName,
@@ -1007,9 +900,131 @@ export default {
       }
     }
   },
+  mounted: function () {
+    this.$nextTick(function () {
+      // Код, который будет запущен только после
+      // отображения всех представлений
+      this.$refs.taskMsgEdit.addEventListener('paste', this.onPasteEvent, { once: true })
+    })
+  },
   methods: {
     print: function (value) {
       console.log(value)
+    },
+    onPasteEvent: function (e) {
+      const items = (e.clipboardData || e.originalEvent.clipboardData).items
+      let loadFile = false
+      for (const index in items) {
+        const item = items[index]
+        if (item.kind === 'file') {
+          const blob = item.getAsFile()
+          /*
+          // по идее загружаться должно не сразу, а в div copypaste_
+          // и отправляться по кнопке отправить - но это не доделано
+          const fileExt = blob.name.split('.').pop()
+          const elementCopyPaste = 'copypaste_' + this.selectedTask.uid
+          const pics = ['jpg', 'png', 'jpeg', 'git', 'bmp', 'gif', 'PNG', 'JPG', 'JPEG', 'BMP', 'GIF']
+          const movies = ['mov', 'mp4']
+          const docs = ['doc', 'xls', 'xlsx', 'txt', 'pdf']
+          const audio = ['mp3', 'wav', 'm4a']
+          if (pics.includes(fileExt)) {
+            const fileURL = URL.createObjectURL(blob)
+            const div = document.createElement('div')
+            div.className = 'lineloadfile'
+            const img = document.createElement('img')
+            img.src = URL.createObjectURL(blob)
+            img.title = blob.name
+            img.className = 'img-preview-custom'
+            img.src = URL.createObjectURL(blob)
+            const href = document.createElement('a')
+            href.className = 'text-blue-600'
+            href.target = '_blank'
+            href.setAttribute('href', fileURL)
+            href.appendChild(img)
+            href.innerHTML += '<span class="img-title-custom">' + blob.name + '</span>'
+            div.appendChild(href)
+            document.getElementById(elementCopyPaste).appendChild(div)
+          } else if (movies.includes(fileExt)) {
+            const fileURL = URL.createObjectURL(blob)
+            const div = document.createElement('div')
+            div.className = 'lineloadfile'
+            const href = document.createElement('a')
+            href.target = '_blank'
+            href.className = 'text-blue-600'
+            href.innerHTML = blob.name
+            href.setAttribute('href', fileURL)
+            href.setAttribute('download', blob.name)
+            div.appendChild(href)
+            document.getElementById(elementCopyPaste).appendChild(div)
+          } else if (docs.includes(fileExt)) {
+            const fileURL = URL.createObjectURL(blob)
+            const div = document.createElement('div')
+            div.className = 'lineloadfile'
+            const href = document.createElement('a')
+            href.className = 'text-blue-600'
+            href.target = '_blank'
+            href.innerHTML = blob.name
+            href.setAttribute('href', fileURL)
+            href.setAttribute('download', blob.name)
+            div.appendChild(href)
+            document.getElementById(elementCopyPaste).appendChild(div)
+          } else if (audio.includes(fileExt)) {
+            const div = document.createElement('div')
+            div.className = 'lineloadfile'
+            const fileURL = URL.createObjectURL(blob)
+            const myAudio = new Audio()
+            myAudio.src = fileURL
+            const hrefaudio = document.createElement('audio')
+            hrefaudio.innerHTML = 'Your browser does not support the\n' +
+                '      <code>audio</code> element.'
+            hrefaudio.setAttribute('src', fileURL)
+            hrefaudio.setAttribute('controls', 'true')
+            div.appendChild(hrefaudio)
+            document.getElementById(elementCopyPaste).appendChild(div)
+          } else {
+            const fileURL = URL.createObjectURL(blob)
+            const div = document.createElement('div')
+            div.className = 'lineloadfile'
+            const href = document.createElement('a')
+            href.target = '_blank'
+            href.className = 'text-blue-600'
+            href.innerHTML = blob.name
+            href.setAttribute('href', fileURL)
+            href.setAttribute('download', blob.name)
+            div.appendChild(href)
+            document.getElementById(elementCopyPaste).appendChild(div)
+          }
+          */
+          const formData = new FormData()
+          formData.append('files', blob)
+          const data = {
+            uid_task: this.selectedTask.uid,
+            name: formData
+          }
+          loadFile = true
+          this.isloading = true
+          this.$store.dispatch(CREATE_FILES_REQUEST, data).then(
+            resp => {
+              this.isloading = false
+              // ставим статус "на доработку" когда прикладываем файл
+              if (this.selectedTask.type === 2 || this.selectedTask.type === 3) {
+                if ([1, 5, 7, 8].includes(this.selectedTask.status)) {
+                  this.selectedTask.status = 9
+                }
+              }
+              // загрузка завершена - подписываемся опять
+              this.$refs.taskMsgEdit.addEventListener('paste', this.onPasteEvent, { once: true })
+            })
+          setTimeout(() => {
+            const elmnt = document.getElementById('content').lastElementChild
+            elmnt.scrollIntoView({ behavior: 'smooth' })
+          }, 100)
+        }
+      }
+      if (!loadFile) {
+        // не вставка файла - подписываемся опять
+        this.$refs.taskMsgEdit.addEventListener('paste', this.onPasteEvent, { once: true })
+      }
     },
     onReAssignToUser: function (userEmail) {
       console.log('onReAssignToUser', userEmail)
@@ -1115,7 +1130,6 @@ export default {
     <div
       id="generalscroll"
       class="column-resize"
-      @focusin="copypastefile(selectedTask.uid)"
     >
       <div />
       <div
@@ -2087,9 +2101,7 @@ export default {
       src="/ajaxloader.gif"
     >
     <div
-      v-if="showpastefile"
       :id="'copypaste_' + selectedTask.uid"
-      ref="pastefile"
       class="сopypastefiles"
     />
     <div class="quote-request" />
@@ -2121,16 +2133,14 @@ export default {
         </div>
       </span>
       <textarea
-        ref="taskMsg"
+        ref="taskMsgEdit"
         v-model="taskMsg"
         class="form-control text-group-design task-msg dark:bg-gray-800 dark:text-gray-100"
         placeholder="Введите сообщение"
         rows="58"
-        @click="copypastefile(selectedTask.uid)"
         @keydown.enter.exact.prevent="createTaskMsg"
         @keydown.enter.shift.exact.prevent="cursorPosition(this)"
       />
-      <editor-content :editor="editor" />
       <span class="input-group-addon input-group-btn-send dark:bg-gray-800 dark:text-gray-100">
         <button
           type="button"

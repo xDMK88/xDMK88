@@ -852,13 +852,9 @@ const actions = {
   [TASK.CHANGE_TASK_TAGS]: ({ commit, dispatch }, data) => {
     // tags
     return new Promise((resolve, reject) => {
-      if (data.tags.length === '') {
-        data.tags = []
-      }
       const url = 'https://web.leadertask.com/api/v1/task/tags'
       axios({ url: url, method: 'PATCH', data: data })
         .then((resp) => {
-          commit(TASK.CHANGE_TASK_TAGS, data)
           resolve(resp)
         })
         .catch((err) => {
@@ -1486,9 +1482,6 @@ const mutations = {
   },
   [TASK.CHANGE_TASK_FOCUS]: (state, data) => {
     state.focus = data.value
-  },
-  [TASK.CHANGE_TASK_TAGS]: (state, data) => {
-    state.selectedTag = data.value
   },
   [TASK.COPY_TASK]: (state, task) => {
     state.copiedTasks[task.uid] = task

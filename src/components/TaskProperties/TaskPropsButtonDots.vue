@@ -39,6 +39,7 @@
           Копировать как ссылку
         </div>
         <div
+          v-if="showDelete"
           class="popper-item popper-clickable"
           @click="selectItem('deleteTask')"
         >

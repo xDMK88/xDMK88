@@ -2,7 +2,7 @@
 import contenteditable from 'vue-contenteditable'
 import { useStore } from 'vuex'
 import Icon from '@/components/Icon.vue'
-import { computed, reactive, ref, watch, nextTick } from 'vue'
+import { computed, reactive, ref, watch, nextTick, onMounted } from 'vue'
 import close from '@/icons/close.js'
 
 const props = defineProps({
@@ -107,6 +107,11 @@ const updateChecklist = (index) => {
     addEmptyChecklist(index)
   }
 }
+
+onMounted(() => {
+  document.getElementById('check_0').focus()
+})
+
 </script>
 
 <template>
@@ -130,7 +135,7 @@ const updateChecklist = (index) => {
           :id="'check_' + index"
           v-model="check.text"
           tag="div"
-          style="max-width: 90%;"
+          style="max-width: 80%;"
           placeholder="write checklist here..."
           class="focus:ring focus:ring-blue-300"
           :class="{ 'text-gray-500 line-through': check.checked }"

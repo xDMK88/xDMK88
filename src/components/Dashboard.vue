@@ -1,19 +1,3 @@
-<!-- ———————————No open icon?———————————
-⠀⣞⢽⢪⢣⢣⢣⢫⡺⡵⣝⡮⣗⢷⢽⢽⢽⣮⡷⡽⣜⣜⢮⢺⣜⢷⢽⢝⡽⣝
-⠸⡸⠜⠕⠕⠁⢁⢇⢏⢽⢺⣪⡳⡝⣎⣏⢯⢞⡿⣟⣷⣳⢯⡷⣽⢽⢯⣳⣫⠇
-⠀⠀⢀⢀⢄⢬⢪⡪⡎⣆⡈⠚⠜⠕⠇⠗⠝⢕⢯⢫⣞⣯⣿⣻⡽⣏⢗⣗⠏⠀
-⠀⠪⡪⡪⣪⢪⢺⢸⢢⢓⢆⢤⢀⠀⠀⠀⠀⠈⢊⢞⡾⣿⡯⣏⢮⠷⠁⠀⠀
-⠀⠀⠀⠈⠊⠆⡃⠕⢕⢇⢇⢇⢇⢇⢏⢎⢎⢆⢄⠀⢑⣽⣿⢝⠲⠉⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⡿⠂⠠⠀⡇⢇⠕⢈⣀⠀⠁⠡⠣⡣⡫⣂⣿⠯⢪⠰⠂⠀⠀⠀⠀
-⠀⠀⠀⠀⡦⡙⡂⢀⢤⢣⠣⡈⣾⡃⠠⠄⠀⡄⢱⣌⣶⢏⢊⠂⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⢝⡲⣜⡮⡏⢎⢌⢂⠙⠢⠐⢀⢘⢵⣽⣿⡿⠁⠁⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠨⣺⡺⡕⡕⡱⡑⡆⡕⡅⡕⡜⡼⢽⡻⠏⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⣼⣳⣫⣾⣵⣗⡵⡱⡡⢣⢑⢕⢜⢕⡝⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⣴⣿⣾⣿⣿⣿⡿⡽⡑⢌⠪⡢⡣⣣⡟⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⡟⡾⣿⢿⢿⢵⣽⣾⣼⣘⢸⢸⣞⡟⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠁⠇⠡⠩⡫⢿⣝⡻⡮⣒⢽⠋⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-—————————————————————————————
- -->
 <script setup>
 import Icon from '@/components/Icon.vue'
 // import focus from '@/icons/focus.js'
@@ -47,9 +31,6 @@ const testObj = reactive({
 })
 
 onBeforeMount(() => {
-  store.dispatch(TASK.OPENED_TASKS_REQUEST).then(() => {
-    testObj.open = store.state.tasks.open.tasks
-  })
   store.dispatch(TASK.TASKS_REQUEST, new Date()).then(() => {
     testObj.today = store.state.tasks.today.tasks
   })
@@ -71,7 +52,26 @@ onBeforeMount(() => {
   store.dispatch(TASK.READY_FOR_COMPLITION_TASKS_REQUEST).then(() => {
     testObj.ready = store.state.tasks.ready.tasks
   })
+  store.dispatch(TASK.OPENED_TASKS_REQUEST).then(() => {
+    testObj.open = store.state.tasks.open.tasks
+  })
 })
+
+// onBeforeUpdate(() => {
+//   if (testObj.open.length) { // проверяем объект на заполненность
+//     for (const i in testObj.open) { // пробегаемся по индексам
+//       if (!testObj.overdue.includes(testObj.open[i]) && !testObj.today.includes(testObj.open[i])) { // проверяем наличие объекта из open в других объектах
+//         if (testObj.open[i].customer_date_end !== testObj.open[i].customer_date_begin) { // сверяем даты, если даты одинаковы, то задание бессрочное
+//           if (new Date(testObj.open[i].customer_date_end) > new Date()) { // если дата окончания позже, чем сегодняшняя дата, то задача попадает в "сегодня"
+//             testObj.today.push(testObj.open[i])
+//           } else { // иначе задача отправляется в просроченные
+//             testObj.overdue.push(testObj.open[i])
+//           }
+//         }
+//       }
+//     }
+//   }
+// })
 
 const tags = reactive(computed(() => {
   return store.state.tasks.tags
@@ -168,7 +168,6 @@ function redirect (title, uid) {
   store.commit('basic', { key: 'taskListSource', value: { uid: uid, param: null } })
   store.commit('basic', { key: 'mainSectionState', value: 'tasks' })
 }
-// setInterval(() => console.log(store.state.tasks), 10000)
 </script>
 <template>
   <!-- <pre>{{ activeCheckbox }}</pre>
@@ -226,7 +225,7 @@ function redirect (title, uid) {
           v-for="(task, taskIdx) in testObj[key]"
           :key="task.uid"
           class="p-2 rounded-xl"
-          :style="task.uid_marker !== '00000000-0000-0000-0000-000000000000' ? {backgroundColor: colors[task.uid_marker].back_color} : ''"
+          :style="task.uid_marker !== '00000000-0000-0000-0000-000000000000' ? {backgroundColor: colors[task.uid_marker].back_color, color:  colors[task.uid_marker].fore_color} : ''"
         >
           <div class="flex">
             <div class="flex order-first">
@@ -235,7 +234,9 @@ function redirect (title, uid) {
             <div class="font-normal">
               <span
                 class="max-w-full break-words text-sm"
-                :style="task.uid_marker !== '00000000-0000-0000-0000-000000000000' ? {color: colors[task.uid_marker].fore_color} : ''">{{ task.name }}</span>
+              >
+                {{ task.name }}
+              </span>
             </div>
           </div>
           <div class="flex items-center text-xs">
@@ -247,7 +248,6 @@ function redirect (title, uid) {
             </div>
             <div
               class="tag-label cursor-default p-1 text-xs flex items-center"
-              :style="task.uid_marker !== '00000000-0000-0000-0000-000000000000' ? {color: colors[task.uid_marker].fore_color} : ''"
             >
               {{ task.customer_name }}
             </div>
@@ -262,7 +262,6 @@ function redirect (title, uid) {
             <div
               v-if="task.uid_project !== '00000000-0000-0000-0000-000000000000'"
               class="p-1 order-last flex align-items justify-around"
-              :style="task.uid_marker !== '00000000-0000-0000-0000-000000000000' ? {color: colors[task.uid_marker].fore_color} : ''"
             >
               <icon
                 :path="project.path"

@@ -21,7 +21,6 @@ import TaskPropsCommentEditor from '@/components/TaskProperties/TaskPropsComment
 import TaskPropsButtonAccess from '@/components/TaskProperties/TaskPropsButtonAccess.vue'
 import TaskPropsButtonSetDate from '@/components/TaskProperties/TaskPropsButtonSetDate.vue'
 import TaskPropsButtonTags from '@/components/TaskProperties/TaskPropsButtonTags.vue'
-
 export default {
   components: {
     TaskPropsButtonDots,
@@ -608,6 +607,27 @@ export default {
         store.dispatch(TASK.RESET_REPEAT_CHANGE, data).then(
           resp => {
             selectedTask.value.SeriesType = 0
+            selectedTask.value.SeriesType = 0
+            selectedTask.value.SeriesAfterType = 0
+            selectedTask.value.SeriesAfterCount = 0
+            selectedTask.value.SeriesWeekCount = 0
+            selectedTask.value.SeriesWeekMon = 1
+            selectedTask.value.SeriesWeekTue = 0
+            selectedTask.value.SeriesWeekWed = 0
+            selectedTask.value.SeriesWeekThu = 0
+            selectedTask.value.SeriesWeekFri = 0
+            selectedTask.value.SeriesWeekSat = 0
+            selectedTask.value.SeriesWeekSun = 0
+            selectedTask.value.SeriesMonthType = 0
+            selectedTask.value.SeriesMonthCount = 0
+            selectedTask.value.SeriesMonthDay = 0
+            selectedTask.value.SeriesMonthWeekType = 0
+            selectedTask.value.SeriesMonthDayOfWeek = 0
+            selectedTask.value.SeriesYearType = 0
+            selectedTask.value.SeriesYearMonth = 0
+            selectedTask.value.SeriesYearMonthDay = 0
+            selectedTask.value.SeriesYearWeekType = 0
+            selectedTask.value.SeriesYearDayOfWeek = 0
           })
       }
       if (this.$refs.SeriesType.value === '1') {
@@ -626,7 +646,7 @@ export default {
       }
       if (this.$refs.SeriesType.value === '2') {
         this.dayWeekMassive.push(this.SeriesWeek)
-        console.log(this.SeriesWeek)
+        console.log(this.$refs.SeriesWeek.selectedOptions[0].value)
         const data = {
           uid: selectedTask.value.uid,
           days: this.SeriesWeek,
@@ -755,6 +775,7 @@ export default {
         this.everyWeekRepeat = true
         this.everyMonthRepeat = false
         this.everyYearRepeat = false
+        this.SeriesWeek = []
         selectedTask.value.SeriesType = 2
         selectedTask.value.SeriesWeekMon = 1
       }
@@ -777,9 +798,13 @@ export default {
 
       console.log(event.target.name)
     }
-
+    const changeSeriesWeek = (event) => {
+      console.log(this.SeriesWeek)
+      this.SeriesWeek.push(this.$refs.SeriesWeek.selectedOptions[0].value)
+    }
     return {
       //  ресет Повтор
+      changeSeriesWeek,
       moveCursorToEnd,
       ispolnit,
       dayWeekMassive: [],
@@ -943,7 +968,16 @@ export default {
       everyMonthRepeat: false,
       everyYearRepeat: false,
       showpastefile: false,
-      SeriesWeek: ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun']
+      SeriesWeek: [],
+      myOptions: [
+        { id: 'mon', text: 'Пн' },
+        { id: 'tue', text: 'Вт' },
+        { id: 'wed', text: 'Ср' },
+        { id: 'thu', text: 'Чт' },
+        { id: 'fri', text: 'Пт' },
+        { id: 'sat', text: 'Сб' },
+        { id: 'sun', text: 'Вск' }
+      ]
       // Модели selectedTask.value.SeriesWeekMon selectedTask.SeriesWeekTue selectedTask.SeriesWeekWed selectedTask.SeriesWeekThu selectedTask.SeriesWeekFri selectedTask.SeriesWeekSat selectedTask.SeriesWeekSun
     }
   },
@@ -1457,7 +1491,6 @@ export default {
         />
         <!-- Повтор -->
         <Popper
-          v-if="selectedTask.term_customer!==''"
           class="popper-repeat"
           arrow
           trigger="hover"
@@ -1566,11 +1599,11 @@ export default {
                         style="margin-left: 5px"
                       >
                         <label>По</label>
-                        <select
-                          ref="SeriesWeek"
+                        <Select
+                          @change = "changeSeriesWeek($event)"
                           v-model="SeriesWeek"
+                          ref="SeriesWeek"
                           class="form-control form-control-select-repeat"
-                          style="height: 40px"
                           multiple
                         >
                           <option value="mon">
@@ -1594,7 +1627,7 @@ export default {
                           <option value="sun">
                             Вск.
                           </option>
-                        </select>
+                        </Select>
                       </div>
                     </div>
                   </div>
@@ -1866,7 +1899,7 @@ export default {
               </div>
             </div>
           </template>
-          <div v-if="selectedTask.term_customer!=='' || selectedTask.SeriesType!==0">
+          <div>
             <div
               v-if="selectedTask.SeriesEnd!==''"
               ref="btnRefRepeat"
@@ -1914,7 +1947,7 @@ export default {
                   {{ day[selectedTask.SeriesYearDayOfWeek] }}
                 </span>
               </span>
-              <button
+              <button v-if="selectedTask.SeriesType > 0"
                 class="btn-close-popover"
                 @click="resetRepeat"
               >
@@ -1933,30 +1966,6 @@ export default {
                 </svg>
               </button>
             </div>
-          </div>
-          <div
-            v-else
-            class="mt-3 tags-custom dark:bg-gray-800 dark:text-gray-100"
-          >
-            <svg
-              width="24"
-              height="24"
-              viewBox="0 0 92 80"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M15.595 71.68H76.4048V66.5015C76.4048 64.3145 78.1735 62.5415 80.3554 62.5415C82.5373 62.5415 84.306 64.3145 84.306 66.5015V71.68C84.306 76.0541 80.7685 79.6 76.4048 79.6H15.595C11.2313 79.6 7.69378 76.0541 7.69378 71.68L7.69378 40H2.83583C0.728566 40 -0.380779 37.4961 1.03222 35.929L9.84079 26.1602C10.8061 25.0897 12.4827 25.0897 13.448 26.1602L22.2566 35.929C23.6696 37.4961 22.5602 40 20.453 40H15.595L15.595 71.68Z"
-                fill="black"
-                fill-opacity="0.5"
-              />
-              <path
-                d="M76.4048 8.32H15.595V13.4985C15.595 15.6855 13.8263 17.4585 11.6444 17.4585C9.46253 17.4585 7.69378 15.6855 7.69378 13.4985V8.32C7.69378 3.94591 11.2313 0.400002 15.595 0.400002H76.4048C80.7685 0.400002 84.306 3.9459 84.306 8.32V40H89.164C91.2712 40 92.3806 42.5039 90.9676 44.071L82.159 53.8398C81.1937 54.9103 79.5171 54.9103 78.5518 53.8398L69.7432 44.071C68.3302 42.5039 69.4396 40 71.5469 40H76.4048V8.32Z"
-                fill="black"
-                fill-opacity="0.5"
-              />
-            </svg>
-            <span class="rounded"> Повтор</span>
           </div>
         </Popper>
         <!-- Всплывающее окно Напоминание -->

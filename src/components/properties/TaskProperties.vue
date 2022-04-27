@@ -20,6 +20,7 @@ import TaskPropsCommentEditor from '@/components/TaskProperties/TaskPropsComment
 import TaskPropsButtonAccess from '@/components/TaskProperties/TaskPropsButtonAccess.vue'
 import TaskPropsButtonSetDate from '@/components/TaskProperties/TaskPropsButtonSetDate.vue'
 import TaskPropsButtonTags from '@/components/TaskProperties/TaskPropsButtonTags.vue'
+import TaskPropsButtonPerform from '@/components/TaskProperties/TaskPropsButtonPerform.vue'
 
 export default {
   components: {
@@ -1315,11 +1316,11 @@ export default {
                       >
                         <label>По</label>
                         <Select
-                          @change = "changeSeriesWeek($event)"
-                          v-model="SeriesWeek"
                           ref="SeriesWeek"
+                          v-model="SeriesWeek"
                           class="form-control form-control-select-repeat"
                           multiple
+                          @change="changeSeriesWeek($event)"
                         >
                           <option value="mon">
                             Пн.
@@ -1662,7 +1663,8 @@ export default {
                   {{ day[selectedTask.SeriesYearDayOfWeek] }}
                 </span>
               </span>
-              <button v-if="selectedTask.SeriesType > 0"
+              <button
+                v-if="selectedTask.SeriesType > 0"
                 class="btn-close-popover"
                 @click="resetRepeat"
               >

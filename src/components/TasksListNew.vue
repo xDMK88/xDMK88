@@ -26,8 +26,7 @@
     has-button
     has-cancel
     button-label="Delete"
-  >
-  </inspector-modal-box>
+  />
 
   <!-- Add task input -->
   <div
@@ -666,8 +665,10 @@ export default {
     const createTask = () => {
       const data = handleTaskSource()
       store.dispatch(TASK.CREATE_TASK, data)
-        .then(() => {
-          lastSelectedTaskUid.value = data.uid
+        .then((resp) => {
+          // выделяем добавленную задачу
+          // и отображаем её свойства
+          nodeSelected({ id: data.uid, info: resp.data })
         })
       createTaskText.value = ''
     }

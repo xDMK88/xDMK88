@@ -14,7 +14,7 @@ import unsorted from '@/icons/dashboardicons/unsorted.js'
 import ready from '@/icons/dashboardicons/ready.js'
 import Taskhead from '@/components/DashboardComponents/Taskhead.vue'
 import TaskStatus from '@/components/TasksList/TaskStatus'
-import { computed, reactive, onBeforeMount, onBeforeUpdate } from 'vue'
+import { computed, reactive, onBeforeMount } from 'vue'
 import { useStore } from 'vuex'
 
 const store = useStore()

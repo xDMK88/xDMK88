@@ -13,6 +13,7 @@ import departments from './modules/departments'
 import projects from './modules/projects'
 import colors from './modules/colors'
 import localization from './modules/localization'
+import inspector from './modules/inspector'
 
 export default createStore({
   state: {
@@ -143,6 +144,7 @@ export default createStore({
     departments,
     projects,
     colors,
-    localization
+    localization,
+    inspector
   }
 })

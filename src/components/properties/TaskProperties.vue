@@ -2028,7 +2028,7 @@ export default {
         />
         <!-- Три точки -->
         <TaskPropsButtonDots
-          :show-delete="selectedTask.type === 1"
+          :show-delete="selectedTask.type === 1 || selectedTask.type === 2"
           :date-create="selectedTask.date_create"
           :only-files="showOnlyFiles"
           @copyUrl="copyurl"

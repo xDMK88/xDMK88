@@ -3,7 +3,7 @@
     <li>
       <div class="list-tags-access">
         <span
-          v-if="tag.children.length"
+          v-if="tag.children?.length"
           class="svg-control-tree"
           @click="onCollapseTag(tag.uid)"
         >
@@ -91,7 +91,7 @@
         </label>
       </div>
       <template
-        v-if="isOpen(tag.uid) && tag.children.length"
+        v-if="isOpen(tag.uid) && tag.children?.length"
       >
         <TaskPropsButtonTagsItem
           v-for="child in tag.children"

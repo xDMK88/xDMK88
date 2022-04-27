@@ -136,7 +136,16 @@
           class="bottom"
         >
           <div class="popper">
-            <div @click="close">
+            <div
+              class="title-popover-main"
+              @click="close"
+            >
+              <button
+                class="btn-clear-popover"
+                @click="close"
+              >
+                Отменить
+              </button>
               <button
                 class="btn-save-popover"
                 @click="onSave"

@@ -26,8 +26,7 @@
     has-button
     has-cancel
     button-label="Delete"
-  >
-  </inspector-modal-box>
+  />
 
   <!-- Add task input -->
   <div
@@ -122,6 +121,7 @@
         <p class="text-[10px] leading-none mb-5">order_new: <strong>{{ props.node.info.order_new }}</strong></p>
         <p class="text-[10px] leading-none">id: <strong>{{ props.node.id  }}</strong></p>
         <pre class="text-[10px] leading-none font-bold text-yellow-500">children: {{ props.node.children  }}</pre>
+        <pre class="text-[10px] leading-none font-bold text-yellow-500">tags: {{ props.node.tags}}</pre>
         -->
         <Transition>
           <div
@@ -666,8 +666,10 @@ export default {
     const createTask = () => {
       const data = handleTaskSource()
       store.dispatch(TASK.CREATE_TASK, data)
-        .then(() => {
-          lastSelectedTaskUid.value = data.uid
+        .then((resp) => {
+          // выделяем добавленную задачу
+          // и отображаем её свойства
+          nodeSelected({ id: data.uid, info: resp.data })
         })
       createTaskText.value = ''
     }

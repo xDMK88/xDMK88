@@ -883,7 +883,6 @@ const actions = {
         method: 'PATCH'
       })
         .then((resp) => {
-          commit(TASK.CHANGE_TASK_PERFORMER, data)
           resolve(resp)
         })
         .catch((err) => {
@@ -1450,9 +1449,6 @@ const mutations = {
   },
   [TASK.CHANGE_TASK_COMMENT]: (state, data) => {
     state.comment.push(data.value)
-  },
-  [TASK.CHANGE_TASK_PERFORMER]: (state, data) => {
-    state.performer = data.value
   },
   [TASK.COLOR_TASKS_REQUEST]: (state, color) => {
     state.selectedColor = color

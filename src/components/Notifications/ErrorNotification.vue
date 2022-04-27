@@ -6,7 +6,7 @@
     position="bottom"
   >
     <div
-      class="fixed inset-x-0 bottom-0 flex items-start justify-end p-6 px-4 py-6 z-50"
+      class="fixed inset-x-0 bottom-0 flex items-start justify-end p-6 px-4 py-6 pointer-events-none z-50"
     >
       <div class="w-full max-w-sm">
         <Notification

@@ -10,7 +10,6 @@ import { CREATE_MESSAGE_REQUEST, DELETE_MESSAGE_REQUEST } from '@/store/actions/
 import { CREATE_FILES_REQUEST, GETFILES } from '@/store/actions/taskfiles'
 import * as TASK from '@/store/actions/tasks'
 import { copyText } from 'vue3-clipboard'
-import sanitizeHtml from 'sanitize-html'
 import linkify from 'vue-linkify'
 import ModalBoxConfirm from '@/components/modals/ModalBoxConfirm.vue'
 import { maska } from 'maska'
@@ -21,6 +20,7 @@ import TaskPropsCommentEditor from '@/components/TaskProperties/TaskPropsComment
 import TaskPropsButtonAccess from '@/components/TaskProperties/TaskPropsButtonAccess.vue'
 import TaskPropsButtonSetDate from '@/components/TaskProperties/TaskPropsButtonSetDate.vue'
 import TaskPropsButtonTags from '@/components/TaskProperties/TaskPropsButtonTags.vue'
+
 export default {
   components: {
     TaskPropsButtonDots,
@@ -29,6 +29,7 @@ export default {
     TaskPropsButtonAccess,
     TaskPropsButtonSetDate,
     TaskPropsButtonTags,
+    TaskPropsButtonPerform,
     TreeItem,
     Popper,
     Checklist,
@@ -1006,11 +1007,29 @@ export default {
       }
     }
   },
-  mounted () {
-  },
   methods: {
     print: function (value) {
       console.log(value)
+    },
+    onReAssignToUser: function (userEmail) {
+      console.log('onReAssignToUser', userEmail)
+      console.log('onReAssignToUser is not resolved')
+    },
+    onChangePerformer: function (userEmail) {
+      console.log('onChangePerformer', userEmail)
+      const data = {
+        uid: this.selectedTask.uid,
+        value: userEmail
+      }
+      this.$store.dispatch(TASK.CHANGE_TASK_PERFORMER, data).then(
+        resp => {
+          this.selectedTask.email_performer = resp.data.email_performer
+          this.selectedTask.perform_time = resp.data.perform_time
+          this.selectedTask.performerreaded = resp.data.performerreaded
+          this.selectedTask.uid_performer = resp.data.uid_performer
+          this.selectedTask.type = resp.data.type
+        }
+      )
     },
     onChangeDates: function (begin, end) {
       const data = {
@@ -1064,71 +1083,8 @@ export default {
       // на сервер отправляет и всё
       this.selectedTask.comment = text
     },
-    HtmlRender: function (text) {
-      const ur = text.split('lt://').pop()
-      console.log(ur)
-      const htmlElement = sanitizeHtml(text, {
-        allowedTags: [
-          'address', 'article', 'aside', 'footer', 'header', 'h1', 'h2', 'h3', 'h4',
-          'h5', 'h6', 'hgroup', 'main', 'nav', 'section', 'blockquote', 'dd', 'div',
-          'dl', 'dt', 'figcaption', 'figure', 'hr', 'li', 'main', 'ol', 'p', 'pre',
-          'ul', 'a', 'abbr', 'b', 'bdi', 'bdo', 'br', 'cite', 'code', 'data', 'dfn',
-          'em', 'i', 'kbd', 'mark', 'q', 'rb', 'rp', 'rt', 'rtc', 'ruby', 's', 'samp',
-          'small', 'span', 'strong', 'sub', 'sup', 'time', 'u', 'var', 'wbr', 'caption',
-          'col', 'colgroup', 'table', 'tbody', 'td', 'tfoot', 'th', 'thead', 'tr', 'strong'
-        ],
-        allowedAttributes: {
-          a: [
-            'href', 'name', 'target'
-          ],
-          img: [
-            'src', 'srcset', 'alt', 'title', 'width', 'height', 'loading'
-          ]
-        },
-        selfClosing: [
-          'img', 'br', 'hr', 'area', 'base', 'basefont', 'input', 'link', 'meta'
-        ],
-        allowedSchemes: [
-          'http', 'https', 'ftp', 'mailto', 'tel', 'lt'
-        ],
-        allowedSchemesByTag: {},
-        allowedSchemesAppliedToAttributes: [
-          'href', 'src', 'cite'
-        ],
-        allowProtocolRelative: true,
-        enforceHtmlBoundary: false
-      })
-      return htmlElement
-    },
     gotoParentNode (uid) {
       document.getElementById(uid).parentNode.click({ preventScroll: false })
-    },
-    formatBytes: function (bytes, decimals = 2) {
-      if (bytes === 0) return '0 Bytes'
-      const k = 1024
-      const dm = decimals < 0 ? 0 : decimals
-      const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']
-      const i = Math.floor(Math.log(bytes) / Math.log(k))
-      return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i]
-    },
-    extension: function (filename) {
-      let ext = 'не определилось'
-      const parts = filename.value.split('.')
-      if (parts.length > 1) ext = parts.pop()
-      document.getElementById('e-fileinfo').innerHTML = [
-        'Размер файла: ' + filename.size + ' B',
-        'Расширение: ' + ext,
-        'MIME тип: ' + filename.type
-      ].join('<br>')
-    },
-    moveToToday () {
-      this.$refs.calendar.move(new Date())
-    },
-    addZero (i) {
-      if (i < 10) {
-        i = '0' + i
-      }
-      return i
     }
   }
 }
@@ -1209,272 +1165,17 @@ export default {
       <div
         class="mt-3 custom-list-tags"
       >
-        <!-- Всплывающее окно сотрудник -->
-        <Popper
-          class="popper-employees"
-          :disabled="selectedTask.type === 5"
-          arrow
-          :class="isDark ? 'dark' : 'light'"
-          placement="bottom"
-        >
-          <span v-if="selectedTask.status !== 3">
-            <!-- <p class="text-center">{{ localization.Labels }}</p>-->
-            <!-- Поручить (личное сообщение) -->
-            <div
-              v-if="selectedTask.type === 1 || selectedTask.uid_customer === cusers.current_user_uid && !selectedTask.email_performer"
-              ref="btnRefEmployee"
-              class="mt-3 tags-custom dark:bg-gray-800 dark:text-gray-100 active project-hover-close"
-            >
-              <svg
-                width="24"
-                height="24"
-                viewBox="0 0 96 96"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M83.7121 54.9882C80.8778 52.5882 77.4767 50.3294 73.5087 48.6353C71.8081 47.9294 69.8241 48.6353 69.1156 50.3294C68.407 52.0235 69.1156 54 70.8161 54.7059C74.0756 56.1177 76.9098 57.9529 79.319 59.9294C82.1533 62.4706 83.8538 66 83.8538 69.8118V84.9177C83.8538 86.7529 82.295 88.1647 80.5944 88.1647H15.4058C13.5636 88.1647 12.1464 86.6118 12.1464 84.9177V69.8118C12.1464 66 13.847 62.3294 16.6813 59.9294C20.0824 56.9647 29.8607 50.1882 48.0001 50.1882C61.6047 50.1882 72.5167 39.1765 72.5167 25.7647C72.5167 12.2118 61.6047 1.2 48.0001 1.2C34.3956 1.2 23.4836 12.2118 23.4836 25.6235C23.4836 33.5294 27.3098 40.5882 33.1201 44.9647C22.4916 47.3647 15.831 51.7412 12.2881 54.8471C7.89498 58.6588 5.48584 64.1647 5.48584 69.8118V84.9177C5.48584 90.4235 10.0207 94.8 15.4058 94.8H80.5944C86.1213 94.8 90.5144 90.2824 90.5144 84.9177V69.8118C90.5144 64.1647 88.1053 58.6588 83.7121 54.9882ZM30.0024 25.6235C30.0024 15.7412 38.0801 7.69412 48.0001 7.69412C57.9201 7.69412 65.9978 15.7412 65.9978 25.6235C65.9978 35.5059 57.9201 43.5529 48.0001 43.5529C38.0801 43.5529 30.0024 35.5059 30.0024 25.6235Z"
-                  fill="white"
-                  fill-opacity="1"
-                />
-              </svg>
-              <span
-                class="rounded"
-              >
-                Поручить
-              </span>
-            </div>
-            <!-- Поручено на email -->
-            <div
-              v-else-if="selectedTask.type === 2 && cusers.owner_email.toLowerCase() !== selectedTask.email_performer.toLowerCase()"
-              ref="btnRefEmployee"
-              class="mt-3 tags-custom dark:bg-gray-800 dark:text-gray-100 project-hover-close"
-            >
-              <svg
-                width="24"
-                height="24"
-                viewBox="0 0 96 96"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M83.7121 54.9882C80.8778 52.5882 77.4767 50.3294 73.5087 48.6353C71.8081 47.9294 69.8241 48.6353 69.1156 50.3294C68.407 52.0235 69.1156 54 70.8161 54.7059C74.0756 56.1177 76.9098 57.9529 79.319 59.9294C82.1533 62.4706 83.8538 66 83.8538 69.8118V84.9177C83.8538 86.7529 82.295 88.1647 80.5944 88.1647H15.4058C13.5636 88.1647 12.1464 86.6118 12.1464 84.9177V69.8118C12.1464 66 13.847 62.3294 16.6813 59.9294C20.0824 56.9647 29.8607 50.1882 48.0001 50.1882C61.6047 50.1882 72.5167 39.1765 72.5167 25.7647C72.5167 12.2118 61.6047 1.2 48.0001 1.2C34.3956 1.2 23.4836 12.2118 23.4836 25.6235C23.4836 33.5294 27.3098 40.5882 33.1201 44.9647C22.4916 47.3647 15.831 51.7412 12.2881 54.8471C7.89498 58.6588 5.48584 64.1647 5.48584 69.8118V84.9177C5.48584 90.4235 10.0207 94.8 15.4058 94.8H80.5944C86.1213 94.8 90.5144 90.2824 90.5144 84.9177V69.8118C90.5144 64.1647 88.1053 58.6588 83.7121 54.9882ZM30.0024 25.6235C30.0024 15.7412 38.0801 7.69412 48.0001 7.69412C57.9201 7.69412 65.9978 15.7412 65.9978 25.6235C65.9978 35.5059 57.9201 43.5529 48.0001 43.5529C38.0801 43.5529 30.0024 35.5059 30.0024 25.6235Z"
-                  fill="#86D69D"
-                  fill-opacity="1"
-                />
-              </svg>
-              <span>{{ employeesByEmail[selectedTask.email_performer.toLowerCase()].name }}</span>
-              <button
-                v-if="selectedTask.uid_customer === cusers.current_user_uid"
-                class="btn-close-popover"
-                @click="resetEmployes"
-              >
-                <svg
-                  width="5"
-                  height="5"
-                  viewBox="0 0 16 15"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M14.8483 2.34833C15.317 1.8797 15.317 1.11991 14.8483 0.651277C14.3797 0.182647 13.6199 0.182647 13.1513 0.651277L7.99981 5.80275L2.84833 0.651277C2.3797 0.182647 1.61991 0.182647 1.15128 0.651277C0.682647 1.11991 0.682647 1.8797 1.15128 2.34833L6.30275 7.4998L1.15128 12.6513C0.682647 13.1199 0.682647 13.8797 1.15128 14.3483C1.61991 14.817 2.3797 14.817 2.84833 14.3483L7.99981 9.19686L13.1513 14.3483C13.6199 14.817 14.3797 14.817 14.8483 14.3483C15.317 13.8797 15.317 13.1199 14.8483 12.6513L9.69686 7.4998L14.8483 2.34833Z"
-                    fill="black"
-                    fill-opacity="0.5"
-                  />
-                </svg>
-              </button>
-            </div>
-            <!-- Перепоручить -->
-            <div
-              v-else-if="selectedTask.type === 3"
-              ref="btnRefEmployee"
-              class="mt-3 tags-custom dark:bg-gray-800 dark:text-gray-100 active project-hover-close"
-            >
-              <svg
-                width="24"
-                height="24"
-                viewBox="0 0 96 96"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M83.7121 54.9882C80.8778 52.5882 77.4767 50.3294 73.5087 48.6353C71.8081 47.9294 69.8241 48.6353 69.1156 50.3294C68.407 52.0235 69.1156 54 70.8161 54.7059C74.0756 56.1177 76.9098 57.9529 79.319 59.9294C82.1533 62.4706 83.8538 66 83.8538 69.8118V84.9177C83.8538 86.7529 82.295 88.1647 80.5944 88.1647H15.4058C13.5636 88.1647 12.1464 86.6118 12.1464 84.9177V69.8118C12.1464 66 13.847 62.3294 16.6813 59.9294C20.0824 56.9647 29.8607 50.1882 48.0001 50.1882C61.6047 50.1882 72.5167 39.1765 72.5167 25.7647C72.5167 12.2118 61.6047 1.2 48.0001 1.2C34.3956 1.2 23.4836 12.2118 23.4836 25.6235C23.4836 33.5294 27.3098 40.5882 33.1201 44.9647C22.4916 47.3647 15.831 51.7412 12.2881 54.8471C7.89498 58.6588 5.48584 64.1647 5.48584 69.8118V84.9177C5.48584 90.4235 10.0207 94.8 15.4058 94.8H80.5944C86.1213 94.8 90.5144 90.2824 90.5144 84.9177V69.8118C90.5144 64.1647 88.1053 58.6588 83.7121 54.9882ZM30.0024 25.6235C30.0024 15.7412 38.0801 7.69412 48.0001 7.69412C57.9201 7.69412 65.9978 15.7412 65.9978 25.6235C65.9978 35.5059 57.9201 43.5529 48.0001 43.5529C38.0801 43.5529 30.0024 35.5059 30.0024 25.6235Z"
-                  fill="white"
-                  fill-opacity="1"
-                />
-              </svg>
-              <span
-                class="rounded"
-              >Перепоручить</span>
-              <button
-                class="btn-close-popover"
-                @click="resetEmployes"
-              ><svg
-                width="5"
-                height="5"
-                viewBox="0 0 16 15"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M14.8483 2.34833C15.317 1.8797 15.317 1.11991 14.8483 0.651277C14.3797 0.182647 13.6199 0.182647 13.1513 0.651277L7.99981 5.80275L2.84833 0.651277C2.3797 0.182647 1.61991 0.182647 1.15128 0.651277C0.682647 1.11991 0.682647 1.8797 1.15128 2.34833L6.30275 7.4998L1.15128 12.6513C0.682647 13.1199 0.682647 13.8797 1.15128 14.3483C1.61991 14.817 2.3797 14.817 2.84833 14.3483L7.99981 9.19686L13.1513 14.3483C13.6199 14.817 14.3797 14.817 14.8483 14.3483C15.317 13.8797 15.317 13.1199 14.8483 12.6513L9.69686 7.4998L14.8483 2.34833Z"
-                  fill="black"
-                  fill-opacity="0.5"
-                />
-              </svg>
-              </button>
-            </div>
-            <!-- Взять на исполнение -->
-            <div
-              v-else-if="selectedTask.type === 10"
-              ref="btnRefEmployee"
-              class="mt-3 tags-custom dark:bg-gray-800 dark:text-gray-100 active project-hover-close"
-            >
-
-              <svg
-                width="24"
-                height="24"
-                viewBox="0 0 96 96"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M83.7121 54.9882C80.8778 52.5882 77.4767 50.3294 73.5087 48.6353C71.8081 47.9294 69.8241 48.6353 69.1156 50.3294C68.407 52.0235 69.1156 54 70.8161 54.7059C74.0756 56.1177 76.9098 57.9529 79.319 59.9294C82.1533 62.4706 83.8538 66 83.8538 69.8118V84.9177C83.8538 86.7529 82.295 88.1647 80.5944 88.1647H15.4058C13.5636 88.1647 12.1464 86.6118 12.1464 84.9177V69.8118C12.1464 66 13.847 62.3294 16.6813 59.9294C20.0824 56.9647 29.8607 50.1882 48.0001 50.1882C61.6047 50.1882 72.5167 39.1765 72.5167 25.7647C72.5167 12.2118 61.6047 1.2 48.0001 1.2C34.3956 1.2 23.4836 12.2118 23.4836 25.6235C23.4836 33.5294 27.3098 40.5882 33.1201 44.9647C22.4916 47.3647 15.831 51.7412 12.2881 54.8471C7.89498 58.6588 5.48584 64.1647 5.48584 69.8118V84.9177C5.48584 90.4235 10.0207 94.8 15.4058 94.8H80.5944C86.1213 94.8 90.5144 90.2824 90.5144 84.9177V69.8118C90.5144 64.1647 88.1053 58.6588 83.7121 54.9882ZM30.0024 25.6235C30.0024 15.7412 38.0801 7.69412 48.0001 7.69412C57.9201 7.69412 65.9978 15.7412 65.9978 25.6235C65.9978 35.5059 57.9201 43.5529 48.0001 43.5529C38.0801 43.5529 30.0024 35.5059 30.0024 25.6235Z"
-                  fill="white"
-                  fill-opacity="1"
-                />
-              </svg>
-              <span
-                class="rounded"
-              >Взять на исполнение</span>
-              <button
-                class="btn-close-popover"
-                @click="resetEmployes"
-              ><svg
-                width="5"
-                height="5"
-                viewBox="0 0 16 15"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M14.8483 2.34833C15.317 1.8797 15.317 1.11991 14.8483 0.651277C14.3797 0.182647 13.6199 0.182647 13.1513 0.651277L7.99981 5.80275L2.84833 0.651277C2.3797 0.182647 1.61991 0.182647 1.15128 0.651277C0.682647 1.11991 0.682647 1.8797 1.15128 2.34833L6.30275 7.4998L1.15128 12.6513C0.682647 13.1199 0.682647 13.8797 1.15128 14.3483C1.61991 14.817 2.3797 14.817 2.84833 14.3483L7.99981 9.19686L13.1513 14.3483C13.6199 14.817 14.3797 14.817 14.8483 14.3483C15.317 13.8797 15.317 13.1199 14.8483 12.6513L9.69686 7.4998L14.8483 2.34833Z"
-                  fill="black"
-                  fill-opacity="0.5"
-                />
-              </svg>
-              </button>
-            </div>
-            <!-- Взять на исполнение -->
-            <div
-              v-else-if="selectedTask.type === 5"
-              ref="btnRefEmployee"
-              class="mt-3 tags-custom dark:bg-gray-800 dark:text-gray-100 active project-hover-close"
-              @click="ispolnit"
-            >
-
-              <svg
-                width="24"
-                height="24"
-                viewBox="0 0 96 96"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M83.7121 54.9882C80.8778 52.5882 77.4767 50.3294 73.5087 48.6353C71.8081 47.9294 69.8241 48.6353 69.1156 50.3294C68.407 52.0235 69.1156 54 70.8161 54.7059C74.0756 56.1177 76.9098 57.9529 79.319 59.9294C82.1533 62.4706 83.8538 66 83.8538 69.8118V84.9177C83.8538 86.7529 82.295 88.1647 80.5944 88.1647H15.4058C13.5636 88.1647 12.1464 86.6118 12.1464 84.9177V69.8118C12.1464 66 13.847 62.3294 16.6813 59.9294C20.0824 56.9647 29.8607 50.1882 48.0001 50.1882C61.6047 50.1882 72.5167 39.1765 72.5167 25.7647C72.5167 12.2118 61.6047 1.2 48.0001 1.2C34.3956 1.2 23.4836 12.2118 23.4836 25.6235C23.4836 33.5294 27.3098 40.5882 33.1201 44.9647C22.4916 47.3647 15.831 51.7412 12.2881 54.8471C7.89498 58.6588 5.48584 64.1647 5.48584 69.8118V84.9177C5.48584 90.4235 10.0207 94.8 15.4058 94.8H80.5944C86.1213 94.8 90.5144 90.2824 90.5144 84.9177V69.8118C90.5144 64.1647 88.1053 58.6588 83.7121 54.9882ZM30.0024 25.6235C30.0024 15.7412 38.0801 7.69412 48.0001 7.69412C57.9201 7.69412 65.9978 15.7412 65.9978 25.6235C65.9978 35.5059 57.9201 43.5529 48.0001 43.5529C38.0801 43.5529 30.0024 35.5059 30.0024 25.6235Z"
-                  fill="white"
-                  fill-opacity="1"
-                />
-              </svg>
-              <span
-                class="rounded"
-              >Взять на исполнение</span>
-              <button
-                class="btn-close-popover"
-                @click="resetEmployes"
-              ><svg
-                width="5"
-                height="5"
-                viewBox="0 0 16 15"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M14.8483 2.34833C15.317 1.8797 15.317 1.11991 14.8483 0.651277C14.3797 0.182647 13.6199 0.182647 13.1513 0.651277L7.99981 5.80275L2.84833 0.651277C2.3797 0.182647 1.61991 0.182647 1.15128 0.651277C0.682647 1.11991 0.682647 1.8797 1.15128 2.34833L6.30275 7.4998L1.15128 12.6513C0.682647 13.1199 0.682647 13.8797 1.15128 14.3483C1.61991 14.817 2.3797 14.817 2.84833 14.3483L7.99981 9.19686L13.1513 14.3483C13.6199 14.817 14.3797 14.817 14.8483 14.3483C15.317 13.8797 15.317 13.1199 14.8483 12.6513L9.69686 7.4998L14.8483 2.34833Z"
-                  fill="black"
-                  fill-opacity="0.5"
-                />
-              </svg>
-              </button>
-            </div>
-          </span>
-          <template
-            #content="{ employee }"
-            class="bottom"
-          >
-            <div class="popper">
-              <div @click="employee" />
-              <div class="text-white body-popover-custom">
-                <div class="container-employee-popover">
-                  <form>
-                    <div
-                      v-for="(key,value) in employees"
-                      :key="value"
-                    >
-                      <div
-                        v-if="key.uid !== cusers.current_user_uid"
-                        class="list-employee-access"
-                        @click="changeEmployee(key.email)"
-                      >
-                        <img
-                          :src="key.fotolink"
-                          class="mr-1 border-fotolink border-solid border-2 border-sky-500"
-                          width="30"
-                          height="30"
-                        >
-                        <label class="employee-name-custom">
-                          {{ key.name }}
-                          <div class="popover-employee-email">{{ key.email }}</div>
-                        </label>
-                        <span
-                          v-if="selectedTask.email_performer!=='' && selectedTask.email_performer===key.email"
-                          class="inline-flex justify-center items-center"
-                          data-v-5784ed69-s=""
-                        >
-                          <svg
-                            viewBox="0 0 26 20"
-                            width="10"
-                            height="10"
-                            class="inline-block"
-                            data-v-5784ed69-s=""
-                          >
-                            <path
-                              fill="currentColor"
-                              fill-rule="evenodd"
-                              clip-rule="evenodd"
-                              d="M24.4107 1.30299C25.2766 2.02718 25.3681 3.2892 24.6148 4.1218L11.8142 18.2718C10.8103 19.3815 9.06094 19.4991 7.9062 18.5344L0.902667 12.6839C0.0362917 11.9601 -0.0558157 10.6982 0.69694 9.86518C1.44969 9.0322 2.76226 8.94364 3.62864 9.66738L9.58691 14.6447L21.4789 1.49931C22.2321 0.666707 23.5447 0.578813 24.4107 1.30299Z"
-                              data-v-5784ed69-s=""
-                            />
-                          </svg><!--v-if-->
-                        </span>
-                        <input
-                          type="radio"
-                          name="check_so_employee"
-                          class="check-custom-empployee"
-                          :checked="selectedTask.email_performer!=='' && selectedTask.email_performer===key.email"
-                          style="display: none"
-                          @click="unchecked"
-                          @change="changeEmployee(key.email)"
-                        >
-                      </div>
-                    </div>
-                  </form>
-                </div>
-              </div>
-            </div>
-          </template>
-        </Popper>
-        <!-- Кнопка доступ -->
+        <!-- Кнопка Поручить / Взять на исполнение / Перепоручить -->
+        <!-- В selectedTask.type === 3 должна быть кнопка перепоручить - это сейчас не работает -->
+        <TaskPropsButtonPerform
+          v-if="selectedTask.status !== 3 && selectedTask.type !== 3 && selectedTask.type !== 4"
+          :task-type="selectedTask.type"
+          :current-user-uid="cusers.current_user_uid"
+          :performer-email="selectedTask.email_performer"
+          @changePerformer="onChangePerformer"
+          @reAssign="onReAssignToUser"
+        />
+        <!-- Кнопка Доступ -->
         <TaskPropsButtonAccess
           v-if="isAccessVisible"
           :current-user-uid="cusers.current_user_uid"
@@ -2336,7 +2037,7 @@ export default {
         />
         <!-- Три точки -->
         <TaskPropsButtonDots
-          :show-delete="selectedTask.type === 1"
+          :show-delete="selectedTask.type === 1 || selectedTask.type === 2"
           :date-create="selectedTask.date_create"
           :only-files="showOnlyFiles"
           @copyUrl="copyurl"
@@ -2344,36 +2045,7 @@ export default {
           @toggleFiles="showOnlyFiles = !showOnlyFiles"
         />
       </div>
-      <!--
-      <div
-        v-if="selectedTask.checklist && selectedTask.checklist.replace(/\r?\n|\r/g, '')"
-        class="mt-3 checklist-custom"
-      >
-        <ul class="check-padding" id="childrenchecklist">
-          <li
-            v-for="(key,value) in selectedTask.checklist.replace(/[\r]/g,' ').split('\n\n')"
-            :key="value"
-          >
-            <div v-if="key!==''">
-            <div v-if="selectedTask.checklist.split('\n\n')[value]!==''">
-              <span class="checkdellist" :class="{linethoud:selectedTask.checklist.split('\n\n')[value][0]==='1'}">
-                <input
-                  type="checkbox" ref="checknew"
-                  :value="selectedTask.checklist.split('\n\n')[value][0]"
-                  :checked="selectedTask.checklist.split('\n\n')[value][0]==='1'"
-                  @click="changevaluechecklist(this.$refs.checknew.value, value)"
-                /><span v-if="selectedTask.checklist.split('\n\n')[value][0]==='1'">{{selectedTask.checklist.split('\n\n')[value].replace('1','')}}</span>
-                  <span v-else @click="checklistedit"><span :contenteditable="checklisteditable" @focusout="removeEditCheckList(this.$refs.checknew.value, $event)">{{ selectedTask.checklist.split('\n\n')[value].replace('0','') }}</span></span>
-              </span>
-            </div>
-            </div>
-          </li>
-        </ul>
-      </div>
-      <button  v-if="selectedTask.checklist" class="btn btn-transperant" @click="addchecklistelement">
-        Добавить
-      </button>
-      -->
+      <!-- Checklist -->
       <Checklist
         v-if="selectedTask.checklist || checklistshow"
         class="mt-3 checklist-custom"

@@ -226,7 +226,7 @@ function redirect (title, uid) {
           v-for="(task, taskIdx) in testObj[key]"
           :key="task.uid"
           class="p-2 rounded-xl"
-          :style="task.uid_marker !== '00000000-0000-0000-0000-000000000000' ? {backgroundColor: colors[task.uid_marker].back_color} : ''"
+          :style="task.uid_marker !== '00000000-0000-0000-0000-000000000000' ? {backgroundColor: colors[task.uid_marker].back_color, color:  colors[task.uid_marker].fore_color} : ''"
         >
           <div class="flex">
             <div class="flex order-first">
@@ -235,7 +235,9 @@ function redirect (title, uid) {
             <div class="font-normal">
               <span
                 class="max-w-full break-words text-sm"
-                :style="task.uid_marker !== '00000000-0000-0000-0000-000000000000' ? {color: colors[task.uid_marker].fore_color} : ''">{{ task.name }}</span>
+              >
+                {{ task.name }}
+              </span>
             </div>
           </div>
           <div class="flex items-center text-xs">
@@ -247,7 +249,6 @@ function redirect (title, uid) {
             </div>
             <div
               class="tag-label cursor-default p-1 text-xs flex items-center"
-              :style="task.uid_marker !== '00000000-0000-0000-0000-000000000000' ? {color: colors[task.uid_marker].fore_color} : ''"
             >
               {{ task.customer_name }}
             </div>
@@ -262,7 +263,6 @@ function redirect (title, uid) {
             <div
               v-if="task.uid_project !== '00000000-0000-0000-0000-000000000000'"
               class="p-1 order-last flex align-items justify-around"
-              :style="task.uid_marker !== '00000000-0000-0000-0000-000000000000' ? {color: colors[task.uid_marker].fore_color} : ''"
             >
               <icon
                 :path="project.path"

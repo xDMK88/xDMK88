@@ -168,7 +168,6 @@ function redirect (title, uid) {
   store.commit('basic', { key: 'taskListSource', value: { uid: uid, param: null } })
   store.commit('basic', { key: 'mainSectionState', value: 'tasks' })
 }
-// setInterval(() => console.log(store.state.tasks), 10000)
 </script>
 <template>
   <!-- <pre>{{ activeCheckbox }}</pre>

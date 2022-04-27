@@ -36,7 +36,10 @@ if (navStack) {
 
 /* Default title tag */
 const defaultDocumentTitle = 'Leadertask 2.0'
-
+const socket = new WebSocket('wss://api.leadertask.ru')
+socket.onmessage = function (event) {
+  console.log(event.data)
+}
 /* Collapse mobile aside menu on route change */
 router.beforeEach(to => {
   store.dispatch('asideMobileToggle', false)

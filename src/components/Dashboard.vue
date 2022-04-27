@@ -1,19 +1,3 @@
-<!-- ———————————No open icon?———————————
-⠀⣞⢽⢪⢣⢣⢣⢫⡺⡵⣝⡮⣗⢷⢽⢽⢽⣮⡷⡽⣜⣜⢮⢺⣜⢷⢽⢝⡽⣝
-⠸⡸⠜⠕⠕⠁⢁⢇⢏⢽⢺⣪⡳⡝⣎⣏⢯⢞⡿⣟⣷⣳⢯⡷⣽⢽⢯⣳⣫⠇
-⠀⠀⢀⢀⢄⢬⢪⡪⡎⣆⡈⠚⠜⠕⠇⠗⠝⢕⢯⢫⣞⣯⣿⣻⡽⣏⢗⣗⠏⠀
-⠀⠪⡪⡪⣪⢪⢺⢸⢢⢓⢆⢤⢀⠀⠀⠀⠀⠈⢊⢞⡾⣿⡯⣏⢮⠷⠁⠀⠀
-⠀⠀⠀⠈⠊⠆⡃⠕⢕⢇⢇⢇⢇⢇⢏⢎⢎⢆⢄⠀⢑⣽⣿⢝⠲⠉⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⡿⠂⠠⠀⡇⢇⠕⢈⣀⠀⠁⠡⠣⡣⡫⣂⣿⠯⢪⠰⠂⠀⠀⠀⠀
-⠀⠀⠀⠀⡦⡙⡂⢀⢤⢣⠣⡈⣾⡃⠠⠄⠀⡄⢱⣌⣶⢏⢊⠂⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⢝⡲⣜⡮⡏⢎⢌⢂⠙⠢⠐⢀⢘⢵⣽⣿⡿⠁⠁⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠨⣺⡺⡕⡕⡱⡑⡆⡕⡅⡕⡜⡼⢽⡻⠏⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⣼⣳⣫⣾⣵⣗⡵⡱⡡⢣⢑⢕⢜⢕⡝⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⣴⣿⣾⣿⣿⣿⡿⡽⡑⢌⠪⡢⡣⣣⡟⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⡟⡾⣿⢿⢿⢵⣽⣾⣼⣘⢸⢸⣞⡟⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠁⠇⠡⠩⡫⢿⣝⡻⡮⣒⢽⠋⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-—————————————————————————————
- -->
 <script setup>
 import Icon from '@/components/Icon.vue'
 // import focus from '@/icons/focus.js'
@@ -72,6 +56,22 @@ onBeforeMount(() => {
     testObj.open = store.state.tasks.open.tasks
   })
 })
+
+// onBeforeUpdate(() => {
+//   if (testObj.open.length) { // проверяем объект на заполненность
+//     for (const i in testObj.open) { // пробегаемся по индексам
+//       if (!testObj.overdue.includes(testObj.open[i]) && !testObj.today.includes(testObj.open[i])) { // проверяем наличие объекта из open в других объектах
+//         if (testObj.open[i].customer_date_end !== testObj.open[i].customer_date_begin) { // сверяем даты, если даты одинаковы, то задание бессрочное
+//           if (new Date(testObj.open[i].customer_date_end) > new Date()) { // если дата окончания позже, чем сегодняшняя дата, то задача попадает в "сегодня"
+//             testObj.today.push(testObj.open[i])
+//           } else { // иначе задача отправляется в просроченные
+//             testObj.overdue.push(testObj.open[i])
+//           }
+//         }
+//       }
+//     }
+//   }
+// })
 
 const tags = reactive(computed(() => {
   return store.state.tasks.tags

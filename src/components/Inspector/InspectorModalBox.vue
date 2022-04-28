@@ -1,5 +1,5 @@
 <script setup>
-import { computed, ref, provide } from 'vue'
+import { computed, ref, watch, provide } from 'vue'
 import { useStore } from 'vuex'
 // import JbButton from '@/components/JbButton.vue'
 import CardComponent from '@/components/CardComponent.vue'
@@ -31,10 +31,10 @@ const emit = defineEmits(['update:modelValue', 'cancel', 'confirm'])
 
 const value = computed({
   get: () => props.modelValue,
-  set: value => emit('update:modelValue', value)
+  set: (value) => emit('update:modelValue', value)
 })
 
-const confirmCancel = mode => {
+const confirmCancel = (mode) => {
   value.value = false
   emit(mode)
 }
@@ -44,26 +44,27 @@ const store = useStore()
 const user = computed(() => store.state.user.user)
 const cancel = () => confirmCancel('cancel')
 
-const delegatedTask = { }
+const delegatedTask = {}
 const currentState = ref('task_name')
 const inputMessage = ref('')
-const messages = ref(
-  [
-    {
-      message: 'Привет, что нужно сделать?',
-      messageFromInspector: true,
-      type: 'task_name',
-      createDate: new Date().toISOString()
-    }
-  ]
-)
+const messages = ref([
+  {
+    message: 'Привет, что нужно сделать?',
+    messageFromInspector: true,
+    type: 'task_name',
+    createDate: new Date().toISOString()
+  }
+])
 
 provide('inputMessage', inputMessage)
 provide('currentState', currentState)
 
 function uuidv4 () {
-  return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
-    (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+  return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, (c) =>
+    (
+      c ^
+      (crypto.getRandomValues(new Uint8Array(1))[0] & (15 >> (c / 4)))
+    ).toString(16)
   )
 }
 
@@ -75,7 +76,8 @@ const getTodaysDate = (val, isYearFirst = true) => {
   if (val == null) {
     val = new Date()
   }
-  if (typeof val === 'string') { // parse date from ISO 8601 string
+  if (typeof val === 'string') {
+    // parse date from ISO 8601 string
     val = new Date(val)
   }
   const month = pad2(val.getMonth() + 1)
@@ -88,6 +90,19 @@ const getTodaysDate = (val, isYearFirst = true) => {
   }
 }
 
+watch(value, (newVal) => {
+  if (!newVal) {
+    messages.value.splice(0)
+    messages.value.push({
+      message: 'Привет, что нужно сделать?',
+      messageFromInspector: true,
+      type: 'task_name',
+      createDate: new Date().toISOString()
+    })
+    currentState.value = 'task_name'
+  }
+})
+
 const createTask = () => {
   delegatedTask.uid = uuidv4()
   delegatedTask.uid_parent = '00000000-0000-0000-0000-000000000000'
@@ -95,8 +110,12 @@ const createTask = () => {
   delegatedTask.status = 0
   delegatedTask.type = 1
   delegatedTask.comment = ''
-  store.dispatch('CREATE_TASK', delegatedTask).then(resp => {
-    store.dispatch('CREATE_INSPECTOR_TASK', { uid: delegatedTask.uid, uid_customer: delegatedTask.uid_customer, taskJson: JSON.stringify(resp.data) })
+  store.dispatch('CREATE_TASK', delegatedTask).then((resp) => {
+    store.dispatch('CREATE_INSPECTOR_TASK', {
+      uid: delegatedTask.uid,
+      uid_customer: delegatedTask.uid_customer,
+      taskJson: JSON.stringify(resp.data)
+    })
   })
 }
 
@@ -111,7 +130,8 @@ const addCustomerMessage = () => {
   if (currentState.value === 'task_name') {
     delegatedTask.name = inputMessage.value
     messages.value.push({
-      message: 'Отлично, теперь выберите исполнителя. Если сотрудника нет в списке - начните вводить его имя, а я его найду.',
+      message:
+        'Отлично, теперь выберите исполнителя. Если сотрудника нет в списке - начните вводить его имя, а я его найду.',
       messageFromInspector: true,
       type: 'employeeSelection',
       createDate: new Date().toISOString()
@@ -296,13 +316,17 @@ const actionConfirmDelegate = (confirmed) => {
       createDate: new Date().toISOString()
     })
     messages.value.push({
-      message: 'Я не знаю, что делать в таком случае, всего доброго!',
+      message: 'Обращайтесь когда я потребуюсь',
       messageFromInspector: true,
       type: 'end',
       createDate: new Date().toISOString()
     })
     currentState.value = 'end'
   }
+  // закрываемся
+  setTimeout(() => {
+    cancel()
+  }, 3000)
 }
 </script>
 
@@ -322,30 +346,30 @@ const actionConfirmDelegate = (confirmed) => {
       <div class="items-center justify-center">
         <InspectorContent
           :messages="messages"
-          :selectEmployee="selectEmployee"
-          :selectProject="selectProject"
-          :selectTag="selectTag"
-          :selectColor="selectColor"
-          :selectAccess="selectAccess"
-          :selectTime="selectTime"
-          :actionConfirmNewParams="actionConfirmNewParams"
-          :actionConfirmDelegate="actionConfirmDelegate"
+          :select-employee="selectEmployee"
+          :select-project="selectProject"
+          :select-tag="selectTag"
+          :select-color="selectColor"
+          :select-access="selectAccess"
+          :select-time="selectTime"
+          :action-confirm-new-params="actionConfirmNewParams"
+          :action-confirm-delegate="actionConfirmDelegate"
           class="max-h-[40vh] h-[40vh] overflow-auto"
         />
         <slot />
       </div>
 
-      <div
-        class="flex items-stretch"
-      >
+      <div class="flex items-stretch">
         <input
           v-model="inputMessage"
+          :disabled="currentState === 'end'"
           type="text"
           class="bg-gray-50 rounded-xl border border-gray-300 w-full p-2"
           placeholder="Your message"
-          @keyup.enter="addCustomerMessage"
           autofocus
-        />
+          @keyup.enter="addCustomerMessage"
+          @keyup.esc="cancel"
+        >
       </div>
     </card-component>
   </overlay-confirm>

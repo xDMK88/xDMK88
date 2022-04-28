@@ -386,7 +386,7 @@ export default {
           selectedTask.value.SeriesAfterType = 0
           selectedTask.value.SeriesAfterCount = 0
           selectedTask.value.SeriesWeekCount = 0
-          selectedTask.value.SeriesWeekMon = 1
+          selectedTask.value.SeriesWeekMon = 0
           selectedTask.value.SeriesWeekTue = 0
           selectedTask.value.SeriesWeekWed = 0
           selectedTask.value.SeriesWeekThu = 0
@@ -510,7 +510,7 @@ export default {
             selectedTask.value.SeriesAfterType = 0
             selectedTask.value.SeriesAfterCount = 0
             selectedTask.value.SeriesWeekCount = 0
-            selectedTask.value.SeriesWeekMon = 1
+            selectedTask.value.SeriesWeekMon = 0
             selectedTask.value.SeriesWeekTue = 0
             selectedTask.value.SeriesWeekWed = 0
             selectedTask.value.SeriesWeekThu = 0
@@ -673,7 +673,8 @@ export default {
         this.everyMonthRepeat = false
         this.everyYearRepeat = false
         selectedTask.value.SeriesType = 2
-        selectedTask.value.SeriesWeekMon = 1
+        selectedTask.value.SeriesWeekMon = 0
+        selectedTask.value.SeriesWeekCount = 1
       }
       if (event.target.value === '3') {
         this.noRepeat = false
@@ -838,7 +839,14 @@ export default {
       selectedTaskcomment: selectedTask.value.comment,
       ActiveSelect: selectedTask.value.SeriesMonthType,
       ActiveYartype: selectedTask.value.SeriesYearType,
-      SeriesWeek: [],
+      SeriesWeekMon: selectedTask.value.SeriesWeekMon === 1 ? 'mon' : ' ',
+      SeriesWeekTue: selectedTask.value.SeriesWeekTue === 1 ? 'tue' : ' ',
+      SeriesWeekWed: selectedTask.value.SeriesWeekWed === 1 ? 'wed' : ' ',
+      SeriesWeekThu: selectedTask.value.SeriesWeekThu === 1 ? 'thu' : ' ',
+      SeriesWeekFri: selectedTask.value.SeriesWeekFri === 1 ? 'fri' : ' ',
+      SeriesWeekSat: selectedTask.value.SeriesWeekSat === 1 ? 'sat' : ' ',
+      SeriesWeekSun: selectedTask.value.SeriesWeekSun === 1 ? 'sun' : ' ',
+      SeriesWeek: [selectedTask.value.SeriesWeekMon === 1 ? 'mon' : ' ', selectedTask.value.SeriesWeekTue === 1 ? 'tue' : ' ', selectedTask.value.SeriesWeekWed === 1 ? 'wed' : ' ', selectedTask.value.SeriesWeekThu === 1 ? 'thu' : ' ', selectedTask.value.SeriesWeekFri === 1 ? 'fri' : ' ', selectedTask.value.SeriesWeekSat === 1 ? 'sat' : ' ', selectedTask.value.SeriesWeekSun === 1 ? 'sun' : ' '],
       myOptions: [
         { id: 'mon', text: 'Пн' },
         { id: 'tue', text: 'Вт' },
@@ -866,7 +874,7 @@ export default {
       everyMonthRepeat: false,
       everyYearRepeat: false,
       showpastefile: false
-      // Модели selectedTask.value.SeriesWeekMon selectedTask.SeriesWeekTue selectedTask.SeriesWeekWed selectedTask.SeriesWeekThu selectedTask.SeriesWeekFri selectedTask.SeriesWeekSat selectedTask.SeriesWeekSun
+      // Модели selectedTask.value.SeriesWeekMon selectedTask.value.SeriesWeekTue selectedTask.value.SeriesWeekWed selectedTask.value.SeriesWeekThu selectedTask.value.SeriesWeekFri selectedTask.value.SeriesWeekSat selectedTask.value.SeriesWeekSun
     }
   },
   computed: {
@@ -1320,7 +1328,7 @@ export default {
                           </option>
                         </Select> -->
                         <div
-                          v-for="(opt) in myOptions" :key="opt" v-bind:value="opt.id"
+                          v-for="opt in myOptions" :key="opt" v-bind:value="opt.id"
                           class="form_checkbox_btn-custom"
                         >
                           <input

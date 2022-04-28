@@ -2,6 +2,7 @@
 import Icon from '@/components/Icon.vue'
 // import focus from '@/icons/focus.js'
 import * as TASK from '@/store/actions/tasks.js'
+import * as USER from '@/store/actions/user.js'
 import unread from '@/icons/dashboardicons/unread.js'
 import project from '@/icons/projectDesktop.js'
 // import gear from '@/icons/dashboardicons/gear.js'
@@ -14,6 +15,8 @@ import unsorted from '@/icons/dashboardicons/unsorted.js'
 import ready from '@/icons/dashboardicons/ready.js'
 import Taskhead from '@/components/DashboardComponents/Taskhead.vue'
 import TaskStatus from '@/components/TasksList/TaskStatus'
+import performerRead from '@/icons/performer-read.js'
+import performerNotRead from '@/icons/performer-not-read.js'
 import { computed, reactive, onBeforeMount } from 'vue'
 import { useStore } from 'vuex'
 
@@ -29,6 +32,10 @@ const testObj = reactive({
   ready: '',
   open: ''
 })
+
+const user = {
+  userData: ''
+}
 
 onBeforeMount(() => {
   store.dispatch(TASK.TASKS_REQUEST, new Date()).then(() => {
@@ -54,6 +61,9 @@ onBeforeMount(() => {
   })
   store.dispatch(TASK.OPENED_TASKS_REQUEST).then(() => {
     testObj.open = store.state.tasks.open.tasks
+  })
+  store.dispatch(USER.USER_REQUEST).then(() => {
+    user.userData = store.state.user.user
   })
 })
 
@@ -225,7 +235,7 @@ function redirect (title, uid) {
           v-for="(task, taskIdx) in testObj[key]"
           :key="task.uid"
           class="p-2 rounded-xl"
-          :style="task.uid_marker !== '00000000-0000-0000-0000-000000000000' ? {backgroundColor: colors[task.uid_marker].back_color, color:  colors[task.uid_marker].fore_color} : ''"
+          :style="task.uid_marker !== '00000000-0000-0000-0000-000000000000' ? {backgroundColor: colors[task.uid_marker].back_color, color:  '#000000'} : ''"
         >
           <div class="flex">
             <div class="flex order-first">
@@ -239,18 +249,35 @@ function redirect (title, uid) {
               </span>
             </div>
           </div>
-          <div class="flex items-center text-xs">
+          <div class="flex flex-wrap items-center text-xs text-white">
+            <!-- customer -->
             <div>
               <img
-                class="w-[22px] h-[22px] border-solid border-2 border-lime-500 rounded-md"
+                class="w-[22px] h-[22px] border-solid border-2 rounded-md"
                 :src="employees[task.uid_customer] === undefined ? '' : employees[task.uid_customer].fotolink"
               >
             </div>
             <div
-              class="tag-label cursor-default p-1 text-xs flex items-center"
+              class="tag-label cursor-default p-1 text-xs flex items-center rounded-lg ml-[4px]"
+              :class="task.uid_performer === user.userData.current_user_uid ? 'bg-red-500' : 'bg-gray-400'"
             >
               {{ task.customer_name }}
             </div>
+            <div
+              v-if="(employees[task.uid_customer] !== undefined) && employees[task.uid_customer] !== employees[task.uid_performer]"
+              class="tag-label cursor-default p-1 text-xs flex items-center rounded-lg ml-[4px]"
+              :class="task.uid_customer === user.userData.current_user_uid ? 'bg-lime-500' : 'bg-gray-400'"
+            >
+                <icon
+                  :path="task.performerreaded ? performerRead.path : performerNotRead.path"
+                  :width="task.performerreaded ? performerRead.width : performerNotRead.width"
+                  :height="task.performerreaded ? performerRead.height : performerNotRead.height"
+                  :viewbox="task.performerreaded ? performerRead.height : performerNotRead.height"
+                  class="mr-[4px]"
+                />
+                {{ employees[task.uid_performer].name }}
+            </div>
+            <!-- tags -->
             <div
               v-for="j in testObj[key][taskIdx].tags.length"
               :key="j"

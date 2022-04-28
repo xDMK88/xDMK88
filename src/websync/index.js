@@ -24,8 +24,7 @@ function parseObject (obj) {
 export default function initWebSync () {
   const clientProperty = 'client'
   const client = new window.fm.websync[clientProperty](
-    'https://sync.leadertask.net/websync.ashx?uid_session=' +
-      storeNavigator.value.push_channel
+    process.env.VUE_APP_SYNC_LEADERTASK_API + 'websync.ashx?uid_session=' + storeNavigator.value.push_channel
   )
   client.connect({
     onSuccess: function (e) {

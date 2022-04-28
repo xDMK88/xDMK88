@@ -21,7 +21,7 @@ const getters = {
 const actions = {
   [CREATE_COLOR_REQUEST]: ({ commit, dispatch }, data) => {
     return new Promise((resolve, reject) => {
-      const url = 'https://web.leadertask.com/api/v1/marker'
+      const url = process.env.VUE_APP_LEADERTASK_API + 'api/v1/marker'
       axios({ url: url, method: 'POST', data: data })
         .then(resp => {
           resolve(resp)
@@ -38,7 +38,7 @@ const actions = {
   },
   [UPDATE_COLOR_REQUEST]: ({ commit, dispatch }, data) => {
     return new Promise((resolve, reject) => {
-      const url = 'https://web.leadertask.com/api/v1/marker'
+      const url = process.env.VUE_APP_LEADERTASK_API + 'api/v1/marker'
       axios({ url: url, method: 'PATCH', data: data })
         .then(resp => {
           resolve(resp)
@@ -55,7 +55,7 @@ const actions = {
   },
   [REMOVE_COLOR_REQUEST]: ({ commit, dispatch }, uid) => {
     return new Promise((resolve, reject) => {
-      const url = 'https://web.leadertask.com/api/v1/marker?uid=' + uid
+      const url = process.env.VUE_APP_LEADERTASK_API + 'api/v1/marker?uid=' + uid
       axios({ url: url, method: 'DELETE' })
         .then(resp => {
           resolve(resp)

@@ -19,7 +19,7 @@ const getters = {
 const actions = {
   [CREATE_DEPARTMENT_REQUEST]: ({ commit, dispatch }, data) => {
     return new Promise((resolve, reject) => {
-      const url = 'https://web.leadertask.com/api/v1/dep'
+      const url = process.env.VUE_APP_LEADERTASK_API + 'api/v1/dep'
       axios({ url: url, method: 'POST', data: data })
         .then(resp => {
           resolve(resp)
@@ -36,7 +36,7 @@ const actions = {
   },
   [UPDATE_DEPARTMENT_REQUEST]: ({ commit, dispatch }, data) => {
     return new Promise((resolve, reject) => {
-      const url = 'https://web.leadertask.com/api/v1/dep'
+      const url = process.env.VUE_APP_LEADERTASK_API + 'api/v1/dep'
       axios({ url: url, method: 'PATCH', data: data })
         .then(resp => {
           resolve(resp)
@@ -53,7 +53,7 @@ const actions = {
   },
   [REMOVE_DEPARTMENT_REQUEST]: ({ commit, dispatch }, uid) => {
     return new Promise((resolve, reject) => {
-      const url = 'https://web.leadertask.com/api/v1/dep?uid=' + uid
+      const url = process.env.VUE_APP_LEADERTASK_API + 'api/v1/dep?uid=' + uid
       axios({ url: url, method: 'DELETE' })
         .then(resp => {
           resolve(resp)

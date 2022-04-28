@@ -11,7 +11,7 @@ const getters = {
 const actions = {
   [INSPECTOR.CREATE_INSPECTOR_TASK]: ({ commit, dispatch }, data) => {
     return new Promise((resolve, reject) => {
-      const url = 'https://api.leadertask.ru/task'
+      const url = process.env.VUE_APP_INSPECTOR_API
       axios({ url: url, method: 'POST', data: data })
         .then(resp => {
           resolve(resp)

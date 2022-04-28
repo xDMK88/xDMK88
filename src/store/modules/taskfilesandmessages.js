@@ -42,7 +42,7 @@ const actions = {
   [FILES_REQUEST]: ({ commit, dispatch }, taskUid) => {
     return new Promise((resolve, reject) => {
       commit(FILES_REQUEST)
-      const url = 'https://web.leadertask.com/api/v1/tasksfiles/bytask?uid=' + taskUid
+      const url = process.env.VUE_APP_LEADERTASK_API + 'api/v1/tasksfiles/bytask?uid=' + taskUid
       axios({ url: url, method: 'GET' })
         .then(resp => {
           commit(FILES_SUCCESS, resp)
@@ -56,7 +56,7 @@ const actions = {
   //  GetFiles
   [GETFILES]: ({ commit, dispatch }, uid) => {
     return new Promise((resolve, reject) => {
-      const url = 'https://web.leadertask.com/api/v1/tasksfiles/file?uid=' + uid
+      const url = process.env.VUE_APP_LEADERTASK_API + 'api/v1/tasksfiles/file?uid=' + uid
       axios({ url: url, method: 'GET', responseType: 'blob' })
         .then(resp => {
           commit(FILE_SUCCESS, resp)
@@ -77,7 +77,7 @@ const actions = {
   },
   [CREATE_FILES_REQUEST]: ({ commit, dispatch }, data) => {
     return new Promise((resolve, reject) => {
-      const url = 'https://web.leadertask.com/api/v1/tasksfiles/several?uid_task=' + data.uid_task
+      const url = process.env.VUE_APP_LEADERTASK_API + 'api/v1/tasksfiles/several?uid_task=' + data.uid_task
       commit(TOGGLE_UPLOAD_STATUS)
       console.log(data)
       axios({
@@ -100,7 +100,7 @@ const actions = {
   },
   [CREATE_FILE_REQUEST]: ({ commit, dispatch }, data) => {
     return new Promise((resolve, reject) => {
-      const url = 'https://web.leadertask.com/api/v1/tasksfiles/one?uid_task=' + data.uid_task
+      const url = process.env.VUE_APP_LEADERTASK_API + 'api/v1/tasksfiles/one?uid_task=' + data.uid_task
       axios({
         url: url,
         method: 'POST',
@@ -120,7 +120,7 @@ const actions = {
   [MESSAGES_REQUEST]: ({ commit, dispatch }, taskUid) => {
     return new Promise((resolve, reject) => {
       commit(MESSAGES_REQUEST)
-      const url = 'https://web.leadertask.com/api/v1/tasksmsgs/bytask?uid=' + taskUid
+      const url = process.env.VUE_APP_LEADERTASK_API + 'api/v1/tasksmsgs/bytask?uid=' + taskUid
       axios({ url: url, method: 'GET' })
         .then(resp => {
           commit(MESSAGES_SUCCESS, resp)
@@ -141,7 +141,7 @@ const actions = {
   [CREATE_MESSAGE_REQUEST]: ({ commit, dispatch }, data) => {
     return new Promise((resolve, reject) => {
       commit(MESSAGES_REQUEST)
-      const url = 'https://web.leadertask.com/api/v1/tasksmsgs'
+      const url = process.env.VUE_APP_LEADERTASK_API + 'api/v1/tasksmsgs'
       axios({ url: url, method: 'POST', data: data })
         .then(resp => {
           resolve(resp)
@@ -160,7 +160,7 @@ const actions = {
   [DELETE_MESSAGE_REQUEST]: ({ commit, dispatch }, data) => {
     return new Promise((resolve, reject) => {
       commit(MESSAGES_REQUEST)
-      const url = 'https://web.leadertask.com/api/v1/tasksmsgs?uid=' + data.uid
+      const url = process.env.VUE_APP_LEADERTASK_API + 'api/v1/tasksmsgs?uid=' + data.uid
       axios({ url: url, method: 'DELETE' })
         .then(resp => {
           resolve(resp)

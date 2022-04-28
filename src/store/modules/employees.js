@@ -21,7 +21,7 @@ const getters = {
 const actions = {
   [CREATE_EMPLOYEE_REQUEST]: ({ commit, dispatch }, data) => {
     return new Promise((resolve, reject) => {
-      const url = 'https://web.leadertask.com/api/v1/emp'
+      const url = process.env.VUE_APP_LEADERTASK_API + 'api/v1/emp'
       axios({ url: url, method: 'POST', data: data })
         .then(resp => {
           resolve(resp)
@@ -38,7 +38,7 @@ const actions = {
   },
   [UPDATE_EMPLOYEE_REQUEST]: ({ commit, dispatch }, data) => {
     return new Promise((resolve, reject) => {
-      const url = 'https://web.leadertask.com/api/v1/emp/title/?email=' + data.email + '&title=' + data.name
+      const url = process.env.VUE_APP_LEADERTASK_API + 'api/v1/emp/title/?email=' + data.email + '&title=' + data.name
       axios({ url: url, method: 'PATCH' })
         .then(resp => {
           resolve(resp)
@@ -55,7 +55,7 @@ const actions = {
   },
   [REMOVE_EMPLOYEE_REQUEST]: ({ commit, dispatch }, data) => {
     return new Promise((resolve, reject) => {
-      const url = 'https://web.leadertask.com/api/v1/emp?uid_delete=' + data.uid + '&uid_delegate=00000000-0000-0000-0000-000000000000'
+      const url = process.env.VUE_APP_LEADERTASK_API + 'api/v1/emp?uid_delete=' + data.uid + '&uid_delegate=00000000-0000-0000-0000-000000000000'
       axios({ url: url, method: 'DELETE' })
         .then(resp => {
           resolve(resp)

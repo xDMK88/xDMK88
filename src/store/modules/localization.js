@@ -25,7 +25,7 @@ const actions = {
       let language = 'russian'
       if (navigator.language.includes('en')) language = 'english'
 
-      const url = 'https://web.leadertask.com/api/v1/localize/strings?language=' + language
+      const url = process.env.VUE_APP_LEADERTASK_API + 'api/v1/localize/strings?language=' + language
       axios({ url: url, method: 'GET' })
         .then(resp => {
           commit(LOCALIZATION_SUCCESS, resp)

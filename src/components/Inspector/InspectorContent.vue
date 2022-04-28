@@ -32,6 +32,9 @@ const props = defineProps({
   },
   actionConfirmDelegate: {
     type: Function
+  },
+  lastSelected: {
+    type: Function
   }
 })
 
@@ -43,21 +46,28 @@ watch(props.messages, (oldValue, newValue) => {
 
 </script>
 <template>
-  <div ref="chat" class="pb-5">
-    <div v-for="message of props.messages" :key="message">
+  <div
+    ref="chat"
+    class="pb-5"
+  >
+    <div
+      v-for="message of props.messages"
+      :key="message"
+    >
       <InspectorMessage
         v-if="message.messageFromInspector"
         :message="message.message"
         :type="message.type"
         :date="message.createDate"
-        :selectEmployee="props.selectEmployee"
-        :selectProject="props.selectProject"
-        :selectTag="props.selectTag"
-        :selectColor="props.selectColor"
-        :selectAccess="props.selectAccess"
-        :selectTime="props.selectTime"
-        :actionConfirmNewParams="props.actionConfirmNewParams"
-        :actionConfirmDelegate="props.actionConfirmDelegate"
+        :select-employee="props.selectEmployee"
+        :select-project="props.selectProject"
+        :select-tag="props.selectTag"
+        :select-color="props.selectColor"
+        :select-access="props.selectAccess"
+        :select-time="props.selectTime"
+        :action-confirm-new-params="props.actionConfirmNewParams"
+        :action-confirm-delegate="props.actionConfirmDelegate"
+        :last-selected="props.lastSelected"
       />
       <CustomerMessage
         v-else

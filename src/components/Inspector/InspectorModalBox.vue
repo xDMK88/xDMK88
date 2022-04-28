@@ -123,8 +123,100 @@ const createTask = () => {
   })
 }
 
+let lastSelectedObj = {}
+const lastSelected = (obj) => {
+  lastSelectedObj = obj ? { ...obj } : null
+  console.log('lastSelected', lastSelectedObj)
+}
+
+function onMessageSelectEmployee (message) {
+  if (lastSelectedObj) {
+    selectEmployee(lastSelectedObj)
+    inputMessage.value = ''
+  }
+}
+
+function onMessageSelectProject (message) {
+  if (lastSelectedObj) {
+    selectProject(lastSelectedObj)
+    inputMessage.value = ''
+  }
+}
+
+function onMessageSelectTag (message) {
+  if (lastSelectedObj) {
+    selectTag(lastSelectedObj)
+    inputMessage.value = ''
+  }
+}
+
+function onMessageSelectColor (message) {
+  if (lastSelectedObj) {
+    selectColor(lastSelectedObj)
+    inputMessage.value = ''
+  }
+}
+
+function onMessageSelectAccess (message) {
+  if (lastSelectedObj) {
+    selectAccess(lastSelectedObj)
+    inputMessage.value = ''
+  }
+}
+
+function onMessageSelectTime (message) {
+  console.log('onMessageSelectTime', message)
+  // selectTime
+}
+
+function onMessageAddParams (message) {
+  if (lastSelectedObj) {
+    actionConfirmNewParams(lastSelectedObj.value)
+    inputMessage.value = ''
+  }
+}
+
+function onMessageConfirm (message) {
+  if (lastSelectedObj) {
+    actionConfirmDelegate(lastSelectedObj.value)
+    inputMessage.value = ''
+  }
+}
+
 const addCustomerMessage = () => {
   if (!inputMessage.value) return
+  if (currentState.value === 'employeeSelection') {
+    onMessageSelectEmployee(inputMessage.value)
+    return
+  }
+  if (currentState.value === 'projectSelection') {
+    onMessageSelectProject(inputMessage.value)
+    return
+  }
+  if (currentState.value === 'tagSelection') {
+    onMessageSelectTag(inputMessage.value)
+    return
+  }
+  if (currentState.value === 'colorSelection') {
+    onMessageSelectColor(inputMessage.value)
+    return
+  }
+  if (currentState.value === 'accessSelection') {
+    onMessageSelectAccess(inputMessage.value)
+    return
+  }
+  if (currentState.value === 'timeSelection') {
+    onMessageSelectTime(inputMessage.value)
+    return
+  }
+  if (currentState.value === 'confirmParams') {
+    onMessageAddParams(inputMessage.value)
+    return
+  }
+  if (currentState.value === 'confirmDelegate') {
+    onMessageConfirm(inputMessage.value)
+    return
+  }
   if (currentState.value !== 'task_name') return
   messages.value.push({
     message: inputMessage.value,
@@ -358,6 +450,7 @@ const actionConfirmDelegate = (confirmed) => {
           :select-time="selectTime"
           :action-confirm-new-params="actionConfirmNewParams"
           :action-confirm-delegate="actionConfirmDelegate"
+          :last-selected="lastSelected"
           class="max-h-[40vh] h-[40vh] overflow-auto"
         />
         <slot />

@@ -13,6 +13,7 @@ const projects = computed(() => store.state.projects.projects)
 const tags = computed(() => store.state.tasks.tags)
 const colors = computed(() => store.state.colors.colors)
 const inputMessage = inject('inputMessage')
+const currentState = inject('currentState')
 const props = defineProps({
   message: {
     type: String,
@@ -57,6 +58,10 @@ const props = defineProps({
   actionConfirmDelegate: {
     type: Function,
     default: () => {}
+  },
+  lastSelected: {
+    type: Function,
+    default: () => {}
   }
 })
 
@@ -75,6 +80,7 @@ const noSetObj = {
 }
 
 const computedColors = computed(() => {
+  if (currentState.value !== 'colorSelection') return {}
   const inputLowerCase = inputMessage.value.toLowerCase()
   const newColors = {}
   if (
@@ -86,17 +92,20 @@ const computedColors = computed(() => {
   for (const colorUid in colors.value) {
     if (
       colors.value[colorUid].parentID &&
-      colors.value[colorUid].name
-        .toLowerCase()
-        .includes(inputLowerCase)
+      colors.value[colorUid].name.toLowerCase().includes(inputLowerCase)
     ) {
       newColors[colorUid] = colors.value[colorUid]
     }
   }
+  //
+  const selectArr = Object.values(newColors)
+  props.lastSelected(selectArr.length === 1 ? selectArr[0] : null)
+  //
   return newColors
 })
 
 const computedTags = computed(() => {
+  if (currentState.value !== 'tagSelection') return {}
   const inputLowerCase = inputMessage.value.toLowerCase()
   const newTags = {}
   if (
@@ -106,14 +115,14 @@ const computedTags = computed(() => {
     newTags[noSetObj.uid] = noSetObj
   }
   for (const key in tags.value) {
-    if (
-      tags.value[key].name
-        .toLowerCase()
-        .includes(inputLowerCase)
-    ) {
+    if (tags.value[key].name.toLowerCase().includes(inputLowerCase)) {
       newTags[key] = tags.value[key]
     }
   }
+  //
+  const selectArr = Object.values(newTags)
+  props.lastSelected(selectArr.length === 1 ? selectArr[0] : null)
+  //
   return newTags
 })
 
@@ -168,6 +177,7 @@ function includesWord (src, value) {
 }
 
 const computedEmployees = computed(() => {
+  if (currentState.value !== 'employeeSelection') return {}
   const inputLowerCase = inputMessage.value.toLowerCase()
   const newEmployees = {}
   for (const empUid in employees.value) {
@@ -178,10 +188,15 @@ const computedEmployees = computed(() => {
       newEmployees[empUid] = employees.value[empUid]
     }
   }
+  //
+  const selectArr = Object.values(newEmployees)
+  props.lastSelected(selectArr.length === 1 ? selectArr[0] : null)
+  //
   return newEmployees
 })
 
 const computedAccessEmployees = computed(() => {
+  if (currentState.value !== 'accessSelection') return {}
   const inputLowerCase = inputMessage.value.toLowerCase()
   const newEmployees = {}
   if (
@@ -198,10 +213,15 @@ const computedAccessEmployees = computed(() => {
       newEmployees[empUid] = employees.value[empUid]
     }
   }
+  //
+  const selectArr = Object.values(newEmployees)
+  props.lastSelected(selectArr.length === 1 ? selectArr[0] : null)
+  //
   return newEmployees
 })
 
 const computedProjects = computed(() => {
+  if (currentState.value !== 'projectSelection') return {}
   const inputLowerCase = inputMessage.value.toLowerCase()
   const newProjects = {}
   if (
@@ -215,7 +235,51 @@ const computedProjects = computed(() => {
       newProjects[key] = projects.value[key]
     }
   }
+  //
+  const selectArr = Object.values(newProjects)
+  props.lastSelected(selectArr.length === 1 ? selectArr[0] : null)
+  //
   return newProjects
+})
+
+const computedСonfirmParams = computed(() => {
+  if (currentState.value !== 'confirmParams') return {}
+  const inputLowerCase = inputMessage.value.toLowerCase()
+  const newСonfirmParams = {}
+  const сonfirmParams = {
+    true: { uid: 'true', name: 'Да', value: true },
+    false: { uid: 'false', name: 'Нет', value: false }
+  }
+  for (const key in сonfirmParams) {
+    if (сonfirmParams[key].name.toLowerCase().includes(inputLowerCase)) {
+      newСonfirmParams[key] = сonfirmParams[key]
+    }
+  }
+  //
+  const selectArr = Object.values(newСonfirmParams)
+  props.lastSelected(selectArr.length === 1 ? selectArr[0] : null)
+  //
+  return newСonfirmParams
+})
+
+const computedСonfirmDelegate = computed(() => {
+  if (currentState.value !== 'confirmDelegate') return {}
+  const inputLowerCase = inputMessage.value.toLowerCase()
+  const newСonfirmParams = {}
+  const сonfirmParams = {
+    true: { uid: 'true', name: 'Да', value: true },
+    false: { uid: 'false', name: 'Нет', value: false }
+  }
+  for (const key in сonfirmParams) {
+    if (сonfirmParams[key].name.toLowerCase().includes(inputLowerCase)) {
+      newСonfirmParams[key] = сonfirmParams[key]
+    }
+  }
+  //
+  const selectArr = Object.values(newСonfirmParams)
+  props.lastSelected(selectArr.length === 1 ? selectArr[0] : null)
+  //
+  return newСonfirmParams
 })
 </script>
 
@@ -233,7 +297,7 @@ const computedProjects = computed(() => {
 
         <!-- Select employee -->
         <div
-          v-if="props.type === 'employeeSelection'"
+          v-if="currentState === 'employeeSelection' && props.type === 'employeeSelection'"
           class="flex flex-wrap mt-2"
         >
           <div
@@ -256,10 +320,7 @@ const computedProjects = computed(() => {
             </div>
           </div>
           <p
-            v-if="
-              props.type === 'employeeSelection' &&
-                Object.keys(computedEmployees).length === 0
-            "
+            v-if="Object.keys(computedEmployees).length === 0"
             class="text-sm text-gray-500"
           >
             Сотрудник {{ inputMessage }} не найден
@@ -268,7 +329,7 @@ const computedProjects = computed(() => {
 
         <!-- Select access employee -->
         <div
-          v-if="props.type === 'accessSelection'"
+          v-if="currentState === 'accessSelection' && props.type === 'accessSelection'"
           class="flex flex-wrap mt-2"
         >
           <div
@@ -292,10 +353,7 @@ const computedProjects = computed(() => {
             </div>
           </div>
           <p
-            v-if="
-              props.type === 'employeeSelection' &&
-                Object.keys(computedEmployees).length === 0
-            "
+            v-if="Object.keys(computedAccessEmployees).length === 0"
             class="text-sm text-gray-500"
           >
             Сотрудник {{ inputMessage }} не найден
@@ -304,7 +362,7 @@ const computedProjects = computed(() => {
 
         <!-- Select projects -->
         <div
-          v-if="props.type === 'projectSelection'"
+          v-if="currentState === 'projectSelection' && props.type === 'projectSelection'"
           class="flex flex-wrap mt-2"
         >
           <div
@@ -333,10 +391,7 @@ const computedProjects = computed(() => {
             </div>
           </div>
           <p
-            v-if="
-              props.type === 'projectSelection' &&
-                Object.keys(computedProjects).length === 0
-            "
+            v-if="Object.keys(computedProjects).length === 0"
             class="text-sm text-gray-500"
           >
             <span
@@ -347,7 +402,7 @@ const computedProjects = computed(() => {
 
         <!-- Select tags -->
         <div
-          v-if="props.type === 'tagSelection'"
+          v-if="currentState === 'tagSelection' && props.type === 'tagSelection'"
           class="flex flex-wrap mt-2"
         >
           <div
@@ -374,10 +429,7 @@ const computedProjects = computed(() => {
             </div>
           </div>
           <p
-            v-if="
-              props.type === 'tagSelection' &&
-                Object.keys(computedTags).length === 0
-            "
+            v-if="Object.keys(computedTags).length === 0"
             class="text-sm text-gray-500"
           >
             <span
@@ -388,7 +440,7 @@ const computedProjects = computed(() => {
 
         <!-- Select Colors -->
         <div
-          v-if="props.type === 'colorSelection'"
+          v-if="currentState === 'colorSelection' && props.type === 'colorSelection'"
           class="flex flex-wrap mt-2"
         >
           <div
@@ -417,10 +469,7 @@ const computedProjects = computed(() => {
             </div>
           </div>
           <p
-            v-if="
-              props.type === 'colorSelection' &&
-                Object.keys(computedColors).length === 0
-            "
+            v-if="Object.keys(computedColors).length === 0"
             class="text-sm text-gray-500"
           >
             <span
@@ -431,7 +480,7 @@ const computedProjects = computed(() => {
 
         <!-- Select time -->
         <div
-          v-if="props.type === 'timeSelection'"
+          v-if="currentState === 'timeSelection' && props.type === 'timeSelection'"
           class="flex flex-wrap mt-2"
         >
           <div
@@ -475,40 +524,48 @@ const computedProjects = computed(() => {
 
         <!-- Confirm adding additional params -->
         <div
-          v-if="props.type === 'confirmParams'"
+          v-if="currentState === 'confirmParams' && props.type === 'confirmParams'"
           class="flex mt-2"
         >
           <div
+            v-for="(confirm, _, index) in computedСonfirmParams"
+            :key="index"
             class="flex items-center bg-white rounded-lg p-1 px-2 mt-1 cursor-pointer mr-1"
-            @click="props.actionConfirmNewParams(true)"
+            @click="props.actionConfirmNewParams(confirm.value)"
           >
-            <span class="text-sm text-gray-600">Да</span>
+            <span class="text-sm text-gray-600"> {{ confirm.name }} </span>
           </div>
-          <div
-            class="flex items-center bg-white rounded-lg p-1 px-2 mt-1 cursor-pointer"
-            @click="props.actionConfirmNewParams(false)"
+          <p
+            v-if="Object.keys(computedСonfirmParams).length === 0"
+            class="text-sm text-gray-500"
           >
-            <span class="text-sm text-gray-600">Нет</span>
-          </div>
+            <span
+              class="text-sm text-gray-600"
+            >Да или Нет?</span>
+          </p>
         </div>
 
         <!-- Confirm delegate the task -->
         <div
-          v-if="props.type === 'confirmDelegate'"
+          v-if="currentState === 'confirmDelegate' && props.type === 'confirmDelegate'"
           class="flex mt-2"
         >
           <div
+            v-for="(confirm, _, index) in computedСonfirmDelegate"
+            :key="index"
             class="flex items-center bg-white rounded-lg p-1 px-2 mt-1 cursor-pointer mr-1"
-            @click="props.actionConfirmDelegate(true)"
+            @click="props.actionConfirmDelegate(confirm.value)"
           >
-            <span class="text-sm text-gray-600">Да</span>
+            <span class="text-sm text-gray-600"> {{ confirm.name }} </span>
           </div>
-          <div
-            class="flex items-center bg-white rounded-lg p-1 px-2 mt-1 cursor-pointer"
-            @click="props.actionConfirmDelegate(false)"
+          <p
+            v-if="Object.keys(computedСonfirmDelegate).length === 0"
+            class="text-sm text-gray-500"
           >
-            <span class="text-sm text-gray-600">Нет</span>
-          </div>
+            <span
+              class="text-sm text-gray-600"
+            >Да или Нет?</span>
+          </p>
         </div>
 
         <p class="text-sm text-gray-500 float-right">

@@ -316,13 +316,17 @@ const actionConfirmDelegate = (confirmed) => {
       createDate: new Date().toISOString()
     })
     messages.value.push({
-      message: 'Я не знаю, что делать в таком случае, всего доброго!',
+      message: 'Обращайтесь когда я потребуюсь',
       messageFromInspector: true,
       type: 'end',
       createDate: new Date().toISOString()
     })
     currentState.value = 'end'
   }
+  // закрываемся
+  setTimeout(() => {
+    cancel()
+  }, 3000)
 }
 </script>
 
@@ -358,6 +362,7 @@ const actionConfirmDelegate = (confirmed) => {
       <div class="flex items-stretch">
         <input
           v-model="inputMessage"
+          :disabled="currentState === 'end'"
           type="text"
           class="bg-gray-50 rounded-xl border border-gray-300 w-full p-2"
           placeholder="Your message"

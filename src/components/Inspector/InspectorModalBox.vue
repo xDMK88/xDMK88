@@ -92,7 +92,11 @@ const getTodaysDate = (val, isYearFirst = true) => {
 
 watch(value, (newVal) => {
   if (!newVal) {
+    // очищаем объект новой задачи
+    Object.keys(delegatedTask).forEach(key => delete delegatedTask[key])
+    // очищаем все сообщения
     messages.value.splice(0)
+    // запускаем первое сообщение
     messages.value.push({
       message: 'Привет, что нужно сделать?',
       messageFromInspector: true,
@@ -169,7 +173,7 @@ const selectProject = (project) => {
     createDate: new Date().toISOString()
   })
   if (currentState.value === 'projectSelection') {
-    delegatedTask.uid_project = project.uid
+    if (project.uid !== 'no_set') delegatedTask.uid_project = project.uid
     messages.value.push({
       message: 'Супер, что на счет меток?',
       messageFromInspector: true,
@@ -189,7 +193,7 @@ const selectTag = (tag) => {
     createDate: new Date().toISOString()
   })
   if (currentState.value === 'tagSelection') {
-    delegatedTask.tags = [tag.uid]
+    if (tag.uid !== 'no_set') delegatedTask.tags = [tag.uid]
     messages.value.push({
       message: 'Какой цвет присвоить задаче?',
       messageFromInspector: true,
@@ -209,7 +213,7 @@ const selectColor = (color) => {
     createDate: new Date().toISOString()
   })
   if (currentState.value === 'colorSelection') {
-    delegatedTask.uid_marker = color.uid
+    if (color.uid !== 'no_set') delegatedTask.uid_marker = color.uid
     messages.value.push({
       message: 'Кто будет иметь доступ к задаче?',
       messageFromInspector: true,
@@ -229,7 +233,7 @@ const selectAccess = (emp) => {
     createDate: new Date().toISOString()
   })
   if (currentState.value === 'accessSelection') {
-    delegatedTask.emails = emp.email
+    if (emp.uid !== 'no_set') delegatedTask.emails = emp.email
     messages.value.push({
       message: 'На этом все, я поручу задачу?',
       messageFromInspector: true,
@@ -316,7 +320,7 @@ const actionConfirmDelegate = (confirmed) => {
       createDate: new Date().toISOString()
     })
     messages.value.push({
-      message: 'Обращайтесь когда я потребуюсь',
+      message: 'Жаль, обращайтесь когда я потребуюсь',
       messageFromInspector: true,
       type: 'end',
       createDate: new Date().toISOString()

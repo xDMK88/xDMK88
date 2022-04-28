@@ -2092,6 +2092,13 @@ audio::-webkit-media-controls-toggle-closed-captions-button {}
   border: 1px solid rgba(0, 0, 0, 0.1);
   width: 155px;
 }
+.form-control-width-100
+{
+  padding: 6px 12px;
+  border-radius: 5px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  width: 100%;
+}
 .select-repeat-control
 {
   padding: 6px 12px;
@@ -2154,22 +2161,68 @@ audio::-webkit-media-controls-toggle-closed-captions-button {}
   background: #efefef;
   color: #666;
 }
-.select2-container--default.select2-container--focus .select2-selection--multiple
-{
-  border: none;
+
+
+
+.form_checkbox_btn-custom {
+  line-height: 20px;
+  float: left;
+  text-align: center;
+  height: 31px;
+  width: 31px;
+  margin: 2px;
+  border-radius:25px;
+  color: black;
+  font-size: 14px;
 }
-.select2-container--default .select2-selection--multiple .select2-selection__choice
+.form_checkbox_btn-custo:hover
 {
-  margin-top: 0;
-  padding: 0 2px;
+  background: #F5B44A;
 }
-.select2-container--default .select2-selection--multiple
-{
-  background-color: transparent;
-  border: none;
-  border-radius: 4px;
-  cursor: text;
+.form_checkbox_btn-custom input[type=checkbox] {
+  display: none;
 }
+.form_checkboxbtn-custom {
+}
+.form_checkbox_btn-custom label {
+  cursor: pointer;
+  user-select: none;
+  line-height: 20px;
+  float: left;
+  text-align: center;
+  padding: 5px;
+  height: 31px;
+  width: 32px;
+  margin: 2px;
+  border-radius:25px;
+  color: black;
+  font-size: 14px;
+}
+
+/* Checked */
+.form_checkbox_btn-custom input[type=checkbox]:checked + label {
+  background: #F5B44A;
+  height: 31px;
+  border-radius:25px;
+  width: 31px;
+  padding: 5px;
+}
+
+/* Hover */
+.form_checkbox_btn-custom label:hover {
+  color: #666;
+}
+
+/* Disabled */
+.form_checkbox_btn-custom input[type=radio]:disabled + label {
+  background: #efefef;
+  color: #666;
+}
+
+
+
+
+
 .form_label {
   position: relative;
   min-height: 88px;

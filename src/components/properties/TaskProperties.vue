@@ -21,7 +21,6 @@ import TaskPropsButtonAccess from '@/components/TaskProperties/TaskPropsButtonAc
 import TaskPropsButtonSetDate from '@/components/TaskProperties/TaskPropsButtonSetDate.vue'
 import TaskPropsButtonTags from '@/components/TaskProperties/TaskPropsButtonTags.vue'
 import TaskPropsButtonPerform from '@/components/TaskProperties/TaskPropsButtonPerform.vue'
-
 export default {
   components: {
     TaskPropsButtonDots,
@@ -495,6 +494,9 @@ export default {
     const createChecklist = () => {
       this.checklistshow = true
     }
+    const resetFocusChecklist = () => {
+      this.checklistshow = false
+    }
     const SaveRepeat = () => {
       console.log(selectedTask.value.Tasks)
       if (this.$refs.SeriesType.value === '0') {
@@ -542,8 +544,6 @@ export default {
           })
       }
       if (this.$refs.SeriesType.value === '2') {
-        this.dayWeekMassive.push(this.SeriesWeek)
-        console.log(this.$refs.SeriesWeek.selectedOptions[0].value)
         const data = {
           uid: selectedTask.value.uid,
           days: this.SeriesWeek,
@@ -672,7 +672,6 @@ export default {
         this.everyWeekRepeat = true
         this.everyMonthRepeat = false
         this.everyYearRepeat = false
-        this.SeriesWeek = []
         selectedTask.value.SeriesType = 2
         selectedTask.value.SeriesWeekMon = 1
       }
@@ -692,16 +691,9 @@ export default {
         this.everyYearRepeat = true
         selectedTask.value.SeriesType = 4
       }
-
-      console.log(event.target.name)
-    }
-    const changeSeriesWeek = (event) => {
-      console.log(this.SeriesWeek)
-      this.SeriesWeek.push(this.$refs.SeriesWeek.selectedOptions[0].value)
     }
     return {
       //  ресет Повтор
-      changeSeriesWeek,
       moveCursorToEnd,
       ispolnit,
       dayWeekMassive: [],
@@ -751,6 +743,7 @@ export default {
       resetAccess,
       resetEmployes,
       resetCalendar,
+      resetFocusChecklist,
       massel: '',
       viewMenu: false,
       top: '0px',
@@ -845,6 +838,16 @@ export default {
       selectedTaskcomment: selectedTask.value.comment,
       ActiveSelect: selectedTask.value.SeriesMonthType,
       ActiveYartype: selectedTask.value.SeriesYearType,
+      SeriesWeek: [],
+      myOptions: [
+        { id: 'mon', text: 'Пн' },
+        { id: 'tue', text: 'Вт' },
+        { id: 'wed', text: 'Ср' },
+        { id: 'thu', text: 'Чт' },
+        { id: 'fri', text: 'Пт' },
+        { id: 'sat', text: 'Сб' },
+        { id: 'sun', text: 'Вск' }
+      ],
       showOnlyFiles: false,
       checklisteditable: false,
       timeEditStart: false,
@@ -862,17 +865,7 @@ export default {
       everyWeekRepeat: false,
       everyMonthRepeat: false,
       everyYearRepeat: false,
-      showpastefile: false,
-      SeriesWeek: [],
-      myOptions: [
-        { id: 'mon', text: 'Пн' },
-        { id: 'tue', text: 'Вт' },
-        { id: 'wed', text: 'Ср' },
-        { id: 'thu', text: 'Чт' },
-        { id: 'fri', text: 'Пт' },
-        { id: 'sat', text: 'Сб' },
-        { id: 'sun', text: 'Вск' }
-      ]
+      showpastefile: false
       // Модели selectedTask.value.SeriesWeekMon selectedTask.SeriesWeekTue selectedTask.SeriesWeekWed selectedTask.SeriesWeekThu selectedTask.SeriesWeekFri selectedTask.SeriesWeekSat selectedTask.SeriesWeekSun
     }
   },
@@ -1292,13 +1285,13 @@ export default {
                   class="tab-content-repeat"
                 >
                   <div class="top-panel-repeat">
-                    <div class="repeat-seleclist flex">
-                      <div class="form-group">
+                    <div class="repeat-seleclist">
+                      <div>
                         <label>Каждую </label>
                         <select
                           ref="SeriesWeekCount"
                           v-model="SeriesWeekCount"
-                          class="form-control form-control-select-repeat"
+                          class="form-control form-control-width-100"
                           name=""
                         >
                           <option
@@ -1314,36 +1307,32 @@ export default {
                         class="form-group"
                         style="margin-left: 5px"
                       >
-                        <label>По</label>
-                        <Select
+                      <!--  <Select
                           ref="SeriesWeek"
-                          v-model="SeriesWeek"
+                          v-model = "SeriesWeek"
+                          @change="changeSeriesWeek"
                           class="form-control form-control-select-repeat"
+                          id="selectedDays"
                           multiple
-                          @change="changeSeriesWeek($event)"
                         >
-                          <option value="mon">
-                            Пн.
+                          <option v-for="opt in myOptions" :key="opt" v-bind:value="opt.id">
+                            {{opt.text}}
                           </option>
-                          <option value="tue">
-                            Вт.
-                          </option>
-                          <option value="wed">
-                            Ср.
-                          </option>
-                          <option value="thu">
-                            Чт.
-                          </option>
-                          <option value="fri">
-                            Пт.
-                          </option>
-                          <option value="sat">
-                            Сб.
-                          </option>
-                          <option value="sun">
-                            Вск.
-                          </option>
-                        </Select>
+                        </Select> -->
+                        <div
+                          v-for="(opt) in myOptions" :key="opt" v-bind:value="opt.id"
+                          class="form_checkbox_btn-custom"
+                        >
+                          <input
+                            :id="'opt_' + opt.id"
+                            ref="SeriesWeek"
+                            v-model="SeriesWeek"
+                            type="checkbox"
+                            name="checkbox"
+                            :value="opt.id"
+                          >
+                          <label :for="'opt_' +opt.id">{{ opt.text }}</label>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -2067,6 +2056,7 @@ export default {
         class="mt-3 checklist-custom"
         :task-uid="selectedTask.uid"
         :checklist="selectedTask.checklist"
+        @focusout="resetFocusChecklist"
       />
       <!-- Comment -->
       <TaskPropsCommentEditor

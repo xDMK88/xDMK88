@@ -12,11 +12,11 @@
       v-if="storeTasks[lastSelectedTaskUid]"
       class="text-center"
     >
-      Do you really wanna delete <strong>"{{ storeTasks[lastSelectedTaskUid].info.name }}"</strong> task?
+      Вы действительно хотите удалить выбраную <strong>"{{ storeTasks[lastSelectedTaskUid].info.name }}"</strong> задачу?
       <span
         v-if="storeTasks[lastSelectedTaskUid].info.has_children"
       >
-        Children will also be affected!
+      (с подзадачами) в количестве: {{storeTasks[lastSelectedTaskUid].children.length}}
       </span>
     </p>
   </modal-box-confirm>

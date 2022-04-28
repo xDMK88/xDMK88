@@ -1120,11 +1120,11 @@ export default {
       v-if="tasks[selectedTask.uid]"
       class="text-center"
     >
-      Do you really wanna delete <strong>"{{ selectedTask.name }}"</strong> task?
+      Вы действительно хотите удалить выбраную <strong>"{{ selectedTask.name }}"</strong> задачу
       <span
         v-if="selectedTask.has_children"
       >
-        Children will also be affected!
+     (с подзадачами) в количестве: {{tasks[selectedTask.uid].children.length}}
       </span>
     </p>
   </modal-box-confirm>

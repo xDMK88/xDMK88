@@ -5,6 +5,7 @@ import { createMessage } from '@/websync/task_message.js'
 import * as TYPES from '@/websync/types.js'
 import { notify } from 'notiwind'
 
+// TODO: write this function in one place in helpers
 function showNotify (notification) {
   notify(notification, 30000)
   const nt = new Audio(require('@/assets/sounds/notification.mp3'))

@@ -67,7 +67,7 @@ const actions = {
   [NAVIGATOR_REQUEST]: ({ commit, dispatch, rootState }) => {
     return new Promise((resolve, reject) => {
       commit(NAVIGATOR_REQUEST)
-      const url = 'https://web.leadertask.com/api/v1/navigator'
+      const url = process.env.VUE_APP_LEADERTASK_API + 'api/v1/navigator'
       axios({ url: url, method: 'GET' })
         .then((resp) => {
           resp.rootState = rootState
@@ -149,7 +149,7 @@ const actions = {
   [PATCH_SETTINGS]: ({ commit, dispatch, rootState }, settings) => {
     return new Promise((resolve, reject) => {
       commit(NAVIGATOR_REQUEST)
-      const url = 'https://web.leadertask.com/api/v1/settings/all'
+      const url = process.env.VUE_APP_LEADERTASK_API + 'api/v1/settings/all'
       axios({ url: url, method: 'PATCH', data: settings })
         .then((resp) => {
           resolve(resp)

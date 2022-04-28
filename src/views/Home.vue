@@ -17,6 +17,7 @@ import { NAVIGATOR_REQUEST } from '@/store/actions/navigator'
 import { USER_REQUEST } from '@/store/actions/user'
 import * as TASK from '@/store/actions/tasks'
 import initWebSync from '@/websync/index.js'
+import initInspectorSocket from '@/inspector/index.js'
 
 const store = useStore()
 const router = useRouter()
@@ -84,6 +85,7 @@ const getNavigator = () => {
     store.dispatch(NAVIGATOR_REQUEST)
       .then(() => {
         initWebSync()
+        initInspectorSocket()
 
         // After navigator is loaded we are trying to set up last visited navElement
         // Checking if last navElement is a gridSource
@@ -144,8 +146,8 @@ const getNavigator = () => {
 onBeforeMount(() => {
   const fm = document.createElement('script')
   const websync = document.createElement('script')
-  fm.setAttribute('src', 'https://web.leadertask.com/scripts/websync/fm.min.js')
-  websync.setAttribute('src', 'https://web.leadertask.com/scripts/websync/fm.websync.min.js')
+  fm.setAttribute('src', process.env.VUE_APP_LEADERTASK_API + 'scripts/websync/fm.min.js')
+  websync.setAttribute('src', process.env.VUE_APP_LEADERTASK_API + 'scripts/websync/fm.websync.min.js')
   document.head.appendChild(fm)
   document.head.appendChild(websync)
 

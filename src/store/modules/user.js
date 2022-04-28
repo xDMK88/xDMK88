@@ -14,7 +14,7 @@ const actions = {
   [USER_REQUEST]: ({ commit }) => {
     return new Promise((resolve, reject) => {
       commit(USER_REQUEST)
-      const url = 'https://web.leadertask.com/api/v1/account/info'
+      const url = process.env.VUE_APP_LEADERTASK_API + 'api/v1/account/info'
       axios({ url: url, method: 'GET' })
         .then((resp) => {
           commit(USER_SUCCESS, resp)

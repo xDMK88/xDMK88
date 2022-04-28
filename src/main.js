@@ -7,6 +7,8 @@ import Notifications from 'notiwind'
 
 import './css/main.css'
 
+console.log(process.env)
+
 const token = localStorage.getItem('user-token')
 const navStack = JSON.parse(localStorage.getItem('navStack'))
 const isGridView = JSON.parse(localStorage.getItem('isGridView'))
@@ -36,17 +38,14 @@ if (navStack) {
 
 /* Default title tag */
 const defaultDocumentTitle = 'Leadertask 2.0'
-const socket = new WebSocket('wss://api.leadertask.ru')
-socket.onmessage = function (event) {
-  console.log(event.data)
-}
+
 /* Collapse mobile aside menu on route change */
-router.beforeEach(to => {
+router.beforeEach((to) => {
   store.dispatch('asideMobileToggle', false)
   store.dispatch('asideLgToggle', false)
 })
 
-router.afterEach(to => {
+router.afterEach((to) => {
   /* Set document title from route meta */
   if (to.meta && to.meta.title) {
     document.title = `${to.meta.title} — ${defaultDocumentTitle}`

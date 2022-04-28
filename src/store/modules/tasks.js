@@ -90,7 +90,7 @@ const actions = {
       const year = chosenDate.getFullYear()
       const formattedDate = day + '-' + month + '-' + year
       const url =
-        'https://web.leadertask.com/api/v1/tasks/withdate?value=' +
+        process.env.VUE_APP_LEADERTASK_API + 'api/v1/tasks/withdate?value=' +
         formattedDate
       axios({ url: url, method: 'GET' })
         .then((resp) => {
@@ -127,7 +127,7 @@ const actions = {
   [TASK.ONE_TASK_REQUEST]: ({ commit, dispatch }, uid) => {
     return new Promise((resolve, reject) => {
       commit(TASK.TASKS_REQUEST)
-      const url = 'https://web.leadertask.com/api/v1/tasks/entity?uid=' + uid
+      const url = process.env.VUE_APP_LEADERTASK_API + 'api/v1/tasks/entity?uid=' + uid
       axios({ url: url, method: 'GET' })
         .then((resp) => {
           commit(TASK.TASKS_SUCCESS, resp)
@@ -158,7 +158,7 @@ const actions = {
   [TASK.SEARCH_TASK]: ({ commit, dispatch }, text) => {
     return new Promise((resolve, reject) => {
       commit(TASK.TASKS_REQUEST)
-      const url = 'https://web.leadertask.com/api/v1/tasks/search?text=' + text
+      const url = process.env.VUE_APP_LEADERTASK_API + 'api/v1/tasks/search?text=' + text
       axios({ url: url, method: 'GET' })
         .then((resp) => {
           commit(TASK.TASKS_SUCCESS, resp)
@@ -190,7 +190,7 @@ const actions = {
     return new Promise((resolve, reject) => {
       // commit(TASK.TASKS_REQUEST)
       const url =
-        'https://web.leadertask.com/api/v1/tasks/withparent?value=' + taskUid
+        process.env.VUE_APP_LEADERTASK_API + 'api/v1/tasks/withparent?value=' + taskUid
       axios({ url: url, method: 'GET' })
         .then((resp) => {
           commit(TASK.SUBTASKS_SUCCESS, resp)
@@ -221,7 +221,7 @@ const actions = {
   [TASK.OPENED_TASKS_REQUEST]: ({ commit, dispatch }) => {
     return new Promise((resolve, reject) => {
       commit(TASK.TASKS_REQUEST)
-      const url = 'https://web.leadertask.com/api/v1/tasks/opened'
+      const url = process.env.VUE_APP_LEADERTASK_API + 'api/v1/tasks/opened'
       axios({ url: url, method: 'GET' })
         .then((resp) => {
           commit(TASK.TASKS_SUCCESS, resp)
@@ -253,7 +253,7 @@ const actions = {
   [TASK.UNSORTED_TASKS_REQUEST]: ({ commit, dispatch }) => {
     return new Promise((resolve, reject) => {
       commit(TASK.TASKS_REQUEST)
-      const url = 'https://web.leadertask.com/api/v1/tasks/inbox'
+      const url = process.env.VUE_APP_LEADERTASK_API + 'api/v1/tasks/inbox'
       axios({ url: url, method: 'GET' })
         .then((resp) => {
           commit(TASK.TASKS_SUCCESS, resp)
@@ -282,7 +282,7 @@ const actions = {
   [TASK.OVERDUE_TASKS_REQUEST]: ({ commit, dispatch }) => {
     return new Promise((resolve, reject) => {
       commit(TASK.TASKS_REQUEST)
-      const url = 'https://web.leadertask.com/api/v1/tasks/overdue'
+      const url = process.env.VUE_APP_LEADERTASK_API + 'api/v1/tasks/overdue'
       axios({ url: url, method: 'GET' })
         .then((resp) => {
           commit(TASK.TASKS_SUCCESS, resp)
@@ -314,7 +314,7 @@ const actions = {
   [TASK.UNREAD_TASKS_REQUEST]: ({ commit, dispatch }) => {
     return new Promise((resolve, reject) => {
       commit(TASK.TASKS_REQUEST)
-      const url = 'https://web.leadertask.com/api/v1/tasks/unread'
+      const url = process.env.VUE_APP_LEADERTASK_API + 'api/v1/tasks/unread'
       axios({ url: url, method: 'GET' })
         .then((resp) => {
           commit(TASK.TASKS_SUCCESS, resp)
@@ -346,7 +346,7 @@ const actions = {
   [TASK.IN_WORK_TASKS_REQUEST]: ({ commit, dispatch }) => {
     return new Promise((resolve, reject) => {
       commit(TASK.TASKS_REQUEST)
-      const url = 'https://web.leadertask.com/api/v1/tasks/inwork'
+      const url = process.env.VUE_APP_LEADERTASK_API + 'api/v1/tasks/inwork'
       axios({ url: url, method: 'GET' })
         .then((resp) => {
           commit(TASK.TASKS_SUCCESS, resp)
@@ -378,7 +378,7 @@ const actions = {
   [TASK.IN_FOCUS_TASKS_REQUEST]: ({ commit, dispatch }) => {
     return new Promise((resolve, reject) => {
       commit(TASK.TASKS_REQUEST)
-      const url = 'https://web.leadertask.com/api/v1/tasks/infocus'
+      const url = process.env.VUE_APP_LEADERTASK_API + 'api/v1/tasks/infocus'
       axios({ url: url, method: 'GET' })
         .then((resp) => {
           commit(TASK.TASKS_SUCCESS, resp)
@@ -410,7 +410,7 @@ const actions = {
   [TASK.READY_FOR_COMPLITION_TASKS_REQUEST]: ({ commit, dispatch }) => {
     return new Promise((resolve, reject) => {
       commit(TASK.TASKS_REQUEST)
-      const url = 'https://web.leadertask.com/api/v1/tasks/ready'
+      const url = process.env.VUE_APP_LEADERTASK_API + 'api/v1/tasks/ready'
       axios({ url: url, method: 'GET' })
         .then((resp) => {
           commit(TASK.TASKS_SUCCESS, resp)
@@ -440,7 +440,7 @@ const actions = {
     return new Promise((resolve, reject) => {
       commit(TASK.TASKS_REQUEST)
       const url =
-        'https://web.leadertask.com/api/v1/tasks/delegate?email=' + email
+        process.env.VUE_APP_LEADERTASK_API + 'api/v1/tasks/delegate?email=' + email
       axios({ url: url, method: 'GET' })
         .then((resp) => {
           commit(TASK.TASKS_SUCCESS, resp)
@@ -472,7 +472,7 @@ const actions = {
     return new Promise((resolve, reject) => {
       commit(TASK.TASKS_REQUEST)
       const url =
-        'https://web.leadertask.com/api/v1/tasks/delegateme?email=' + email
+        process.env.VUE_APP_LEADERTASK_API + 'api/v1/tasks/delegateme?email=' + email
       axios({ url: url, method: 'GET' })
         .then((resp) => {
           commit(TASK.TASKS_SUCCESS, resp)
@@ -503,7 +503,7 @@ const actions = {
   [TASK.PROJECT_TASKS_REQUEST]: ({ commit, dispatch }, uid) => {
     return new Promise((resolve, reject) => {
       commit(TASK.TASKS_REQUEST)
-      const url = 'https://web.leadertask.com/api/v1/tasks/byproject?uid=' + uid
+      const url = process.env.VUE_APP_LEADERTASK_API + 'api/v1/tasks/byproject?uid=' + uid
       axios({ url: url, method: 'GET' })
         .then((resp) => {
           commit(TASK.TASKS_SUCCESS, resp)
@@ -534,7 +534,7 @@ const actions = {
   [TASK.TAG_TASKS_REQUEST]: ({ commit, dispatch }, uid) => {
     return new Promise((resolve, reject) => {
       commit(TASK.TASKS_REQUEST)
-      const url = 'https://web.leadertask.com/api/v1/tasks/withtag?uid=' + uid
+      const url = process.env.VUE_APP_LEADERTASK_API + 'api/v1/tasks/withtag?uid=' + uid
       axios({ url: url, method: 'GET' })
         .then((resp) => {
           commit(TASK.TASKS_SUCCESS, resp)
@@ -565,7 +565,7 @@ const actions = {
   [TASK.COLOR_TASKS_REQUEST]: ({ commit, dispatch }, uid) => {
     return new Promise((resolve, reject) => {
       commit(TASK.TASKS_REQUEST)
-      const url = 'https://web.leadertask.com/api/v1/tasks/withcolor?uid=' + uid
+      const url = process.env.VUE_APP_LEADERTASK_API + 'api/v1/tasks/withcolor?uid=' + uid
       axios({ url: url, method: 'GET' })
         .then((resp) => {
           commit(TASK.TASKS_SUCCESS, resp)
@@ -596,7 +596,7 @@ const actions = {
   [TASK.EMPLOYEE_TASKS_REQUEST]: ({ commit, dispatch }, uid) => {
     return new Promise((resolve, reject) => {
       commit(TASK.TASKS_REQUEST)
-      const url = 'https://web.leadertask.com/api/v1/tasks/withemp?uid=' + uid
+      const url = process.env.VUE_APP_LEADERTASK_API + 'api/v1/tasks/withemp?uid=' + uid
       axios({ url: url, method: 'GET' })
         .then((resp) => {
           commit(TASK.TASKS_SUCCESS, resp)
@@ -626,7 +626,7 @@ const actions = {
   },
   [TASK.CREATE_TASK]: ({ commit, dispatch }, data) => {
     return new Promise((resolve, reject) => {
-      const url = 'https://web.leadertask.com/api/v1/task'
+      const url = process.env.VUE_APP_LEADERTASK_API + 'api/v1/task'
       axios({
         url: url,
         method: 'POST',
@@ -682,7 +682,7 @@ const actions = {
   [TASK.CHANGE_TASK_READ]: ({ commit, dispatch }, uid) => {
     return new Promise((resolve, reject) => {
       const url =
-        'https://web.leadertask.com/api/v1/task/readed?uid=' + uid + '&value=1'
+        process.env.VUE_APP_LEADERTASK_API + 'api/v1/task/readed?uid=' + uid + '&value=1'
       axios({
         url: url,
         method: 'PATCH'
@@ -710,7 +710,7 @@ const actions = {
       if (data.value === '') {
         data.value = 'Task name'
       }
-      const url = 'https://web.leadertask.com/api/v1/task/name?uid=' + data.uid
+      const url = process.env.VUE_APP_LEADERTASK_API + 'api/v1/task/name?uid=' + data.uid
       axios({
         url: url,
         method: 'PATCH',
@@ -736,7 +736,7 @@ const actions = {
   [TASK.CHANGE_TASK_STATUS]: ({ commit, dispatch }, data) => {
     return new Promise((resolve, reject) => {
       const url =
-        'https://web.leadertask.com/api/v1/task/status?uid=' +
+        process.env.VUE_APP_LEADERTASK_API + 'api/v1/task/status?uid=' +
         data.uid +
         '&value=' +
         data.value
@@ -764,7 +764,7 @@ const actions = {
   },
   [TASK.REMOVE_TASK]: ({ commit, dispatch }, uid) => {
     return new Promise((resolve, reject) => {
-      const url = 'https://web.leadertask.com/api/v1/task?uid=' + uid
+      const url = process.env.VUE_APP_LEADERTASK_API + 'api/v1/task?uid=' + uid
       axios({
         url: url,
         method: 'DELETE'
@@ -793,7 +793,7 @@ const actions = {
   [TASK.CHANGE_TASK_ACCESS]: ({ commit, dispatch }, data) => {
     return new Promise((resolve, reject) => {
       const url =
-        'https://web.leadertask.com/api/v1/task/common?uid=' +
+        process.env.VUE_APP_LEADERTASK_API + 'api/v1/task/common?uid=' +
         data.uid +
         '&value=' +
         data.value
@@ -823,7 +823,7 @@ const actions = {
     return new Promise((resolve, reject) => {
       commit(TASK.COLOR_TASKS_REQUEST)
       const url =
-        'https://web.leadertask.com/api/v1/task/marker?uid=' +
+        process.env.VUE_APP_LEADERTASK_API + 'api/v1/task/marker?uid=' +
         data.uid +
         '&value=' +
         data.value
@@ -852,7 +852,7 @@ const actions = {
   [TASK.CHANGE_TASK_TAGS]: ({ commit, dispatch }, data) => {
     // tags
     return new Promise((resolve, reject) => {
-      const url = 'https://web.leadertask.com/api/v1/task/tags'
+      const url = process.env.VUE_APP_LEADERTASK_API + 'api/v1/task/tags'
       axios({ url: url, method: 'PATCH', data: data })
         .then((resp) => {
           resolve(resp)
@@ -874,7 +874,7 @@ const actions = {
   [TASK.CHANGE_TASK_PERFORMER]: ({ commit, dispatch }, data) => {
     return new Promise((resolve, reject) => {
       const url =
-        'https://web.leadertask.com/api/v1/task/performer?uid=' +
+        process.env.VUE_APP_LEADERTASK_API + 'api/v1/task/performer?uid=' +
         data.uid +
         '&value=' +
         data.value
@@ -902,7 +902,7 @@ const actions = {
   [TASK.CHANGE_TASK_FOCUS]: ({ commit, dispatch }, data) => {
     return new Promise((resolve, reject) => {
       const url =
-        'https://web.leadertask.com/api/v1/task/focus?uid=' +
+        process.env.VUE_APP_LEADERTASK_API + 'api/v1/task/focus?uid=' +
         data.uid +
         '&value=' +
         data.value
@@ -932,7 +932,7 @@ const actions = {
     return new Promise((resolve, reject) => {
       commit(TASK.PROJECT_TASKS_REQUEST)
       const url =
-        'https://web.leadertask.com/api/v1/task/project?uid=' +
+        process.env.VUE_APP_LEADERTASK_API + 'api/v1/task/project?uid=' +
         data.uid +
         '&value=' +
         data.value
@@ -960,7 +960,7 @@ const actions = {
   },
   [TASK.CHANGE_TASK_CHEKCLIST]: ({ commit, dispatch }, data) => {
     return new Promise((resolve, reject) => {
-      const url = 'https://web.leadertask.com/api/v1/task/checklist'
+      const url = process.env.VUE_APP_LEADERTASK_API + 'api/v1/task/checklist'
       axios({ url: url, method: 'PATCH', data: data })
         .then((resp) => {
           commit(TASK.CHANGE_TASK_CHEKCLIST, data)
@@ -983,7 +983,7 @@ const actions = {
   [TASK.CHANGE_TASK_COMMENT]: ({ commit, dispatch }, data) => {
     return new Promise((resolve, reject) => {
       const url =
-        'https://web.leadertask.com/api/v1/task/comment?uid=' + data.uid
+        process.env.VUE_APP_LEADERTASK_API + 'api/v1/task/comment?uid=' + data.uid
       axios({
         url: url,
         method: 'PATCH',
@@ -1010,7 +1010,7 @@ const actions = {
   [TASK.CHANGE_TASK_DATE]: ({ commit, dispatch }, data) => {
     const dataSend = { ...data }
     return new Promise((resolve, reject) => {
-      const url = 'https://web.leadertask.com/api/v1/task/term'
+      const url = process.env.VUE_APP_LEADERTASK_API + 'api/v1/task/term'
       axios({ url: url, method: 'PATCH', data: dataSend })
         .then((resp) => {
           dataSend.term = resp.data.term
@@ -1033,7 +1033,7 @@ const actions = {
   [TASK.CHANGE_TASK_PARENT_AND_ORDER]: ({ commit, dispatch }, data) => {
     return new Promise((resolve, reject) => {
       const url =
-        'https://web.leadertask.com/api/v1/task/parent?uid=' +
+        process.env.VUE_APP_LEADERTASK_API + 'api/v1/task/parent?uid=' +
         data.uid +
         '&parent=' +
         data.parent +
@@ -1062,7 +1062,7 @@ const actions = {
   },
   [TASK.CREATE_TAG_REQUEST]: ({ commit, dispatch }, data) => {
     return new Promise((resolve, reject) => {
-      const url = 'https://web.leadertask.com/api/v1/tag'
+      const url = process.env.VUE_APP_LEADERTASK_API + 'api/v1/tag'
       axios({ url: url, method: 'POST', data: data })
         .then((resp) => {
           resolve(resp)
@@ -1083,7 +1083,7 @@ const actions = {
   },
   [TASK.UPDATE_TAG_REQUEST]: ({ commit, dispatch }, data) => {
     return new Promise((resolve, reject) => {
-      const url = 'https://web.leadertask.com/api/v1/tag'
+      const url = process.env.VUE_APP_LEADERTASK_API + 'api/v1/tag'
       axios({ url: url, method: 'PATCH', data: data })
         .then((resp) => {
           resolve(resp)
@@ -1104,7 +1104,7 @@ const actions = {
   },
   [TASK.REMOVE_TAG_REQUEST]: ({ commit, dispatch }, uid) => {
     return new Promise((resolve, reject) => {
-      const url = 'https://web.leadertask.com/api/v1/tag?uid=' + uid
+      const url = process.env.VUE_APP_LEADERTASK_API + 'api/v1/tag?uid=' + uid
       axios({ url: url, method: 'DELETE' })
         .then((resp) => {
           resolve(resp)
@@ -1127,7 +1127,7 @@ const actions = {
   [TASK.RESET_REPEAT_CHANGE]: ({ commit, dispatch }, data) => {
     return new Promise((resolve, reject) => {
       const url =
-        'https://web.leadertask.com/api/v1/taskrepeat/reset?uid=' + data.uid
+        process.env.VUE_APP_LEADERTASK_API + 'api/v1/taskrepeat/reset?uid=' + data.uid
       axios({ url: url, method: 'PATCH' })
         .then((resp) => {
           resolve(resp)
@@ -1149,7 +1149,7 @@ const actions = {
   [TASK.EVERY_DAY_CHANGE]: ({ commit, dispatch }, data) => {
     return new Promise((resolve, reject) => {
       const url =
-        'https://web.leadertask.com/api/v1/taskrepeat/everyday?uid=' + data.uid
+        process.env.VUE_APP_LEADERTASK_API + 'api/v1/taskrepeat/everyday?uid=' + data.uid
       axios({ url: url, method: 'PATCH', data: data })
         .then((resp) => {
           resolve(resp)
@@ -1171,7 +1171,7 @@ const actions = {
   [TASK.EVERY_WEEK_CHANGE]: ({ commit, dispatch }, data) => {
     return new Promise((resolve, reject) => {
       const url =
-        'https://web.leadertask.com/api/v1/taskrepeat/everyweek?uid=' + data.uid
+        process.env.VUE_APP_LEADERTASK_API + 'api/v1/taskrepeat/everyweek?uid=' + data.uid
       axios({ url: url, method: 'PATCH', data: data })
         .then((resp) => {
           resolve(resp)
@@ -1193,7 +1193,7 @@ const actions = {
   [TASK.EVERY_MONTH_CHANGE]: ({ commit, dispatch }, data) => {
     return new Promise((resolve, reject) => {
       const url =
-        'https://web.leadertask.com/api/v1/taskrepeat/everymonth?uid=' +
+        process.env.VUE_APP_LEADERTASK_API + 'api/v1/taskrepeat/everymonth?uid=' +
         data.uid
       axios({ url: url, method: 'PATCH', data: data })
         .then((resp) => {
@@ -1216,7 +1216,7 @@ const actions = {
   [TASK.EVERY_YEAR_CHANGE]: ({ commit, dispatch }, data) => {
     return new Promise((resolve, reject) => {
       const url =
-        'https://web.leadertask.com/api/v1/taskrepeat/everyyear?uid=' + data.uid
+        process.env.VUE_APP_LEADERTASK_API + 'api/v1/taskrepeat/everyyear?uid=' + data.uid
       axios({ url: url, method: 'PATCH', data: data })
         .then((resp) => {
           resolve(resp)

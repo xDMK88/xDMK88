@@ -49,7 +49,7 @@ const actions = {
   [AUTH_REGISTER]: ({ commit }, user) => {
     return new Promise((resolve, reject) => {
       commit(AUTH_REGISTER)
-      const uri = 'https://web.leadertask.com/api/v1/users/new'
+      const uri = process.env.VUE_APP_LEADERTASK_API + 'api/v1/users/new'
       axios({ url: uri, data: user, method: 'POST' })
         .then(resp => {
           console.log(resp)
@@ -76,7 +76,7 @@ const actions = {
       commit(AUTH_LOGOUT)
       localStorage.removeItem('user-token')
       localStorage.removeItem('user-refresh-token')
-      const url = 'https://web.leadertask.com/api/v1/account/exit'
+      const url = process.env.VUE_APP_LEADERTASK_API + 'api/v1/account/exit'
       commit(RESET_STATE_NAVIGATOR)
       commit(RESET_STATE_TASKS)
       commit(RESET_STATE_PROJECT)

@@ -51,7 +51,7 @@ const employees = computed(() => store.state.employees.employees)
                     {{ notification.title }}
                   </p>
                   <Employee
-                    v-if="employees[notification.obj.obj.uid_creator]"
+                    v-if="notification.obj && employees[notification.obj.obj.uid_creator]"
                     class="mt-1"
                     :fotolink="employees[notification.obj.obj.uid_creator].fotolink"
                     :name="employees[notification.obj.obj.uid_creator].name"

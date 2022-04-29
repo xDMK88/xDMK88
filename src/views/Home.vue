@@ -85,6 +85,7 @@ const getNavigator = () => {
     store.dispatch(NAVIGATOR_REQUEST)
       .then(() => {
         initWebSync()
+        console.log('initInspector', process.env.VUE_APP_INSPECTOR_WS)
         initInspectorSocket()
 
         // After navigator is loaded we are trying to set up last visited navElement

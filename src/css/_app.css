@@ -231,8 +231,8 @@ input:focus {outline: 0;}
 .task-msg
 {
   resize: none;
-  height: 40px;
-
+  min-height: 40px;
+  max-height: 100px;
   box-sizing: border-box;
 }
 .list-files-custom

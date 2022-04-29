@@ -256,6 +256,7 @@ const selectEmployee = (emp) => {
   })
   if (currentState.value === 'employeeSelection') {
     delegatedTask.email_performer = emp.email
+    delegatedTask.uid_performer = emp.uid
     messages.value.push({
       message: 'Очень хорошо, когда выполнить?',
       messageFromInspector: true,

@@ -1,17 +1,17 @@
-html,  #aside, .scroll-style {
+html,  #aside, #aside-right, .scroll-style {
   scrollbar-width: thin;
 }
 
-html::-webkit-scrollbar, #aside::-webkit-scrollbar, .scroll-style::-webkit-scrollbar {
+html::-webkit-scrollbar, #aside::-webkit-scrollbar, #aside-right::-webkit-scrollbar, .scroll-style::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 
-html::-webkit-scrollbar, #aside::-webkit-scrollbar{
+html::-webkit-scrollbar, #aside::-webkit-scrollbar, #aside-right::-webkit-scrollbar {
   scrollbar-color: #9ca3af #e5e7eb;
 }
 
-html::-webkit-scrollbar-thumb, #aside::-webkit-scrollbar-thumb, .scroll-style::-webkit-scrollbar-thumb {
+html::-webkit-scrollbar-thumb, #aside::-webkit-scrollbar-thumb, #aside-right::-webkit-scrollbar-thumb, .scroll-style::-webkit-scrollbar-thumb {
   @apply rounded;
 }
 
@@ -48,17 +48,22 @@ html.dark::-webkit-scrollbar-thumb:hover {
   @apply bg-gray-600;
 }
 
+#aside-right {
+  overflow: hidden;
+  scrollbar-color: #4b5563 #111827;
+}
+
 #aside {
   @apply overflow-auto;
   /*overflow: overlay;*/
   scrollbar-color: #4b5563 #111827;
 }
 
-#aside::-webkit-scrollbar-track {
+#aside::-webkit-scrollbar-track, #aside-right::-webkit-scrollbar-track {
   @apply bg-white hidden;
 }
 
-#aside::-webkit-scrollbar-thumb {
+#aside::-webkit-scrollbar-thumb, #aside-right::-webkit-scrollbar-track {
   @apply bg-gray-200 hidden;
 }
 

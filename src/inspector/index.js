@@ -20,6 +20,14 @@ export default function initInspectorSocket () {
   socket.onmessage = function (event) {
     parseMessage(event.data)
   }
+  socket.onclose = function (event) {
+    setTimeout(function () {
+      initInspectorSocket()
+    }, 2500)
+  }
+  socket.onerror = function () {
+    socket.close()
+  }
 }
 
 function parseMessage (data) {

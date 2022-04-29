@@ -1,6 +1,6 @@
 import store from '@/store/index.js'
-import { computed } from 'vue'
 import { notify } from 'notiwind'
+import { computed } from 'vue'
 
 function showNotify (notification) {
   notify(notification, 30000)
@@ -12,6 +12,7 @@ function showNotify (notification) {
 const user = computed(() => store.state.user.user)
 
 export default function initInspectorSocket () {
+  console.log('initInspector', process.env.VUE_APP_INSPECTOR_WS)
   const socket = new WebSocket(process.env.VUE_APP_INSPECTOR_WS)
   socket.onopen = function (event) {
     const auth = { type: 'auth', message: user.value.current_user_uid }

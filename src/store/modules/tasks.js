@@ -1468,12 +1468,12 @@ const mutations = {
         state.newtasks[task.uid_parent].children.unshift(task.uid)
       } else {
         state.newtasks[task.uid_parent].children = [task.uid]
-        state.newConfig.leaves = arrayRemove(
-          state.newConfig.leaves,
-          task.uid_parent
-        )
       }
     }
+    state.newConfig.leaves = arrayRemove(
+      state.newConfig.leaves,
+      task.uid_parent
+    )
     state.newtasks[task.uid_parent].state.opened = true
   },
   [TASK.OPENED_TASKS_REQUEST]: (state, resp) => {

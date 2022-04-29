@@ -108,7 +108,6 @@ watch(value, (newVal) => {
   } else {
     // ставим фокус в edit
     setTimeout(() => {
-      console.log(input.value)
       input.value.focus({ preventScroll: false })
     }, 250)
   }

@@ -121,6 +121,9 @@ const createTask = () => {
   delegatedTask.type = 1
   delegatedTask.comment = ''
   store.dispatch('CREATE_TASK', delegatedTask).then((resp) => {
+    // manually setup uid_performer beacuse
+    // we get empty uid_performer after CREATE_TASK request
+    resp.data.uid_performer = delegatedTask.uid_performer
     store.dispatch('CREATE_INSPECTOR_TASK', {
       uid: delegatedTask.uid,
       uid_customer: delegatedTask.uid_customer,
@@ -255,6 +258,7 @@ const selectEmployee = (emp) => {
     createDate: new Date().toISOString()
   })
   if (currentState.value === 'employeeSelection') {
+    console.log('emp', emp)
     delegatedTask.email_performer = emp.email
     delegatedTask.uid_performer = emp.uid
     messages.value.push({

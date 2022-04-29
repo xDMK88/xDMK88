@@ -51,10 +51,16 @@ const employees = computed(() => store.state.employees.employees)
                     {{ notification.title }}
                   </p>
                   <Employee
-                    v-if="notification.obj && employees[notification.obj.obj.uid_creator]"
+                    v-if="notification.obj && notification.obj.obj && employees[notification.obj.obj.uid_creator]"
                     class="mt-1"
                     :fotolink="employees[notification.obj.obj.uid_creator].fotolink"
                     :name="employees[notification.obj.obj.uid_creator].name"
+                  />
+                  <Employee
+                    v-if="notification.obj && notification.obj.obj && employees[notification.obj.obj.uid_customer]"
+                    class="mt-1"
+                    :fotolink="employees[notification.obj.obj.uid_customer].fotolink"
+                    :name="employees[notification.obj.obj.uid_customer].name"
                   />
                   <p class="text-sm font-semibold text-gray-500">
                     {{ notification.text }}

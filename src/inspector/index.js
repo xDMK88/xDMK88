@@ -33,7 +33,7 @@ export default function initInspectorSocket () {
 function parseMessage (data) {
   try {
     const parsedData = JSON.parse(data)
-    showNotify({ group: 'top', title: 'Инспектор', obj: null, text: parsedData.message })
+    showNotify({ group: 'top', title: 'Инспектор', text: parsedData.message })
   } catch (e) {
     console.log(e)
   }

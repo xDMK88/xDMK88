@@ -913,6 +913,13 @@ export default {
     print: function (value) {
       console.log(value)
     },
+    addNewLineTaskMsg: function () {
+      this.taskMsg += '\n'
+      console.log(this.$refs.taskMsgEdit)
+      this.$nextTick(function () {
+        this.$refs.taskMsgEdit.scrollTo(0, this.$refs.taskMsgEdit.scrollHeight)
+      })
+    },
     onPasteEvent: function (e) {
       const items = (e.clipboardData || e.originalEvent.clipboardData).items
       let loadFile = false
@@ -1124,7 +1131,7 @@ export default {
       <span
         v-if="selectedTask.has_children"
       >
-     (с подзадачами) в количестве: {{tasks[selectedTask.uid].children.length}}
+        (с подзадачами) в количестве: {{ tasks[selectedTask.uid].children.length }}
       </span>
     </p>
   </modal-box-confirm>
@@ -1315,7 +1322,7 @@ export default {
                         class="form-group"
                         style="margin-left: 5px"
                       >
-                      <!--  <Select
+                        <!--  <Select
                           ref="SeriesWeek"
                           v-model = "SeriesWeek"
                           @change="changeSeriesWeek"
@@ -1328,7 +1335,9 @@ export default {
                           </option>
                         </Select> -->
                         <div
-                          v-for="opt in myOptions" :key="opt" v-bind:value="opt.id"
+                          v-for="opt in myOptions"
+                          :key="opt"
+                          :value="opt.id"
                           class="form_checkbox_btn-custom"
                         >
                           <input
@@ -2139,7 +2148,7 @@ export default {
         placeholder="Введите сообщение"
         rows="58"
         @keydown.enter.exact.prevent="createTaskMsg"
-        @keydown.enter.shift.exact.prevent="cursorPosition(this)"
+        @keydown.enter.shift.exact.prevent="addNewLineTaskMsg"
       />
       <span class="input-group-addon input-group-btn-send dark:bg-gray-800 dark:text-gray-100">
         <button

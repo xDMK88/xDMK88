@@ -42,7 +42,7 @@ export default {
 </script>
 <template>
   <aside
-    id="aside"
+    id="aside-right"
     class="bg-white dark:bg-gray-900 p-3 w-96 fixed top-0 z-40 h-screen transition-position dark:border-r dark:border-gray-800 custom-column"
     :class="[ isPropertiesMobileExpanded ? 'right-0' : '-right-96', isPropertiesMobileExpanded ? 'block' : 'hidden']"
   >

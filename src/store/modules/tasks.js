@@ -651,7 +651,7 @@ const actions = {
             resp.data.uid_parent !== '00000000-0000-0000-0000-000000000000' &&
             !data._justCreated
           ) {
-            commit(TASK.ADD_SUBTASK, resp.data)
+            commit(TASK.PASTE_TO_SUBTASK, resp.data)
           } else {
             commit(TASK.ADD_TASK, resp.data)
           }
@@ -1450,7 +1450,7 @@ const mutations = {
     state.newConfig.roots = arrayRemove(state.newConfig.roots, uid)
     delete state.newtasks[uid]
   },
-  [TASK.ADD_SUBTASK]: (state, task) => {
+  [TASK.PASTE_TO_SUBTASK]: (state, task) => {
     state.newConfig.leaves.push(task.uid)
     state.newtasks[task.uid] = {
       info: task,
@@ -1474,6 +1474,30 @@ const mutations = {
       state.newConfig.leaves,
       task.uid_parent
     )
+    state.newtasks[task.uid_parent].state.opened = true
+  },
+  [TASK.ADD_SUBTASK]: (state, task) => {
+    state.newConfig.leaves.push(task.uid)
+    state.newtasks[task.uid] = {
+      info: task,
+      children: [],
+      state: {
+        disabled: false,
+        draggable: true
+      }
+    }
+    if (
+      state.newtasks[task.uid_parent].children &&
+      state.newtasks[task.uid_parent].children.length
+    ) {
+      state.newtasks[task.uid_parent].children.unshift(task.uid)
+    } else {
+      state.newtasks[task.uid_parent].children = [task.uid]
+      state.newConfig.leaves = arrayRemove(
+        state.newConfig.leaves,
+        task.uid_parent
+      )
+    }
     state.newtasks[task.uid_parent].state.opened = true
   },
   [TASK.OPENED_TASKS_REQUEST]: (state, resp) => {

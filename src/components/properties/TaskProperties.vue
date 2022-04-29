@@ -2187,7 +2187,7 @@ export default {
       <textarea
         ref="taskMsgEdit"
         v-model="taskMsg"
-        class="form-control text-group-design task-msg overflow-auto scroll-style dark:bg-gray-800 dark:text-gray-100"
+        class="form-control mt-[7px] text-group-design task-msg overflow-auto scroll-style dark:bg-gray-800 dark:text-gray-100"
         placeholder="Введите сообщение"
         rows="58"
         @input="onInputTaskMsg"

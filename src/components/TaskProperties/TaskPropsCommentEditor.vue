@@ -5,7 +5,7 @@
   >
     <div
       v-linkify:options="{ className: 'text-blue-600' }"
-      class="dark:text-gray-100"
+      class="dark:text-gray-100 text-base"
       :contenteditable="isEditable"
       :data-placeholder="placeholderComment()"
       @blur="changeComment($event)"
@@ -99,6 +99,10 @@ export default {
 </script>
 
 <style scoped>
+h2{
+  font-size: 10px;
+}
+
 .description-content {
   width: 100%;
   font-size: 14px;

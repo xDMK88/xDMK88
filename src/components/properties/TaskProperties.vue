@@ -953,8 +953,18 @@ export default {
       })
     },
     onInputTaskMsg: function () {
+      // после этого рассчитает новый scrollHeight
       this.$refs.taskMsgEdit.style.height = '40px'
-      this.$refs.taskMsgEdit.style.height = (this.$refs.taskMsgEdit.scrollHeight) + 'px'
+      //
+      const defSendHeight = 105
+      const defEditHeight = 40
+      const defEditHeightMax = 100
+      const scrollHeight = this.$refs.taskMsgEdit.scrollHeight
+      const scrollHeightFix = scrollHeight < defEditHeight ? defEditHeight : scrollHeight > defEditHeightMax ? defEditHeightMax : scrollHeight
+      const sendHeight = defSendHeight + scrollHeightFix - defEditHeight
+      //
+      this.$refs.taskMsgEdit.style.height = scrollHeight + 'px'
+      document.documentElement.style.setProperty('--hex-parent-height', sendHeight + 'px')
     },
     addNewLineTaskMsg: function () {
       this.taskMsg += '\n'

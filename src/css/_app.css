@@ -1,3 +1,7 @@
+:root {
+  --hex-parent-height: 105px;
+}
+
 @font-face {
   font-family: 'SFProDisplayBold';
   src: url('tailwind/fonts/SFProDisplay/SFPRODISPLAYBOLD.OTF');
@@ -1011,7 +1015,7 @@ fieldset[disabled] .btn {
 }
 .column-resize
 {
-  height: calc(100vh - 105px);
+  height: calc(100vh - var(--hex-parent-height));
   overflow-y: auto;
   position: relative;
 }

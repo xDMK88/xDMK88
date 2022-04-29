@@ -281,6 +281,35 @@ const computedСonfirmDelegate = computed(() => {
   //
   return newСonfirmParams
 })
+
+const computedTimes = computed(() => {
+  if (currentState.value !== 'timeSelection') return {}
+  const inputLowerCase = inputMessage.value.toLowerCase()
+  const newTimes = {}
+  const times = {
+    today: { uid: 'today', name: 'Сегодня', value: new Date() },
+    tomorrow: {
+      uid: 'tomorrow',
+      name: 'Завтра',
+      value: new Date(new Date().setDate(new Date().getDate() + 1))
+    },
+    oneDayLater: {
+      uid: 'oneDayLater',
+      name: 'Послезавтра',
+      value: new Date(new Date().setDate(new Date().getDate() + 2))
+    }
+  }
+  for (const key in times) {
+    if (times[key].name.toLowerCase().includes(inputLowerCase)) {
+      newTimes[key] = times[key]
+    }
+  }
+  //
+  const selectArr = Object.values(newTimes)
+  props.lastSelected(selectArr.length === 1 ? selectArr[0] : null)
+  //
+  return newTimes
+})
 </script>
 
 <template>
@@ -484,42 +513,19 @@ const computedСonfirmDelegate = computed(() => {
           class="flex flex-wrap mt-2"
         >
           <div
-            class="flex items-center bg-white rounded-lg p-1 px-2 mt-1 mr-1 cursor-pointer"
-            @click="
-              props.selectTime({
-                name: 'Сегодня',
-                date: new Date().toISOString()
-              })
-            "
+            v-for="(time, _, index) in computedTimes"
+            :key="index"
+            class="flex items-center bg-white rounded-lg p-1 px-2 mt-1 cursor-pointer mr-1"
+            @click="props.selectTime({ name: time.name, date: time.value.toISOString() })"
           >
-            <span class="text-sm text-gray-600">Сегодня</span>
+            <span class="text-sm text-gray-600"> {{ time.name }} </span>
           </div>
-          <div
-            class="flex items-center bg-white rounded-lg p-1 px-2 mt-1 mr-1 cursor-pointer"
-            @click="
-              props.selectTime({
-                name: 'Завтра',
-                date: new Date(
-                  new Date().setDate(new Date().getDate() + 1)
-                ).toISOString()
-              })
-            "
+          <p
+            v-if="Object.keys(computedTimes).length === 0"
+            class="text-sm text-gray-500"
           >
-            <span class="text-sm text-gray-600">Завтра</span>
-          </div>
-          <div
-            class="flex items-center bg-white rounded-lg p-1 px-2 mt-1 mr-1 cursor-pointer"
-            @click="
-              props.selectTime({
-                name: 'Послезавтра',
-                date: new Date(
-                  new Date().setDate(new Date().getDate() + 2)
-                ).toISOString()
-              })
-            "
-          >
-            <span class="text-sm text-gray-600">Послезавтра</span>
-          </div>
+            <span class="text-sm text-gray-600">Не могу понять когда это</span>
+          </p>
         </div>
 
         <!-- Confirm adding additional params -->
@@ -539,9 +545,7 @@ const computedСonfirmDelegate = computed(() => {
             v-if="Object.keys(computedСonfirmParams).length === 0"
             class="text-sm text-gray-500"
           >
-            <span
-              class="text-sm text-gray-600"
-            >Да или Нет?</span>
+            <span class="text-sm text-gray-600">Да или Нет?</span>
           </p>
         </div>
 
@@ -562,9 +566,7 @@ const computedСonfirmDelegate = computed(() => {
             v-if="Object.keys(computedСonfirmDelegate).length === 0"
             class="text-sm text-gray-500"
           >
-            <span
-              class="text-sm text-gray-600"
-            >Да или Нет?</span>
+            <span class="text-sm text-gray-600">Да или Нет?</span>
           </p>
         </div>
 

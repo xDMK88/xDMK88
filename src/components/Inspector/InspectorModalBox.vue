@@ -45,6 +45,7 @@ const user = computed(() => store.state.user.user)
 const cancel = () => confirmCancel('cancel')
 
 const delegatedTask = {}
+const input = ref()
 const currentState = ref('task_name')
 const inputMessage = ref('')
 const messages = ref([
@@ -93,7 +94,7 @@ const getTodaysDate = (val, isYearFirst = true) => {
 watch(value, (newVal) => {
   if (!newVal) {
     // очищаем объект новой задачи
-    Object.keys(delegatedTask).forEach(key => delete delegatedTask[key])
+    Object.keys(delegatedTask).forEach((key) => delete delegatedTask[key])
     // очищаем все сообщения
     messages.value.splice(0)
     // запускаем первое сообщение
@@ -104,6 +105,12 @@ watch(value, (newVal) => {
       createDate: new Date().toISOString()
     })
     currentState.value = 'task_name'
+  } else {
+    // ставим фокус в edit
+    setTimeout(() => {
+      console.log(input.value)
+      input.value.focus({ preventScroll: false })
+    }, 250)
   }
 })
 
@@ -123,10 +130,9 @@ const createTask = () => {
   })
 }
 
-let lastSelectedObj = {}
+let lastSelectedObj = null
 const lastSelected = (obj) => {
   lastSelectedObj = obj ? { ...obj } : null
-  console.log('lastSelected', lastSelectedObj)
 }
 
 function onMessageSelectEmployee (message) {
@@ -165,8 +171,13 @@ function onMessageSelectAccess (message) {
 }
 
 function onMessageSelectTime (message) {
-  console.log('onMessageSelectTime', message)
-  // selectTime
+  if (lastSelectedObj) {
+    selectTime({
+      name: lastSelectedObj.name,
+      date: lastSelectedObj.value.toISOString()
+    })
+    inputMessage.value = ''
+  }
 }
 
 function onMessageAddParams (message) {
@@ -458,12 +469,12 @@ const actionConfirmDelegate = (confirmed) => {
 
       <div class="flex items-stretch">
         <input
+          ref="input"
           v-model="inputMessage"
           :disabled="currentState === 'end'"
           type="text"
           class="bg-gray-50 rounded-xl border border-gray-300 w-full p-2"
           placeholder="Your message"
-          autofocus
           @keyup.enter="addCustomerMessage"
           @keyup.esc="cancel"
         >

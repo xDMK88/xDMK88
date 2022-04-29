@@ -4,6 +4,7 @@
   "scripts": {
     "dev": "vite --host",
     "serve": "vue-cli-service serve --mode development",
+    "serve-prod": "vue-cli-service serve --mode production",
     "serve:vite": "vite preview",
     "build": "vue-cli-service build",
     "build:vite": "vite build",

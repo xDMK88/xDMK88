@@ -245,7 +245,7 @@ function redirect (title, uid) {
               <span
                 class="max-w-full break-words text-sm"
               >
-                {{ task.name }}
+                {{ !task ? '' : task.name  }}
               </span>
             </div>
           </div>
@@ -254,6 +254,7 @@ function redirect (title, uid) {
             <div>
               <img
                 class="w-[22px] h-[22px] border-solid border-2 rounded-md"
+                :class="task.uid_performer === user.userData.current_user_uid ? 'border-red-500' : 'border-gray-400' "
                 :src="employees[task.uid_customer] === undefined ? '' : employees[task.uid_customer].fotolink"
               >
             </div>
@@ -275,7 +276,7 @@ function redirect (title, uid) {
                   :viewbox="task.performerreaded ? performerRead.height : performerNotRead.height"
                   class="mr-[4px]"
                 />
-                {{ employees[task.uid_performer].name }}
+                {{ !employees[task.uid_performer] ? '' : employees[task.uid_performer].name}}
             </div>
             <!-- tags -->
             <div
@@ -284,7 +285,7 @@ function redirect (title, uid) {
               class="tag-label cursor-default p-1 px-2 text-xs rounded-lg mr-1 flex items-center text-white bg-gray-400 order-first"
               :style="{ backgroundColor: tags[testObj[key][taskIdx].tags[j - 1]].back_color }"
             >
-              {{ tags[testObj[key][taskIdx].tags[j - 1]].name }}
+              {{ !tags[testObj[key][taskIdx].tags[j - 1]] ? '' : tags[testObj[key][taskIdx].tags[j - 1]].name }}
             </div>
             <div
               v-if="task.uid_project !== '00000000-0000-0000-0000-000000000000'"
@@ -296,7 +297,7 @@ function redirect (title, uid) {
                 :width="project.width"
                 :viewBox="project.viewBox"
               />
-              <span class="ml-1">{{ projects[task.uid_project].name }}</span>
+              <span class="ml-1">{{ !projects[task.uid_project] ? '' : projects[task.uid_project].name }}</span>
             </div>
           </div>
         </div>

@@ -35,7 +35,7 @@
     :class="newConfig.listHasChildren ? 'pl-8' : 'pl-0'"
   >
     <button
-      class="bg-orange-500 px-2 rounded-xl text-white mr-1 hover:bg-orange-500 bg-opacity-70"
+      class="bg-orange-500 px-2 rounded-xl text-white mr-1 ml-1 hover:bg-orange-500 bg-opacity-70"
       @click="showInspector = true"
     >
       Поручить
@@ -274,7 +274,7 @@
               v-model="props.node.info.name"
               tag="div"
               @focusout="clearTaskFocus(props.node.info)"
-              class="taskName p-0.5 ring-0 outline-none"
+              class="taskName p-0.5 ring-0 outline-none max-w-7xl"
               :contenteditable="props.node.info._isEditable"
               placeholder="Enter task name"
               :no-nl="true"

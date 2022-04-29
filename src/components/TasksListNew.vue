@@ -273,6 +273,7 @@
             <contenteditable
               v-model="props.node.info.name"
               tag="div"
+              @focusout="clearTaskFocus(props.node.info)"
               class="taskName p-0.5 ring-0 outline-none"
               :contenteditable="props.node.info._isEditable"
               placeholder="Enter task name"
@@ -694,13 +695,25 @@ export default {
           // removeTask(task.uid)
         }
       }
+      if (task.name !== '') {
+        task.name = 'Пусто'
+      }
       if (task.uid_customer === user.value.current_user_uid) {
         document.getElementById(task.uid).parentNode.draggable = true
       }
       store.dispatch(TASK.SELECT_TASK, task)
       nextTick(() => { document.getElementById(task.uid).parentNode.click() })
     }
-
+    const clearTaskFocus = (task) => {
+      console.log(task.name)
+      if (task.name === '') {
+        removeTask(task.uid)
+      }
+      if (isPropertiesMobileExpanded.value) {
+        store.dispatch('asidePropertiesToggle', false)
+      }
+      task._isEditing = false
+    }
     const moveTaskTomorrow = (task) => {
       const today = new Date()
       const tomorrow = new Date(today)
@@ -773,7 +786,6 @@ export default {
           }, 200)
         })
     }
-
     const copyTask = (task) => {
       store.commit(TASK.COPY_TASK, task)
     }
@@ -840,6 +852,7 @@ export default {
     }
 
     return {
+      clearTaskFocus,
       editTaskName,
       storeTasks,
       newConfig,

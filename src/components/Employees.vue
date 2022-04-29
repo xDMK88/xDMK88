@@ -175,7 +175,6 @@ const clickOnGridCard = (value) => {
       </p>
     </div>
   </div>
-
   <div
     v-for="(value, index) in employees"
     :key="index"

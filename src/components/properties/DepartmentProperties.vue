@@ -23,14 +23,17 @@ const createOrUpdateDepartment = (department) => {
   if (!department.uid) {
     department.uid = uuidv4()
     store.dispatch(CREATE_DEPARTMENT_REQUEST, department)
-      .then(() => {
+      .then(resp => {
+        console.log(resp)
         store.dispatch('asidePropertiesToggle', false)
         store.commit(PUSH_DEPARTMENT, [department])
+        console.log(selectedDepartment.value)
+        selectedDepartment.value = resp.data.name
         // store.commit(NAVIGATOR_PUSH_EMPLOYEE, [employee])
       })
   } else {
     store.dispatch(UPDATE_DEPARTMENT_REQUEST, department)
-      .then(() => {
+      .then(resp => {
         store.dispatch('asidePropertiesToggle', false)
       })
   }
@@ -59,6 +62,7 @@ const removeDepartment = (department) => {
     </p>
   </modal-box-confirm>
   <div>
+    {{selectedDepartment}}
     <div>
       <p class="text-sm text-gray-500 dark:text-gray-200">
         Свойства отдела

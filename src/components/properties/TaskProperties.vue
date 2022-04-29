@@ -913,10 +913,53 @@ export default {
     print: function (value) {
       console.log(value)
     },
+    uuidv4: function () {
+      return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
+        (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+      )
+    },
+    sendTaskMsg: function () {
+      const date = new Date()
+      const month = this.pad2(date.getUTCMonth() + 1)
+      const day = this.pad2(date.getUTCDate())
+      const year = this.pad2(date.getUTCFullYear())
+      const hours = this.pad2(date.getUTCHours())
+      const minutes = this.pad2(date.getUTCMinutes())
+      const seconds = this.pad2(date.getUTCSeconds())
+      const dateCreate = year + '-' + month + '-' + day + 'T' + hours + ':' + minutes + ':' + seconds
+      const data = {
+        uid_task: this.selectedTask.uid,
+        uid_creator: this.cusers.current_user_uid,
+        uid_msg: this.uuidv4(),
+        date_create: dateCreate,
+        text: this.taskMsg,
+        msg: this.taskMsg
+      }
+      this.$store.dispatch(CREATE_MESSAGE_REQUEST, data).then(
+        resp => {
+          this.selectedTask.has_msgs = true
+          if (this.selectedTask.type === 2 || this.selectedTask.type === 3) {
+            if ([1, 5, 7, 8].includes(this.selectedTask.status)) {
+              this.selectedTask.status = 9
+            }
+          }
+          this.selectedTask.msg = decodeURIComponent(this.taskMsg)
+          const elmnt = document.getElementById('content').lastElementChild
+          elmnt.scrollIntoView({ behavior: 'smooth' })
+        })
+      this.taskMsg = ''
+      this.$nextTick(function () {
+        this.onInputTaskMsg()
+      })
+    },
+    onInputTaskMsg: function () {
+      this.$refs.taskMsgEdit.style.height = '40px'
+      this.$refs.taskMsgEdit.style.height = (this.$refs.taskMsgEdit.scrollHeight) + 'px'
+    },
     addNewLineTaskMsg: function () {
       this.taskMsg += '\n'
-      console.log(this.$refs.taskMsgEdit)
       this.$nextTick(function () {
+        this.onInputTaskMsg()
         this.$refs.taskMsgEdit.scrollTo(0, this.$refs.taskMsgEdit.scrollHeight)
       })
     },
@@ -2147,7 +2190,8 @@ export default {
         class="form-control text-group-design task-msg overflow-auto scroll-style dark:bg-gray-800 dark:text-gray-100"
         placeholder="Введите сообщение"
         rows="58"
-        @keydown.enter.exact.prevent="createTaskMsg"
+        @input="onInputTaskMsg"
+        @keydown.enter.exact.prevent="sendTaskMsg"
         @keydown.enter.shift.exact.prevent="addNewLineTaskMsg"
       />
       <span class="input-group-addon input-group-btn-send dark:bg-gray-800 dark:text-gray-100">

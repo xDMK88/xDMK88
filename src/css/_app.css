@@ -231,8 +231,8 @@ input:focus {outline: 0;}
 .task-msg
 {
   resize: none;
-  height: 40px;
-
+  min-height: 40px;
+  max-height: 100px;
   box-sizing: border-box;
 }
 .list-files-custom
@@ -1644,35 +1644,47 @@ label
 }
 .popper-employees .popper
 {
-  top: 5% !important;
+  margin-top: 30px !important;
+  display: inline;
 }
 .popper-access .popper
 {
-  top: 5% !important;
+  margin-top: 30px !important;
+  display: inline;
+}
+.popper
+{
+
 }
 .popper-calendar .popper
 {
-  top: 5% !important;
+  margin-top: 30px !important;
+  display: inline;
 }
 .popper-repeat .popper
 {
-  top: 6% !important;
+  margin-top: 30px !important;
+  display: inline;
 }
 .popper-reminder .popper
 {
-  top: 6% !important;
+  margin-top: 30px !important;
+  display: inline;
 }
 .popper-project .popper
 {
-  top: 6% !important;
+  margin-top: 30px !important;
+  display: inline;
 }
 .popper-color .popper
 {
-  top: 6% !important;
+  margin-top: 30px !important;
+  display: inline;
 }
 .popper-tags .popper
 {
-  top: 6% !important;
+  margin-top: 30px !important;
+  display: inline;
 }
 .form-group1 input {
   padding: 0;

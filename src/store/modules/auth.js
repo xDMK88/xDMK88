@@ -6,7 +6,7 @@ import {
   AUTH_REGISTER
 } from '../actions/auth'
 import { RESET_STATE_NAVIGATOR } from '../actions/navigator'
-import { RESET_STATE_TASKS } from '../actions/tasks'
+import { RESET_STATE_TASKS, PROJECT_TASKS_REQUEST } from '../actions/tasks'
 import { RESET_STATE_PROJECT } from '../actions/projects'
 import { notify } from 'notiwind'
 import axios from 'axios'
@@ -80,6 +80,8 @@ const actions = {
       commit(RESET_STATE_NAVIGATOR)
       commit(RESET_STATE_TASKS)
       commit(RESET_STATE_PROJECT)
+      commit(PROJECT_TASKS_REQUEST)
+      commit(AUTH_REQUEST)
       axios.get(url)
         .then(resp => {
           resolve(resp)

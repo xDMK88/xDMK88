@@ -39,49 +39,33 @@ const user = {
 
 onBeforeMount(() => {
   store.dispatch(TASK.TASKS_REQUEST, new Date()).then(() => {
-    testObj.today = store.state.tasks.today.tasks
+    testObj.today = reactive(store.state.tasks.today.tasks)
   })
   store.dispatch(TASK.UNREAD_TASKS_REQUEST).then(() => {
-    testObj.unread = store.state.tasks.unread.tasks
+    testObj.unread = reactive(store.state.tasks.unread.tasks)
   })
   store.dispatch(TASK.IN_WORK_TASKS_REQUEST).then(() => {
-    testObj.inWork = store.state.tasks.inWork.tasks
+    testObj.inWork = reactive(store.state.tasks.inWork.tasks)
   })
   store.dispatch(TASK.IN_FOCUS_TASKS_REQUEST).then(() => {
-    testObj.inFocus = store.state.tasks.inFocus.tasks
+    testObj.inFocus = reactive(store.state.tasks.inFocus.tasks)
   })
   store.dispatch(TASK.OVERDUE_TASKS_REQUEST).then(() => {
-    testObj.overdue = store.state.tasks.overdue.tasks
+    testObj.overdue = reactive(store.state.tasks.overdue.tasks)
   })
   store.dispatch(TASK.UNSORTED_TASKS_REQUEST).then(() => {
-    testObj.unsorted = store.state.tasks.unsorted.tasks
+    testObj.unsorted = reactive(store.state.tasks.unsorted.tasks)
   })
   store.dispatch(TASK.READY_FOR_COMPLITION_TASKS_REQUEST).then(() => {
-    testObj.ready = store.state.tasks.ready.tasks
+    testObj.ready = reactive(store.state.tasks.ready.tasks)
   })
   store.dispatch(TASK.OPENED_TASKS_REQUEST).then(() => {
-    testObj.open = store.state.tasks.open.tasks
+    testObj.open = reactive(store.state.tasks.open.tasks)
   })
   store.dispatch(USER.USER_REQUEST).then(() => {
-    user.userData = store.state.user.user
+    user.userData = reactive(store.state.user.user)
   })
 })
-
-// onBeforeUpdate(() => {
-//   if (testObj.open.length) { // проверяем объект на заполненность
-//     for (const i in testObj.open) { // пробегаемся по индексам
-//       if (!testObj.overdue.includes(testObj.open[i]) && !testObj.today.includes(testObj.open[i])) { // проверяем наличие объекта из open в других объектах
-//         if (testObj.open[i].customer_date_end !== testObj.open[i].customer_date_begin) { // сверяем даты, если даты одинаковы, то задание бессрочное
-//           if (new Date(testObj.open[i].customer_date_end) > new Date()) { // если дата окончания позже, чем сегодняшняя дата, то задача попадает в "сегодня"
-//             testObj.today.push(testObj.open[i])
-//           } else { // иначе задача отправляется в просроченные
-//             testObj.overdue.push(testObj.open[i])
-//           }
-//         }
-//       }
-//     }
-//   }
-// })
 
 const tags = reactive(computed(() => {
   return store.state.tasks.tags
@@ -110,48 +94,6 @@ const icons = {
   open
 }
 
-// const cardMenu = reactive({
-//   visible: false
-// })
-
-// for (const elem in checkboxes) {
-//   if (checkboxes[elem] === 'flex') {
-//     document.getElementById(elem + 'checkbox').checked = true
-//   } else {
-//     document.getElementById(elem + 'checkbox').checked = false
-//   }
-//   console.log(document.getElementById(elem + 'checkbox'))
-// }
-
-// const activeCheckbox = reactive({
-//   today: '',
-//   unread: '',
-//   inWork: '',
-//   inFocus: '',
-//   overdue: '',
-//   unsorted: '',
-//   ready: '',
-//   open: ''
-// })
-
-// function hide (cardId) {
-//   if (document.getElementById(cardId).style.display === 'flex') {
-//     document.getElementById(cardId).style.display = 'none'
-//   } else {
-//     document.getElementById(cardId).style.display = 'flex'
-//   }
-//   console.log(activeCheckbox[cardId])
-//   activeCheckbox[cardId] = document.getElementById(cardId).style.display
-//   console.log(activeCheckbox[cardId])
-//   console.log(document.getElementById(cardId).style.display)
-//   localStorage.setItem('activeCheckbox', JSON.stringify(activeCheckbox))
-// }
-
-// const checkboxes = computed(() => {
-//   return JSON.parse(localStorage.getItem('activeCheckbox'))
-// })
-// console.log(localStorage)
-
 const iconsKeys = Object.keys(icons)
 
 // link logic
@@ -164,6 +106,12 @@ const UID_TO_ACTION = {
   '2a5cae4b-e877-4339-8ca1-bd61426864ec': TASK.IN_WORK_TASKS_REQUEST,
   '6fc44cc6-9d45-4052-917e-25b1189ab141': TASK.IN_FOCUS_TASKS_REQUEST,
   'd35fe0bc-1747-4eb1-a1b2-3411e07a92a0': TASK.READY_FOR_COMPLITION_TASKS_REQUEST
+}
+
+function visualTaskStatus (task) {
+  store.state.tasks.newtasks[task.uid] = task
+  store.state.tasks.newtasks[task.uid].info = task
+  store.state.tasks.newtasks[task.uid].status = task.status
 }
 
 function redirect (title, uid) {
@@ -180,34 +128,9 @@ function redirect (title, uid) {
 }
 </script>
 <template>
-  <!-- <pre>{{ activeCheckbox }}</pre>
-  <pre>{{ checkboxes }}</pre>
-  <div class="flex justify-end">
-    <div class="flex-col items-center w-2/12 bg-gray-200">
-      <div class="w-2/2">
-        <button class="w-1/2 bg-gray-100" @click="cardMenu.visible ? cardMenu.visible = false : cardMenu.visible = true">Настроить</button>
-      </div>
-      <div
-        class="flex-col absolute bg-green-100 w-[270px] h-[320px]"
-        :style="cardMenu.visible === false ? { visibility: 'hidden' } : { visibility: 'visible' }"
-      >
-        <div class="pl-3.5">
-          <div
-            v-for="(elem, key) in testObj" :key="elem"
-            class="mt-3.5"
-          >
-            <label>
-              <input type="checkbox" :id="key + 'checkbox'" @click="hide(key)" :checked="checkboxes[key] === 'flex' ? true : false ">
-              {{ store.state.tasks[key].title }}
-            </label>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div> -->
-  <div class="grid grid-rows-2 grid-flow-col max-h-[85vh]">
+  <div class="md:grid md:grid-rows-2 md:grid-flow-col md:max-h-[85vh] sm:flex sm:max-w-screen-sm sm:flex-wrap">
     <div
-      class="flex flex-col bg-white dark:bg-slate-900 rounded-xl min-w-[380px] mb-4 max-w-screen-sm scroll-style mr-3 px-2 pt-2 shadow-sm font-SfProTextNormal"
+      class="flex flex-col bg-white dark:bg-slate-900 rounded-xl cursor-default min-h-[400px] max-h-[400px] min-w-[380px] mb-4 max-w-screen-sm scroll-style mr-3 px-2 pt-2 shadow-sm font-SfProTextNormal"
       :id="key"
       v-for="(elem, key, idx) in testObj"
       :key="elem"
@@ -218,6 +141,7 @@ function redirect (title, uid) {
             class="hover:cursor-pointer"
             @click="redirect(store.state.tasks[key].title, store.state.tasks[key].link)">
               {{ store.state.tasks[key].title }}
+              {{ '(' + testObj[key].length + ')' }}
           </span>
         </template>
         <template #icon>
@@ -239,7 +163,7 @@ function redirect (title, uid) {
         >
           <div class="flex">
             <div class="flex order-first">
-              <task-status :task="task" />
+              <TaskStatus :task="task" @click="visualTaskStatus(task)"></TaskStatus>
             </div>
             <div class="font-normal">
               <span

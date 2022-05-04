@@ -21,6 +21,11 @@ import { PATCH_SETTINGS } from '@/store/actions/navigator.js'
 import { SELECT_PROJECT } from '@/store/actions/projects'
 
 const UID_TO_ACTION = {
+  '2bad1413-a373-4926-8a3c-58677a680714': [
+    TASK.TASKS_REQUEST,
+    TASK.OVERDUE_TASKS_REQUEST,
+    TASK.UNSORTED_TASKS_REQUEST
+  ],
   '901841d9-0016-491d-ad66-8ee42d2b496b': TASK.TASKS_REQUEST, // get today's day
   '46418722-a720-4c9e-b255-16db4e590c34': TASK.OVERDUE_TASKS_REQUEST,
   '017a3e8c-79ac-452c-abb7-6652deecbd1c': TASK.OPENED_TASKS_REQUEST,
@@ -37,6 +42,8 @@ const UID_TO_ACTION = {
   '511d871c-c5e9-43f0-8b4c-e8c447e1a823': TASK.DELEGATED_TO_USER_TASKS_REQUEST,
   'd35fe0bc-1747-4eb1-a1b2-3411e07a92a0': TASK.READY_FOR_COMPLITION_TASKS_REQUEST
 }
+
+const showNoneUid = ['46418722-a720-4c9e-b255-16db4e590c34', '017a3e8c-79ac-452c-abb7-6652deecbd1c', 'fa042915-a3d2-469c-bd5a-708cf0339b89', '2a5cae4b-e877-4339-8ca1-bd61426864ec', 'd35fe0bc-1747-4eb1-a1b2-3411e07a92a0']
 
 const store = useStore()
 
@@ -259,18 +266,15 @@ const openProjectProperties = (project, parentProjectUid = '') => {
   }
   store.commit(SELECT_PROJECT, project)
 }
-
-const showSearchBar = computed(() => {
-  const greedPath = navStack.value[0]?.greedPath
-  const navStackUid = navStack.value[0]?.value?.uid
-  return greedPath !== 'new_private_projects' &&
-         greedPath !== 'new_delegate' &&
-         navStackUid !== '2bad1413-a373-4926-8a3c-58677a680714' && // рабочий стол
-         navStackUid !== '2cf6b167-6506-4b05-bc34-70a8d88e3b25' // делать сейчас
-})
 </script>
 
 <template>
+  <pre
+    v-if="showNoneUid.includes(navStack[navStack.length - 1].value.uid)"
+    class="md:text-lg sm:text-base"
+  >
+    У вас пока нет задач этой категории!
+  </pre>
   <nav
     v-show="isNavBarVisible"
     class="top-0 left-0 right-0 fixed flex h-14 z-30 bg-slate-100
@@ -372,10 +376,7 @@ const showSearchBar = computed(() => {
         </div>
       </nav-bar-item>
     </div>
-    <div
-      v-if="showSearchBar"
-      class="flex-none items-stretch flex h-14"
-    >
+    <div class="flex-none items-stretch flex h-14" v-if="navStack[0].greedPath !== 'new_private_projects' && navStack[0].greedPath !== 'new_delegate' && navStack[0].name !== 'Рабочий стол'">
       <nav-bar-item class="px-3">
         <Popper
           class="items-center"

@@ -21,6 +21,11 @@ import { PATCH_SETTINGS } from '@/store/actions/navigator.js'
 import { SELECT_PROJECT } from '@/store/actions/projects'
 
 const UID_TO_ACTION = {
+  '2bad1413-a373-4926-8a3c-58677a680714': [
+    TASK.TASKS_REQUEST,
+    TASK.OVERDUE_TASKS_REQUEST,
+    TASK.UNSORTED_TASKS_REQUEST
+  ],
   '901841d9-0016-491d-ad66-8ee42d2b496b': TASK.TASKS_REQUEST, // get today's day
   '46418722-a720-4c9e-b255-16db4e590c34': TASK.OVERDUE_TASKS_REQUEST,
   '017a3e8c-79ac-452c-abb7-6652deecbd1c': TASK.OPENED_TASKS_REQUEST,

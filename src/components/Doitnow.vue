@@ -23,6 +23,10 @@
   >
     У вас запланированы дела на сегодня. Пора приступить к делу
   </div>
+  <DoitnowTask
+    v-if="tasksCount"
+    :task="firstTask"
+  />
   <button
     v-if="tasksCount"
     class="bg-orange-500 py-1 mt-10 px-2 rounded-xl text-white mr-1 ml-1 hover:bg-orange-500 bg-opacity-70"
@@ -38,10 +42,12 @@
 <script>
 import * as TASK from '@/store/actions/tasks.js'
 import DoitnowEmpty from '@/components/Doitnow/DoitnowEmpty.vue'
+import DoitnowTask from '@/components/Doitnow/DoitnowTask.vue'
 
 export default {
   components: {
-    DoitnowEmpty
+    DoitnowEmpty,
+    DoitnowTask
   },
   data: () => ({
     unreadTasks: [],
@@ -51,6 +57,18 @@ export default {
   computed: {
     tasksCount () {
       return this.unreadTasks.length + this.overdueTasks.length + this.todayTasks.length
+    },
+    firstTask () {
+      if (this.unreadTasks.length) {
+        return this.unreadTasks[0]
+      }
+      if (this.overdueTasks.length) {
+        return this.overdueTasks[0]
+      }
+      if (this.todayTasks.length) {
+        return this.todayTasks[0]
+      }
+      return null
     }
   },
   mounted: function () {

@@ -12,6 +12,7 @@
       @keyup="changeComment($event)"
       @focusout="removeEditComment($event)"
       v-html="getFixedCommentText()"
+      @paste="OnPaste_StripFormatting(this, $event);"
     />
   </div>
 </template>
@@ -36,7 +37,8 @@ export default {
   emits: ['changeComment', 'endChangeComment'],
   data: () => ({
     isEditable: false,
-    currText: ''
+    currText: '',
+    onPaste_StripFormatting_IEPaste: false
   }),
   watch: {
     comment: {
@@ -47,6 +49,25 @@ export default {
     }
   },
   methods: {
+    OnPaste_StripFormatting (elem, e) {
+      var text = ''
+      if (e.originalEvent && e.originalEvent.clipboardData && e.originalEvent.clipboardData.getData) {
+        e.preventDefault()
+        text = e.originalEvent.clipboardData.getData('text/plain')
+        window.document.execCommand('insertText', false, text)
+      } else if (e.clipboardData && e.clipboardData.getData) {
+        e.preventDefault()
+        text = e.clipboardData.getData('text/plain')
+        window.document.execCommand('insertText', false, text)
+      } else if (window.clipboardData && window.clipboardData.getData) {
+        if (!this.onPaste_StripFormatting_IEPaste) {
+          this.onPaste_StripFormatting_IEPaste = true
+          e.preventDefault()
+          window.document.execCommand('ms-pasteTextOnly', false)
+        }
+        this.onPaste_StripFormatting_IEPaste = false
+      }
+    },
     getFixedCommentText () {
       return this.comment.replaceAll('\n', '<br/>')
     },

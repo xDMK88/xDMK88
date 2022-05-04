@@ -123,19 +123,6 @@ const menuClick = (event, item) => {
     return
   }
 
-  // do it now
-  if (item.uid === '2cf6b167-6506-4b05-bc34-70a8d88e3b25') {
-    const navElem = {
-      name: item.label,
-      key: 'greedSource',
-      value: { uid: item.uid, param: null }
-    }
-    store.commit('updateStackWithInitValue', navElem)
-    store.commit('basic', { key: 'mainSectionState', value: 'greed' })
-    store.commit('basic', { key: 'greedPath', value: 'doitnow' })
-    return
-  }
-
   // Tasks list source
   if (UID_TO_ACTION[item.uid] && item.type === 'uid') {
     store.dispatch(UID_TO_ACTION[item.uid])
@@ -264,17 +251,17 @@ const tarifS = () => {
     </div>
     <nav-bar-item class="rounded-b-3xl pt-0 mt-0">
       <DatePicker
-        id="Maincalendar"
-        ref="calendarclass"
-        v-model="navigatorMenu.currentDate"
         dot="true"
+        id="Maincalendar"
+        v-model="navigatorMenu.currentDate"
         class="border-none text-xs px-3 calendar-custom calendar-nav-custom"
         style="border: none!important;"
         :style="{ backgroundColor: datePickerBG }"
         show-weeknumbers="left"
         days="-1"
         color="#CCC"
-        week-from-end="6"
+        ref="calendarclass"
+        weekFromEnd="6"
         from-page="fromPage"
         to-page="toPage"
         is-expanded
@@ -284,9 +271,9 @@ const tarifS = () => {
         :is-dark="isDark"
         mode="single"
         is-inline
-        in-next-month="true"
-        in-month="true"
-        in-prev-month="true"
+        inNextMonth="true"
+        inMonth="true"
+        inPrevMonth="true"
         select-attribute="dates"
       />
     </nav-bar-item>

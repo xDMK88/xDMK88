@@ -201,19 +201,6 @@ const mutations = {
     ])
     state.menu.push([
       {
-        label: 'Делать сейчас',
-        uid: '2cf6b167-6506-4b05-bc34-70a8d88e3b25',
-        bold: 0,
-        icon: desktop.path,
-        width: desktop.width,
-        height: desktop.height,
-        iconBox: desktop.viewBox,
-        type: 'uid',
-        iconBackgroundClass: 'bg-white-500'
-      }
-    ])
-    state.menu.push([
-      {
         label: localization.value.Today,
         uid: resp.data.tasks.items[0].uid,
         bold: resp.data.tasks.items[0].bold,

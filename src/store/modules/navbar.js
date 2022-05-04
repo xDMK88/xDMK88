@@ -1,5 +1,5 @@
 const state = {
-  navStack: []
+  navStack: ['1']
 }
 
 const getters = {

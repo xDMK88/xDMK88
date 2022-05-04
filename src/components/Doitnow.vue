@@ -6,7 +6,14 @@
 
 <script>
 export default {
-
+  mounted: function () {
+    this.loadAllTasks()
+  },
+  methods: {
+    loadAllTasks: function () {
+      //
+    }
+  }
 }
 </script>
 

@@ -12,6 +12,7 @@ import Tags from '@/components/Tags.vue'
 import Colors from '@/components/Colors.vue'
 import Assignments from '@/components/Assignments.vue'
 import Dashboard from '@/components/Dashboard.vue'
+import Doitnow from '@/components/Doitnow.vue'
 
 import { NAVIGATOR_REQUEST } from '@/store/actions/navigator'
 import { USER_REQUEST } from '@/store/actions/user'
@@ -92,10 +93,14 @@ const getNavigator = () => {
         // Checking if last navElement is a gridSource
         if (navStack.value.length && navStack.value.length > 0) {
           if (navStack.value[navStack.value.length - 1].key === 'greedSource') {
+            const navStackUid = navStack.value[0]?.value?.uid
             // desktop check
-            if (navStack.value[0].name === 'Рабочий стол') {
+            if (navStackUid === '2bad1413-a373-4926-8a3c-58677a680714') {
               store.commit('basic', { key: 'mainSectionState', value: 'greed' })
               store.commit('basic', { key: 'greedPath', value: 'dashboard' })
+            } else if (navStackUid === '2cf6b167-6506-4b05-bc34-70a8d88e3b25') {
+              store.commit('basic', { key: 'mainSectionState', value: 'greed' })
+              store.commit('basic', { key: 'greedPath', value: 'doitnow' })
             } else {
               store.commit('basic', { key: 'greedPath', value: navStack.value[navStack.value.length - 1].greedPath })
               store.commit('basic', { key: 'mainSectionState', value: 'greed' })
@@ -174,6 +179,9 @@ onBeforeMount(() => {
       <projects
         v-if="greedPath === 'new_private_projects'"
         :projects="greedSource"
+      />
+      <doitnow
+        v-if="greedPath === 'doitnow'"
       />
       <dashboard
         v-if="greedPath === 'dashboard'"

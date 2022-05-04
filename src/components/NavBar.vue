@@ -259,6 +259,15 @@ const openProjectProperties = (project, parentProjectUid = '') => {
   }
   store.commit(SELECT_PROJECT, project)
 }
+
+const showSearchBar = computed(() => {
+  const greedPath = navStack.value[0]?.greedPath
+  const navStackUid = navStack.value[0]?.value?.uid
+  return greedPath !== 'new_private_projects' &&
+         greedPath !== 'new_delegate' &&
+         navStackUid !== '2bad1413-a373-4926-8a3c-58677a680714' && // рабочий стол
+         navStackUid !== '2cf6b167-6506-4b05-bc34-70a8d88e3b25' // делать сейчас
+})
 </script>
 
 <template>
@@ -363,7 +372,10 @@ const openProjectProperties = (project, parentProjectUid = '') => {
         </div>
       </nav-bar-item>
     </div>
-    <div class="flex-none items-stretch flex h-14" v-if="navStack[0].greedPath !== 'new_private_projects' && navStack[0].greedPath !== 'new_delegate' && navStack[0].name !== 'Рабочий стол'">
+    <div
+      v-if="showSearchBar"
+      class="flex-none items-stretch flex h-14"
+    >
       <nav-bar-item class="px-3">
         <Popper
           class="items-center"

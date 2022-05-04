@@ -62,7 +62,6 @@ const removeDepartment = (department) => {
     </p>
   </modal-box-confirm>
   <div>
-    {{selectedDepartment}}
     <div>
       <p class="text-sm text-gray-500 dark:text-gray-200">
         Свойства отдела

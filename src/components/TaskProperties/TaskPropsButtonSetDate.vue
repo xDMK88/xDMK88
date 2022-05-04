@@ -36,7 +36,6 @@
             v-model="datePickerDate"
             class="border-none text-xs calendar-properties"
             style="border: none !important"
-            is-range
             title-position="left"
             :masks="{ weekdays: 'WW' }"
             @dayclick="onDayClick"

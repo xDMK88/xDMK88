@@ -7,48 +7,42 @@
   </div>
   <div
     v-if="unreadTasks.length"
-    class="font-normal"
+    class="font-normal mt-10"
   >
     Команда ждет ваших действий по задачам. Пожалуйста, ответьте им
   </div>
   <div
     v-else-if="overdueTasks.length"
-    class="font-normal"
+    class="font-normal mt-10"
   >
     У вас есть просроченные задачи. Примите решение, что с ними делать
   </div>
   <div
     v-else-if="todayTasks.length"
-    class="font-normal"
+    class="font-normal mt-10"
   >
     У вас запланированы дела на сегодня. Пора приступить к делу
   </div>
   <button
     v-if="tasksCount"
-    class="bg-orange-500 px-2 rounded-xl text-white mr-1 ml-1 hover:bg-orange-500 bg-opacity-70"
+    class="bg-orange-500 py-1 mt-10 px-2 rounded-xl text-white mr-1 ml-1 hover:bg-orange-500 bg-opacity-70"
     @click="nextTask"
   >
     Дальше
   </button>
-  <div
+  <DoitnowEmpty
     v-if="tasksCount === 0"
-    class="font-normal"
-  >
-    Поздравляем, вы успешно обработали все задачи. Не хотите запланировать дела на завтра?
-  </div>
-  <button
-    v-if="tasksCount === 0"
-    class="bg-orange-500 px-2 rounded-xl text-white mr-1 ml-1 hover:bg-orange-500 bg-opacity-70"
-    @click="goToNextDay"
-  >
-    Запланировать
-  </button>
+  />
 </template>
 
 <script>
 import * as TASK from '@/store/actions/tasks.js'
+import DoitnowEmpty from '@/components/Doitnow/DoitnowEmpty.vue'
 
 export default {
+  components: {
+    DoitnowEmpty
+  },
   data: () => ({
     unreadTasks: [],
     overdueTasks: [],

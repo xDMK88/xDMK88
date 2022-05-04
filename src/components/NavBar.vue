@@ -270,7 +270,7 @@ const openProjectProperties = (project, parentProjectUid = '') => {
 
 <template>
   <pre
-    v-if="showNoneUid.includes(navStack[navStack.length - 1].value.uid)"
+    v-if="navStack.length && showNoneUid.includes(navStack[navStack.length - 1].uid)"
     class="md:text-lg sm:text-base"
   >
     У вас пока нет задач этой категории!
@@ -376,7 +376,7 @@ const openProjectProperties = (project, parentProjectUid = '') => {
         </div>
       </nav-bar-item>
     </div>
-    <div class="flex-none items-stretch flex h-14" v-if="navStack[0].greedPath !== 'new_private_projects' && navStack[0].greedPath !== 'new_delegate' && navStack[0].name !== 'Рабочий стол'">
+    <div class="flex-none items-stretch flex h-14" v-if="navStack[0] && navStack[0].greedPath !== 'new_private_projects' && navStack[0].greedPath !== 'new_delegate' && navStack[0].name !== 'Рабочий стол'">
       <nav-bar-item class="px-3">
         <Popper
           class="items-center"

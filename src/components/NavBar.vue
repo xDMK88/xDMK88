@@ -38,7 +38,7 @@ const UID_TO_ACTION = {
   'd35fe0bc-1747-4eb1-a1b2-3411e07a92a0': TASK.READY_FOR_COMPLITION_TASKS_REQUEST
 }
 
-const showNoneUid = ['46418722-a720-4c9e-b255-16db4e590c34', '017a3e8c-79ac-452c-abb7-6652deecbd1c', 'fa042915-a3d2-469c-bd5a-708cf0339b89', '2a5cae4b-e877-4339-8ca1-bd61426864ec']
+const showNoneUid = ['46418722-a720-4c9e-b255-16db4e590c34', '017a3e8c-79ac-452c-abb7-6652deecbd1c', 'fa042915-a3d2-469c-bd5a-708cf0339b89', '2a5cae4b-e877-4339-8ca1-bd61426864ec', 'd35fe0bc-1747-4eb1-a1b2-3411e07a92a0']
 
 const store = useStore()
 
@@ -266,7 +266,7 @@ const openProjectProperties = (project, parentProjectUid = '') => {
 <template>
   <pre
     v-if="showNoneUid.includes(navStack[navStack.length - 1].value.uid)"
-    class="text-lg"
+    class="md:text-lg sm:text-base"
   >
     У вас пока нет задач этой категории!
   </pre>

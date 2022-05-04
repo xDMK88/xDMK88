@@ -920,6 +920,35 @@ const actions = {
         })
     })
   },
+  [TASK.CHANGE_TASK_REDELEGATE]: ({ commit, dispatch }, data) => {
+    return new Promise((resolve, reject) => {
+      const url =
+        process.env.VUE_APP_LEADERTASK_API +
+        'api/v1/task/redelegate?uid=' +
+        data.uid +
+        '&value=' +
+        data.value
+      axios({
+        url: url,
+        method: 'PATCH'
+      })
+        .then((resp) => {
+          resolve(resp)
+        })
+        .catch((err) => {
+          notify(
+            {
+              group: 'api',
+              title: 'REST API Error, please make screenshot',
+              action: TASK.CHANGE_TASK_REDELEGATE,
+              text: err.response.data
+            },
+            15000
+          )
+          reject(err)
+        })
+    })
+  },
   [TASK.CHANGE_TASK_FOCUS]: ({ commit, dispatch }, data) => {
     return new Promise((resolve, reject) => {
       const url =

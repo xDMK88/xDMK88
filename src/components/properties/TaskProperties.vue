@@ -1091,6 +1091,15 @@ export default {
     onReAssignToUser: function (userEmail) {
       console.log('onReAssignToUser', userEmail)
       console.log('onReAssignToUser is not resolved')
+      const data = {
+        uid: this.selectedTask.uid,
+        value: userEmail
+      }
+      this.$store.dispatch(TASK.CHANGE_TASK_REDELEGATE, data).then(
+        resp => {
+          console.log(resp.data)
+        }
+      )
     },
     onChangePerformer: function (userEmail) {
       console.log('onChangePerformer', userEmail)
@@ -1242,7 +1251,6 @@ export default {
         class="mt-3 custom-list-tags"
       >
         <!-- Кнопка Поручить / Взять на исполнение / Перепоручить -->
-        <!-- В selectedTask.type === 3 должна быть кнопка перепоручить - это сейчас не работает -->
         <TaskPropsButtonPerform
           v-if="selectedTask.status !== 3 && selectedTask.type !== 3 && selectedTask.type !== 4"
           :task-type="selectedTask.type"

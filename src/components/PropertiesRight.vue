@@ -3,6 +3,7 @@ import { computed } from 'vue'
 import { useStore } from 'vuex'
 import TaskProperties from '@/components/properties/TaskProperties.vue'
 import ProjectProperties from '@/components/properties/ProjectProperties.vue'
+import BoardProperties from '@/components/properties/BoardProperties.vue'
 import ColorProperties from '@/components/properties/ColorProperties.vue'
 import TagProperties from '@/components/properties/TagProperties.vue'
 import EmployeeProperties from '@/components/properties/EmployeeProperties.vue'
@@ -14,6 +15,7 @@ export default {
   components: {
     TaskProperties,
     ProjectProperties,
+    BoardProperties,
     ColorProperties,
     TagProperties,
     EmployeeProperties,
@@ -59,6 +61,9 @@ export default {
     />
     <ProjectProperties
       v-if="propertiesState == 'project'"
+    />
+    <BoardProperties
+      v-if="propertiesState == 'board'"
     />
     <ColorProperties
       v-if="propertiesState == 'color'"

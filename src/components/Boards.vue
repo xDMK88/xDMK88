@@ -7,8 +7,8 @@ import projectIcon from '@/icons/project.js'
 import sharedProject from '@/icons/shared_project.js'
 import gridView from '@/icons/grid-view.js'
 import listView from '@/icons/list-view.js'
+import * as BOARD from '@/store/actions/boards.js'
 import * as CARD from '@/store/actions/cards.js'
-import { SELECT_BOARD } from '@/store/actions/projects'
 
 const store = useStore()
 defineProps({
@@ -64,7 +64,7 @@ const openProperties = (board, parentBoardUid = '') => {
       bold: 0
     }
   }
-  store.commit(SELECT_BOARD, board)
+  store.commit(BOARD.SELECT_BOARD, board)
 }
 
 const gotoChildren = (value) => {

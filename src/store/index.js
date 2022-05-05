@@ -11,6 +11,7 @@ import taskfilesandmessages from './modules/taskfilesandmessages'
 import employees from './modules/employees'
 import departments from './modules/departments'
 import projects from './modules/projects'
+import boards from './modules/boards'
 import colors from './modules/colors'
 import localization from './modules/localization'
 import inspector from './modules/inspector'
@@ -143,6 +144,7 @@ export default createStore({
     employees,
     departments,
     projects,
+    boards,
     colors,
     localization,
     inspector

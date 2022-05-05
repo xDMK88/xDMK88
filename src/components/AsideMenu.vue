@@ -189,8 +189,6 @@ const tarifS = () => {
 </script>
 
 <template>
-  <pre>{{ navStack }}</pre>
-  <pre>{{ lastVisitedDate }}</pre>
   <!-- Profile modal -->
   <modal-box
     v-model="modalOneActive"

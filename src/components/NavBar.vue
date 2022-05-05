@@ -195,7 +195,7 @@ const requestLastVisitedNav = () => {
 }
 
 const clickOnGridCard = (item, index) => {
-  if (!item) {
+  if (!item || !item.greedPath) {
     return
   }
   store.commit('removeAllFromStackAfterIndex', index)

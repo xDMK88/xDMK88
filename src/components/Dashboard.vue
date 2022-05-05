@@ -159,7 +159,7 @@ function redirect (title, uid) {
           v-for="(task, taskIdx) in testObj[key]"
           :key="task.uid"
           class="p-2 rounded-xl"
-          :style="task.uid_marker !== '00000000-0000-0000-0000-000000000000' ? {backgroundColor: colors[task.uid_marker].back_color, color:  '#000000'} : ''"
+          :style="task.uid_marker !== '00000000-0000-0000-0000-000000000000' ? {backgroundColor: colors[task.uid_marker].back_color, color: colors[task.uid_marker].fore_color ? colors[task.uid_marker].fore_color : '#000000' } : ''"
         >
           <div class="flex">
             <div class="flex order-first">

@@ -19,7 +19,7 @@ const updateSettings = () => {
       cal_number_of_first_week: settings.value.cal_number_of_first_week ? 1 : 0,
       cal_show_week_number: settings.value.cal_show_week_number ? 1 : 0,
       nav_show_tags: settings.value.nav_show_tags,
-      nav_show_overdue: settings.value.nav_show_overdue,
+      nav_show_overdue: settings.value.nav_show_overdue ? 1 : 0,
       nav_show_summary: settings.value.nav_show_summary,
       nav_show_emps: settings.value.nav_show_emps,
       nav_show_markers: settings.value.nav_show_markers,
@@ -76,15 +76,16 @@ const updateSettings = () => {
             </div>
         </div>
         <div class="my-2">
-            <strong>Показываать раздел Просрочено</strong>
+            <strong>Показывать раздел Просрочено</strong>
             <div class="flex mt-2">
                 <Toggle
-                  @change="hasChanged = true"
+                  v-model="settings.nav_show_overdue"
+                  @change="updateSettings()"
                   class="outline-none ring-0"
                   :classes="{ toggleOn: 'bg-blue-400 border-blue-400 justify-start text-white', container: 'focus:ring-0' }"
                 />
-                <a class="ml-2" v-if="settings.nav_show_overdue === 1">Вкл.</a>
-                <a class="ml-2" v-if="settings.nav_show_overdue === 0">Выкл.</a>
+                <a class="ml-2" v-if="settings.nav_show_overdue === true">Вкл.</a>
+                <a class="ml-2" v-if="settings.nav_show_overdue === false">Выкл.</a>
             </div>
         </div>
         <div class="my-2">

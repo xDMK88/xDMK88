@@ -464,6 +464,7 @@ export default {
     const newConfig = computed(() => store.state.tasks.newConfig)
     const storeTasks = computed(() => store.state.tasks.newtasks)
     const isDark = computed(() => store.state.darkMode)
+    const navStack = computed(() => store.state.navbar.navStack)
     const isPropertiesMobileExpanded = computed(() => store.state.isPropertiesMobileExpanded)
     const copiedTasks = computed(() => store.state.tasks.copiedTasks)
     const lastSelectedTaskUid = ref('')
@@ -671,6 +672,9 @@ export default {
           // выделяем добавленную задачу
           // и отображаем её свойства
           nodeSelected({ id: data.uid, info: resp.data })
+          if (navStack.value && navStack.value[navStack.value.length - 1].value.uid === '901841d9-0016-491d-ad66-8ee42d2b496b') {
+            store.commit('addDot', new Date(navStack.value[navStack.value.length - 1].value.param))
+          }
         })
       createTaskText.value = ''
     }
@@ -854,6 +858,7 @@ export default {
     return {
       clearTaskFocus,
       editTaskName,
+      navStack,
       storeTasks,
       newConfig,
       showConfirm,

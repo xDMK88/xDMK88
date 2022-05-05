@@ -3,7 +3,8 @@ import {
   AUTH_ERROR,
   AUTH_SUCCESS,
   AUTH_LOGOUT,
-  AUTH_REGISTER
+  AUTH_REGISTER,
+  AUTH_RESET
 } from '../actions/auth'
 import { RESET_STATE_NAVIGATOR } from '../actions/navigator'
 import { RESET_STATE_TASKS, PROJECT_TASKS_REQUEST } from '../actions/tasks'
@@ -14,7 +15,8 @@ import axios from 'axios'
 const state = {
   token: localStorage.getItem('user-token') || '',
   status: '',
-  hasLoadedOnce: false
+  hasLoadedOnce: false,
+  navStack: []
 }
 
 const getters = {
@@ -82,6 +84,7 @@ const actions = {
       commit(RESET_STATE_PROJECT)
       commit(PROJECT_TASKS_REQUEST)
       commit(AUTH_REQUEST)
+      commit(AUTH_RESET)
       axios.get(url)
         .then(resp => {
           resolve(resp)
@@ -117,6 +120,14 @@ const mutations = {
   },
   [AUTH_LOGOUT]: state => {
     state.token = ''
+  },
+  [AUTH_RESET]: (state, index) => {
+    if (index === state.navStack.length - 1 || state.navStack.length === 1) {
+      return
+    }
+    console.log(state.navStack)
+    state.navStack.splice(index + 1, (state.navStack.length - 1) - index)
+    localStorage.setItem('navStack', JSON.stringify(state.navStack))
   }
 }
 

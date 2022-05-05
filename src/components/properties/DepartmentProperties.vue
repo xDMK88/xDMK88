@@ -20,6 +20,7 @@ function uuidv4 () {
 }
 
 const createOrUpdateDepartment = (department) => {
+  console.log(department)
   if (!department.uid) {
     department.uid = uuidv4()
     store.dispatch(CREATE_DEPARTMENT_REQUEST, department)
@@ -82,6 +83,9 @@ const removeDepartment = (department) => {
         placeholder="Имя отдела"
         class="mt-2 p-3 rounded-xl bg-gray-100 font-bold text-gray-700 w-full border-none ring-0 outline-none"
       >
+      <input type="hidden" v-model="selectedDepartment.uid_parent">
+      <input type="hidden" v-model="selectedDepartment.collapsed">
+      <input type="hidden" v-model="selectedDepartment.emails">
       <button
         v-if="employees[user.current_user_uid].type != 3"
         class="w-full bg-gray-100 rounded-xl mt-8 p-3 text-gray-700 font-bold hover:bg-gray-200"

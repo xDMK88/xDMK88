@@ -244,6 +244,7 @@ export default {
       default: () => ({})
     }
   },
+  emits: ['clickTask'],
   setup () {
     const statuses = [
       undefined, // we don't have 0 status
@@ -339,7 +340,7 @@ export default {
       return data
     },
     onClick () {
-      console.log('DoitnowTask click')
+      this.$emit('clickTask', this.task)
     }
   }
 }

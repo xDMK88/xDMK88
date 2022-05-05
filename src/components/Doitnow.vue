@@ -30,6 +30,7 @@
     :tags="tags"
     :employees="employees"
     :projects="projects"
+    @clickTask="onClickTask"
   />
   <button
     v-if="tasksCount"
@@ -114,6 +115,8 @@ export default {
       return day + ' ' + month + ', ' + weekday
     },
     nextTask: function () {
+      this.$store.dispatch('asidePropertiesToggle', false)
+
       if (this.unreadTasks.length) {
         this.unreadTasks.shift()
         return
@@ -144,6 +147,11 @@ export default {
         value: { uid: '901841d9-0016-491d-ad66-8ee42d2b496b', param: tomorrow }
       })
       this.$store.commit(TASK.CLEAN_UP_LOADED_TASKS)
+    },
+    onClickTask: function (task) {
+      this.$store.commit('basic', { key: 'propertiesState', value: 'task' })
+      this.$store.dispatch(TASK.SELECT_TASK, task)
+      this.$store.dispatch('asidePropertiesToggle', true)
     }
   }
 }

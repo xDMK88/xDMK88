@@ -90,6 +90,7 @@ const actions = {
               dt.parentID = resp.data.delegate_to_me.uid
             }
           }
+          // TODO: we are doing the same thing 3 times, DRY
           // process colors in shared vuex storage
           if (resp.data.colors.items) {
             commit(PUSH_COLOR, resp.data.colors.items)
@@ -116,6 +117,18 @@ const actions = {
             })
             commit(PUSH_PROJECT, myCommonProjects)
           }
+
+          if (resp.data.private_boards.items) {
+            visitChildren(resp.data.private_projects.items, (value) => {
+              value.global_property_uid = resp.data.private_boards.uid
+            })
+          }
+          if (resp.data.common_projects.items) {
+            visitChildren(resp.data.common_projects.items, (value) => {
+              value.global_property_uid = resp.data.common_boards.uid
+            })
+          }
+
           // process tags then put them in shared vuex storage
           if (resp.data.tags.items) {
             const myTags = []
@@ -255,6 +268,20 @@ const mutations = {
         iconBackgroundClass: 'bg-amber-500'
       }
     ])
+    state.menu.push([
+      {
+        label: 'Доски',
+        uid: resp.data.private_projects.uid,
+        bold: false,
+        icon: project.path,
+        iconBox: project.viewBox,
+        width: project.width,
+        height: project.height,
+        type: 'greed',
+        path: 'new_private_boards',
+        iconBackgroundClass: 'bg-amber-500'
+      }
+    ])
     state.menu.push('separator')
     state.menu.push([
       {
@@ -312,6 +339,19 @@ const mutations = {
       items: resp.data.common_projects.items
     })
     resp.data.new_private_projects = newCommonProjects
+
+    // Merge common boards and private boards into my own data structure
+    // Array of objects where object is { dep: 'Dependency name', items: items }
+    const newCommonBoards = []
+    newCommonBoards.push({
+      dep: 'My boards',
+      items: resp.data.private_boards.items
+    })
+    newCommonBoards.push({
+      dep: 'Shared boards',
+      items: resp.data.common_boards.items
+    })
+    resp.data.new_private_boards = newCommonBoards
 
     state.navigator = resp.data
   },

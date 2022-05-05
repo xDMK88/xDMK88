@@ -6,6 +6,7 @@ import { visitChildren } from '@/store/helpers/functions'
 import TasksListNew from '@/components/TasksListNew.vue'
 import MainSection from '@/components/MainSection.vue'
 import Projects from '@/components/Projects.vue'
+import Boards from '@/components/Boards.vue'
 import ProjectsChildren from '@/components/ProjectsChildren.vue'
 import Employees from '@/components/Employees.vue'
 import Tags from '@/components/Tags.vue'
@@ -107,7 +108,7 @@ const getNavigator = () => {
             }
             // If last navElement is related to processed navigator instance with 'new_' prefix
             // then we pass entire object from storeNavigator
-            if (['new_private_projects', 'new_emps', 'new_delegate'].includes(navStack.value[navStack.value.length - 1].greedPath)) {
+            if (['new_private_projects', 'new_emps', 'new_delegate', 'new_private_boards'].includes(navStack.value[navStack.value.length - 1].greedPath)) {
               store.commit('basic', { key: navStack.value[navStack.value.length - 1].key, value: storeNavigator.value[navStack.value[navStack.value.length - 1].greedPath] })
 
             // if last visited navElemen is in nested in children, then we trying to find these children with visitChildren fucntion
@@ -179,6 +180,10 @@ onBeforeMount(() => {
       <projects
         v-if="greedPath === 'new_private_projects'"
         :projects="greedSource"
+      />
+      <boards
+        v-if="greedPath === 'new_private_boards'"
+        :boards="greedSource"
       />
       <doitnow
         v-if="greedPath === 'doitnow'"

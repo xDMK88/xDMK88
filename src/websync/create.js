@@ -38,10 +38,13 @@ export default function processCreate (obj) {
       createProject(obj)
       break
     case TYPES.TYPE_OBJECT_TASK:
-      if (obj.obj.uid_customer !== currentUserUid()) {
+      if (
+        obj.obj.uid_customer !== currentUserUid() &&
+        obj.obj.uid_performer === currentUserUid()
+      ) {
         showNotify({
           group: 'top',
-          title: 'Новая задача',
+          title: 'Новое поручение',
           obj: obj,
           text: obj.obj.name
         })
@@ -67,14 +70,16 @@ export default function processCreate (obj) {
     case TYPES.TYPE_OBJECT_TASK_FILE:
       break
     case TYPES.TYPE_OBJECT_TASK_MSG:
-      if (obj.obj.uid_creator !== currentUserUid()) {
-        showNotify({
-          group: 'top',
-          title: 'Новое сообщение',
-          obj: obj,
-          text: obj.obj.msg
-        })
-      }
+      // выводит вообще все сообщения - а надо только те что для меня
+      // в текущем api не сделать
+      // if (obj.obj.uid_creator !== currentUserUid()) {
+      //   showNotify({
+      //     group: 'top',
+      //     title: 'Новое сообщение',
+      //     obj: obj,
+      //     text: obj.obj.msg
+      //   })
+      // }
       createMessage(obj)
       break
     case TYPES.TYPE_OBJECT_TASK_TAG:

@@ -1,4 +1,7 @@
 <template>
+  <TasksSkeleton
+    v-if="isLoading"
+  />
   <div
     v-if="tasksCount"
     class="font-normal"
@@ -40,7 +43,7 @@
     Дальше
   </button>
   <DoitnowEmpty
-    v-if="tasksCount === 0"
+    v-if="tasksCount === 0 && !isLoading"
     @clickPlanning="goToNextDay"
   />
 </template>
@@ -49,11 +52,13 @@
 import * as TASK from '@/store/actions/tasks.js'
 import DoitnowEmpty from '@/components/Doitnow/DoitnowEmpty.vue'
 import DoitnowTask from '@/components/Doitnow/DoitnowTask.vue'
+import TasksSkeleton from '@/components/TasksList/TasksSkeleton.vue'
 
 export default {
   components: {
     DoitnowEmpty,
-    DoitnowTask
+    DoitnowTask,
+    TasksSkeleton
   },
   data: () => ({
     unreadTasks: [],
@@ -91,6 +96,9 @@ export default {
     },
     tags () {
       return this.$store.state.tasks.tags
+    },
+    isLoading () {
+      return this.$store.state.tasks.status === 'loading'
     }
   },
   mounted: function () {

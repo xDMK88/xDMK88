@@ -478,7 +478,7 @@ const actionConfirmDelegate = (confirmed) => {
           :disabled="currentState === 'end'"
           type="text"
           class="bg-gray-50 rounded-xl border border-gray-300 w-full p-2"
-          placeholder="Your message"
+          placeholder="Написать сообщение..."
           @keyup.enter="addCustomerMessage"
           @keyup.esc="cancel"
         >

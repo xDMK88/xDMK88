@@ -433,8 +433,6 @@ import fortomorrow from '@/icons/for-tomorrow.js'
 import copy from '@/icons/copy.js'
 import cut from '@/icons/cut.js'
 import bin from '@/icons/bin.js'
-import { NAVIGATOR_REQUEST } from '@/store/actions/navigator'
-import { notify } from 'notiwind'
 /* /Icons */
 
 export default {
@@ -673,20 +671,6 @@ export default {
           // выделяем добавленную задачу
           // и отображаем её свойства
           nodeSelected({ id: data.uid, info: resp.data })
-        })
-      store.dispatch(NAVIGATOR_REQUEST)
-        .then((resp) => {
-          store.dispatch('setDots', resp.data.calendar.dates_with_tasks)
-        })
-        .catch((err) => {
-          notify(
-            {
-              group: 'api',
-              title: 'REST API Error, please make screenshot',
-              action: NAVIGATOR_REQUEST,
-              text: err.response.data
-            }
-          )
         })
       createTaskText.value = ''
     }

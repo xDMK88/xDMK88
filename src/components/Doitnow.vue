@@ -26,6 +26,10 @@
   <DoitnowTask
     v-if="tasksCount"
     :task="firstTask"
+    :colors="colors"
+    :tags="tags"
+    :employees="employees"
+    :projects="projects"
   />
   <button
     v-if="tasksCount"
@@ -36,6 +40,7 @@
   </button>
   <DoitnowEmpty
     v-if="tasksCount === 0"
+    @clickPlanning="goToNextDay"
   />
 </template>
 
@@ -56,7 +61,11 @@ export default {
   }),
   computed: {
     tasksCount () {
-      return this.unreadTasks.length + this.overdueTasks.length + this.todayTasks.length
+      return (
+        this.unreadTasks.length +
+        this.overdueTasks.length +
+        this.todayTasks.length
+      )
     },
     firstTask () {
       if (this.unreadTasks.length) {
@@ -69,6 +78,18 @@ export default {
         return this.todayTasks[0]
       }
       return null
+    },
+    employees () {
+      return this.$store.state.employees.employees
+    },
+    projects () {
+      return this.$store.state.projects.projects
+    },
+    colors () {
+      return this.$store.state.colors.colors
+    },
+    tags () {
+      return this.$store.state.tasks.tags
     }
   },
   mounted: function () {
@@ -76,20 +97,20 @@ export default {
   },
   methods: {
     loadAllTasks: function () {
-      Promise.all([
-        this.$store.dispatch(TASK.UNREAD_TASKS_REQUEST),
-        this.$store.dispatch(TASK.OVERDUE_TASKS_REQUEST),
-        this.$store.dispatch(TASK.TASKS_REQUEST, new Date())
-      ]).then((result) => {
-        this.unreadTasks = [...result[0].data.tasks]
-        this.overdueTasks = [...result[1].data.tasks]
-        this.todayTasks = [...result[2].data.tasks]
-      })
+      this.$store.dispatch(TASK.DOITNOW_TASKS_REQUEST)
+        .then((result) => {
+          console.log('loadAllTasks', result)
+          this.unreadTasks = [...result[0]]
+          this.overdueTasks = [...result[1]]
+          this.todayTasks = [...result[2]]
+        })
     },
     dateToLabelFormat: function (calendarDate) {
       const day = calendarDate.getDate()
       const month = calendarDate.toLocaleString('default', { month: 'short' })
-      const weekday = calendarDate.toLocaleString('default', { weekday: 'short' })
+      const weekday = calendarDate.toLocaleString('default', {
+        weekday: 'short'
+      })
       return day + ' ' + month + ', ' + weekday
     },
     nextTask: function () {
@@ -118,7 +139,10 @@ export default {
         value: { uid: '901841d9-0016-491d-ad66-8ee42d2b496b', param: tomorrow }
       }
       this.$store.commit('updateStackWithInitValue', navElem)
-      this.$store.commit('basic', { key: 'taskListSource', value: { uid: '901841d9-0016-491d-ad66-8ee42d2b496b', param: tomorrow } })
+      this.$store.commit('basic', {
+        key: 'taskListSource',
+        value: { uid: '901841d9-0016-491d-ad66-8ee42d2b496b', param: tomorrow }
+      })
       this.$store.commit(TASK.CLEAN_UP_LOADED_TASKS)
     }
   }

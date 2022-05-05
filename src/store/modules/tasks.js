@@ -316,6 +316,72 @@ const actions = {
         })
     })
   },
+  [TASK.DOITNOW_TASKS_REQUEST]: ({ commit, dispatch }) => {
+    return new Promise((resolve, reject) => {
+      commit(TASK.TASKS_REQUEST)
+      const urlUnread =
+        process.env.VUE_APP_LEADERTASK_API + 'api/v1/tasks/unread'
+      const urlOverdue =
+        process.env.VUE_APP_LEADERTASK_API + 'api/v1/tasks/overdue'
+      const month = pad2(new Date().getMonth() + 1)
+      const day = pad2(new Date().getDate())
+      const year = new Date().getFullYear()
+      const formattedDate = day + '-' + month + '-' + year
+      const urlToday =
+        process.env.VUE_APP_LEADERTASK_API +
+        'api/v1/tasks/withdate?value=' +
+        formattedDate
+      Promise.all([
+        axios({ url: urlUnread, method: 'GET' }),
+        axios({ url: urlOverdue, method: 'GET' }),
+        axios({ url: urlToday, method: 'GET' })
+      ])
+        .then((respAll) => {
+          const unreadTasks = [...respAll[0].data.tasks]
+          const overdueTasks = [...respAll[1].data.tasks].filter(
+            (task) => unreadTasks.findIndex((t) => t.uid === task.uid) === -1
+          )
+          const todayTasks = [...respAll[2].data.tasks].filter(
+            (task) =>
+              unreadTasks.findIndex((t) => t.uid === task.uid) === -1 &&
+              overdueTasks.findIndex((t) => t.uid === task.uid) === -1
+          )
+          const tasks = [...unreadTasks, ...overdueTasks, ...todayTasks]
+          commit(TASK.TASKS_SUCCESS, { data: { tasks } })
+          const anothersTags = [
+            ...respAll[0].data.anothers_tags,
+            ...respAll[1].data.anothers_tags,
+            ...respAll[2].data.anothers_tags
+          ]
+          if (anothersTags.length) {
+            commit(TASK.ADD_TASK_TAGS, anothersTags)
+          }
+          const anothersMarkers = [
+            ...respAll[0].data.anothers_markers,
+            ...respAll[1].data.anothers_markers,
+            ...respAll[2].data.anothers_markers
+          ]
+          if (anothersMarkers.length) {
+            commit(PUSH_COLOR, anothersMarkers)
+          }
+          resolve([unreadTasks, overdueTasks, todayTasks])
+        })
+        .catch((err) => {
+          notify(
+            {
+              group: 'api',
+              title: 'REST API Error, please make screenshot',
+              action: TASK.DOITNOW_TASKS_REQUEST,
+              text: err.response.data
+            },
+            15000
+          )
+          commit(TASK.TASKS_ERROR, err)
+          dispatch(AUTH_LOGOUT)
+          reject(err)
+        })
+    })
+  },
   [TASK.UNREAD_TASKS_REQUEST]: ({ commit, dispatch }) => {
     return new Promise((resolve, reject) => {
       commit(TASK.TASKS_REQUEST)

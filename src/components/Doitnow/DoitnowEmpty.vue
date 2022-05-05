@@ -25,36 +25,11 @@
 </template>
 
 <script>
-import * as TASK from '@/store/actions/tasks.js'
-
 export default {
+  emits: ['clickPlanning'],
   methods: {
-    dateToLabelFormat: function (calendarDate) {
-      const day = calendarDate.getDate()
-      const month = calendarDate.toLocaleString('default', { month: 'short' })
-      const weekday = calendarDate.toLocaleString('default', {
-        weekday: 'short'
-      })
-      return day + ' ' + month + ', ' + weekday
-    },
     goToNextDay: function () {
-      const tomorrow = new Date(new Date().setDate(new Date().getDate() + 1))
-
-      this.$store.dispatch('asidePropertiesToggle', false)
-      this.$store.commit('basic', { key: 'mainSectionState', value: 'tasks' })
-      this.$store.dispatch(TASK.TASKS_REQUEST, tomorrow)
-      // hardcoded and messy
-      const navElem = {
-        name: this.dateToLabelFormat(tomorrow),
-        key: 'taskListSource',
-        value: { uid: '901841d9-0016-491d-ad66-8ee42d2b496b', param: tomorrow }
-      }
-      this.$store.commit('updateStackWithInitValue', navElem)
-      this.$store.commit('basic', {
-        key: 'taskListSource',
-        value: { uid: '901841d9-0016-491d-ad66-8ee42d2b496b', param: tomorrow }
-      })
-      this.$store.commit(TASK.CLEAN_UP_LOADED_TASKS)
+      this.$emit('clickPlanning')
     }
   }
 }

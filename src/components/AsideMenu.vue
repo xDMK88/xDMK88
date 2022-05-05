@@ -18,7 +18,6 @@ import * as TASK from '@/store/actions/tasks'
 import { AUTH_LOGOUT } from '@/store/actions/auth'
 
 import ArrowDown from '@/icons/arrow-down.js'
-import { NAVIGATOR_REQUEST } from '@/store/actions/navigator'
 
 const router = useRouter()
 
@@ -110,11 +109,6 @@ const menuClick = (event, item) => {
   if (isPropertiesMobileExpanded.value) {
     store.dispatch('asidePropertiesToggle', false)
   }
-
-  store.dispatch(NAVIGATOR_REQUEST)
-    .then((resp) => {
-      store.dispatch('setDots', resp.data.calendar.dates_with_tasks)
-    })
 
   // desktop check
   if (item.uid === '2bad1413-a373-4926-8a3c-58677a680714') {

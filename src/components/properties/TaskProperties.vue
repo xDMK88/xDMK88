@@ -3,7 +3,6 @@
 import Popper from 'vue3-popper'
 import { computed, ref, watch } from 'vue'
 import { useStore } from 'vuex'
-import TreeItem from '@/components/TreeItem.vue'
 import Checklist from '@/components/properties/Checklist.vue'
 import close from '@/icons/close.js'
 import { CREATE_MESSAGE_REQUEST, DELETE_MESSAGE_REQUEST } from '@/store/actions/taskmessages'
@@ -21,6 +20,7 @@ import TaskPropsButtonAccess from '@/components/TaskProperties/TaskPropsButtonAc
 import TaskPropsButtonSetDate from '@/components/TaskProperties/TaskPropsButtonSetDate.vue'
 import TaskPropsButtonTags from '@/components/TaskProperties/TaskPropsButtonTags.vue'
 import TaskPropsButtonPerform from '@/components/TaskProperties/TaskPropsButtonPerform.vue'
+import TaskPropsButtonProject from '@/components/TaskProperties/TaskPropsButtonProject.vue'
 export default {
   components: {
     TaskPropsButtonDots,
@@ -30,7 +30,7 @@ export default {
     TaskPropsButtonSetDate,
     TaskPropsButtonTags,
     TaskPropsButtonPerform,
-    TreeItem,
+    TaskPropsButtonProject,
     Popper,
     Checklist,
     ModalBoxConfirm,
@@ -1150,6 +1150,18 @@ export default {
         }
       )
     },
+    onChangeProject: function (projectUid) {
+      console.log('onChangeProject', projectUid)
+      const data = {
+        uid: this.selectedTask.uid,
+        value: projectUid
+      }
+      this.$store.dispatch(TASK.CHANGE_TASK_PROJECT, data).then(
+        resp => {
+          this.selectedTask.uid_project = projectUid
+        }
+      )
+    },
     onChangeTags: function (tags) {
       console.log('onChangeTags', tags)
       const data = {
@@ -1843,105 +1855,12 @@ export default {
              <span class="rounded"> Напоминание</span>
            </a>
          </Popper>-->
-        <!--Всплывающее окно Проекты-->
-        <Popper
-          class="popper-project"
-          arrow
-          trigger="hover"
-          :class="isDark ? 'dark' : 'light'"
-          placement="bottom"
-          :options="{
-            placement: 'top',
-            modifiers: { offset: { offset: '0,10px' } }
-          }"
-        >
-          <template
-            #content="{ close }"
-            class="bottom"
-          >
-            <div class="popper">
-              <div @click="close" />
-              <div class="text-white body-popover-custom">
-                <div class="container-project-popover">
-                  <ul
-                    v-for="(value,index, ind) in projects"
-                    :key="ind"
-                  >
-                    <TreeItem
-                      v-if="value.uid_parent==='00000000-0000-0000-0000-000000000000'"
-                      class="item"
-                      :model="value"
-                    />
-                  </ul>
-                </div>
-              </div>
-            </div>
-          </template>
-          <a
-            v-if="selectedTask.uid_project !== '00000000-0000-0000-0000-000000000000' && projects[selectedTask.uid_project].name!==''"
-            ref="btnRefProject"
-            class="mt-3 tags-custom dark:bg-gray-800 dark:text-gray-100 project-hover-close"
-          >
-            <svg
-              width="24"
-              height="24"
-              viewBox="0 0 90 81"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                v-if="projects[selectedTask.uid_project].color!==11114678 && projects[selectedTask.uid_project].color!==-4056036 && projects[selectedTask.uid_project].color!==-2679009"
-                d="M81.8999 17.1334V12.1427C81.8999 7.51337 78.1159 3.74215 73.4708 3.74215H38.7349L37.6926 2.02591C37.0581 1.03229 35.9478 0.399994 34.7696 0.399994H9.02918C4.38412 0.399994 0.600098 4.17121 0.600098 8.80056V72.1661C0.600098 76.7954 4.38412 80.5667 9.02918 80.5667H80.9709C85.616 80.5667 89.4 76.7954 89.4 72.1661V25.4888C89.4226 21.153 86.1144 17.585 81.8999 17.1334ZM7.44306 8.80056C7.44306 7.91985 8.16814 7.19722 9.05183 7.19722H32.8662L42.111 22.2369C42.7228 23.2306 43.8331 23.8629 45.034 23.8629H81.0162C81.8999 23.8629 82.625 24.5855 82.625 25.4662V72.1661C82.625 73.0468 81.8999 73.7694 81.0162 73.7694H9.02918C8.14548 73.7694 7.4204 73.0468 7.4204 72.1661V8.80056H7.44306ZM75.0569 17.0656H46.9147L42.9041 10.5394H73.4482C74.3319 10.5394 75.0569 11.262 75.0569 12.1427V17.0656Z"
-                :fill="projects[selectedTask.uid_project].color"
-                fill-opacity="1"
-              />
-              <path
-                v-else
-                d="M81.8999 17.1334V12.1427C81.8999 7.51337 78.1159 3.74215 73.4708 3.74215H38.7349L37.6926 2.02591C37.0581 1.03229 35.9478 0.399994 34.7696 0.399994H9.02918C4.38412 0.399994 0.600098 4.17121 0.600098 8.80056V72.1661C0.600098 76.7954 4.38412 80.5667 9.02918 80.5667H80.9709C85.616 80.5667 89.4 76.7954 89.4 72.1661V25.4888C89.4226 21.153 86.1144 17.585 81.8999 17.1334ZM7.44306 8.80056C7.44306 7.91985 8.16814 7.19722 9.05183 7.19722H32.8662L42.111 22.2369C42.7228 23.2306 43.8331 23.8629 45.034 23.8629H81.0162C81.8999 23.8629 82.625 24.5855 82.625 25.4662V72.1661C82.625 73.0468 81.8999 73.7694 81.0162 73.7694H9.02918C8.14548 73.7694 7.4204 73.0468 7.4204 72.1661V8.80056H7.44306ZM75.0569 17.0656H46.9147L42.9041 10.5394H73.4482C74.3319 10.5394 75.0569 11.262 75.0569 12.1427V17.0656Z"
-                fill="black"
-                fill-opacity="0.5"
-              />
-            </svg>
-            {{ projects[selectedTask.uid_project].name.substring(0, 15) }}
-            <button
-              class="btn-close-popover"
-              @click="resetProject"
-            ><svg
-              width="5"
-              height="5"
-              viewBox="0 0 16 15"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M14.8483 2.34833C15.317 1.8797 15.317 1.11991 14.8483 0.651277C14.3797 0.182647 13.6199 0.182647 13.1513 0.651277L7.99981 5.80275L2.84833 0.651277C2.3797 0.182647 1.61991 0.182647 1.15128 0.651277C0.682647 1.11991 0.682647 1.8797 1.15128 2.34833L6.30275 7.4998L1.15128 12.6513C0.682647 13.1199 0.682647 13.8797 1.15128 14.3483C1.61991 14.817 2.3797 14.817 2.84833 14.3483L7.99981 9.19686L13.1513 14.3483C13.6199 14.817 14.3797 14.817 14.8483 14.3483C15.317 13.8797 15.317 13.1199 14.8483 12.6513L9.69686 7.4998L14.8483 2.34833Z"
-                fill="black"
-                fill-opacity="0.5"
-              />
-            </svg>
-            </button>
-          </a>
-          <a
-            v-else
-            ref="btnRefProject"
-            class="mt-3 tags-custom dark:bg-gray-800 dark:text-gray-100"
-          >
-            <svg
-              width="24"
-              height="24"
-              viewBox="0 0 90 81"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M81.8999 17.1334V12.1427C81.8999 7.51337 78.1159 3.74215 73.4708 3.74215H38.7349L37.6926 2.02591C37.0581 1.03229 35.9478 0.399994 34.7696 0.399994H9.02918C4.38412 0.399994 0.600098 4.17121 0.600098 8.80056V72.1661C0.600098 76.7954 4.38412 80.5667 9.02918 80.5667H80.9709C85.616 80.5667 89.4 76.7954 89.4 72.1661V25.4888C89.4226 21.153 86.1144 17.585 81.8999 17.1334ZM7.44306 8.80056C7.44306 7.91985 8.16814 7.19722 9.05183 7.19722H32.8662L42.111 22.2369C42.7228 23.2306 43.8331 23.8629 45.034 23.8629H81.0162C81.8999 23.8629 82.625 24.5855 82.625 25.4662V72.1661C82.625 73.0468 81.8999 73.7694 81.0162 73.7694H9.02918C8.14548 73.7694 7.4204 73.0468 7.4204 72.1661V8.80056H7.44306ZM75.0569 17.0656H46.9147L42.9041 10.5394H73.4482C74.3319 10.5394 75.0569 11.262 75.0569 12.1427V17.0656Z"
-                fill="black"
-                fill-opacity="0.5"
-              />
-            </svg>
-            <span class="rounded"> Проект</span>
-          </a>
-        </Popper>
+        <!-- Кнопка Проект -->
+        <TaskPropsButtonProject
+          :selected-project="selectedTask.uid_project"
+          :can-edit="selectedTask.type === 1 || selectedTask.type === 2"
+          @changeProject="onChangeProject"
+        />
         <!--Всплывающее окно Цвета-->
         <Popper
           v-if="selectedTask.type!==4"

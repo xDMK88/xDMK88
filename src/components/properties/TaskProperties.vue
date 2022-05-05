@@ -928,13 +928,14 @@ export default {
       const minutes = this.pad2(date.getUTCMinutes())
       const seconds = this.pad2(date.getUTCSeconds())
       const dateCreate = year + '-' + month + '-' + day + 'T' + hours + ':' + minutes + ':' + seconds
+      const msgtask = this._linkify(this.taskMsg)
       const data = {
         uid_task: this.selectedTask.uid,
         uid_creator: this.cusers.current_user_uid,
         uid_msg: this.uuidv4(),
         date_create: dateCreate,
         text: this.taskMsg,
-        msg: this.taskMsg
+        msg: msgtask
       }
       this.$store.dispatch(CREATE_MESSAGE_REQUEST, data).then(
         resp => {
@@ -952,6 +953,9 @@ export default {
       this.$nextTick(function () {
         this.onInputTaskMsg()
       })
+    },
+    _linkify: function (text) {
+      return text.replace(/(lt?:\/\/[^\s]+)/g, '<a href="$1">$1</a>')
     },
     onInputTaskMsg: function () {
       // после этого рассчитает новый scrollHeight
@@ -1099,6 +1103,7 @@ export default {
       this.$store.dispatch(TASK.CHANGE_TASK_REDELEGATE, data).then(
         resp => {
           console.log(resp.data)
+          this.$store.commit(TASK.SUBTASKS_REQUEST, resp.data)
         }
       )
     },
@@ -1253,7 +1258,7 @@ export default {
       >
         <!-- Кнопка Поручить / Взять на исполнение / Перепоручить -->
         <TaskPropsButtonPerform
-          v-if="selectedTask.status !== 3 && selectedTask.type !== 3 && selectedTask.type !== 4"
+          v-if="selectedTask.status !== 3 && selectedTask.type !== 4"
           :task-type="selectedTask.type"
           :current-user-uid="cusers.current_user_uid"
           :performer-email="selectedTask.email_performer"

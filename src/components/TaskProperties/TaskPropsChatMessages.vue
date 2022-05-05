@@ -146,7 +146,7 @@
             >
               <ChatLoader v-if="uploadStarted && message.loading" />
               <div
-                v-linkify
+                v-linkify v-linkify:options="{ className: 'text-blue-600' }"
                 v-html="message.msg.replaceAll('\n', '<br/>')"
               />
               <div

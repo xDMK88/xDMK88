@@ -7,7 +7,8 @@
     >
       <div
         v-if="
-          index >= taskMessages.length - 7 ||
+          index == taskMessages.length - 1 ||
+          index == taskMessages.length - 2 ||
           showAllMessages
         "
       >

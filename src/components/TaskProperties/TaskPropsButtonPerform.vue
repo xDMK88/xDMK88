@@ -206,7 +206,7 @@ export default {
     },
     changePerformer (userEmail) {
       if (this.isCurrentPerformerEmail(userEmail)) return
-      if (this.type === 3) {
+      if (this.taskType === 3) {
         this.$emit('reAssign', userEmail)
         return
       }

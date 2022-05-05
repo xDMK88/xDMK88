@@ -59,10 +59,10 @@ const navig = computed(() => store.state.navig)
 const getNavigatorLanguage = () => (navigator.languages && navigator.languages.length) ? navigator.languages[0] : navigator.userLanguage || navigator.language || navigator.browserLanguage || 'en'
 
 const lastVisitedDate = ref(navStack.value && navStack.value.length && navStack.value[navStack.value.length - 1].value && navStack.value[navStack.value.length - 1].value.uid && navStack.value[navStack.value.length - 1].value.uid === '901841d9-0016-491d-ad66-8ee42d2b496b' && navStack.value[navStack.value.length - 1].value.param ? new Date(navStack.value[navStack.value.length - 1].value.param) : new Date())
-
 const currentDate = computed({
   get: () => lastVisitedDate.value,
   set: val => {
+    lastVisitedDate.value = val
     if (isPropertiesMobileExpanded.value) { store.dispatch('asidePropertiesToggle', false) }
     store.commit('basic', { key: 'mainSectionState', value: 'tasks' })
     store.dispatch(TASK.TASKS_REQUEST, val)
@@ -145,6 +145,7 @@ const menuClick = (event, item) => {
       value: { uid: item.uid, param: null }
     }
     store.commit('updateStackWithInitValue', navElem)
+    if (item.uid === '901841d9-0016-491d-ad66-8ee42d2b496b') { lastVisitedDate.value = new Date() } // desktop check
     store.commit('basic', { key: 'taskListSource', value: { uid: item.uid, param: null } })
     store.commit('basic', { key: 'mainSectionState', value: 'tasks' })
   // Grid source (projects, employees, colors, tags)
@@ -171,8 +172,6 @@ const menuClick = (event, item) => {
       store.commit('basic', { key: 'greedSource', value: storeNavigator.value[item.path].items })
     }
   }
-
-  store.commit(TASK.CLEAN_UP_LOADED_TASKS)
 }
 const TitleName = () => {
   if (navig.value === 0) return ('Аккаунт')
@@ -190,6 +189,8 @@ const tarifS = () => {
 </script>
 
 <template>
+  <pre>{{ navStack }}</pre>
+  <pre>{{ lastVisitedDate }}</pre>
   <!-- Profile modal -->
   <modal-box
     v-model="modalOneActive"

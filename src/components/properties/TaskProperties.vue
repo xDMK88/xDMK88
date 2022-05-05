@@ -919,6 +919,7 @@ export default {
       )
     },
     sendTaskMsg: function () {
+      this.showAllMessages = true
       const date = new Date()
       const month = this.pad2(date.getUTCMonth() + 1)
       const day = this.pad2(date.getUTCDate())

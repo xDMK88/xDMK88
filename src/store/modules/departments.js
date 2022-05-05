@@ -3,14 +3,17 @@ import {
   PUSH_DEPARTMENT,
   CREATE_DEPARTMENT_REQUEST,
   UPDATE_DEPARTMENT_REQUEST,
-  REMOVE_DEPARTMENT_REQUEST
+  REMOVE_DEPARTMENT_REQUEST,
+  DEPARTMENT_REQUEST
 } from '../actions/departments'
 import axios from 'axios'
 import { notify } from 'notiwind'
 
 const state = {
   deps: {},
-  selectedDepartment: null
+  selectedDepartment: null,
+  departments: null,
+  status: ''
 }
 
 const getters = {
@@ -18,6 +21,8 @@ const getters = {
 
 const actions = {
   [CREATE_DEPARTMENT_REQUEST]: ({ commit, dispatch }, data) => {
+    commit(PUSH_DEPARTMENT, data)
+    commit(DEPARTMENT_REQUEST)
     return new Promise((resolve, reject) => {
       const url = process.env.VUE_APP_LEADERTASK_API + 'api/v1/dep'
       axios({ url: url, method: 'POST', data: data })
@@ -76,6 +81,9 @@ const mutations = {
   },
   [SELECT_DEPARTMENT]: (state, department) => {
     state.selectedDepartment = department
+  },
+  [DEPARTMENT_REQUEST]: (state, departament) => {
+    state.status = 'loading'
   }
 }
 

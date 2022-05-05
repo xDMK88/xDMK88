@@ -3,16 +3,20 @@ import { computed, ref } from 'vue'
 import { useStore } from 'vuex'
 
 import ModalBoxConfirm from '@/components/modals/ModalBoxConfirm.vue'
-
-import { CREATE_DEPARTMENT_REQUEST, UPDATE_DEPARTMENT_REQUEST, REMOVE_DEPARTMENT_REQUEST, PUSH_DEPARTMENT } from '@/store/actions/departments'
-// import { NAVIGATOR_PUSH_EMPLOYEE, NAVIGATOR_REMOVE_EMPLOYEE } from '@/store/actions/navigator'
-
+import {
+  CREATE_DEPARTMENT_REQUEST,
+  UPDATE_DEPARTMENT_REQUEST,
+  REMOVE_DEPARTMENT_REQUEST,
+  PUSH_DEPARTMENT,
+  SELECT_DEPARTMENT,
+  DEPARTMENT_REQUEST
+} from '@/store/actions/departments'
 const store = useStore()
 const selectedDepartment = computed(() => store.state.departments.selectedDepartment)
+//  const departments = computed(() => store.state.departments.deps)
 const user = computed(() => store.state.user.user)
 const employees = computed(() => store.state.employees.employees)
 const showConfirm = ref(false)
-
 function uuidv4 () {
   return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
     (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
@@ -20,17 +24,14 @@ function uuidv4 () {
 }
 
 const createOrUpdateDepartment = (department) => {
-  console.log(department)
+  console.log(department.uid)
   if (!department.uid) {
     department.uid = uuidv4()
     store.dispatch(CREATE_DEPARTMENT_REQUEST, department)
       .then(resp => {
-        console.log(resp)
+        console.log(resp.data)
         store.dispatch('asidePropertiesToggle', false)
-        store.commit(PUSH_DEPARTMENT, [department])
-        console.log(selectedDepartment.value)
-        selectedDepartment.value = resp.data.name
-        // store.commit(NAVIGATOR_PUSH_EMPLOYEE, [employee])
+        selectedDepartment.value.uid = resp.data.uid
       })
   } else {
     store.dispatch(UPDATE_DEPARTMENT_REQUEST, department)
@@ -38,13 +39,17 @@ const createOrUpdateDepartment = (department) => {
         store.dispatch('asidePropertiesToggle', false)
       })
   }
+  store.commit(DEPARTMENT_REQUEST, department)
+  store.commit(SELECT_DEPARTMENT, department)
 }
 
 const removeDepartment = (department) => {
   store.dispatch(REMOVE_DEPARTMENT_REQUEST, department.uid)
-    .then(() => {
+    .then(resp => {
       store.dispatch('asidePropertiesToggle', false)
-      // store.commit(NAVIGATOR_REMOVE_EMPLOYEE, employee)
+      store.commit(PUSH_DEPARTMENT, resp.data)
+      store.commit('basic', { key: 'propertiesState', value: 'department' })
+      store.commit(SELECT_DEPARTMENT, department)
     })
 }
 </script>

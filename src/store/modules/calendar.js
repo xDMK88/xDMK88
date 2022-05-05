@@ -10,6 +10,7 @@ const actions = {
   getDefaultCalendarAttributes ({ commit, state }) {
     const value = [{ key: 'today', highlight: { color: 'gray', fillMode: 'outline', class: 'back-hover' }, dates: new Date() }]
     commit('basic', { key: 'calendar', value })
+    console.log('beeeeee')
   },
   setDots ({ commit, state }, dates) {
     const calendarDates = []

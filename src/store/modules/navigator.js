@@ -119,12 +119,12 @@ const actions = {
           }
 
           if (resp.data.private_boards.items) {
-            visitChildren(resp.data.private_projects.items, (value) => {
+            visitChildren(resp.data.private_boards.items, (value) => {
               value.global_property_uid = resp.data.private_boards.uid
             })
           }
           if (resp.data.common_projects.items) {
-            visitChildren(resp.data.common_projects.items, (value) => {
+            visitChildren(resp.data.common_boards.items, (value) => {
               value.global_property_uid = resp.data.common_boards.uid
             })
           }
@@ -271,7 +271,7 @@ const mutations = {
     state.menu.push([
       {
         label: 'Доски',
-        uid: resp.data.private_projects.uid,
+        uid: resp.data.private_boards.uid,
         bold: false,
         icon: project.path,
         iconBox: project.viewBox,
@@ -340,8 +340,6 @@ const mutations = {
     })
     resp.data.new_private_projects = newCommonProjects
 
-    // Merge common boards and private boards into my own data structure
-    // Array of objects where object is { dep: 'Dependency name', items: items }
     const newCommonBoards = []
     newCommonBoards.push({
       dep: 'My boards',

@@ -7,6 +7,7 @@ import {
   DEPARTMENT_REQUEST,
   PUSH_DEPARTMENTS
 } from '../actions/departments'
+import { NAVIGATOR_PUSH_DEPARTAMENT } from '@/store/actions/navigator'
 import axios from 'axios'
 import { notify } from 'notiwind'
 
@@ -24,6 +25,7 @@ const actions = {
   [CREATE_DEPARTMENT_REQUEST]: ({ commit, dispatch }, data) => {
     commit(PUSH_DEPARTMENT, data)
     commit(DEPARTMENT_REQUEST)
+    commit(NAVIGATOR_PUSH_DEPARTAMENT, [data])
     return new Promise((resolve, reject) => {
       const url = process.env.VUE_APP_LEADERTASK_API + 'api/v1/dep'
       axios({ url: url, method: 'POST', data: data })
@@ -41,6 +43,7 @@ const actions = {
     })
   },
   [UPDATE_DEPARTMENT_REQUEST]: ({ commit, dispatch }, data) => {
+    console.log(data)
     return new Promise((resolve, reject) => {
       const url = process.env.VUE_APP_LEADERTASK_API + 'api/v1/dep'
       axios({ url: url, method: 'PATCH', data: data })

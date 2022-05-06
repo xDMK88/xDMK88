@@ -133,9 +133,7 @@ const actions = {
           }
           console.log(resp.data.deps.items)
           if (resp.data.deps.items) {
-            for (const deps of resp.data.deps.items) {
-              commit(PUSH_DEPARTMENT, deps)
-            }
+            commit(PUSH_DEPARTMENT, resp.data.deps.items)
           }
           // process tags then put them in shared vuex storage
           if (resp.data.tags.items) {
@@ -334,7 +332,6 @@ const mutations = {
       )
     })
     resp.data.new_emps = newEmps
-
     // Merge common projects and private projects into my own data structure
     // Array of objects where object is { dep: 'Dependency name', items: items }
     const newCommonProjects = []
@@ -358,12 +355,6 @@ const mutations = {
       items: resp.data.common_boards.items
     })
     resp.data.new_private_boards = newCommonBoards
-    const newDeps = []
-    newDeps.push({
-      dep: '',
-      items: resp.data.deps.items
-    })
-    resp.data.deps.items = newDeps
     state.navigator = resp.data
   },
   [NAVIGATOR_PUSH_DEPARTAMENT]: (state, departaments) => {
@@ -386,6 +377,7 @@ const mutations = {
         )
       }
     }
+    console.log(state.navigator.deps.items)
   },
   [NAVIGATOR_REMOVE_DEPARTAMENT]: (state, departament) => {
     console.log(state.navigator.deps.items.length)

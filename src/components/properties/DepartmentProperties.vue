@@ -1,13 +1,12 @@
 <script setup>
-import { computed, ref } from 'vue'
+import { computed, ref, watch, onMounted } from 'vue'
 import { useStore } from 'vuex'
 
 import ModalBoxConfirm from '@/components/modals/ModalBoxConfirm.vue'
 import {
   CREATE_DEPARTMENT_REQUEST,
   UPDATE_DEPARTMENT_REQUEST,
-  REMOVE_DEPARTMENT_REQUEST,
-  PUSH_DEPARTMENT
+  REMOVE_DEPARTMENT_REQUEST
 } from '@/store/actions/departments'
 import { NAVIGATOR_PUSH_DEPARTAMENT, NAVIGATOR_REMOVE_DEPARTAMENT } from '@/store/actions/navigator'
 const store = useStore()
@@ -16,24 +15,33 @@ const selectedDepartment = computed(() => store.state.departments.selectedDepart
 const user = computed(() => store.state.user.user)
 const employees = computed(() => store.state.employees.employees)
 const showConfirm = ref(false)
+const hasChanged = ref(false)
 function uuidv4 () {
   return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
     (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
   )
 }
-
+watch(selectedDepartment, () => {
+  hasChanged.value = false
+})
+onMounted(() => {
+  hasChanged.value = false
+})
 const createOrUpdateDepartment = (department) => {
   if (!department.uid) {
     department.uid = uuidv4()
     store.dispatch(CREATE_DEPARTMENT_REQUEST, department)
       .then(() => {
+        hasChanged.value = false
         store.dispatch('asidePropertiesToggle', false)
         store.commit(NAVIGATOR_PUSH_DEPARTAMENT, [department])
-        store.commit(PUSH_DEPARTMENT, [department])
+        selectedDepartment.value = department
       })
   } else {
     store.dispatch(UPDATE_DEPARTMENT_REQUEST, department)
-      .then(resp => {
+      .then(() => {
+        hasChanged.value = false
+        console.log(department)
         store.dispatch('asidePropertiesToggle', false)
       })
   }

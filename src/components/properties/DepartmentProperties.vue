@@ -7,10 +7,9 @@ import {
   CREATE_DEPARTMENT_REQUEST,
   UPDATE_DEPARTMENT_REQUEST,
   REMOVE_DEPARTMENT_REQUEST,
-  PUSH_DEPARTMENT,
-  SELECT_DEPARTMENT,
-  DEPARTMENT_REQUEST
+  PUSH_DEPARTMENT
 } from '@/store/actions/departments'
+import { NAVIGATOR_PUSH_DEPARTAMENT, NAVIGATOR_REMOVE_DEPARTAMENT } from '@/store/actions/navigator'
 const store = useStore()
 const selectedDepartment = computed(() => store.state.departments.selectedDepartment)
 //  const departments = computed(() => store.state.departments.deps)
@@ -24,14 +23,13 @@ function uuidv4 () {
 }
 
 const createOrUpdateDepartment = (department) => {
-  console.log(department.uid)
   if (!department.uid) {
     department.uid = uuidv4()
     store.dispatch(CREATE_DEPARTMENT_REQUEST, department)
-      .then(resp => {
-        console.log(resp.data)
+      .then(() => {
         store.dispatch('asidePropertiesToggle', false)
-        selectedDepartment.value.uid = resp.data.uid
+        store.commit(NAVIGATOR_PUSH_DEPARTAMENT, [department])
+        store.commit(PUSH_DEPARTMENT, [department])
       })
   } else {
     store.dispatch(UPDATE_DEPARTMENT_REQUEST, department)
@@ -39,17 +37,13 @@ const createOrUpdateDepartment = (department) => {
         store.dispatch('asidePropertiesToggle', false)
       })
   }
-  store.commit(DEPARTMENT_REQUEST, department)
-  store.commit(SELECT_DEPARTMENT, department)
 }
 
-const removeDepartment = (department) => {
-  store.dispatch(REMOVE_DEPARTMENT_REQUEST, department.uid)
+const removeDepartment = (departament) => {
+  store.dispatch(REMOVE_DEPARTMENT_REQUEST, departament.uid)
     .then(resp => {
       store.dispatch('asidePropertiesToggle', false)
-      store.commit(PUSH_DEPARTMENT, resp.data)
-      store.commit('basic', { key: 'propertiesState', value: 'department' })
-      store.commit(SELECT_DEPARTMENT, department)
+      store.commit(NAVIGATOR_REMOVE_DEPARTAMENT, departament)
     })
 }
 </script>
@@ -88,9 +82,6 @@ const removeDepartment = (department) => {
         placeholder="Имя отдела"
         class="mt-2 p-3 rounded-xl bg-gray-100 font-bold text-gray-700 w-full border-none ring-0 outline-none"
       >
-      <input type="hidden" v-model="selectedDepartment.uid_parent">
-      <input type="hidden" v-model="selectedDepartment.collapsed">
-      <input type="hidden" v-model="selectedDepartment.emails">
       <button
         v-if="employees[user.current_user_uid].type != 3"
         class="w-full bg-gray-100 rounded-xl mt-8 p-3 text-gray-700 font-bold hover:bg-gray-200"

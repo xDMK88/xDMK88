@@ -4,7 +4,8 @@ import {
   CREATE_DEPARTMENT_REQUEST,
   UPDATE_DEPARTMENT_REQUEST,
   REMOVE_DEPARTMENT_REQUEST,
-  DEPARTMENT_REQUEST
+  DEPARTMENT_REQUEST,
+  PUSH_DEPARTMENTS
 } from '../actions/departments'
 import axios from 'axios'
 import { notify } from 'notiwind'
@@ -12,7 +13,7 @@ import { notify } from 'notiwind'
 const state = {
   deps: {},
   selectedDepartment: null,
-  departments: null,
+  departments: {},
   status: ''
 }
 
@@ -84,6 +85,11 @@ const mutations = {
   },
   [DEPARTMENT_REQUEST]: (state, departament) => {
     state.status = 'loading'
+  },
+  [PUSH_DEPARTMENTS]: (state, departaments) => {
+    for (const departament of departaments) {
+      state.deps[departament.uid] = departament
+    }
   }
 }
 

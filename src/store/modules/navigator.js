@@ -16,6 +16,8 @@ import {
   NAVIGATOR_PUSH_EMPLOYEE,
   NAVIGATOR_PUSH_PROJECT,
   NAVIGATOR_PUSH_TAG,
+  NAVIGATOR_PUSH_DEPARTAMENT,
+  NAVIGATOR_REMOVE_DEPARTAMENT,
   NAVIGATOR_REMOVE_COLOR,
   NAVIGATOR_REMOVE_EMPLOYEE,
   NAVIGATOR_REMOVE_PROJECT,
@@ -27,6 +29,7 @@ import {
   RESET_STATE_NAVIGATOR
 } from '../actions/navigator'
 import { PUSH_PROJECT } from '../actions/projects'
+import { PUSH_DEPARTMENT } from '../actions/departments'
 import { ADD_TASK_TAGS } from '../actions/tasks'
 import { visitChildren } from '../helpers/functions'
 
@@ -128,7 +131,12 @@ const actions = {
               value.global_property_uid = resp.data.common_boards.uid
             })
           }
-
+          console.log(resp.data.deps.items)
+          if (resp.data.deps.items) {
+            for (const deps of resp.data.deps.items) {
+              commit(PUSH_DEPARTMENT, deps)
+            }
+          }
           // process tags then put them in shared vuex storage
           if (resp.data.tags.items) {
             const myTags = []
@@ -350,8 +358,51 @@ const mutations = {
       items: resp.data.common_boards.items
     })
     resp.data.new_private_boards = newCommonBoards
-
+    const newDeps = []
+    newDeps.push({
+      dep: '',
+      items: resp.data.deps.items
+    })
+    resp.data.deps.items = newDeps
     state.navigator = resp.data
+  },
+  [NAVIGATOR_PUSH_DEPARTAMENT]: (state, departaments) => {
+    for (const departament of departaments) {
+      if (
+        !departament.uid_parent ||
+        departament.uid_parent === ''
+      ) {
+        // adding departament to the root
+        state.navigator.deps.items.push(departament)
+      } else {
+        // adding departament recursively to subarrays
+        visitChildren(
+          state.navigator.deps.items,
+          (value) => {
+            if (value.uid === departament.uid_parent) {
+              value.children.push(departament)
+            }
+          }
+        )
+      }
+    }
+  },
+  [NAVIGATOR_REMOVE_DEPARTAMENT]: (state, departament) => {
+    console.log(state.navigator.deps.items.length)
+    for (
+      let i = 0;
+      i < state.navigator.deps.items.length;
+      i++
+    ) {
+      console.log(state.navigator.deps.items[i].uid === departament.uid)
+      if (
+        state.navigator.deps.items[i].uid === departament.uid
+      ) {
+        console.log(i)
+        state.navigator.deps.items.splice(i, 1)
+        //  state.navigator.deps.items.splice(state.navigator.deps.items.indexOf(department.uid), 1)
+      }
+    }
   },
   [NAVIGATOR_PUSH_PROJECT]: (state, projects) => {
     for (const project of projects) {

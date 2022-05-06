@@ -350,11 +350,11 @@ const mutations = {
 
     const newCommonBoards = []
     newCommonBoards.push({
-      dep: 'My boards',
+      dep: 'Мои доски',
       items: resp.data.private_boards.items
     })
     newCommonBoards.push({
-      dep: 'Shared boards',
+      dep: 'Общие доски',
       items: resp.data.common_boards.items
     })
     resp.data.new_private_boards = newCommonBoards

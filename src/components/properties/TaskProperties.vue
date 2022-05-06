@@ -21,6 +21,7 @@ import TaskPropsButtonSetDate from '@/components/TaskProperties/TaskPropsButtonS
 import TaskPropsButtonTags from '@/components/TaskProperties/TaskPropsButtonTags.vue'
 import TaskPropsButtonPerform from '@/components/TaskProperties/TaskPropsButtonPerform.vue'
 import TaskPropsButtonProject from '@/components/TaskProperties/TaskPropsButtonProject.vue'
+import TaskPropsButtonColor from '@/components/TaskProperties/TaskPropsButtonColor.vue'
 export default {
   components: {
     TaskPropsButtonDots,
@@ -31,6 +32,7 @@ export default {
     TaskPropsButtonTags,
     TaskPropsButtonPerform,
     TaskPropsButtonProject,
+    TaskPropsButtonColor,
     Popper,
     Checklist,
     ModalBoxConfirm,
@@ -1174,6 +1176,18 @@ export default {
         }
       )
     },
+    onChangeColor: function (colorUid) {
+      console.log('onChangeColor', colorUid)
+      const data = {
+        uid: this.selectedTask.uid,
+        value: colorUid
+      }
+      this.$store.dispatch(TASK.CHANGE_TASK_COLOR, data).then(
+        resp => {
+          this.selectedTask.uid_marker = colorUid
+        }
+      )
+    },
     onChangeComment: function (text) {
       const data = {
         uid: this.selectedTask.uid,
@@ -1294,11 +1308,13 @@ export default {
         />
         <!-- Повтор -->
         <Popper
+          v-if="selectedTask.term_customer"
           class="popper-repeat"
           arrow
           trigger="hover"
           :class="isDark ? 'dark' : 'light'"
           placement="bottom"
+          :disabled="selectedTask.type !== 1 && selectedTask.type !== 2"
         >
           <template
             #content="{ close }"
@@ -1703,8 +1719,8 @@ export default {
           <div>
             <div
               v-if="selectedTask.SeriesEnd!==''"
-              ref="btnRefRepeat"
               class="mt-3 tags-custom dark:bg-gray-800 dark:text-gray-100 project-hover-close"
+              :style="{ 'cursor': selectedTask.type !== 1 && selectedTask.type !== 2 ? 'default' : 'pointer' }"
             >
               <svg
                 width="24"
@@ -1712,6 +1728,7 @@ export default {
                 viewBox="0 0 92 80"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
+                :style="{ 'cursor': selectedTask.type !== 1 && selectedTask.type !== 2 ? 'default' : 'pointer' }"
               >
                 <path
                   d="M15.595 71.68H76.4048V66.5015C76.4048 64.3145 78.1735 62.5415 80.3554 62.5415C82.5373 62.5415 84.306 64.3145 84.306 66.5015V71.68C84.306 76.0541 80.7685 79.6 76.4048 79.6H15.595C11.2313 79.6 7.69378 76.0541 7.69378 71.68L7.69378 40H2.83583C0.728566 40 -0.380779 37.4961 1.03222 35.929L9.84079 26.1602C10.8061 25.0897 12.4827 25.0897 13.448 26.1602L22.2566 35.929C23.6696 37.4961 22.5602 40 20.453 40H15.595L15.595 71.68Z"
@@ -1749,7 +1766,7 @@ export default {
                 </span>
               </span>
               <button
-                v-if="selectedTask.SeriesType > 0"
+                v-if="selectedTask.SeriesType > 0 && (selectedTask.type === 1 || selectedTask.type === 2)"
                 class="btn-close-popover"
                 @click="resetRepeat"
               >
@@ -1861,136 +1878,12 @@ export default {
           :can-edit="selectedTask.type === 1 || selectedTask.type === 2"
           @changeProject="onChangeProject"
         />
-        <!--Всплывающее окно Цвета-->
-        <Popper
-          v-if="selectedTask.type!==4"
-          class="popper-color"
-          arrow
-          trigger="hover"
-          :class="isDark ? 'dark' : 'light'"
-          placement="bottom"
-          :options="{
-            placement: 'top',
-            modifiers: { offset: { offset: '0,10px' } }
-          }"
-        >
-          <template
-            #content="{ close }"
-            class="bottom"
-          >
-            <div class="popper">
-              <div @click="close" />
-              <div class="text-white body-popover-custom">
-                <div class="container-color-popover">
-                  <div
-                    v-for="(key,value) in colors"
-                    :key="value"
-                    class="list-color-access"
-                    :title="key.name"
-                    :class="{active:isActive=key.uid === selectedTask.uid_marker}"
-                    :style="{'background-color': key.back_color, 'border:1px solid ': key.back_color}"
-                    @click="changeColors(selectedTask.uid, key.uid)"
-                  >
-                    <span
-                      :style="{'color': key.force_color}"
-                    />
-                    <span
-                      class="inline-flex justify-center items-center checkcolor"
-                      :alt="key.name"
-                      :title="key.name"
-                    ><svg
-                      viewBox="0 0 26 20"
-                      width="15"
-                      height="15"
-                      class="inline-block"
-                    ><path
-                      fill="currentColor"
-                      fill-rule="evenodd"
-                      clip-rule="evenodd"
-                      d="M24.4107 1.30299C25.2766 2.02718 25.3681 3.2892 24.6148 4.1218L11.8142 18.2718C10.8103 19.3815 9.06094 19.4991 7.9062 18.5344L0.902667 12.6839C0.0362917 11.9601 -0.0558157 10.6982 0.69694 9.86518C1.44969 9.0322 2.76226 8.94364 3.62864 9.66738L9.58691 14.6447L21.4789 1.49931C22.2321 0.666707 23.5447 0.578813 24.4107 1.30299Z"
-                    /></svg><!--v-if--></span>
-                    <input
-                      style="display: none;"
-                      type="radio"
-                      name="check_colors"
-                      :value="key.uid"
-                      class="check-custom-project"
-                      :checked="key.uid===selectedTask.uid_marker"
-                      @change="changeColors(selectedTask.uid, key.uid)"
-                    >
-                  </div>
-                </div>
-              </div>
-            </div>
-          </template>
-          <a
-            ref="btnRefColor"
-            class="mt-3 tags-custom dark:bg-gray-800 dark:text-gray-100 project-hover-close"
-          >
-            <span v-if="selectedTask.uid_marker !== '00000000-0000-0000-0000-000000000000'">
-              <svg
-                width="24"
-                height="24"
-                viewBox="0 0 89 90"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M86.4883 31.2718L82.1334 26.8569C80.6576 25.3607 78.5769 24.8211 76.6656 25.2871C77.1253 23.3249 76.593 21.2155 75.1172 19.7438L65.6574 10.1535C64.7864 9.27053 63.6735 8.7064 62.5122 8.51017C62.3187 7.33285 61.7622 6.20458 60.8912 5.32158L57.9396 2.32921C55.6653 0.0236062 51.9879 0.0236062 49.7378 2.32921L20.0278 32.4492C17.7536 34.7548 17.7536 38.483 20.0278 40.764L26.3666 47.1903C26.9714 47.8035 27.2375 48.6129 27.165 49.4714C27.0682 50.3053 26.6085 51.0657 25.9069 51.5317C7.03567 63.7219 5.26951 65.5124 4.5195 66.2728C-0.706372 71.5708 -0.706372 80.18 4.5195 85.4779C9.74538 90.7759 18.2374 90.7759 23.4633 85.4779C24.2133 84.7176 25.9795 82.9271 38.0038 63.7955C38.4635 63.0842 39.1893 62.6182 40.0361 62.5201C40.8829 62.422 41.7055 62.7163 42.2861 63.3049L48.6249 69.7312C50.8992 72.0368 54.5766 72.0368 56.8266 69.7312L86.5367 39.6112C88.7626 37.2811 88.7626 33.5529 86.4883 31.2718ZM52.6895 65.537L46.3507 59.1107C44.512 57.2466 41.9474 56.3391 39.3587 56.6334C36.7699 56.9278 34.4715 58.3749 33.0683 60.5824C27.7456 69.069 21.0197 79.5177 19.302 81.2592C16.3503 84.2516 11.5357 84.2516 8.58407 81.2592C5.63242 78.2668 5.63242 73.3858 8.58407 70.3934C10.3018 68.652 20.6326 61.8578 28.9795 56.4372C31.157 55.0146 32.6086 52.6845 32.8989 50.06C33.1892 47.4356 32.2699 44.8356 30.4553 42.9715L24.1165 36.5453L28.7376 31.8605L57.2863 60.8031L52.6895 65.537ZM61.3993 56.707L32.8505 27.7644L53.8266 6.49891L56.8025 9.49128L53.4879 16.9477C53.3669 17.193 53.4395 17.5118 53.6331 17.708C53.8266 17.9043 54.1411 17.9533 54.3831 17.8307L61.5686 14.3232L71.0285 23.9135L61.9992 39.3961C61.8299 39.6659 61.8541 40.0092 62.0718 40.23C62.2896 40.4507 62.6525 40.4998 62.9186 40.3036L78.0447 31.002L82.3996 35.417L61.3993 56.707Z"
-                  :fill="colors[selectedTask.uid_marker] ? colors[selectedTask.uid_marker].back_color : ''"
-                  fill-opacity="0.5"
-                />
-                <path
-                  d="M18.2858 74.9311C18.2858 76.8442 16.7616 78.3895 14.8745 78.3895C12.9874 78.3895 11.4631 76.8442 11.4631 74.9311C11.4631 73.0179 12.9874 71.4727 14.8745 71.4727C16.7616 71.4727 18.2858 73.0179 18.2858 74.9311Z"
-                  :fill="colors[selectedTask.uid_marker] ? colors[selectedTask.uid_marker].back_color : ''"
-                  fill-opacity="1"
-                />
-              </svg>
-              <span
-                v-if="colors[selectedTask.uid_marker]"
-                class="rounded"
-              > {{ colors[selectedTask.uid_marker].name }}</span>
-              <button
-                class="btn-close-popover"
-                @click="resetColor"
-              ><svg
-                width="5"
-                height="5"
-                viewBox="0 0 16 15"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M14.8483 2.34833C15.317 1.8797 15.317 1.11991 14.8483 0.651277C14.3797 0.182647 13.6199 0.182647 13.1513 0.651277L7.99981 5.80275L2.84833 0.651277C2.3797 0.182647 1.61991 0.182647 1.15128 0.651277C0.682647 1.11991 0.682647 1.8797 1.15128 2.34833L6.30275 7.4998L1.15128 12.6513C0.682647 13.1199 0.682647 13.8797 1.15128 14.3483C1.61991 14.817 2.3797 14.817 2.84833 14.3483L7.99981 9.19686L13.1513 14.3483C13.6199 14.817 14.3797 14.817 14.8483 14.3483C15.317 13.8797 15.317 13.1199 14.8483 12.6513L9.69686 7.4998L14.8483 2.34833Z"
-                  fill="black"
-                  fill-opacity="0.5"
-                />
-              </svg>
-              </button>
-            </span>
-            <span v-else>
-              <svg
-                width="24"
-                height="24"
-                viewBox="0 0 89 90"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M86.4883 31.2718L82.1334 26.8569C80.6576 25.3607 78.5769 24.8211 76.6656 25.2871C77.1253 23.3249 76.593 21.2155 75.1172 19.7438L65.6574 10.1535C64.7864 9.27053 63.6735 8.7064 62.5122 8.51017C62.3187 7.33285 61.7622 6.20458 60.8912 5.32158L57.9396 2.32921C55.6653 0.0236062 51.9879 0.0236062 49.7378 2.32921L20.0278 32.4492C17.7536 34.7548 17.7536 38.483 20.0278 40.764L26.3666 47.1903C26.9714 47.8035 27.2375 48.6129 27.165 49.4714C27.0682 50.3053 26.6085 51.0657 25.9069 51.5317C7.03567 63.7219 5.26951 65.5124 4.5195 66.2728C-0.706372 71.5708 -0.706372 80.18 4.5195 85.4779C9.74538 90.7759 18.2374 90.7759 23.4633 85.4779C24.2133 84.7176 25.9795 82.9271 38.0038 63.7955C38.4635 63.0842 39.1893 62.6182 40.0361 62.5201C40.8829 62.422 41.7055 62.7163 42.2861 63.3049L48.6249 69.7312C50.8992 72.0368 54.5766 72.0368 56.8266 69.7312L86.5367 39.6112C88.7626 37.2811 88.7626 33.5529 86.4883 31.2718ZM52.6895 65.537L46.3507 59.1107C44.512 57.2466 41.9474 56.3391 39.3587 56.6334C36.7699 56.9278 34.4715 58.3749 33.0683 60.5824C27.7456 69.069 21.0197 79.5177 19.302 81.2592C16.3503 84.2516 11.5357 84.2516 8.58407 81.2592C5.63242 78.2668 5.63242 73.3858 8.58407 70.3934C10.3018 68.652 20.6326 61.8578 28.9795 56.4372C31.157 55.0146 32.6086 52.6845 32.8989 50.06C33.1892 47.4356 32.2699 44.8356 30.4553 42.9715L24.1165 36.5453L28.7376 31.8605L57.2863 60.8031L52.6895 65.537ZM61.3993 56.707L32.8505 27.7644L53.8266 6.49891L56.8025 9.49128L53.4879 16.9477C53.3669 17.193 53.4395 17.5118 53.6331 17.708C53.8266 17.9043 54.1411 17.9533 54.3831 17.8307L61.5686 14.3232L71.0285 23.9135L61.9992 39.3961C61.8299 39.6659 61.8541 40.0092 62.0718 40.23C62.2896 40.4507 62.6525 40.4998 62.9186 40.3036L78.0447 31.002L82.3996 35.417L61.3993 56.707Z"
-                  fill="black"
-                  fill-opacity="0.5"
-                />
-                <path
-                  d="M18.2858 74.9311C18.2858 76.8442 16.7616 78.3895 14.8745 78.3895C12.9874 78.3895 11.4631 76.8442 11.4631 74.9311C11.4631 73.0179 12.9874 71.4727 14.8745 71.4727C16.7616 71.4727 18.2858 73.0179 18.2858 74.9311Z"
-                  fill="black"
-                  fill-opacity="0.5"
-                />
-              </svg>
-              <span class="rounded">Цвет</span>
-            </span>
-          </a>
-        </Popper>
+        <!-- Кнопка Цвет -->
+        <TaskPropsButtonColor
+          :selected-color="selectedTask.uid_marker"
+          :can-edit="selectedTask.type === 1 || selectedTask.type === 2"
+          @changeColor="onChangeColor"
+        />
         <!-- Кнопка Метки -->
         <TaskPropsButtonTags
           v-if="selectedTask.type === 1 || selectedTask.type === 2"

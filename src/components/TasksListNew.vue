@@ -16,7 +16,7 @@
       <span
         v-if="storeTasks[lastSelectedTaskUid].info.has_children"
       >
-      (с подзадачами) в количестве: {{storeTasks[lastSelectedTaskUid].children.length}}
+        (с подзадачами) в количестве: {{ storeTasks[lastSelectedTaskUid].children.length }}
       </span>
     </p>
   </modal-box-confirm>
@@ -35,17 +35,17 @@
     :class="newConfig.listHasChildren ? 'pl-8' : 'pl-0'"
   >
     <button
-      class="bg-orange-500 px-2 rounded-xl text-white mr-1 ml-1 hover:bg-orange-500 bg-opacity-70"
+      class="bg-orange-500 px-2 rounded-lg text-white mr-1 ml-1 hover:bg-orange-500 bg-opacity-70"
       @click="showInspector = true"
     >
       Поручить
     </button>
     <div
-      class="flex items-center bg-gray-600 dark:bg-gray-700 bg-opacity-70 rounded-xl w-full"
+      class="flex items-center bg-gray-600 dark:bg-gray-700 bg-opacity-70 rounded-lg w-full"
     >
       <div
         class="flex items-center pl-3"
-        :class="{ 'bg-gray-500 p-3 rounded-l-xl cursor-pointer': Object.keys(copiedTasks).length }"
+        :class="{ 'bg-gray-500 p-3 rounded-l-lg cursor-pointer': Object.keys(copiedTasks).length }"
         @click="pasteCopiedTasks('00000000-0000-0000-0000-000000000000')"
       >
         <svg
@@ -106,7 +106,7 @@
     <template #before-input="props">
       <div
         :id="props.node.info.uid"
-        class="group task-node flex-col items-center w-full bg-white p-2 rounded-xl dark:bg-gray-900 dark:border-gray-700 border border-gray-300 my-0.5 relative"
+        class="group task-node flex-col items-center w-full bg-white p-2 rounded-lg dark:bg-gray-900 dark:border-gray-700 border border-gray-300 my-0.5 relative"
         :style="{ backgroundColor: getValidBackColor(colors[props.node.info.uid_marker]?.back_color) }"
         :class="{ 'bg-gray-200 dark:bg-gray-800': (props.node.info.status == 1 || props.node.info.status == 7) && props.node.info.uid_marker == '00000000-0000-0000-0000-000000000000', 'ring-2 ring-orange-400 border border-orange-400': props.node.id === lastSelectedTaskUid }"
         @click.shift="clickAndShift(props.node)"
@@ -273,7 +273,6 @@
             <contenteditable
               v-model="props.node.info.name"
               tag="div"
-              @focusout="clearTaskFocus(props.node.info)"
               class="taskName p-0.5 ring-0 outline-none max-w-7xl"
               :contenteditable="props.node.info._isEditable"
               placeholder="Enter task name"
@@ -281,6 +280,7 @@
               :no-html="true"
               :class="{ 'uppercase': !props.node.info._isEditable && colors[props.node.info.uid_marker] && colors[props.node.info.uid_marker].uppercase, 'text-gray-500': props.node.info.status == 1 || props.node.info.status == 7, 'line-through': props.node.info.status == 1 || props.node.info.status == 7, 'font-extrabold': props.node.info.readed == 0 }"
               :style="{ color: getValidForeColor(colors[props.node.info.uid_marker]?.fore_color) }"
+              @focusout="clearTaskFocus(props.node.info)"
               @dblclick.stop="editTaskName(props.node.id)"
               @keyup.enter="updateTask($event, props.node.info); props.node.info._isEditable = false;"
             />

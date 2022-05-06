@@ -18,7 +18,7 @@
 <script>
 export default {
   data: () => ({
-    classes: 'animate-pulse bg-white my-1 border border-gray-300 rounded-xl',
+    classes: 'animate-pulse bg-white my-1 border border-gray-300 rounded-lg',
     classesDark: 'dark:bg-slate-900 dark:border-gray-700'
   })
 }

@@ -93,10 +93,13 @@
     v-if="status == 'loading'"
     :class="newConfig.listHasChildren ? 'pl-8' : 'pl-0'"
   />
+  <!-- <pre>{{ storeTasks }}</pre>
+  <pre>-----</pre>
+  <pre>{{ store.state.tasks.overdue.tasks }}</pre> -->
   <!-- vue3-treeview -->
   <tree
     v-if="status == 'success'"
-    :nodes="storeTasks"
+    :nodes="getStoreTasks()"
     :config="newConfig"
     class="mt-0.5"
     @nodeOpened="nodeExpanding"
@@ -397,7 +400,7 @@
 </template>
 
 <script>
-import { computed, ref, nextTick } from 'vue'
+import { computed, ref, nextTick, onMounted, watch } from 'vue'
 import treeview from 'vue3-treeview'
 import { useStore } from 'vuex'
 import Icon from '@/components/Icon.vue'
@@ -473,6 +476,42 @@ export default {
     const showInspector = ref(false)
     const isTaskHoverPopperActive = ref(false)
     const isTaskStatusPopperActive = ref(false)
+
+    const lastVisitedDate = computed(() => {
+      return (navStack.value && navStack.value.length && navStack.value[navStack.value.length - 1].value && navStack.value[navStack.value.length - 1].value.uid && navStack.value[navStack.value.length - 1].value.uid === '901841d9-0016-491d-ad66-8ee42d2b496b' && navStack.value[navStack.value.length - 1].value.param ? new Date(navStack.value[navStack.value.length - 1].value.param) : new Date())
+    })
+
+    const date = computed(() => {
+      return lastVisitedDate.value.getDay() === new Date().getDay() && lastVisitedDate.value.getMonth() === new Date().getMonth() && lastVisitedDate.value.getFullYear() === new Date().getFullYear()
+    })
+
+    watch(() => {
+      if (date.value && navStack.value[0].value.uid === '901841d9-0016-491d-ad66-8ee42d2b496b') {
+        store.dispatch(TASK.OVERDUE_TASKS_REQUEST)
+          .then(() => {
+            store.dispatch(TASK.TASKS_REQUEST)
+              .then(() => {
+                for (const idx in store.state.tasks.overdue.tasks) {
+                  store.state.tasks.newtasks[store.state.tasks.overdue.tasks[idx].uid] = {
+                    info: store.state.tasks.overdue.tasks[idx],
+                    children: store.state.tasks.overdue.tasks[idx].children,
+                    state: {
+                      draggable: true
+                    },
+                    id: store.state.tasks.overdue.tasks[idx].uid,
+                    parent: null
+                  }
+                }
+              })
+            storeTasks.value = store.state.tasks.newtasks
+          })
+      }
+    })
+
+    onMounted(() => {
+      console.log(store.state.tasks.overdue)
+      console.log(storeTasks)
+    })
 
     const clickAndShift = (arg) => {
       selectedTasks.value[arg.id] = arg.info
@@ -859,6 +898,9 @@ export default {
       clearTaskFocus,
       editTaskName,
       navStack,
+      lastVisitedDate,
+      store,
+      date,
       storeTasks,
       newConfig,
       showConfirm,
@@ -939,6 +981,9 @@ export default {
     getValidBackColor (backColor) {
       if (backColor && backColor !== '#A998B6') return backColor
       return ''
+    },
+    getStoreTasks () {
+      return this.storeTasks
     }
   }
 }

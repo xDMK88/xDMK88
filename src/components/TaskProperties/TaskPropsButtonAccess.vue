@@ -122,7 +122,6 @@
           :class="{ 'cursor-pointer': canEdit, 'cursor-default': !canEdit }"
         >
           <svg
-            v-if="key !== 'null'"
             width="24"
             height="24"
             viewBox="0 0 91 92"
@@ -139,9 +138,9 @@
           </svg>
           <span class="rounded">{{ getEmpNameByEmail(accessEmails[0]) }}</span>
           <button
-            v-if="userEmail === currentUserEmail"
+            v-if="accessEmails[0] === currentUserEmail"
             class="btn-close-popover"
-            @click="removeAccess(userEmail)"
+            @click="removeAccess(accessEmails[0])"
           >
             <svg
               width="5"

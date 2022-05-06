@@ -1,6 +1,6 @@
 <template>
   <div
-    class="group task-node flex-col items-center w-full bg-white p-2 rounded-xl dark:bg-gray-900 dark:border-gray-700 border border-gray-300 my-0.5 relative"
+    class="group task-node flex-col items-center w-full bg-white p-2 rounded-lg dark:bg-gray-900 dark:border-gray-700 border border-gray-300 my-0.5 relative"
     :style="{ backgroundColor: backgroundColor }"
     :class="{
       'bg-gray-200 dark:bg-gray-800':

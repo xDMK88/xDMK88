@@ -1308,11 +1308,13 @@ export default {
         />
         <!-- Повтор -->
         <Popper
+          v-if="selectedTask.term_customer"
           class="popper-repeat"
           arrow
           trigger="hover"
           :class="isDark ? 'dark' : 'light'"
           placement="bottom"
+          :disabled="selectedTask.type !== 1 && selectedTask.type !== 2"
         >
           <template
             #content="{ close }"
@@ -1717,8 +1719,8 @@ export default {
           <div>
             <div
               v-if="selectedTask.SeriesEnd!==''"
-              ref="btnRefRepeat"
               class="mt-3 tags-custom dark:bg-gray-800 dark:text-gray-100 project-hover-close"
+              :style="{ 'cursor': selectedTask.type !== 1 && selectedTask.type !== 2 ? 'default' : 'pointer' }"
             >
               <svg
                 width="24"
@@ -1726,6 +1728,7 @@ export default {
                 viewBox="0 0 92 80"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
+                :style="{ 'cursor': selectedTask.type !== 1 && selectedTask.type !== 2 ? 'default' : 'pointer' }"
               >
                 <path
                   d="M15.595 71.68H76.4048V66.5015C76.4048 64.3145 78.1735 62.5415 80.3554 62.5415C82.5373 62.5415 84.306 64.3145 84.306 66.5015V71.68C84.306 76.0541 80.7685 79.6 76.4048 79.6H15.595C11.2313 79.6 7.69378 76.0541 7.69378 71.68L7.69378 40H2.83583C0.728566 40 -0.380779 37.4961 1.03222 35.929L9.84079 26.1602C10.8061 25.0897 12.4827 25.0897 13.448 26.1602L22.2566 35.929C23.6696 37.4961 22.5602 40 20.453 40H15.595L15.595 71.68Z"
@@ -1763,7 +1766,7 @@ export default {
                 </span>
               </span>
               <button
-                v-if="selectedTask.SeriesType > 0"
+                v-if="selectedTask.SeriesType > 0 && (selectedTask.type === 1 || selectedTask.type === 2)"
                 class="btn-close-popover"
                 @click="resetRepeat"
               >

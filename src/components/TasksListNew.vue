@@ -96,10 +96,12 @@
   <!-- <pre>{{ storeTasks }}</pre>
   <pre>-----</pre>
   <pre>{{ store.state.tasks.overdue.tasks }}</pre> -->
+  <!-- <pre>{{ lastVisitedDate }}</pre>
+  <pre>{{ navStack }}</pre> -->
   <!-- vue3-treeview -->
   <tree
     v-if="status == 'success'"
-    :nodes="getStoreTasks()"
+    :nodes="storeTasks"
     :config="newConfig"
     class="mt-0.5"
     @nodeOpened="nodeExpanding"
@@ -485,33 +487,39 @@ export default {
       return lastVisitedDate.value.getDay() === new Date().getDay() && lastVisitedDate.value.getMonth() === new Date().getMonth() && lastVisitedDate.value.getFullYear() === new Date().getFullYear()
     })
 
+    // watch(() => {
+    //   if (date.value && navStack.value[0].value.uid === '901841d9-0016-491d-ad66-8ee42d2b496b') {
+    //     store.dispatch(TASK.OVERDUE_TASKS_REQUEST)
+    //       .then(() => {
+    //         store.dispatch(TASK.TASKS_REQUEST)
+    //           .then(() => {
+    //             for (const idx in store.state.tasks.overdue.tasks) {
+    //               store.state.tasks.newtasks[store.state.tasks.overdue.tasks[idx].uid] = {
+    //                 info: store.state.tasks.overdue.tasks[idx],
+    //                 children: store.state.tasks.overdue.tasks[idx].children,
+    //                 state: {
+    //                   draggable: true
+    //                 },
+    //                 id: store.state.tasks.overdue.tasks[idx].uid,
+    //                 parent: null
+    //               }
+    //             }
+    //           })
+    //         storeTasks.value = store.state.tasks.newtasks
+    //       })
+    //   }
+    // })
     watch(() => {
-      if (date.value && navStack.value[0].value.uid === '901841d9-0016-491d-ad66-8ee42d2b496b') {
-        store.dispatch(TASK.OVERDUE_TASKS_REQUEST)
-          .then(() => {
-            store.dispatch(TASK.TASKS_REQUEST)
-              .then(() => {
-                for (const idx in store.state.tasks.overdue.tasks) {
-                  store.state.tasks.newtasks[store.state.tasks.overdue.tasks[idx].uid] = {
-                    info: store.state.tasks.overdue.tasks[idx],
-                    children: store.state.tasks.overdue.tasks[idx].children,
-                    state: {
-                      draggable: true
-                    },
-                    id: store.state.tasks.overdue.tasks[idx].uid,
-                    parent: null
-                  }
-                }
-              })
-            storeTasks.value = store.state.tasks.newtasks
-          })
-      }
+      console.log()
     })
 
     onMounted(() => {
-      console.log(store.state.tasks.overdue)
-      console.log(storeTasks)
+      console.log()
     })
+    // onMounted(() => {
+    //   console.log(store.state.tasks.overdue)
+    //   console.log(storeTasks)
+    // })
 
     const clickAndShift = (arg) => {
       selectedTasks.value[arg.id] = arg.info

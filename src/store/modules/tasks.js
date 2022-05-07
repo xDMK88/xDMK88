@@ -1407,8 +1407,6 @@ const mutations = {
       keyboardNavigation: true
     })
 
-    console.log(resp.data)
-
     const nodes = {}
     for (const node of resp.data.tasks) {
       if (node.has_children && !state.newConfig.listHasChildren) {

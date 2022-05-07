@@ -77,22 +77,29 @@ const showStatusOrNot = (type, status) => {
   }
 }
 
-// const navStack = computed(() => store.state.navbar.navStack)
-// const lastVisitedDate = computed(() => {
-//   return (navStack.value && navStack.value.length && navStack.value[navStack.value.length - 1].value && navStack.value[navStack.value.length - 1].value.uid && navStack.value[navStack.value.length - 1].value.uid === '901841d9-0016-491d-ad66-8ee42d2b496b' && navStack.value[navStack.value.length - 1].value.param ? new Date(navStack.value[navStack.value.length - 1].value.param) : new Date())
-// })
-// const requestDate = lastVisitedDate.value.getDate() + '-' + lastVisitedDate.value.getMonth() + '-' + lastVisitedDate.value.getFullYear()
+const navStack = computed(() => store.state.navbar.navStack)
+const lastVisitedDate = computed(() => {
+  return (navStack.value && navStack.value.length && navStack.value[navStack.value.length - 1].value && navStack.value[navStack.value.length - 1].value.uid && navStack.value[navStack.value.length - 1].value.uid === '901841d9-0016-491d-ad66-8ee42d2b496b' && navStack.value[navStack.value.length - 1].value.param ? new Date(navStack.value[navStack.value.length - 1].value.param) : new Date())
+})
 
 const changeTaskStatus = (uid, status) => {
   store.dispatch(TASK.CHANGE_TASK_STATUS, { uid: uid, value: status })
   if (!storeNavigator.value.settings.show_completed_tasks && [1, 5, 7, 8].includes(status)) {
     store.dispatch(TASK.REMOVE_TASK, uid)
-    // alert('deleting')
-    // alert(lastVisitedDate.value.getDate())
-    // alert(requestDate)
-    // alert(new Date(lastVisitedDate))
-    // store.dispatch(TASK.TASKS_REQUEST, navStack.value[0].param)
-    // console.log(Object.keys(store.state.tasks.newtasks))
+    store.dispatch(TASK.TASKS_REQUEST, navStack.value[0].value.param)
+      .then(() => {
+        if (!Object.keys(store.state.tasks.newtasks).length) {
+          console.log(store.state.calendar)
+          for (const date of store.state.calendar[1].dates) {
+            const idxDate = date.getDate() + '-' + date.getMonth() + '-' + date.getFullYear()
+            const checkDate = lastVisitedDate.value.getDate() + '-' + lastVisitedDate.value.getMonth() + '-' + lastVisitedDate.value.getFullYear()
+            if (idxDate === checkDate) {
+              store.state.calendar[1].dates.splice(store.state.calendar[1].dates.indexOf(date), date)
+              store.dispatch('setDots')
+            }
+          }
+        }
+      })
   }
 }
 </script>

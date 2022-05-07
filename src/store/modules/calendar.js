@@ -28,8 +28,7 @@ const mutations = {
     state[payload.key] = payload.value
   },
   addDot (state, date) {
-    const attr = { order: 1, dates: date, highlight: { color: 'dark', class: 'dots-back' } }
-    state.calendar.push(attr)
+    state.calendar[1].dates.push(date)
   }
 }
 

@@ -99,6 +99,8 @@
   <!-- <pre>{{ lastVisitedDate }}</pre>
   <pre>{{ navStack }}</pre> -->
   <!-- vue3-treeview -->
+  <!-- <pre>{{ lastVisitedDate }}</pre>
+  <pre>{{ navStack }}</pre> -->
   <tree
     v-if="status == 'success'"
     :nodes="storeTasks"
@@ -402,7 +404,7 @@
 </template>
 
 <script>
-import { computed, ref, nextTick, onMounted, watch } from 'vue'
+import { computed, ref, nextTick } from 'vue'
 import treeview from 'vue3-treeview'
 import { useStore } from 'vuex'
 import Icon from '@/components/Icon.vue'
@@ -478,48 +480,6 @@ export default {
     const showInspector = ref(false)
     const isTaskHoverPopperActive = ref(false)
     const isTaskStatusPopperActive = ref(false)
-
-    const lastVisitedDate = computed(() => {
-      return (navStack.value && navStack.value.length && navStack.value[navStack.value.length - 1].value && navStack.value[navStack.value.length - 1].value.uid && navStack.value[navStack.value.length - 1].value.uid === '901841d9-0016-491d-ad66-8ee42d2b496b' && navStack.value[navStack.value.length - 1].value.param ? new Date(navStack.value[navStack.value.length - 1].value.param) : new Date())
-    })
-
-    const date = computed(() => {
-      return lastVisitedDate.value.getDay() === new Date().getDay() && lastVisitedDate.value.getMonth() === new Date().getMonth() && lastVisitedDate.value.getFullYear() === new Date().getFullYear()
-    })
-
-    // watch(() => {
-    //   if (date.value && navStack.value[0].value.uid === '901841d9-0016-491d-ad66-8ee42d2b496b') {
-    //     store.dispatch(TASK.OVERDUE_TASKS_REQUEST)
-    //       .then(() => {
-    //         store.dispatch(TASK.TASKS_REQUEST)
-    //           .then(() => {
-    //             for (const idx in store.state.tasks.overdue.tasks) {
-    //               store.state.tasks.newtasks[store.state.tasks.overdue.tasks[idx].uid] = {
-    //                 info: store.state.tasks.overdue.tasks[idx],
-    //                 children: store.state.tasks.overdue.tasks[idx].children,
-    //                 state: {
-    //                   draggable: true
-    //                 },
-    //                 id: store.state.tasks.overdue.tasks[idx].uid,
-    //                 parent: null
-    //               }
-    //             }
-    //           })
-    //         storeTasks.value = store.state.tasks.newtasks
-    //       })
-    //   }
-    // })
-    watch(() => {
-      console.log()
-    })
-
-    onMounted(() => {
-      console.log()
-    })
-    // onMounted(() => {
-    //   console.log(store.state.tasks.overdue)
-    //   console.log(storeTasks)
-    // })
 
     const clickAndShift = (arg) => {
       selectedTasks.value[arg.id] = arg.info
@@ -906,9 +866,7 @@ export default {
       clearTaskFocus,
       editTaskName,
       navStack,
-      lastVisitedDate,
       store,
-      date,
       storeTasks,
       newConfig,
       showConfirm,

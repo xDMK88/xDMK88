@@ -1,6 +1,7 @@
 <script setup>
 import { computed, ref, watch, onMounted } from 'vue'
 import { useStore } from 'vuex'
+import { copyText } from 'vue3-clipboard'
 import Icon from '@/components/Icon.vue'
 import ColorPicker from '@/components/properties/ColorPicker.vue'
 import Toggle from '@vueform/toggle'
@@ -102,6 +103,16 @@ const removeProject = (project) => {
       store.dispatch('asidePropertiesToggle', false)
       store.commit(NAVIGATOR_REMOVE_PROJECT, project)
     })
+}
+
+const copyurl = (uid) => {
+  copyText(`${window.location.origin}/project/${uid}`, undefined, (error, event) => {
+    if (error) {
+      console.log(error)
+    } else {
+      console.log(event)
+    }
+  })
 }
 </script>
 
@@ -297,6 +308,12 @@ const removeProject = (project) => {
         @click="showConfirmQuit = true"
       >
         Выйти из проекта
+      </button>
+      <button
+        class="w-full bg-gray-100 rounded-xl mt-4 p-3 text-gray-700 font-bold hover:bg-gray-200"
+        @click="copyurl(selectedProject.uid)"
+      >
+       Скопировать как ссылку
       </button>
     </div>
   </div>

@@ -517,27 +517,4 @@ padding-right: 0 !important;
 {
   color: #E23300 !important;
 }
-
-&, & * {
-  box-sizing: border-box;
-  &:focus {
-   outline: none !important;
-  }
-}
-& button,
-& [role='button'] {
-    cursor: pointer !important;
-  }
-&.vc-is-expanded {
-   min-width: 100% !important;
- }
-/* Hides double border within popovers */
-& .vc-container {
-    border: none !important;
-  }
-&.vc-is-dark {
-   color: var(--gray-100) !important;
-   background-color: var(--gray-900) !important;
-   border-color: var(--gray-700) !important;
-}
 </style>

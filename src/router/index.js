@@ -47,6 +47,17 @@ const routes = [
     beforeEnter: ifAuthenticated
   },
   {
+    // Document title tag
+    // We combine it with defaultDocumentTitle set in `src/main.js` on router.afterEach hook
+    meta: {
+      title: 'Application'
+    },
+    path: '/project/:id',
+    name: 'project',
+    component: Home,
+    beforeEnter: ifAuthenticated
+  },
+  {
     meta: {
       title: 'Login',
       fullScreen: true

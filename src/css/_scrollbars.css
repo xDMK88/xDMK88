@@ -49,7 +49,7 @@ html.dark::-webkit-scrollbar-thumb:hover {
 }
 
 #aside-right {
-  overflow: hidden;
+  overflow: auto;
   scrollbar-color: #4b5563 #111827;
 }
 

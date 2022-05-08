@@ -20,6 +20,7 @@ import { USER_REQUEST } from '@/store/actions/user'
 import * as TASK from '@/store/actions/tasks'
 import initWebSync from '@/websync/index.js'
 import initInspectorSocket from '@/inspector/index.js'
+// import project from '@/icons/project'
 
 const store = useStore()
 const router = useRouter()
@@ -52,7 +53,7 @@ const UID_TO_ACTION = {
   '47a38aa5-19c4-40d0-b8c0-56c3a420935d': TASK.ONE_TASK_REQUEST
 }
 
-const getOneTask = (uid) => {
+const getTask = (uid) => {
   if (store.state.auth.token) {
     store.dispatch(TASK.ONE_TASK_REQUEST, uid).then(() => {
       const navElem = {
@@ -94,6 +95,43 @@ const getTasks = () => {
   }
 }
 
+const initNavStackWithFoundProjects = (projectUid) => {
+  let project
+  visitChildren(storeNavigator.value.new_private_projects[0].items, value => {
+    if (value.uid === projectUid) {
+      project = value
+    }
+  })
+  visitChildren(storeNavigator.value.new_private_projects[1].items, value => {
+    if (value.uid === projectUid) {
+      project = value
+    }
+  })
+
+  const navElem = {
+    name: project.name,
+    key: 'greedSource',
+    uid: project.uid,
+    global_property_uid: project.global_property_uid,
+    greedPath: 'projects_children',
+    value: project.children
+  }
+  store.commit('pushIntoNavStack', navElem)
+}
+
+const getProject = (uid) => {
+  console.log(uid)
+  const navElem = {
+    name: 'Проекты',
+    key: 'greedSource',
+    greedPath: 'new_private_projects',
+    value: storeNavigator.value.new_private_projects
+  }
+  store.commit('updateStackWithInitValue', navElem)
+  initNavStackWithFoundProjects(uid)
+  window.location = '/'
+}
+
 const getNavigator = () => {
   if (store.state.auth.token) {
     store.dispatch(NAVIGATOR_REQUEST)
@@ -101,7 +139,9 @@ const getNavigator = () => {
         initWebSync()
         console.log('initInspector', process.env.VUE_APP_INSPECTOR_WS)
         initInspectorSocket()
-
+        if (router.currentRoute.value.name === 'project' && router.currentRoute.value.params.id) {
+          getProject(router.currentRoute.value.params.id)
+        }
         // After navigator is loaded we are trying to set up last visited navElement
         // Checking if last navElement is a gridSource
         if (navStack.value.length && navStack.value.length > 0) {
@@ -171,12 +211,12 @@ onBeforeMount(() => {
   document.head.appendChild(websync)
 
   store.dispatch(USER_REQUEST)
-  if (router.currentRoute.value.params.id) {
-    getOneTask(router.currentRoute.value.params.id)
+  getNavigator()
+  if (router.currentRoute.value.name === 'task' && router.currentRoute.value.params.id) {
+    getTask(router.currentRoute.value.params.id)
   } else {
     getTasks()
   }
-  getNavigator()
 })
 </script>
 

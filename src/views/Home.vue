@@ -47,12 +47,24 @@ const UID_TO_ACTION = {
   'd28e3872-9a23-4158-aea0-246e2874da73': TASK.EMPLOYEE_TASKS_REQUEST,
   '169d728b-b88b-462d-bd8e-3ac76806605b': TASK.DELEGATED_TASKS_REQUEST,
   '511d871c-c5e9-43f0-8b4c-e8c447e1a823': TASK.DELEGATED_TO_USER_TASKS_REQUEST,
-  'd35fe0bc-1747-4eb1-a1b2-3411e07a92a0': TASK.READY_FOR_COMPLITION_TASKS_REQUEST
+  'd35fe0bc-1747-4eb1-a1b2-3411e07a92a0': TASK.READY_FOR_COMPLITION_TASKS_REQUEST,
+  '11212e94-cedf-11ec-9d64-0242ac120002': TASK.SEARCH_TASK,
+  '47a38aa5-19c4-40d0-b8c0-56c3a420935d': TASK.ONE_TASK_REQUEST
 }
 
 const getOneTask = (uid) => {
   if (store.state.auth.token) {
-    store.dispatch(TASK.ONE_TASK_REQUEST, uid)
+    store.dispatch(TASK.ONE_TASK_REQUEST, uid).then(() => {
+      const navElem = {
+        name: 'Поиск',
+        key: 'taskListSource',
+        value: { uid: '47a38aa5-19c4-40d0-b8c0-56c3a420935d', param: uid }
+      }
+      store.commit('updateStackWithInitValue', navElem)
+      store.commit('basic', { key: 'mainSectionState', value: 'tasks' })
+      store.commit('basic', { key: 'taskListSource', value: navElem.value })
+      window.location = '/'
+    })
   }
 }
 

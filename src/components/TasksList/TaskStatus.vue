@@ -77,15 +77,16 @@ const showStatusOrNot = (type, status) => {
   }
 }
 
-const navStack = computed(() => store.state.navbar.navStack)
-const lastVisitedDate = computed(() => {
-  return (navStack.value && navStack.value.length && navStack.value[navStack.value.length - 1].value && navStack.value[navStack.value.length - 1].value.uid && navStack.value[navStack.value.length - 1].value.uid === '901841d9-0016-491d-ad66-8ee42d2b496b' && navStack.value[navStack.value.length - 1].value.param ? new Date(navStack.value[navStack.value.length - 1].value.param) : new Date())
-})
+// const navStack = computed(() => store.state.navbar.navStack)
+// const lastVisitedDate = computed(() => {
+//   return (navStack.value && navStack.value.length && navStack.value[navStack.value.length - 1].value && navStack.value[navStack.value.length - 1].value.uid && navStack.value[navStack.value.length - 1].value.uid === '901841d9-0016-491d-ad66-8ee42d2b496b' && navStack.value[navStack.value.length - 1].value.param ? new Date(navStack.value[navStack.value.length - 1].value.param) : new Date())
+// })
 
 const changeTaskStatus = (uid, status) => {
   store.dispatch(TASK.CHANGE_TASK_STATUS, { uid: uid, value: status })
   if (!storeNavigator.value.settings.show_completed_tasks && [1, 5, 7, 8].includes(status)) {
     store.dispatch(TASK.REMOVE_TASK, uid)
+    /*
     store.dispatch(TASK.TASKS_REQUEST, navStack.value[0].value.param)
       .then(() => {
         if (!Object.keys(store.state.tasks.newtasks).length) {
@@ -100,6 +101,7 @@ const changeTaskStatus = (uid, status) => {
           }
         }
       })
+    */
   }
 }
 </script>

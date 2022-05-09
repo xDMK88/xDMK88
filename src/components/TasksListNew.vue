@@ -93,15 +93,7 @@
     v-if="status == 'loading'"
     :class="newConfig.listHasChildren ? 'pl-8' : 'pl-0'"
   />
-  <!-- <pre>{{ storeTasks }}</pre>
-  <pre>-----</pre>
-  <pre>{{ store.state.tasks.overdue.tasks }}</pre> -->
-  <!-- <pre>{{ lastVisitedDate }}</pre>
-  <pre>{{ navStack }}</pre> -->
   <!-- vue3-treeview -->
-  <!-- <pre>{{ lastVisitedDate }}</pre>
-  <pre>{{ navStack }}</pre> -->
-  <!-- <pre>{{ navStack[0].value.param.getDate() + '-' + navStack[0].value.param.getMonth() + '-' + navStack[0].value.param.getFullYear() }}</pre> -->
   <tree
     v-if="status == 'success'"
     :nodes="storeTasks"

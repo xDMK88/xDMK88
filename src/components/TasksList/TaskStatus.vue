@@ -85,23 +85,28 @@ const showStatusOrNot = (type, status) => {
 const changeTaskStatus = (uid, status) => {
   store.dispatch(TASK.CHANGE_TASK_STATUS, { uid: uid, value: status })
   if (!storeNavigator.value.settings.show_completed_tasks && [1, 5, 7, 8].includes(status)) {
+    const deleted = new Date(store.state.tasks.newtasks[uid].info.date_begin)
+    let counter = 0
     store.dispatch(TASK.REMOVE_TASK, uid)
-    /*
-    store.dispatch(TASK.TASKS_REQUEST, navStack.value[0].value.param)
       .then(() => {
-        if (!Object.keys(store.state.tasks.newtasks).length) {
-          console.log(store.state.calendar)
-          for (const date of store.state.calendar[1].dates) {
-            const idxDate = date.getDate() + '-' + date.getMonth() + '-' + date.getFullYear()
-            const checkDate = lastVisitedDate.value.getDate() + '-' + lastVisitedDate.value.getMonth() + '-' + lastVisitedDate.value.getFullYear()
-            if (idxDate === checkDate) {
-              store.state.calendar[1].dates.splice(store.state.calendar[1].dates.indexOf(date), date)
-              store.dispatch('setDots')
+        for (const elem in store.state.tasks.newtasks) {
+          const taskDate = new Date(store.state.tasks.newtasks[elem].info.date_begin)
+          if (taskDate.getDate() + taskDate.getMonth() + taskDate.getFullYear() === deleted.getDate() + deleted.getMonth() + deleted.getFullYear()) {
+            counter++
+            break
+          }
+        }
+        if (!counter) {
+          for (const idx in store.state.calendar[1].dates) {
+            if (!store.state.calendar[1].dates.length) { break }
+            const calendarDate = store.state.calendar[1].dates[idx]
+            if (deleted.getDate() + deleted.getMonth() + deleted.getFullYear() === calendarDate.getDate() + calendarDate.getMonth() + calendarDate.getFullYear()) {
+              store.state.calendar[1].dates.splice(calendarDate, 1)
             }
+            store.dispatch('setDots')
           }
         }
       })
-    */
   }
 }
 </script>

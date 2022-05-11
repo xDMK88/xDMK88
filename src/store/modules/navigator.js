@@ -45,6 +45,7 @@ const getDefaultState = () => {
 }
 
 function getAllMembersByDepartmentUID (resp, departmentUID) {
+  console.log(resp.data.emps.items)
   const employeesStuck = []
   for (const employee of resp.data.emps.items) {
     if (employee.uid_dep === departmentUID) {
@@ -140,7 +141,9 @@ const actions = {
           }
           console.log(resp.data.deps.items)
           if (resp.data.deps.items) {
-            commit(PUSH_DEPARTMENT, resp.data.deps.items)
+            for (const department of resp.data.deps.items) {
+              commit(PUSH_DEPARTMENT, department)
+            }
           }
           // process tags then put them in shared vuex storage
           if (resp.data.tags.items) {
@@ -366,9 +369,9 @@ const mutations = {
   },
   [NAVIGATOR_PUSH_DEPARTAMENT]: (state, departaments) => {
     for (const departament of departaments) {
+      state.navigator.deps.items.push(departament)
       if (
-        !departament.uid_parent ||
-        departament.uid_parent === ''
+        departament.uid_parent === '00000000-0000-0000-0000-000000000000'
       ) {
         // adding departament to the root
         state.navigator.deps.items.push(departament)
@@ -384,20 +387,16 @@ const mutations = {
         )
       }
     }
-    console.log(state.navigator.deps.items)
   },
   [NAVIGATOR_REMOVE_DEPARTAMENT]: (state, departament) => {
-    console.log(state.navigator.deps.items.length)
     for (
       let i = 0;
       i < state.navigator.deps.items.length;
       i++
     ) {
-      console.log(state.navigator.deps.items[i].uid === departament.uid)
       if (
         state.navigator.deps.items[i].uid === departament.uid
       ) {
-        console.log(i)
         state.navigator.deps.items.splice(i, 1)
         //  state.navigator.deps.items.splice(state.navigator.deps.items.indexOf(department.uid), 1)
       }

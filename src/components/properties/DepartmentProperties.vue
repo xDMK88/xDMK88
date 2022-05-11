@@ -9,7 +9,8 @@ import ModalBoxConfirm from '@/components/modals/ModalBoxConfirm.vue'
 import {
   CREATE_DEPARTMENT_REQUEST,
   UPDATE_DEPARTMENT_REQUEST,
-  REMOVE_DEPARTMENT_REQUEST
+  REMOVE_DEPARTMENT_REQUEST,
+  PUSH_DEPARTMENT
 } from '@/store/actions/departments'
 import { NAVIGATOR_PUSH_DEPARTAMENT, NAVIGATOR_REMOVE_DEPARTAMENT } from '@/store/actions/navigator'
 const store = useStore()
@@ -57,15 +58,14 @@ const createOrUpdateDepartment = (department) => {
       .then(() => {
         hasChanged.value = false
         store.dispatch('asidePropertiesToggle', false)
-        console.log(department)
         store.commit(NAVIGATOR_PUSH_DEPARTAMENT, [department])
+        store.commit(PUSH_DEPARTMENT, department)
         selectedDepartment.value = department
       })
   } else {
     store.dispatch(UPDATE_DEPARTMENT_REQUEST, department)
-      .then(() => {
+      .then(resp => {
         hasChanged.value = false
-        console.log(department)
         store.dispatch('asidePropertiesToggle', false)
       })
   }
@@ -73,7 +73,7 @@ const createOrUpdateDepartment = (department) => {
 
 const removeDepartment = (departament) => {
   store.dispatch(REMOVE_DEPARTMENT_REQUEST, departament.uid)
-    .then(resp => {
+    .then(() => {
       store.dispatch('asidePropertiesToggle', false)
       store.commit(NAVIGATOR_REMOVE_DEPARTAMENT, departament)
     })

@@ -44,10 +44,10 @@ const openDepartmentProperties = (department) => {
       uid: '',
       uid_parent: '',
       name: '',
-      password: '',
+      //  password: '',
       order: 0,
       collapsed: 0,
-      emails: ''
+      emails: []
     }
   }
   store.commit('basic', { key: 'propertiesState', value: 'department' })

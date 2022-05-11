@@ -43,7 +43,6 @@ const actions = {
     })
   },
   [UPDATE_DEPARTMENT_REQUEST]: ({ commit, dispatch }, data) => {
-    console.log(data)
     return new Promise((resolve, reject) => {
       const url = process.env.VUE_APP_LEADERTASK_API + 'api/v1/dep'
       axios({ url: url, method: 'PATCH', data: data })

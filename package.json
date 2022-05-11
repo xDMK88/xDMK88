@@ -12,6 +12,8 @@
     "lint:fix": "vue-cli-service lint --fix"
   },
   "dependencies": {
+    "@babel/core": "^7.17.10",
+    "@babel/preset-env": "^7.17.10",
     "@mdi/js": "^6.4.95",
     "@popperjs/core": "^2.11.2",
     "@syncfusion/ej2-vue-navigations": "^19.4.50",

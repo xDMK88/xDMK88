@@ -51,7 +51,6 @@ export default {
     <Icon
       :path="close.path"
       class="text-gray-600 dark:text-white float-right cursor-pointer"
-      :class="selectedTask.uid_parent !== '00000000-0000-0000-0000-000000000000' && tasks[selectedTask.uid_parent] ? 'mt-3' : 'mt-0.5'"
       :box="close.viewBox"
       :width="close.width"
       :height="close.height"

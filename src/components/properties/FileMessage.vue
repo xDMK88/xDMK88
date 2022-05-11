@@ -3,16 +3,23 @@ import { ref } from 'vue'
 import { useStore } from 'vuex'
 import { GETFILES } from '@/store/actions/taskfiles'
 import ChatLoader from './ChatLoader.vue'
-
+// use the component
 const store = useStore()
-
 const props = defineProps({
   file: {
     type: Object,
     default: () => {}
+  },
+  data: function () {
+    return {
+      items: [
+        'https://cosmos-images2.imgix.net/file/spina/photo/20565/191010_nature.jpg?ixlib=rails-2.1.4&auto=format&ch=Width%2CDPR&fit=max&w=835',
+        'https://hips.hearstapps.com/hmg-prod.s3.amazonaws.com/images/nature-quotes-1557340276.jpg?crop=0.666xw:1.00xh;0.168xw,0&resize=640:*'
+      ],
+      index: null
+    }
   }
 })
-
 const pics = ['jpg', 'png', 'jpeg', 'git', 'bmp', 'gif', 'PNG', 'JPG', 'JPEG', 'BMP', 'GIF']
 const movies = ['mov', 'mp4']
 const docs = ['doc', 'xls', 'xlsx', 'txt', 'pdf']
@@ -23,22 +30,22 @@ const getImgUrl = (uid, extension, filename) => {
   // computed value triggered after template change
   if (isImageLoaded.value) return
   store.dispatch(GETFILES, uid).then(resp => {
-    const fileURL = window.URL.createObjectURL(new Blob([resp.data]))
+    const fileURL = window.URL.createObjectURL(new Blob([resp.data], { type: 'image/' + extension }))
     const myImage = new Image()
     myImage.src = fileURL
-    document.getElementById(uid).appendChild(myImage)
-    document.getElementById(uid).setAttribute('href', fileURL)
-    document.getElementById(uid).setAttribute('download', filename)
+    document.getElementById('img_' + uid).appendChild(myImage)
     isImageLoaded.value = true
+    document.getElementById('img_' + uid).setAttribute('href', fileURL)
     return myImage
   })
 }
 
 const getMovUrl = (uid, extension, filename) => {
   store.dispatch(GETFILES, uid).then(resp => {
-    const fileURL = window.URL.createObjectURL(new Blob([resp.data], { type: 'text/plain' }))
-    document.getElementById(uid).setAttribute('href', fileURL)
-    document.getElementById(uid).setAttribute('download', filename + '.' + extension)
+    const fileURL = window.URL.createObjectURL(new Blob([resp.data]))
+    //  document.getElementById('mov_' + uid).setAttribute('href', fileURL)
+    document.getElementById('video_' + uid).setAttribute('src', fileURL)
+    //  document.getElementById('mov_' + uid).setAttribute('download', filename)
     return fileURL
   })
 }
@@ -46,8 +53,8 @@ const getMovUrl = (uid, extension, filename) => {
 const getDocUrl = (uid, extension, filename) => {
   store.dispatch(GETFILES, uid).then(resp => {
     const fileURL = window.URL.createObjectURL(new Blob([resp.data], { type: 'text/plain' }))
-    document.getElementById(uid).setAttribute('href', fileURL)
-    document.getElementById(uid).setAttribute('download', filename + '.' + extension)
+    document.getElementById('doc_' + uid).setAttribute('href', fileURL)
+    document.getElementById('doc_' + uid).setAttribute('download', filename)
     return fileURL
   })
 }
@@ -57,18 +64,19 @@ const getAudioUrl = (uid, extension, filename) => {
     const fileURL = window.URL.createObjectURL(new Blob([resp.data], { type: 'text/plain' }))
     const myAudio = new Audio()
     myAudio.src = fileURL
-    document.getElementById(uid).appendChild(myAudio)
-    document.getElementById(uid).setAttribute('src', fileURL)
-    document.getElementById(uid).setAttribute('download', filename + '.' + extension)
+    document.getElementById('audio_' + uid).appendChild(myAudio)
+    document.getElementById('audio_' + uid).setAttribute('src', fileURL)
+    document.getElementById('audio_' + uid).setAttribute('download', filename)
     return myAudio
   })
 }
 
 const getAnyUrl = (uid, extension, filename) => {
   store.dispatch(GETFILES, uid).then(resp => {
-    const fileURL = window.URL.createObjectURL(new Blob([resp.data], { type: 'text/plain' }))
-    document.getElementById(uid).setAttribute('href', fileURL)
-    document.getElementById(uid).setAttribute('download', filename + '.' + extension)
+    const fileURL = window.URL.createObjectURL(new Blob([resp.data]))
+    document.getElementById('any_' + uid).setAttribute('href', fileURL)
+    document.getElementById('any_' + uid).setAttribute('download', filename)
+    // получаем arrayBuffer из Blob
     return fileURL
   })
 }
@@ -81,7 +89,7 @@ const getAnyUrl = (uid, extension, filename) => {
     v-if="pics.includes(props.file.file_name.split('.').pop())"
   >
     <a
-      :id="props.file.uid"
+      :id="'img_' + props.file.uid"
       :href="'https://web.leadertask.com/User/Files/GetFile?uid=' + props.file.uid"
       target="_blank"
     >
@@ -99,8 +107,14 @@ const getAnyUrl = (uid, extension, filename) => {
   <span
     v-if="movies.includes(props.file.file_name.split('.').pop())"
   >
-    <a
-      :id="props.file.uid"
+
+   <video width="400" controls="controls" preload="metadata" :id="'video_' + props.file.uid">
+           {{ getMovUrl(props.file.uid, props.file.file_name.split('.').pop(), props.file.file_name) }}
+  <source :src="'https://web.leadertask.com/User/Files/GetFile?uid=' + props.file.uid + '#t=0.5'" type="video/mp4">
+</video>
+    <br/>
+  <!--  <a
+      :id="'mov_' + props.file.uid"
       :href="'https://web.leadertask.com/User/Files/GetFile?uid=' + props.file.uid"
       target="_blank"
     >
@@ -118,8 +132,8 @@ const getAnyUrl = (uid, extension, filename) => {
           fill="#757575"
         />
       </svg>
-      {{ getMovUrl(props.file.uid, props.file.file_name.split('.').pop(), props.file.file_name) }}
-    </a>
+
+    </a> -->
   </span>
 
   <!-- Docs -->
@@ -127,7 +141,7 @@ const getAnyUrl = (uid, extension, filename) => {
     v-if="docs.includes(props.file.file_name.split('.').pop())"
   >
     <a
-      :id="props.file.uid"
+      :id="'doc_' + props.file.uid"
       :href="'https://web.leadertask.com/User/Files/GetFile?uid=' + props.file.uid"
       target="_blank"
     >
@@ -171,7 +185,7 @@ const getAnyUrl = (uid, extension, filename) => {
   >
     {{ getAudioUrl(props.file.uid, props.file.file_name.split('.').pop(), props.file.file_name) }}
     <audio
-      :id="props.file.uid"
+      :id="'audio_' + props.file.uid"
       ref="audioPlayer"
       :src="'https://web.leadertask.com/User/Files/GetFile?uid=' + props.uid"
       controls
@@ -186,7 +200,7 @@ const getAnyUrl = (uid, extension, filename) => {
     v-else
   >
     <a
-      :id="props.file.uid"
+      :id="'any_' + props.file.uid"
       :href="'https://web.leadertask.com/User/Files/GetFile?uid=' + props.file.uid"
       target="_blank"
     >

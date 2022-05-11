@@ -45,12 +45,13 @@ export default {
 <template>
   <aside
     id="aside-right"
-    class="bg-white dark:bg-gray-900 p-3 w-96 fixed top-0 z-40 h-screen transition-position dark:border-r dark:border-gray-800 custom-column"
+    class="bg-white dark:bg-gray-900 p-3 w-96 fixed top-0 z-40 h-screen transition-position dark:border-r dark:border-gray-800 custom-column pt-5"
     :class="[ isPropertiesMobileExpanded ? 'right-0' : '-right-96', isPropertiesMobileExpanded ? 'block' : 'hidden']"
   >
     <Icon
       :path="close.path"
-      class="text-gray-600 dark:text-white float-right mt-0.5 cursor-pointer"
+      class="text-gray-600 dark:text-white float-right cursor-pointer"
+      :class="selectedTask.uid_parent !== '00000000-0000-0000-0000-000000000000' && tasks[selectedTask.uid_parent] ? 'mt-3' : 'mt-0.5'"
       :box="close.viewBox"
       :width="close.width"
       :height="close.height"

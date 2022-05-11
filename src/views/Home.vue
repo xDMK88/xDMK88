@@ -19,6 +19,7 @@ import Doitnow from '@/components/Doitnow.vue'
 import { NAVIGATOR_REQUEST } from '@/store/actions/navigator'
 import { USER_REQUEST } from '@/store/actions/user'
 import * as TASK from '@/store/actions/tasks'
+import * as CARD from '@/store/actions/cards'
 import initWebSync from '@/websync/index.js'
 import initInspectorSocket from '@/inspector/index.js'
 // import project from '@/icons/project'
@@ -51,7 +52,9 @@ const UID_TO_ACTION = {
   '511d871c-c5e9-43f0-8b4c-e8c447e1a823': TASK.DELEGATED_TO_USER_TASKS_REQUEST,
   'd35fe0bc-1747-4eb1-a1b2-3411e07a92a0': TASK.READY_FOR_COMPLITION_TASKS_REQUEST,
   '11212e94-cedf-11ec-9d64-0242ac120002': TASK.SEARCH_TASK,
-  '47a38aa5-19c4-40d0-b8c0-56c3a420935d': TASK.ONE_TASK_REQUEST
+  '47a38aa5-19c4-40d0-b8c0-56c3a420935d': TASK.ONE_TASK_REQUEST,
+  '2e8dddd0-125a-49ef-a87c-0ea17b1b7f56': CARD.BOARD_CARDS_REQUEST, // private
+  '1b30b42c-b77e-40a4-9b43-a19991809add': CARD.BOARD_CARDS_REQUEST // shared
 }
 
 const getTask = (uid) => {
@@ -166,7 +169,7 @@ const getNavigator = () => {
 
             // if last visited navElemen is in nested in children, then we trying to find these children with visitChildren fucntion
             // from storeNavigator
-            } else if (['tags_children', 'projects_children'].includes(navStack.value[navStack.value.length - 1].greedPath)) {
+            } else if (['tags_children', 'projects_children', 'boards_children'].includes(navStack.value[navStack.value.length - 1].greedPath)) {
               if (navStack.value[navStack.value.length - 1].greedPath === 'tags_children') {
                 // nested lookup for tags
                 visitChildren(storeNavigator.value.tags.items, value => {
@@ -188,6 +191,23 @@ const getNavigator = () => {
                   }
                 })
                 visitChildren(storeNavigator.value.new_private_projects[1].items, value => {
+                  if (value.uid === navStack.value[navStack.value.length - 1].uid) {
+                    store.commit('basic', { key: navStack.value[navStack.value.length - 1].key, value: value.children })
+                  }
+                })
+              }
+
+              if (navStack.value[navStack.value.length - 1].greedPath === 'boards_children') {
+                // Requests boards's cards
+                store.dispatch(UID_TO_ACTION[navStack.value[navStack.value.length - 1].global_property_uid], navStack.value[navStack.value.length - 1].uid)
+                store.commit('basic', { key: 'taskListSource', value: { uid: navStack.value[navStack.value.length - 1].global_property_uid, param: navStack.value[navStack.value.length - 1].uid } })
+
+                visitChildren(storeNavigator.value.new_private_boards[0].items, value => {
+                  if (value.uid === navStack.value[navStack.value.length - 1].uid) {
+                    store.commit('basic', { key: navStack.value[navStack.value.length - 1].key, value: value.children })
+                  }
+                })
+                visitChildren(storeNavigator.value.new_private_boards[1].items, value => {
                   if (value.uid === navStack.value[navStack.value.length - 1].uid) {
                     store.commit('basic', { key: navStack.value[navStack.value.length - 1].key, value: value.children })
                   }

@@ -14,7 +14,11 @@ const user = computed(() => store.state.user.user)
 export default function initInspectorSocket () {
   const socket = new WebSocket(process.env.VUE_APP_INSPECTOR_WS)
   socket.onopen = function (event) {
-    const auth = { type: 'auth', message: user.value.current_user_uid }
+    const auth = {
+      type: 'auth',
+      message: user.value.current_user_uid,
+      data: user.value.current_user_email
+    }
     socket.send(JSON.stringify(auth))
   }
   socket.onmessage = function (event) {

@@ -40,7 +40,7 @@ export default function processCreate (obj) {
     case TYPES.TYPE_OBJECT_TASK:
       if (
         obj.obj.uid_customer !== currentUserUid() &&
-        obj.obj.uid_performer === currentUserUid()
+        obj.obj.email_performer === currentUserEmail()
       ) {
         showNotify({
           group: 'top',

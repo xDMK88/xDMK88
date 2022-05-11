@@ -14,7 +14,10 @@ const actions = {
   [CARD.BOARD_CARDS_REQUEST]: ({ commit, rootState }, boardUid) => {
     return new Promise((resolve, reject) => {
       commit(CARD.BOARD_CARDS_REQUEST)
-      const url = process.env.VUE_APP_LEADERTASK_API + 'api/v1/cards/byboard?uid=' + boardUid
+      const url =
+        process.env.VUE_APP_LEADERTASK_API +
+        'api/v1/cards/byboard?uid=' +
+        boardUid
       axios({ url: url, method: 'GET' })
         .then((resp) => {
           console.log('REQUESTING CARDS, THIS IS RESPONSE: ', resp)
@@ -48,10 +51,10 @@ const mutations = {
     const board = resp.rootState.boards.boards[resp.boardUid]
     const stages = board.stages
     for (const stage of stages) {
-      stage.tasks = []
+      stage.cards = []
       for (const card of resp.data.cards) {
         if (stage.UID === card.uid_stage) {
-          stage.tasks.push(card)
+          stage.cards.push(card)
         }
       }
     }

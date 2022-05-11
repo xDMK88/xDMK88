@@ -280,7 +280,7 @@
               :no-html="true"
               :class="{ 'uppercase': !props.node.info._isEditable && colors[props.node.info.uid_marker] && colors[props.node.info.uid_marker].uppercase, 'text-gray-500': props.node.info.status == 1 || props.node.info.status == 7, 'line-through': props.node.info.status == 1 || props.node.info.status == 7, 'font-extrabold': props.node.info.readed == 0 }"
               :style="{ color: getValidForeColor(colors[props.node.info.uid_marker]?.fore_color) }"
-              @focusout="clearTaskFocus($event, props.node.info); props.node.info._isEditable = false"
+              @focusout="clearTaskFocus(props.node.info)"
               @dblclick.stop="editTaskName(props.node.id)"
               @keyup.enter="updateTask($event, props.node.info); props.node.info._isEditable = false;"
             />
@@ -741,12 +741,12 @@ export default {
       store.dispatch(TASK.SELECT_TASK, task)
       nextTick(() => { document.getElementById(task.uid).parentNode.click() })
     }
-    const clearTaskFocus = (event, task) => {
+    const clearTaskFocus = (task) => {
       console.log(task.name)
       if (task.name === '') {
         removeTask(task.uid)
-      } else {
-        updateTask(event, task)
+      } else if (task.name !== '') {
+        updateTask(task)
       }
       if (isPropertiesMobileExpanded.value) {
         store.dispatch('asidePropertiesToggle', false)

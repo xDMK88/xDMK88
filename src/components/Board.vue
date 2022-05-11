@@ -1,30 +1,30 @@
 <template>
   <div id="Board">
-    <div class="flex justify-center">
-      <div class="min-h-screen flex overflow-x-scroll py-12">
+    <div class="flex justify-start">
+      <div class="min-h-screen flex overflow-x-scroll">
         <div
-          v-for="column in columns"
-          :key="column.title"
-          class="bg-gray-100 rounded-lg px-3 py-3 column-width mr-4"
+          v-for="column in storeCards"
+          :key="column.Name"
+          class="rounded-lg p-3 column-width"
         >
           <p
             class="text-gray-700 font-semibold font-sans tracking-wide text-sm"
           >
-            {{ column.title }}
+            {{ column.Name }}
           </p>
           <draggable
             :list="column.tasks"
             ghost-class="ghost-card"
             item-key="id"
-            group="tasks"
-            :animation="200"
+            group="cards"
+            :animation="100"
             @start="drag = true"
             @end="drag = false"
           >
             <template #item="{ element }">
               <task-card
                 :task="element"
-                class="mt-3 cursor-move"
+                class="mt-2 cursor-move"
               />
             </template>
           </draggable>
@@ -38,6 +38,9 @@
 import draggable from 'vuedraggable'
 import TaskCard from './TaskCard.vue'
 export default {
+  props: {
+    storeCards: Array
+  },
   components: {
     TaskCard,
     draggable
@@ -76,6 +79,29 @@ export default {
               title: 'Test checkout flow',
               date: 'Sep 15',
               type: 'QA'
+            }
+          ]
+        },
+        {
+          title: 'In Progress',
+          tasks: [
+            {
+              id: 6,
+              title: 'Design shopping cart dropdown',
+              date: 'Sep 9',
+              type: 'Design'
+            },
+            {
+              id: 7,
+              title: 'Add discount code to checkout page',
+              date: 'Sep 14',
+              type: 'Feature Request'
+            },
+            {
+              id: 8,
+              title: 'Provide documentation on integrations',
+              date: 'Sep 12',
+              type: 'Backend'
             }
           ]
         },

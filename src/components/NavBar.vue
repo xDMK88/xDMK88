@@ -154,12 +154,12 @@ const requestLastVisitedNav = () => {
 
       // If last navElement is related to processed navigator instance with 'new_' prefix
       // then we pass entire object from storeNavigator
-      if (['new_private_projects', 'new_emps', 'new_delegate'].includes(navStack.value[navStack.value.length - 1].greedPath)) {
+      if (['new_private_projects', 'new_emps', 'new_delegate', 'new_private_boards'].includes(navStack.value[navStack.value.length - 1].greedPath)) {
         store.commit('basic', { key: navStack.value[navStack.value.length - 1].key, value: storeNavigator.value[navStack.value[navStack.value.length - 1].greedPath] })
 
-      // if last visited navElemen is in nested in children, then we trying to find these children with visitChildren fucntion
+      // if last visited navElem is in nested in children, then we trying to find these children with visitChildren function
       // from storeNavigator
-      } else if (['tags_children', 'projects_children'].includes(navStack.value[navStack.value.length - 1].greedPath)) {
+      } else if (['tags_children', 'projects_children', 'boards_children'].includes(navStack.value[navStack.value.length - 1].greedPath)) {
         if (navStack.value[navStack.value.length - 1].greedPath === 'tags_children') {
           // nested lookup for tags
           visitChildren(storeNavigator.value.tags.items, value => {
@@ -181,6 +181,24 @@ const requestLastVisitedNav = () => {
             }
           })
           visitChildren(storeNavigator.value.new_private_projects[1].items, value => {
+            if (value.uid === navStack.value[navStack.value.length - 1].uid) {
+              store.commit('basic', { key: navStack.value[navStack.value.length - 1].key, value: value.children })
+            }
+          })
+        }
+
+        // nested lookup for shared and private boards
+        if (navStack.value[navStack.value.length - 1].greedPath === 'boards_children') {
+          // Requests project's tasks
+          store.dispatch(UID_TO_ACTION[navStack.value[navStack.value.length - 1].global_property_uid], navStack.value[navStack.value.length - 1].uid)
+          store.commit('basic', { key: 'cardSource', value: { uid: navStack.value[navStack.value.length - 1].global_property_uid, param: navStack.value[navStack.value.length - 1].uid } })
+
+          visitChildren(storeNavigator.value.new_private_boards[0].items, value => {
+            if (value.uid === navStack.value[navStack.value.length - 1].uid) {
+              store.commit('basic', { key: navStack.value[navStack.value.length - 1].key, value: value.children })
+            }
+          })
+          visitChildren(storeNavigator.value.new_private_boards[1].items, value => {
             if (value.uid === navStack.value[navStack.value.length - 1].uid) {
               store.commit('basic', { key: navStack.value[navStack.value.length - 1].key, value: value.children })
             }

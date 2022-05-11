@@ -29,6 +29,7 @@ import {
   RESET_STATE_NAVIGATOR
 } from '../actions/navigator'
 import { PUSH_PROJECT } from '../actions/projects'
+import { PUSH_BOARD } from '../actions/boards'
 import { PUSH_DEPARTMENT } from '../actions/departments'
 import { ADD_TASK_TAGS } from '../actions/tasks'
 import { visitChildren } from '../helpers/functions'
@@ -122,14 +123,20 @@ const actions = {
           }
 
           if (resp.data.private_boards.items) {
+            const myPrivateBoards = []
             visitChildren(resp.data.private_boards.items, (value) => {
               value.global_property_uid = resp.data.private_boards.uid
+              myPrivateBoards.push(value)
             })
+            commit(PUSH_BOARD, myPrivateBoards)
           }
           if (resp.data.common_projects.items) {
+            const myCommonBoards = []
             visitChildren(resp.data.common_boards.items, (value) => {
               value.global_property_uid = resp.data.common_boards.uid
+              myCommonBoards.push(value)
             })
+            commit(PUSH_BOARD, myCommonBoards)
           }
           console.log(resp.data.deps.items)
           if (resp.data.deps.items) {

@@ -12,6 +12,7 @@ import employees from './modules/employees'
 import departments from './modules/departments'
 import projects from './modules/projects'
 import boards from './modules/boards'
+import cards from './modules/cards'
 import colors from './modules/colors'
 import localization from './modules/localization'
 import inspector from './modules/inspector'
@@ -145,6 +146,7 @@ export default createStore({
     departments,
     projects,
     boards,
+    cards,
     colors,
     localization,
     inspector

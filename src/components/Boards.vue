@@ -72,7 +72,7 @@ const gotoChildren = (value) => {
     store.dispatch(UID_TO_ACTION[value.global_property_uid], value.uid)
     store.commit('basic', { key: 'cardSource', value: { uid: value.global_property_uid, param: value.uid } })
   }
-  store.commit(CARD.CLEAN_UP_LOADED_CARDS)
+  // store.commit(CARD.CLEAN_UP_LOADED_CARDS)
 
   const navElem = {
     name: value.name,

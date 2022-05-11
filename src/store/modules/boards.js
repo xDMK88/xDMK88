@@ -22,6 +22,11 @@ const actions = {
 }
 
 const mutations = {
+  [BOARD.PUSH_BOARD]: (state, boards) => {
+    for (const board of boards) {
+      state.boards[board.uid] = board
+    }
+  },
   [BOARD.SELECT_BOARD]: (state, board) => {
     state.selectedBoard = board
   }

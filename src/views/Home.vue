@@ -8,6 +8,7 @@ import MainSection from '@/components/MainSection.vue'
 import Projects from '@/components/Projects.vue'
 import Boards from '@/components/Boards.vue'
 import ProjectsChildren from '@/components/ProjectsChildren.vue'
+import BoardsChildren from '@/components/BoardsChildren.vue'
 import Employees from '@/components/Employees.vue'
 import Tags from '@/components/Tags.vue'
 import Colors from '@/components/Colors.vue'
@@ -246,6 +247,10 @@ onBeforeMount(() => {
       <projects-children
         v-if="greedPath === 'projects_children'"
         :projects="greedSource"
+      />
+      <boards-children
+        v-if="greedPath === 'boards_children'"
+        :boards="greedSource"
       />
       <employees
         v-if="greedPath === 'new_emps'"

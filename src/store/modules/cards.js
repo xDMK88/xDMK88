@@ -3,7 +3,7 @@ import { notify } from 'notiwind'
 import * as CARD from '../actions/cards'
 
 const state = {
-  cards: false,
+  cards: [],
   status: '',
   hasLoadedOnce: false
 }
@@ -41,6 +41,7 @@ const actions = {
 
 const mutations = {
   [CARD.BOARD_CARDS_REQUEST]: (state) => {
+    state.cards = []
     state.status = 'loading'
   },
   [CARD.BOARD_CARDS_SUCCESS]: (state, resp) => {

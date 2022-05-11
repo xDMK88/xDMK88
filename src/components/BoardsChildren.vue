@@ -89,7 +89,7 @@ const gotoChildren = (value) => {
   }
   store.commit('pushIntoNavStack', navElem)
   store.commit('basic', { key: 'greedSource', value: value.children })
-  store.commit('basic', { key: 'greedPath', value: 'cards_children' })
+  store.commit('basic', { key: 'greedPath', value: 'boards_children' })
 }
 </script>
 

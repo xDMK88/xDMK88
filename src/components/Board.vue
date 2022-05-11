@@ -1,11 +1,11 @@
 <template>
   <div id="Board">
     <div class="flex justify-start">
-      <div class="min-h-screen flex overflow-x-scroll">
+      <div class="max-h-[100%] flex overflow-x-scroll">
         <div
           v-for="column in storeCards"
           :key="column.Name"
-          class="rounded-lg p-3 column-width"
+          class="bg-gray-50 rounded-lg p-3 column-width mr-3"
         >
           <p
             class="text-gray-700 font-semibold font-sans tracking-wide text-sm"

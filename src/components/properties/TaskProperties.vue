@@ -699,6 +699,7 @@ export default {
       //  ресет Повтор
       moveCursorToEnd,
       ispolnit,
+      user,
       dayWeekMassive: [],
       SaveRepeat,
       tabChanged,
@@ -1111,6 +1112,8 @@ export default {
     },
     onChangePerformer: function (userEmail) {
       console.log('onChangePerformer', userEmail)
+      const user = this.$store.state.user.user
+      const taskUid = this.selectedTask.uid
       const data = {
         uid: this.selectedTask.uid,
         value: userEmail
@@ -1124,6 +1127,10 @@ export default {
           this.selectedTask.type = resp.data.type
         }
       )
+      if (user.current_user_email !== userEmail) {
+        this.$store.commit(TASK.REMOVE_TASK, taskUid)
+        this.$store.dispatch('asidePropertiesToggle', false)
+      }
     },
     onChangeDates: function (begin, end) {
       const data = {

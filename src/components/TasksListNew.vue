@@ -397,7 +397,7 @@
 </template>
 
 <script>
-import { computed, ref, nextTick, watch } from 'vue'
+import { computed, ref, nextTick } from 'vue'
 import treeview from 'vue3-treeview'
 import { useStore } from 'vuex'
 import Icon from '@/components/Icon.vue'
@@ -467,9 +467,6 @@ export default {
     const isDark = computed(() => store.state.darkMode)
     const navStack = computed(() => store.state.navbar.navStack)
 
-    const settings = computed(() => {
-      return store.state.navigator.navigator.settings
-    })
     const lastVisitedDate = computed(() => {
       return (navStack.value && navStack.value.length && navStack.value[navStack.value.length - 1].value && navStack.value[navStack.value.length - 1].value.uid && navStack.value[navStack.value.length - 1].value.uid === '901841d9-0016-491d-ad66-8ee42d2b496b' && navStack.value[navStack.value.length - 1].value.param ? new Date(navStack.value[navStack.value.length - 1].value.param) : new Date())
     })
@@ -486,27 +483,6 @@ export default {
     const date = computed(() => {
       return lastVisitedDate.value.getDate() + '-' + lastVisitedDate.value.getMonth() + '-' + lastVisitedDate.value.getFullYear()
     })
-    const todayDate = new Date().getDate() + '-' + new Date().getMonth() + '-' + new Date().getFullYear()
-
-    watch(() => {
-      if (settings.value) {
-        if (settings.value.nav_show_overdue) {
-          if (date.value === todayDate) {
-            store.dispatch(TASK.OVERDUE_TASKS_REQUEST)
-              .then(() => {
-                store.dispatch(TASK.TASKS_REQUEST, navStack.value[0].value.param)
-                  .then(() => {
-                    for (const idx in overdue.value.tasks) {
-                      console.log(overdue.value.tasks[idx])
-                      store.commit('ADD_TASK', overdue.value.tasks[idx])
-                    }
-                  })
-              })
-          }
-        }
-      }
-    })
-
     const clickAndShift = (arg) => {
       selectedTasks.value[arg.id] = arg.info
     }
@@ -895,7 +871,6 @@ export default {
       editTaskName,
       navStack,
       date,
-      todayDate,
       overdue,
       store,
       storeTasks,

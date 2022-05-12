@@ -1,9 +1,11 @@
 import {
   MESSAGES_REQUEST,
+  INSPECTOR_MESSAGES_REQUEST,
   CREATE_MESSAGE_REQUEST,
   DELETE_MESSAGE_REQUEST,
   MESSAGES_ERROR,
   MESSAGES_SUCCESS,
+  INSPECTOR_MESSAGES_SUCCESS,
   REFRESH_MESSAGES
 } from '../actions/taskmessages'
 import {
@@ -27,6 +29,7 @@ import axios from 'axios'
 const state = {
   /* messages */
   messages: [],
+  inspectorMessages: [],
   status: '',
   hasLoadedOnce: false,
   /* files */
@@ -138,6 +141,27 @@ const actions = {
         })
     })
   },
+  [INSPECTOR_MESSAGES_REQUEST]: ({ commit, dispatch }, taskUid) => {
+    return new Promise((resolve, reject) => {
+      commit(MESSAGES_REQUEST)
+      const url = process.env.VUE_APP_INSPECTOR_API + 'message?uid_task=' + taskUid
+      axios({ url: url, method: 'GET' })
+        .then(resp => {
+          commit(INSPECTOR_MESSAGES_SUCCESS, resp)
+          resolve(resp)
+        }).catch(err => {
+          commit(MESSAGES_ERROR, err)
+          notify({
+            group: 'api',
+            title: 'REST API Error, please make screenshot',
+            action: MESSAGES_REQUEST,
+            text: err.response.data
+          }, 15000)
+          dispatch(AUTH_LOGOUT)
+          reject(err)
+        })
+    })
+  },
   [CREATE_MESSAGE_REQUEST]: ({ commit, dispatch }, data) => {
     return new Promise((resolve, reject) => {
       commit(MESSAGES_REQUEST)
@@ -180,9 +204,10 @@ const actions = {
     commit(MESSAGES_REQUEST)
 
     const messages = dispatch(MESSAGES_REQUEST, uid)
+    const inspectorMessages = dispatch(INSPECTOR_MESSAGES_REQUEST, uid)
     const files = dispatch(FILES_REQUEST, uid)
 
-    return Promise.all([messages, files])
+    return Promise.all([messages, files, inspectorMessages])
       .then(() => {
         commit(MERGE_FILES_WITH_MESSAGES)
       })
@@ -196,6 +221,12 @@ const mutations = {
   [MESSAGES_SUCCESS]: (state, resp) => {
     state.status = 'success'
     state.messages = resp.data.msgs
+    state.hasLoadedOnce = true
+  },
+  [INSPECTOR_MESSAGES_SUCCESS]: (state, resp) => {
+    console.log('inspectors resp ', resp.data)
+    state.status = 'success'
+    state.inspectorMessages = resp.data
     state.hasLoadedOnce = true
   },
   [MESSAGES_ERROR]: state => {
@@ -256,10 +287,19 @@ const mutations = {
     state.files = []
   },
   [MERGE_FILES_WITH_MESSAGES]: state => {
+    console.log('MERGING FILES WITH MESSAGES')
+    state.inspectorMessages.forEach(item => {
+      item.msg = 'helloworld'
+      item.uid_creator = 'inspector'
+      item.date_create = item.creation_date
+    })
+
     state.files.forEach(item => {
       item.msg = item.file_name
     })
+
     state.messages = state.messages.concat(state.files)
+    state.messages = state.messages.concat(state.inspectorMessages)
     state.messages.sort((a, b) => {
       return new Date(a.date_create) - new Date(b.date_create)
     })

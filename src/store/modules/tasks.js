@@ -1,10 +1,11 @@
 import {
-  FILES_REQUEST,
-  MERGE_FILES_WITH_MESSAGES,
+  // FILES_REQUEST,
+  // MERGE_FILES_WITH_MESSAGES,
   REFRESH_FILES
 } from '@/store/actions/taskfiles'
 import {
-  MESSAGES_REQUEST,
+  // MESSAGES_REQUEST,
+  // INSPECTOR_MESSAGES_REQUEST,
   REFRESH_MESSAGES
 } from '@/store/actions/taskmessages'
 import axios from 'axios'
@@ -746,17 +747,18 @@ const actions = {
     commit(REFRESH_MESSAGES)
     commit(TASK.SELECT_TASK, data)
 
-    if (data.has_msgs && !data.has_files) {
-      dispatch(MESSAGES_REQUEST, data.uid)
-    }
-    if (data.has_files && !data.has_msgs) {
-      dispatch(FILES_REQUEST, data.uid).then(() => {
-        commit(MERGE_FILES_WITH_MESSAGES)
-      })
-    }
-    if (data.has_files && data.has_msgs) {
-      dispatch('fetchMessagesAndFiles', data.uid)
-    }
+    // dispatch(INSPECTOR_MESSAGES_REQUEST, data.uid)
+    // if (data.has_msgs && !data.has_files) {
+    //   dispatch(MESSAGES_REQUEST, data.uid)
+    // }
+    // if (data.has_files && !data.has_msgs) {
+    //   dispatch(FILES_REQUEST, data.uid).then(() => {
+    //     commit(MERGE_FILES_WITH_MESSAGES)
+    //   })
+    // }
+    // if (data.has_files && data.has_msgs) {
+    dispatch('fetchMessagesAndFiles', data.uid)
+    // }
   },
   [TASK.CHANGE_TASK_READ]: ({ commit, dispatch }, uid) => {
     return new Promise((resolve, reject) => {

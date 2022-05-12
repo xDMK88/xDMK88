@@ -40,6 +40,7 @@
         <div
           v-if="
             message.uid_creator !== currentUserUid &&
+            message.uid_creator !== 'inspector' &&
               !message.uid_file &&
               !showOnlyFiles
           "
@@ -66,6 +67,42 @@
               <div
                 v-linkify:options="{ className: 'text-blue-600' }"
                 v-html="message.msg.replaceAll('\n', '<br/>')"
+              />
+              <div
+                v-if="message.date_create"
+                class="time-chat dark:text-gray-300"
+              >
+                {{ getMessageTimeString(message.date_create) }}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Chat message inspector -->
+        <div
+          v-if="message.uid_creator === 'inspector' && !message.uid_file && !showOnlyFiles"
+        >
+          <div
+            v-if="
+              index == 0 ||
+                (taskMessages[index - 1] &&
+                  taskMessages[index - 1].uid_creator != message.uid_creator)
+            "
+            class="flex"
+          >
+            <p
+              class="name-chat-custom dark:text-gray-100 font-bold"
+            >
+              Inspector
+            </p>
+          </div>
+          <div class="chat-main">
+            <div
+              class="mt-1 msg-custom-chat-left font-semibold text-sm bg-blue-100 dark:bg-gray-800 dark:text-gray-100"
+            >
+              <div
+                v-linkify:options="{ className: 'text-blue-600' }"
+                v-html="getInspectorMessage(message.type).replaceAll('\n', '<br/>')"
               />
               <div
                 v-if="message.date_create"
@@ -245,9 +282,19 @@ export default {
     print (val) {
       console.log(val)
     },
+    getInspectorMessage (type) {
+      switch (type) {
+        case 1: return 'Вам все понятно по задаче? вопросов нет?'
+        case 2: return 'Вы не ответили после того как получили задачу от Семен Петровича. Пожалуйста напишите вопросы если есть, или нажмите “Вопросов нет- приступаю - будет готово завтра до 14:00'
+        case 3: return 'Вы просрочили задачу - напишите причину почему задача еще не выполнена и когда ожидать выполнения? А лучше свяжитесь с заказачиком и обсудите эту ситуацию'
+      }
+    },
     getMessageTimeString (dateCreate) {
       // добавляем Z в конец, чтобы он посчитал что это UTC время
-      const date = new Date(dateCreate + 'Z')
+      if (dateCreate[dateCreate.length - 1] !== 'Z') {
+        dateCreate = dateCreate + 'Z'
+      }
+      const date = new Date(dateCreate)
       return date.toLocaleString('default', {
         hour: 'numeric',
         minute: 'numeric'

@@ -156,7 +156,7 @@ const copyurl = (uid) => {
         type="text"
         placeholder="Название проекта"
         class="mt-2 rounded-xl bg-gray-100 font-bold text-gray-700 dark:text-gray-100 w-full border-none ring-0 outline-none p-3 bg-transparent"
-        :disabled="selectedProject.email_creator != user.current_user_email"
+        :disabled="selectedProject.email_creator.toLowerCase() != user.current_user_email.toLowerCase()"
         @input="hasChanged = true"
       >
       <div
@@ -166,7 +166,7 @@ const copyurl = (uid) => {
           v-model="selectedProject.color"
           :update="() => hasChanged = true "
           :label="'Цвет проекта'"
-          :disabled="selectedProject.email_creator != user.current_user_email"
+          :disabled="selectedProject.email_creator.toLowerCase() != user.current_user_email.toLowerCase()"
         />
       </div>
       <hr class="my-6">
@@ -223,7 +223,7 @@ const copyurl = (uid) => {
           </div>
         </template>
         <div
-          v-if="selectedProject.email_creator == user.current_user_email"
+          v-if="selectedProject.email_creator.toLowerCase() == user.current_user_email.toLowerCase()"
           class="flex items-center justify-center my-6 cursor-pointer"
         >
           <Icon
@@ -246,12 +246,12 @@ const copyurl = (uid) => {
           :key="pindex"
         >
           <div
-            v-if="employeesByEmail[employee]"
+            v-if="employeesByEmail[employee.toLowerCase()]"
             v-show="pindex < 4 || showAllMembers"
             class="flex items-center bg-white dark:bg-gray-700 rounded-xl shadow h-30 px-3 py-5 mt-1"
           >
             <img
-              :src="employeesByEmail[employee].fotolink"
+              :src="employeesByEmail[employee.toLowerCase()].fotolink"
               class="rounded-lg mx-2 my-auto"
               width="38"
               height="38"
@@ -261,20 +261,20 @@ const copyurl = (uid) => {
                 <p
                   class="font-normal cursor-pointer"
                 >
-                  {{ employeesByEmail[employee].name }}
+                  {{ employeesByEmail[employee.toLowerCase()].name }}
                 </p>
                 <icon
-                  v-if="employeesByEmail[employee].uid !== user.current_user_uid && selectedProject.email_creator == user.current_user_email"
+                  v-if="employeesByEmail[employee.toLowerCase()].uid !== user.current_user_uid && selectedProject.email_creator.toLowerCase() == user.current_user_email.toLowerCase()"
                   :path="close.path"
                   :width="10"
                   :height="10"
                   :box="close.viewBox"
                   class="text-grayemployeesByEmail[employee]-400 cursor-pointer hover:text-gray-800"
-                  @click="removeMember(employeesByEmail[employee])"
+                  @click="removeMember(employeesByEmail[employee.toLowerCase()])"
                 />
               </div>
               <p class="font-light text-xs break-all">
-                {{ employeesByEmail[employee].email }}
+                {{ employeesByEmail[employee.toLowerCase()].email }}
               </p>
             </div>
           </div>
@@ -288,7 +288,7 @@ const copyurl = (uid) => {
         </p>
       </div>
       <button
-        v-if="selectedProject.email_creator == user.current_user_email"
+        v-if="selectedProject.email_creator.toLowerCase() == user.current_user_email.toLowerCase()"
         class="w-full bg-gray-100 dark:bg-gray-800 rounded-xl mt-4 p-3 text-gray-700 dark:text-gray-100 font-bold hover:bg-gray-200 hover:dark:bg-gray-700"
         :class="{ 'bg-orange-400 dark:bg-orange-400 hover:bg-orange-500 hover:dark:bg-orange-500': hasChanged }"
         @click="createOrUpdateProject(selectedProject)"
@@ -296,14 +296,14 @@ const copyurl = (uid) => {
         {{ selectedProject.uid ? 'Сохранить' : 'Создать' }}
       </button>
       <button
-        v-if="selectedProject.email_creator == user.current_user_email && selectedProject.uid"
+        v-if="selectedProject.email_creator.toLowerCase() == user.current_user_email.toLowerCase() && selectedProject.uid"
         class="w-full bg-red-600 rounded-xl mt-4 p-3 text-white font-bold hover:bg-red-800"
         @click="showConfirm = true"
       >
         Удалить
       </button>
       <button
-        v-if="selectedProject.email_creator !== user.current_user_email"
+        v-if="selectedProject.email_creator.toLowerCase() !== user.current_user_email.toLowerCase()"
         class="w-full bg-gray-100 rounded-xl mt-4 p-3 text-gray-700 font-bold hover:bg-gray-200"
         @click="showConfirmQuit = true"
       >
@@ -313,7 +313,7 @@ const copyurl = (uid) => {
         class="w-full bg-gray-100 rounded-xl mt-4 p-3 text-gray-700 font-bold hover:bg-gray-200"
         @click="copyurl(selectedProject.uid)"
       >
-       Скопировать как ссылку
+        Скопировать как ссылку
       </button>
     </div>
   </div>

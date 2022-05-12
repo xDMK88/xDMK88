@@ -45,7 +45,6 @@ const getDefaultState = () => {
 }
 
 function getAllMembersByDepartmentUID (resp, departmentUID) {
-  console.log(resp.data.emps.items)
   const employeesStuck = []
   for (const employee of resp.data.emps.items) {
     if (employee.uid_dep === departmentUID) {
@@ -139,7 +138,6 @@ const actions = {
             })
             commit(PUSH_BOARD, myCommonBoards)
           }
-          console.log(resp.data.deps.items)
           if (resp.data.deps.items) {
             for (const department of resp.data.deps.items) {
               commit(PUSH_DEPARTMENT, department)
@@ -332,6 +330,7 @@ const mutations = {
         dep: department,
         items: getAllMembersByDepartmentUID(resp, department.uid)
       }
+      console.log(resp)
       newEmps.push(dep)
     }
     newEmps.push({
@@ -342,6 +341,7 @@ const mutations = {
       )
     })
     resp.data.new_emps = newEmps
+    console.log(resp.data.new_emps)
     // Merge common projects and private projects into my own data structure
     // Array of objects where object is { dep: 'Dependency name', items: items }
     const newCommonProjects = []
@@ -395,7 +395,7 @@ const mutations = {
       i++
     ) {
       if (
-        state.navigator.deps.items[i].uid === departament.uid
+        state.navigator.deps.items[i].uid !== departament.uid
       ) {
         state.navigator.deps.items.splice(i, 1)
         //  state.navigator.deps.items.splice(state.navigator.deps.items.indexOf(department.uid), 1)

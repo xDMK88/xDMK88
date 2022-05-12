@@ -21,6 +21,7 @@ const employees = computed(() => store.state.employees.employees)
 const employeesByEmail = computed(() => store.state.employees.employeesByEmail)
 const showConfirm = ref(false)
 const hasChanged = ref(false)
+const showConfirmQuit = ref(false)
 const showAllMembers = ref(false)
 function uuidv4 () {
   return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
@@ -39,6 +40,7 @@ function arrayRemove (arr, value) {
     return ele !== value
   })
 }
+
 const addRemoveMember = (email) => {
   hasChanged.value = true
   if (email.included) {
@@ -54,23 +56,47 @@ const removeMember = (member) => {
 const createOrUpdateDepartment = (department) => {
   if (!department.uid) {
     department.uid = uuidv4()
+    console.log('Обработчик на добавление', department)
     store.dispatch(CREATE_DEPARTMENT_REQUEST, department)
       .then(() => {
         hasChanged.value = false
         store.dispatch('asidePropertiesToggle', false)
         store.commit(NAVIGATOR_PUSH_DEPARTAMENT, [department])
         store.commit(PUSH_DEPARTMENT, department)
-        selectedDepartment.value = department
       })
   } else {
-    store.dispatch(UPDATE_DEPARTMENT_REQUEST, department)
+    console.log('Обработчик на обновление', department)
+    const dep = {
+      uid: department.uid,
+      uid_parent: '',
+      name: department.name,
+      order: department.order,
+      collapsed: department.collapsed,
+      emails: department.emails
+    }
+    store.dispatch(UPDATE_DEPARTMENT_REQUEST, dep)
       .then(resp => {
         hasChanged.value = false
         store.dispatch('asidePropertiesToggle', false)
       })
   }
 }
-
+const quitremoveDepartment = (departament) => {
+  console.log(departament)
+  const dep = {
+    uid: departament.uid,
+    uid_parent: '',
+    name: departament.name,
+    order: departament.order,
+    collapsed: departament.collapsed,
+    emails: departament.emails.splice(departament.emails.indexOf(user.value.current_user_email), 1)
+  }
+  store.dispatch(UPDATE_DEPARTMENT_REQUEST, dep)
+    .then(() => {
+      store.dispatch('asidePropertiesToggle', false)
+      store.commit(NAVIGATOR_REMOVE_DEPARTAMENT, departament)
+    })
+}
 const removeDepartment = (departament) => {
   store.dispatch(REMOVE_DEPARTMENT_REQUEST, departament.uid)
     .then(() => {
@@ -81,6 +107,18 @@ const removeDepartment = (departament) => {
 </script>
 
 <template>
+  <modal-box-confirm
+    v-model="showConfirmQuit"
+    button="warning"
+    has-button
+    has-cancel
+    button-label="Quit"
+    @confirm="quitremoveDepartment(selectedDepartment)"
+  >
+    <p class="text-center">
+      Do you really wanna quit "<strong>{{ selectedDepartment.name }}</strong>" project?
+    </p>
+  </modal-box-confirm>
   <modal-box-confirm
     v-model="showConfirm"
     button="warning"
@@ -131,7 +169,8 @@ const removeDepartment = (departament) => {
               :key="index"
               class="px-3 py-1 bg-gray-50 rounded-xl mt-1 flex items-center justify-between border border-gray-100"
             >
-              <div class="flex items-center">
+
+              <div class="flex items-center" >
                 <img
                   :src="email.fotolink"
                   class="rounded-xl mr-2"
@@ -145,11 +184,12 @@ const removeDepartment = (departament) => {
                 class="ml-2 bg-gray-300 rounded border border-gray-100"
                 type="checkbox"
                 @change="addRemoveMember(email)"
+                :checked="selectedDepartment.uid===email.uid_dep"
               >
             </div>
           </div>
         </template>
-        <div
+        <div v-if="!selectedDepartment.emails.includes(user.current_user_email) && employees[user.current_user_uid].type != 3 && selectedDepartment.type != 1"
           class="flex items-center justify-center my-6 cursor-pointer"
         >
           <Icon
@@ -172,12 +212,12 @@ const removeDepartment = (departament) => {
           :key="pindex"
         >
           <div
-            v-if="employeesByEmail[employee]"
+            v-if="employeesByEmail[employee.toLowerCase()]"
             v-show="pindex < 4 || showAllMembers"
             class="flex items-center bg-white dark:bg-gray-700 rounded-xl shadow h-30 px-3 py-5 mt-1"
           >
             <img
-              :src="employeesByEmail[employee].fotolink"
+              :src="employeesByEmail[employee.toLowerCase()].fotolink"
               class="rounded-lg mx-2 my-auto"
               width="38"
               height="38"
@@ -187,20 +227,20 @@ const removeDepartment = (departament) => {
                 <p
                   class="font-normal cursor-pointer"
                 >
-                  {{ employeesByEmail[employee].name }}
+                  {{ employeesByEmail[employee.toLowerCase()].name }}
                 </p>
                 <icon
-                  v-if="employeesByEmail[employee].uid !== user.current_user_uid && selectedProject.emails.includes(user.current_user_email)"
+                  v-if="employeesByEmail[employee.toLowerCase()].uid !== user.current_user_uid"
                   :path="close.path"
                   :width="10"
                   :height="10"
                   :box="close.viewBox"
                   class="text-grayemployeesByEmail[employee]-400 cursor-pointer hover:text-gray-800"
-                  @click="removeMember(employeesByEmail[employee])"
+                  @click="removeMember(employeesByEmail[employee.toLowerCase()])"
                 />
               </div>
               <p class="font-light text-xs break-all">
-                {{ employeesByEmail[employee].email }}
+                {{ employeesByEmail[employee.toLowerCase()].email }}
               </p>
             </div>
           </div>
@@ -219,6 +259,13 @@ const removeDepartment = (departament) => {
         @click="createOrUpdateDepartment(selectedDepartment)"
       >
         {{ selectedDepartment.uid ? 'Сохранить' : 'Создать' }}
+      </button>
+      <button
+        v-if="selectedDepartment.emails.includes(user.current_user_email)"
+        class="w-full bg-gray-100 rounded-xl mt-4 p-3 text-gray-700 font-bold hover:bg-gray-200"
+        @click="showConfirmQuit = true"
+      >
+        Выйти из отдела
       </button>
       <button
         v-if="selectedDepartment.uid && employees[user.current_user_uid].type != 3 && selectedDepartment.type != 1"

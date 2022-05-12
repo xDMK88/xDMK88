@@ -84,7 +84,6 @@ const clickOnGridCard = (value) => {
   store.commit('basic', { key: 'mainSectionState', value: 'tasks' })
   store.commit(TASK.CLEAN_UP_LOADED_TASKS)
 }
-
 </script>
 
 <template class="w-full">

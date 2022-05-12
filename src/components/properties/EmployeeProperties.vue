@@ -29,20 +29,24 @@ onMounted(() => {
 })
 
 const createOrUpdateEmployee = (employee) => {
-  if (!employee.uid) {
-    employee.uid = uuidv4()
-    store.dispatch(CREATE_EMPLOYEE_REQUEST, employee)
-      .then(() => {
-        hasChanged.value = false
-        store.dispatch('asidePropertiesToggle', false)
-        store.commit(NAVIGATOR_PUSH_EMPLOYEE, [employee])
-      })
+  if (user.value.license_type !== 0 || user.value.days_left > 0) {
+    if (!employee.uid) {
+      employee.uid = uuidv4()
+      store.dispatch(CREATE_EMPLOYEE_REQUEST, employee)
+        .then(() => {
+          hasChanged.value = false
+          store.dispatch('asidePropertiesToggle', false)
+          store.commit(NAVIGATOR_PUSH_EMPLOYEE, [employee])
+        })
+    } else {
+      store.dispatch(UPDATE_EMPLOYEE_REQUEST, employee)
+        .then(() => {
+          hasChanged.value = false
+          store.dispatch('asidePropertiesToggle', false)
+        })
+    }
   } else {
-    store.dispatch(UPDATE_EMPLOYEE_REQUEST, employee)
-      .then(() => {
-        hasChanged.value = false
-        store.dispatch('asidePropertiesToggle', false)
-      })
+    alert('У вас нет рабочих мест')
   }
 }
 

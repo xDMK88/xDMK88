@@ -9,7 +9,7 @@ import { SELECT_DEPARTMENT } from '@/store/actions/departments'
 import gridView from '@/icons/grid-view.js'
 import listView from '@/icons/list-view.js'
 
-defineProps({
+const props = defineProps({
   employees: {
     type: Array,
     default: () => []
@@ -34,7 +34,7 @@ const isPropertiesMobileExpanded = computed(() => store.state.isPropertiesMobile
 const storeEmployees = computed(() => store.state.employees.employees)
 const user = computed(() => store.state.user.user)
 const focusedEmployee = ref('')
-
+const moviesLocalRef = computed(() => props.employees)
 const openDepartmentProperties = (department) => {
   if (!isPropertiesMobileExpanded.value) {
     store.dispatch('asidePropertiesToggle', true)
@@ -175,7 +175,7 @@ const clickOnGridCard = (value) => {
     </div>
   </div>
   <div
-    v-for="(value, index) in employees"
+    v-for="(value, index) in moviesLocalRef"
     :key="index"
   >
     <div

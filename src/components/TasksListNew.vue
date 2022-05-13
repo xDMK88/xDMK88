@@ -94,7 +94,6 @@
     :class="newConfig.listHasChildren ? 'pl-8' : 'pl-0'"
   />
   <!-- vue3-treeview -->
-  <pre>{{ store.state.tasks.newtasks }}</pre>
   <tree
     v-if="status == 'success'"
     :nodes="storeTasks"

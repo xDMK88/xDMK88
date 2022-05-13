@@ -347,7 +347,7 @@ const openProjectProperties = (project, parentProjectUid = '') => {
       <nav-bar-item
         v-for="(navItem, index) in navStack"
         :key="index"
-        class="px-1 group"
+        class="px-1 group cursor-default"
       >
         <span
           v-if="navItem && navItem.name"

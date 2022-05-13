@@ -709,9 +709,6 @@ export default {
           // removeTask(task.uid)
         }
       }
-      if (task.name !== '') {
-        task.name = 'Пусто'
-      }
       if (task.uid_customer === user.value.current_user_uid) {
         document.getElementById(task.uid).parentNode.draggable = true
       }

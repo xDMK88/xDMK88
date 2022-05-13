@@ -8,8 +8,8 @@
       <div
         v-if="
           index == taskMessages.length - 1 ||
-          index == taskMessages.length - 2 ||
-          showAllMessages
+            index == taskMessages.length - 2 ||
+            showAllMessages
         "
       >
         <div
@@ -40,7 +40,7 @@
         <div
           v-if="
             message.uid_creator !== currentUserUid &&
-            message.uid_creator !== 'inspector' &&
+              message.uid_creator !== 'inspector' &&
               !message.uid_file &&
               !showOnlyFiles
           "
@@ -98,7 +98,7 @@
           </div>
           <div class="chat-main">
             <div
-              class="mt-1 msg-custom-chat-left font-semibold text-sm bg-blue-100 dark:bg-gray-800 dark:text-gray-100"
+              class="mt-1 msg-custom-chat-left font-semibold text-sm bg-blue-50 dark:bg-gray-800 dark:text-gray-100"
             >
               <div
                 v-linkify:options="{ className: 'text-blue-600' }"
@@ -183,7 +183,8 @@
             >
               <ChatLoader v-if="uploadStarted && message.loading" />
               <div
-                v-linkify v-linkify:options="{ className: 'text-blue-600' }"
+                v-linkify
+                v-linkify:options="{ className: 'text-blue-600' }"
                 v-html="message.msg.replaceAll('\n', '<br/>')"
               />
               <div
@@ -287,6 +288,7 @@ export default {
         case 1: return 'Вам все понятно по задаче? вопросов нет?'
         case 2: return 'Вы не ответили после того как получили задачу от Семен Петровича. Пожалуйста напишите вопросы если есть, или нажмите “Вопросов нет- приступаю - будет готово завтра до 14:00'
         case 3: return 'Вы просрочили задачу - напишите причину почему задача еще не выполнена и когда ожидать выполнения? А лучше свяжитесь с заказачиком и обсудите эту ситуацию'
+        case 4: return 'Как у вас дела? Пожалуйста, приложите результат!'
       }
     },
     getMessageTimeString (dateCreate) {

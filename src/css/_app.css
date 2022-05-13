@@ -844,6 +844,7 @@ input:focus {outline: 0;}
   overflow-y: auto;
   margin-top: 10px;
   width: 220px;
+  position: relative;
 }
 
 .container-tags-popover::-webkit-scrollbar {

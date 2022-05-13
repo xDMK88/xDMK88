@@ -1,6 +1,4 @@
 <template>
-  <span>
-    <span v-if="selectedTags.length">
       <Popper
         v-for="(key, value) in selectedTags"
         :key="value"
@@ -17,6 +15,7 @@
         <template
           #content="{ close }"
           class="bottom"
+          v-if="selectedTags.length"
         >
           <div class="popper">
             <div
@@ -51,7 +50,9 @@
             </div>
           </div>
         </template>
-        <span>
+        <span
+          v-if="selectedTags.length"
+        >
           <a
             class="mt-3 tags-custom dark:bg-gray-800 dark:text-gray-100 project-hover-close"
           >
@@ -117,9 +118,8 @@
           </a>
         </span>
       </Popper>
-    </span>
-    <span v-else>
       <Popper
+        v-if="!selectedTags.length"
         class="popper-tags light"
         trigger="clickToOpen"
         force-show
@@ -190,8 +190,6 @@
           <span class="rounded custom-method">Метки</span>
         </button>
       </Popper>
-    </span>
-  </span>
 </template>
 
 <script>

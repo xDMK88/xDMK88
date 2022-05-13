@@ -689,6 +689,7 @@ export default {
     }
 
     const updateTask = (event, task) => {
+      task.enterPress = true
       task.name = task.name.replace(/\r?\n|\r/g, '')
       if (task.name.length > 0) {
         if (task._justCreated) {
@@ -708,9 +709,6 @@ export default {
           // removeTask(task.uid)
         }
       }
-      if (task.name !== '') {
-        task.name = 'Пусто'
-      }
       if (task.uid_customer === user.value.current_user_uid) {
         document.getElementById(task.uid).parentNode.draggable = true
       }
@@ -721,7 +719,7 @@ export default {
       console.log(task.name)
       if (task.name === '') {
         removeTask(task.uid)
-      } else if (task.name !== '') {
+      } else if (task.name !== '' && !task.enterPress) {
         updateTask(event, task)
       }
       if (isPropertiesMobileExpanded.value) {

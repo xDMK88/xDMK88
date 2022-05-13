@@ -212,7 +212,7 @@ const mutations = {
 
     // Push statickly tasks to menu array from state
     state.memu = []
-    state.menu.push('separator')
+    // state.menu.push('separator')
     state.menu.push([
       {
         label: 'Рабочий стол',
@@ -252,7 +252,7 @@ const mutations = {
         iconBackgroundClass: 'bg-blue-400'
       }
     ])
-    state.menu.push('separator')
+    // state.menu.push('separator')
     state.menu.push([
       {
         label: 'Поручения',
@@ -267,7 +267,7 @@ const mutations = {
         iconBackgroundClass: 'bg-indigo-400'
       }
     ])
-    state.menu.push('separator')
+    // state.menu.push('separator')
     state.menu.push([
       {
         label: 'Проекты',
@@ -296,7 +296,7 @@ const mutations = {
         iconBackgroundClass: 'bg-amber-500'
       }
     ])
-    state.menu.push('separator')
+    // state.menu.push('separator')
     state.menu.push([
       {
         label: localization.value.Emps,

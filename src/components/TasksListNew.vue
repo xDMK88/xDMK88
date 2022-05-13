@@ -722,7 +722,7 @@ export default {
       if (task.name === '') {
         removeTask(task.uid)
       } else if (task.name !== '') {
-        updateTask(task)
+        updateTask(event, task)
       }
       if (isPropertiesMobileExpanded.value) {
         store.dispatch('asidePropertiesToggle', false)

@@ -94,6 +94,7 @@
     :class="newConfig.listHasChildren ? 'pl-8' : 'pl-0'"
   />
   <!-- vue3-treeview -->
+  <pre>{{ store.state.tasks.newtasks }}</pre>
   <tree
     v-if="status == 'success'"
     :nodes="storeTasks"
@@ -466,6 +467,22 @@ export default {
     const overdue = computed(() => store.state.tasks.overdue)
     const isDark = computed(() => store.state.darkMode)
     const navStack = computed(() => store.state.navbar.navStack)
+    const settings = computed(() => {
+      return store.state.navigator.navigator.settings
+    })
+
+    // if (settings.value && storeTasks.value) {
+    //   if (settings.value.add_task_to_begin) {
+    //     for (const elem in storeTasks.value) {
+    //       if (storeTasks.value[elem].info.email_performer === user.value.current_user_email) {
+    //         storeTasks.value[elem]
+    //         const copy = storeTasks.value[elem]
+    //         store.commit(TASK.REMOVE_TASK, storeTasks.value[elem].info.uid)
+    //         store.commit(TASK.ADD_TASK, copy)
+    //       }
+    //     }
+    //   }
+    // }
 
     const lastVisitedDate = computed(() => {
       return (navStack.value && navStack.value.length && navStack.value[navStack.value.length - 1].value && navStack.value[navStack.value.length - 1].value.uid && navStack.value[navStack.value.length - 1].value.uid === '901841d9-0016-491d-ad66-8ee42d2b496b' && navStack.value[navStack.value.length - 1].value.param ? new Date(navStack.value[navStack.value.length - 1].value.param) : new Date())
@@ -869,6 +886,7 @@ export default {
       editTaskName,
       navStack,
       date,
+      settings,
       overdue,
       store,
       storeTasks,

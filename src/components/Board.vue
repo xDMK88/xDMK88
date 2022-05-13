@@ -8,14 +8,15 @@
         <div
           v-for="column in storeCards"
           :key="column.UID"
-          class="bg-gray-50 rounded-lg p-3 column-width mr-3"
+          class="bg-gray-50 rounded-lg p-3 column-width mr-3" :style="{background: column.Color}"
         >
           <div class="flex justify-between">
-          <p
+          <p :contenteditable="isEditableTaskName"
             class="text-gray-700 font-bold font-tahoma tracking-wide text-base"
           >
             {{ column.Name }}
           </p>
+            <!-- Три точки -->
           <svg class="float-right" width="24" height="24" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path fill-rule="evenodd" clip-rule="evenodd" d="M9.35445 16.1053C8.37341 16.1053 7.57812 15.31 7.57812 14.3289C7.57812 13.3479 8.37341 12.5526 9.35445 12.5526C10.3355 12.5526 11.1308 13.3479 11.1308 14.3289C11.1308 15.31 10.3355 16.1053 9.35445 16.1053ZM9.35445 10.7763C8.37341 10.7763 7.57812 9.981 7.57812 8.99996C7.57813 8.01892 8.37341 7.22364 9.35445 7.22364C10.3355 7.22364 11.1308 8.01892 11.1308 8.99996C11.1308 9.981 10.3355 10.7763 9.35445 10.7763ZM7.57813 3.67098C7.57813 4.65202 8.37341 5.4473 9.35445 5.4473C10.3355 5.4473 11.1308 4.65202 11.1308 3.67098C11.1308 2.68995 10.3355 1.89466 9.35445 1.89466C8.37341 1.89466 7.57813 2.68995 7.57813 3.67098Z" fill="black" fill-opacity="0.5"/>
           </svg>
@@ -48,12 +49,30 @@
               />
             </template>
           </draggable>
+          <div class="mt-4">
+          <button class="justify-between text-center h-full rounded rounded-[6px] w-full p-2 bg-gray-50">
+            Добавить карточку
+            <svg class="relative top-2 right-12 float-right" width="11" height="11" viewBox="0 0 11 11" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M5.5 0.5C4.84625 0.5 4.31629 1.02997 4.31629 1.68371V4.31629H1.68371C1.02997 4.31629 0.5 4.84625 0.5 5.5C0.5 6.15375 1.02997 6.68371 1.68371 6.68371H4.31629V9.31629C4.31629 9.97003 4.84625 10.5 5.5 10.5C6.15375 10.5 6.68371 9.97003 6.68371 9.31629V6.68371H9.31629C9.97003 6.68371 10.5 6.15375 10.5 5.5C10.5 4.84625 9.97003 4.31629 9.31629 4.31629H6.68371V1.68371C6.68371 1.02997 6.15375 0.5 5.5 0.5Z" fill="black" fill-opacity="0.5"/>
+            </svg>
+          </button>
+          </div>
         </div>
       </div>
     </div>
   </div>
-</template>
 
+</template>
+<style scoped>
+.margin-auto
+{
+  margin:0 auto;
+}
+.margin-auto-4
+{
+  margin:.9rem auto 1px auto;
+}
+</style>
 <script>
 import draggable from 'vuedraggable'
 import BoardCard from '@/components/Board/BoardCard.vue'
@@ -68,6 +87,12 @@ export default {
       default: () => []
     }
   },
+  data () {
+    return {
+      months: ['Января', 'Февраля', 'Марта', 'Апреля', 'Мая', 'Июня', 'Июля', 'Августа', 'Сентября', 'Октября', 'Ноября', 'Декабря'],
+      isEditableTaskName: true
+    }
+  },
   methods: {
     print (val) {
       console.log(val)
@@ -79,7 +104,11 @@ export default {
         console.log(cards[i].cost)
         sum += parseInt(cards[i].cost)
       }
-      return sum.toString().slice(0, -2)
+      if (sum > 0) {
+        return sum.toString().slice(0, -2)
+      } else {
+        return sum
+      }
     }
   }
 }

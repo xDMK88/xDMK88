@@ -1512,11 +1512,6 @@ const mutations = {
       }
     }
   },
-  [TASK.ADD_TASK_TO_BEGIN]: (state, task) => {
-    console.log(task)
-    Object.assign(state.newtasks[task.info.uid], task)
-    console.log(state.newtasks[task.info.uid])
-  },
   [TASK.REMOVE_TASK]: (state, uid) => {
     const uidParent =
       state.newtasks[uid].info.uid_parent ===

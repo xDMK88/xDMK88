@@ -397,7 +397,7 @@
 </template>
 
 <script>
-import { computed, ref, nextTick } from 'vue'
+import { computed, ref, nextTick, watch } from 'vue'
 import treeview from 'vue3-treeview'
 import { useStore } from 'vuex'
 import Icon from '@/components/Icon.vue'
@@ -470,21 +470,26 @@ export default {
       return store.state.navigator.navigator.settings
     })
 
-    // if (settings.value && storeTasks.value) {
-    //   if (settings.value.add_task_to_begin) {
-    //     for (const elem in storeTasks.value) {
-    //       if (storeTasks.value[elem].info.email_performer === user.value.current_user_email) {
-    //         storeTasks.value[elem]
-    //         const copy = storeTasks.value[elem]
-    //         store.commit(TASK.REMOVE_TASK, storeTasks.value[elem].info.uid)
-    //         store.commit(TASK.ADD_TASK, copy)
-    //       }
-    //     }
-    //   }
-    // }
-
     const lastVisitedDate = computed(() => {
       return (navStack.value && navStack.value.length && navStack.value[navStack.value.length - 1].value && navStack.value[navStack.value.length - 1].value.uid && navStack.value[navStack.value.length - 1].value.uid === '901841d9-0016-491d-ad66-8ee42d2b496b' && navStack.value[navStack.value.length - 1].value.param ? new Date(navStack.value[navStack.value.length - 1].value.param) : new Date())
+    })
+
+    watch(() => {
+      if (storeTasks.value && settings.value) {
+        if (settings.value.add_task_to_begin && navStack.value[0].greedPath === 'new_private_projects') {
+          const tasksToLift = []
+          for (const elem in storeTasks.value) {
+            if (storeTasks.value[elem].info.email_performer === user.value.current_user_email) {
+              storeTasks.value[elem].info._justCreated = false
+              tasksToLift.push(storeTasks.value[elem].info)
+              store.commit(TASK.REMOVE_TASK, elem)
+            }
+          }
+          for (const elem in tasksToLift) {
+            store.commit(TASK.ADD_TASK, tasksToLift[elem])
+          }
+        }
+      }
     })
 
     const isPropertiesMobileExpanded = computed(() => store.state.isPropertiesMobileExpanded)

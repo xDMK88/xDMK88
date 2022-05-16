@@ -27,6 +27,11 @@ const storeCards = computed(() => store.state.cards.cards)
 const navStack = computed(() => store.state.navbar.navStack)
 const user = computed(() => store.state.user.user)
 const allBoards = computed(() => store.state.boards.boards)
+const currentBoard = computed(() => {
+  const currBoardUid = navStack.value[navStack.value.length - 1].uid
+  const board = allBoards.value[currBoardUid]
+  return board
+})
 
 onMounted(() => {
   parentBoardUid.value = navStack.value[navStack.value.length - 1].uid
@@ -184,7 +189,8 @@ const gotoChildren = (value) => {
   </div>
   <div class="mt-5">
     <Board
-      :storeCards="storeCards"
+      :store-cards="storeCards"
+      :board="currentBoard"
     />
   </div>
 </template>

@@ -229,22 +229,45 @@
       >
         Отложить
       </button>
+      <!-- popper menu -->
+      <Popper
+        arrow
+        placement="bottom"
+        @click.stop="toggleTaskHoverPopper(true)"
+        @open:popper="toggleTaskHoverPopper(true)"
+        @close:popper="toggleTaskHoverPopper(false)"
+      >
+        <Icon
+          :path="taskoptions.path"
+          class="text-gray-600 dark:text-white cursor-pointer h-full"
+          :box="taskoptions.viewBox"
+          :width="taskoptions.width"
+          :style="{ color: 'gray' }"
+          :height="taskoptions.height"
+        />
+        <template #content>
+          <div>This is a content</div>
+        </template>
+      </Popper>
     </div>
   </div>
   <icon/>
 </template>
 
 <script>
+import { ref } from 'vue'
 import TaskListIconLabel from '@/components/TasksList/TaskListIconLabel.vue'
 import TaskListTagLabel from '@/components/TasksList/TaskListTagLabel.vue'
 import TaskPropsButtonPerform from '@/components/TaskProperties/TaskPropsButtonPerform.vue'
 import TaskPropsButtonSetDate from '@/components/TaskProperties/TaskPropsButtonSetDate.vue'
 import TaskStatus from '@/components/TasksList/TaskStatus.vue'
+import Popper from 'vue3-popper'
 import Icon from '@/components/Icon.vue'
 
 import * as TASK from '@/store/actions/tasks'
 
 /* Icons */
+import taskoptions from '@/icons/taskoptions.js'
 import file from '@/icons/file.js'
 import inaccess from '@/icons/inaccess.js'
 import msgs from '@/icons/msgs.js'
@@ -273,7 +296,8 @@ export default {
     Icon,
     TaskStatus,
     TaskPropsButtonPerform,
-    TaskPropsButtonSetDate
+    TaskPropsButtonSetDate,
+    Popper
   },
   props: {
     task: {
@@ -299,6 +323,10 @@ export default {
   },
   emits: ['clickTask'],
   setup () {
+    const isTaskHoverPopperActive = ref(false)
+    const toggleTaskHoverPopper = (val) => {
+      isTaskHoverPopperActive.value = val
+    }
     const statuses = [
       undefined, // we don't have 0 status
       readyStatus,
@@ -312,6 +340,9 @@ export default {
       improve
     ]
     return {
+      isTaskHoverPopperActive,
+      toggleTaskHoverPopper,
+      taskoptions,
       statuses,
       file,
       inaccess,
@@ -413,33 +444,35 @@ export default {
       console.log('onReAssignToUser', userEmail)
       console.log('onReAssignToUser is not resolved')
       const data = {
-        uid: this.selectedTask.uid,
+        uid: this.task.uid,
         value: userEmail
       }
-      this.$store.dispatch(TASK.CHANGE_TASK_REDELEGATE, data).then(
-        resp => {
-          console.log(resp.data)
-          this.$store.commit(TASK.SUBTASKS_REQUEST, resp.data)
-        }
-      )
+      this.$store.dispatch(TASK.CHANGE_TASK_REDELEGATE, data)
+      // .then(
+      //   resp => {
+      //     console.log(resp.data)
+      //     this.$store.commit(TASK.SUBTASKS_REQUEST, resp.data)
+      //   }
+      // )
     },
     onChangePerformer: function (userEmail) {
       console.log('onChangePerformer', userEmail)
       const user = this.$store.state.user.user
-      const taskUid = this.selectedTask.uid
+      const taskUid = this.task.uid
       const data = {
-        uid: this.selectedTask.uid,
+        uid: this.task.uid,
         value: userEmail
       }
-      this.$store.dispatch(TASK.CHANGE_TASK_PERFORMER, data).then(
-        resp => {
-          this.selectedTask.email_performer = resp.data.email_performer
-          this.selectedTask.perform_time = resp.data.perform_time
-          this.selectedTask.performerreaded = resp.data.performerreaded
-          this.selectedTask.uid_performer = resp.data.uid_performer
-          this.selectedTask.type = resp.data.type
-        }
-      )
+      this.$store.dispatch(TASK.CHANGE_TASK_PERFORMER, data)
+      // .then(
+      //   resp => {
+      //     this.selectedTask.email_performer = resp.data.email_performer
+      //     this.selectedTask.perform_time = resp.data.perform_time
+      //     this.selectedTask.performerreaded = resp.data.performerreaded
+      //     this.selectedTask.uid_performer = resp.data.uid_performer
+      //     this.selectedTask.type = resp.data.type
+      //   }
+      // )
       if (user.current_user_email !== userEmail) {
         this.$store.commit(TASK.REMOVE_TASK, taskUid)
         this.$store.dispatch('asidePropertiesToggle', false)
@@ -447,17 +480,18 @@ export default {
     },
     onChangeDates: function (begin, end) {
       const data = {
-        uid_task: this.selectedTask.uid,
+        uid_task: this.task.uid,
         str_date_begin: begin,
         str_date_end: end,
         reset: 0
       }
-      this.$store.dispatch(TASK.CHANGE_TASK_DATE, data).then(
-        resp => {
-          this.selectedTask.term_user = resp.term
-          this.selectedTask.date_begin = resp.str_date_begin
-          this.selectedTask.date_end = resp.str_date_end
-        })
+      this.$store.dispatch(TASK.CHANGE_TASK_DATE, data)
+      // .then(
+      //   resp => {
+      //     this.selectedTask.term_user = resp.term
+      //     this.selectedTask.date_begin = resp.str_date_begin
+      //     this.selectedTask.date_end = resp.str_date_end
+      //   })
     }
   }
 }

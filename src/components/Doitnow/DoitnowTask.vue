@@ -240,6 +240,7 @@ import TaskListTagLabel from '@/components/TasksList/TaskListTagLabel.vue'
 import TaskPropsButtonPerform from '@/components/TaskProperties/TaskPropsButtonPerform.vue'
 import TaskPropsButtonSetDate from '@/components/TaskProperties/TaskPropsButtonSetDate.vue'
 import TaskStatus from '@/components/TasksList/TaskStatus.vue'
+import Popper from 'vue3-popper'
 import Icon from '@/components/Icon.vue'
 
 import * as TASK from '@/store/actions/tasks'
@@ -273,7 +274,8 @@ export default {
     Icon,
     TaskStatus,
     TaskPropsButtonPerform,
-    TaskPropsButtonSetDate
+    TaskPropsButtonSetDate,
+    Popper
   },
   props: {
     task: {
@@ -311,6 +313,7 @@ export default {
       canceled,
       improve
     ]
+    const isTaskHoverPopperActive = ref(false)
     return {
       statuses,
       file,
@@ -331,6 +334,11 @@ export default {
       canceled,
       improve,
       repeat
+    }
+  },
+  mutations: {
+    PopperState (val) {
+      this.isTaskHoverPopperActive = val
     }
   },
   computed: {
@@ -413,33 +421,20 @@ export default {
       console.log('onReAssignToUser', userEmail)
       console.log('onReAssignToUser is not resolved')
       const data = {
-        uid: this.selectedTask.uid,
+        uid: this.task.uid,
         value: userEmail
       }
-      this.$store.dispatch(TASK.CHANGE_TASK_REDELEGATE, data).then(
-        resp => {
-          console.log(resp.data)
-          this.$store.commit(TASK.SUBTASKS_REQUEST, resp.data)
-        }
-      )
+      this.$store.dispatch(TASK.CHANGE_TASK_REDELEGATE, data)
     },
     onChangePerformer: function (userEmail) {
       console.log('onChangePerformer', userEmail)
       const user = this.$store.state.user.user
-      const taskUid = this.selectedTask.uid
+      const taskUid = this.task.uid
       const data = {
-        uid: this.selectedTask.uid,
+        uid: this.task.uid,
         value: userEmail
       }
-      this.$store.dispatch(TASK.CHANGE_TASK_PERFORMER, data).then(
-        resp => {
-          this.selectedTask.email_performer = resp.data.email_performer
-          this.selectedTask.perform_time = resp.data.perform_time
-          this.selectedTask.performerreaded = resp.data.performerreaded
-          this.selectedTask.uid_performer = resp.data.uid_performer
-          this.selectedTask.type = resp.data.type
-        }
-      )
+      this.$store.dispatch(TASK.CHANGE_TASK_PERFORMER, data)
       if (user.current_user_email !== userEmail) {
         this.$store.commit(TASK.REMOVE_TASK, taskUid)
         this.$store.dispatch('asidePropertiesToggle', false)
@@ -447,17 +442,12 @@ export default {
     },
     onChangeDates: function (begin, end) {
       const data = {
-        uid_task: this.selectedTask.uid,
+        uid_task: this.task.uid,
         str_date_begin: begin,
         str_date_end: end,
         reset: 0
       }
-      this.$store.dispatch(TASK.CHANGE_TASK_DATE, data).then(
-        resp => {
-          this.selectedTask.term_user = resp.term
-          this.selectedTask.date_begin = resp.str_date_begin
-          this.selectedTask.date_end = resp.str_date_end
-        })
+      this.$store.dispatch(TASK.CHANGE_TASK_DATE, data)
     }
   }
 }

@@ -8,17 +8,19 @@ import axios from 'axios'
 import { notify } from 'notiwind'
 import { computed } from 'vue'
 import { AUTH_LOGOUT } from '../actions/auth'
+import { PUSH_BOARD } from '../actions/boards'
 import { PUSH_COLOR, PUSH_MYCOLOR } from '../actions/colors'
+import { PUSH_DEPARTMENT } from '../actions/departments'
 import { PUSH_EMPLOYEE, PUSH_EMPLOYEE_BY_EMAIL } from '../actions/employees'
 import {
   NAVIGATOR_ERROR,
   NAVIGATOR_PUSH_COLOR,
+  NAVIGATOR_PUSH_DEPARTAMENT,
   NAVIGATOR_PUSH_EMPLOYEE,
   NAVIGATOR_PUSH_PROJECT,
   NAVIGATOR_PUSH_TAG,
-  NAVIGATOR_PUSH_DEPARTAMENT,
-  NAVIGATOR_REMOVE_DEPARTAMENT,
   NAVIGATOR_REMOVE_COLOR,
+  NAVIGATOR_REMOVE_DEPARTAMENT,
   NAVIGATOR_REMOVE_EMPLOYEE,
   NAVIGATOR_REMOVE_PROJECT,
   NAVIGATOR_REMOVE_TAG,
@@ -29,8 +31,6 @@ import {
   RESET_STATE_NAVIGATOR
 } from '../actions/navigator'
 import { PUSH_PROJECT } from '../actions/projects'
-import { PUSH_BOARD } from '../actions/boards'
-import { PUSH_DEPARTMENT } from '../actions/departments'
 import { ADD_TASK_TAGS } from '../actions/tasks'
 import { visitChildren } from '../helpers/functions'
 
@@ -282,20 +282,6 @@ const mutations = {
         iconBackgroundClass: 'bg-amber-500'
       }
     ])
-    state.menu.push([
-      {
-        label: 'Доски',
-        uid: resp.data.private_boards.uid,
-        bold: false,
-        icon: project.path,
-        iconBox: project.viewBox,
-        width: project.width,
-        height: project.height,
-        type: 'greed',
-        path: 'new_private_boards',
-        iconBackgroundClass: 'bg-amber-500'
-      }
-    ])
     // state.menu.push('separator')
     state.menu.push([
       {
@@ -344,16 +330,28 @@ const mutations = {
     console.log(resp.data.new_emps)
     // Merge common projects and private projects into my own data structure
     // Array of objects where object is { dep: 'Dependency name', items: items }
-    const newCommonProjects = []
-    newCommonProjects.push({
+    const itemsInProjectView = []
+    itemsInProjectView.push({
       dep: localization.value.Projects,
-      items: resp.data.private_projects.items
+      items: resp.data.private_projects.items,
+      type: 'projects'
     })
-    newCommonProjects.push({
+    itemsInProjectView.push({
       dep: localization.value.SharedProjects,
-      items: resp.data.common_projects.items
+      items: resp.data.common_projects.items,
+      type: 'projects'
     })
-    resp.data.new_private_projects = newCommonProjects
+    itemsInProjectView.push({
+      dep: 'Мои доски',
+      items: resp.data.private_boards.items,
+      type: 'boards'
+    })
+    itemsInProjectView.push({
+      dep: 'Общие доски',
+      items: resp.data.common_boards.items,
+      type: 'boards'
+    })
+    resp.data.new_private_projects = itemsInProjectView
 
     const newCommonBoards = []
     newCommonBoards.push({
@@ -365,38 +363,28 @@ const mutations = {
       items: resp.data.common_boards.items
     })
     resp.data.new_private_boards = newCommonBoards
+
     state.navigator = resp.data
   },
   [NAVIGATOR_PUSH_DEPARTAMENT]: (state, departaments) => {
     for (const departament of departaments) {
       state.navigator.deps.items.push(departament)
-      if (
-        departament.uid_parent === '00000000-0000-0000-0000-000000000000'
-      ) {
+      if (departament.uid_parent === '00000000-0000-0000-0000-000000000000') {
         // adding departament to the root
         state.navigator.deps.items.push(departament)
       } else {
         // adding departament recursively to subarrays
-        visitChildren(
-          state.navigator.deps.items,
-          (value) => {
-            if (value.uid === departament.uid_parent) {
-              value.children.push(departament)
-            }
+        visitChildren(state.navigator.deps.items, (value) => {
+          if (value.uid === departament.uid_parent) {
+            value.children.push(departament)
           }
-        )
+        })
       }
     }
   },
   [NAVIGATOR_REMOVE_DEPARTAMENT]: (state, departament) => {
-    for (
-      let i = 0;
-      i < state.navigator.deps.items.length;
-      i++
-    ) {
-      if (
-        state.navigator.deps.items[i].uid !== departament.uid
-      ) {
+    for (let i = 0; i < state.navigator.deps.items.length; i++) {
+      if (state.navigator.deps.items[i].uid !== departament.uid) {
         state.navigator.deps.items.splice(i, 1)
         //  state.navigator.deps.items.splice(state.navigator.deps.items.indexOf(department.uid), 1)
       }

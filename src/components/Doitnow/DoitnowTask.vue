@@ -246,7 +246,78 @@
           :height="taskoptions.height"
         />
         <template #content>
-          <div>This is a content</div>
+          <!-- Доступ -->
+          <TaskPropsButtonAccess
+            v-if="isAccessVisible"
+            :current-user-uid="this.$store.state.user.user.current_user_uid"
+            :access-emails="task.emails ? task.emails.split('..') : []"
+            :can-edit="task.type === 1 || task.type === 2"
+            @changeAccess="onChangeAccess"
+          />
+          <!-- Проекты -->
+          <TaskPropsButtonProject
+            :selected-project="task.uid_project"
+            :can-edit="task.type === 1 || task.type === 2"
+            @changeProject="onChangeProject"
+          />
+          <!-- Цвет -->
+          <TaskPropsButtonColor
+            :selected-color="task.uid_marker"
+            :can-edit="task.type === 1 || task.type === 2"
+            @changeColor="onChangeColor"
+          />
+          <!-- Теги -->
+          <TaskPropsButtonTags
+            v-if="task.type === 1 || task.type === 2"
+            :selected-tags="task.tags"
+            @changeTags="onChangeTags"
+          />
+          <!-- Чек лист -->
+          <div
+            v-if="!task.checklist && task.type!==4 && task.type!==3"
+            class="mt-3 tags-custom dark:bg-gray-800 dark:text-gray-100"
+            @click="createChecklist"
+          >
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 72 96"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M30.8812 36.8813L21 46.7625L17.1188 42.8813C15.9563 41.7188 14.0437 41.7188 12.8812 42.8813C11.7187 44.0438 11.7187 45.9563 12.8812 47.1188L18.8812 53.1188C19.4625 53.7 20.2313 54 21 54C21.7687 54 22.5375 53.7 23.1188 53.1188L35.1188 41.1188C36.2812 39.9563 36.2812 38.0438 35.1188 36.8813C33.9562 35.7188 32.0438 35.7 30.8812 36.8813Z"
+                fill="black"
+                fill-opacity="0.5"
+              />
+              <path
+                d="M30.8812 60.8813L21 70.7625L17.1188 66.8813C15.9563 65.7188 14.0437 65.7188 12.8812 66.8813C11.7187 68.0438 11.7187 69.9563 12.8812 71.1188L18.8812 77.1188C19.4625 77.7 20.2313 78 21 78C21.7687 78 22.5375 77.7 23.1188 77.1188L35.1188 65.1188C36.2812 63.9563 36.2812 62.0438 35.1188 60.8813C33.9562 59.7188 32.0438 59.7 30.8812 60.8813Z"
+                fill="black"
+                fill-opacity="0.5"
+              />
+              <path
+                d="M42 45C42 46.65 43.35 48 45 48H57C58.65 48 60 46.65 60 45C60 43.35 58.65 42 57 42H45C43.35 42 42 43.35 42 45Z"
+                fill="black"
+                fill-opacity="0.5"
+              />
+              <path
+                d="M57 66H45C43.35 66 42 67.35 42 69C42 70.65 43.35 72 45 72H57C58.65 72 60 70.65 60 69C60 67.35 58.65 66 57 66Z"
+                fill="black"
+                fill-opacity="0.5"
+              />
+              <path
+                d="M51 6H44.4938C43.2563 2.5125 39.9188 0 36 0C32.0812 0 28.7437 2.5125 27.5062 6H21C19.35 6 18 7.35 18 9V12H6C2.7 12 0 14.7 0 18V90C0 93.3 2.7 96 6 96H66C69.3 96 72 93.3 72 90V18C72 14.7 69.3 12 66 12H54V9C54 7.35 52.65 6 51 6ZM24 12H30C31.65 12 33 10.65 33 9C33 7.35 34.35 6 36 6C37.65 6 39 7.35 39 9C39 10.65 40.35 12 42 12H48V18H24V12ZM66 18V90H6V18H18V21C18 22.65 19.35 24 21 24H51C52.65 24 54 22.65 54 21V18H66Z"
+                fill="black"
+                fill-opacity="0.5"
+              />
+            </svg>
+            <span class="rounded"> Чек-лист</span>
+          </div>
+          <!-- Фокус -->
+          <TaskPropsButtonFocus
+            :focus="task.focus === 1"
+            @toggle-focus="changeFocus(task.uid, task.focus === 1 ? 0 : 1)"
+          />
         </template>
       </Popper>
     </div>
@@ -260,6 +331,11 @@ import TaskListIconLabel from '@/components/TasksList/TaskListIconLabel.vue'
 import TaskListTagLabel from '@/components/TasksList/TaskListTagLabel.vue'
 import TaskPropsButtonPerform from '@/components/TaskProperties/TaskPropsButtonPerform.vue'
 import TaskPropsButtonSetDate from '@/components/TaskProperties/TaskPropsButtonSetDate.vue'
+import TaskPropsButtonAccess from '@/components/TaskProperties/TaskPropsButtonAccess.vue'
+import TaskPropsButtonTags from '@/components/TaskProperties/TaskPropsButtonTags.vue'
+import TaskPropsButtonFocus from '@/components/TaskProperties/TaskPropsButtonFocus.vue'
+import TaskPropsButtonColor from '@/components/TaskProperties/TaskPropsButtonColor.vue'
+import TaskPropsButtonProject from '@/components/TaskProperties/TaskPropsButtonProject.vue'
 import TaskStatus from '@/components/TasksList/TaskStatus.vue'
 import Popper from 'vue3-popper'
 import Icon from '@/components/Icon.vue'
@@ -297,6 +373,11 @@ export default {
     TaskStatus,
     TaskPropsButtonPerform,
     TaskPropsButtonSetDate,
+    TaskPropsButtonColor,
+    TaskPropsButtonAccess,
+    TaskPropsButtonTags,
+    TaskPropsButtonFocus,
+    TaskPropsButtonProject,
     Popper
   },
   props: {
@@ -324,8 +405,12 @@ export default {
   emits: ['clickTask'],
   setup () {
     const isTaskHoverPopperActive = ref(false)
+    const checklistshow = ref(false)
     const toggleTaskHoverPopper = (val) => {
       isTaskHoverPopperActive.value = val
+    }
+    const createChecklist = () => {
+      checklistshow.value = true
     }
     const statuses = [
       undefined, // we don't have 0 status
@@ -342,6 +427,8 @@ export default {
     return {
       isTaskHoverPopperActive,
       toggleTaskHoverPopper,
+      createChecklist,
+      checklistshow,
       taskoptions,
       statuses,
       file,
@@ -365,6 +452,11 @@ export default {
     }
   },
   computed: {
+    isAccessVisible () {
+      if (this.task.emails) return true
+      if (this.task.type === 1 || this.task.type === 2) return true
+      return false
+    },
     statusColor () {
       const statusColor = {
         4: 'text-green-600',
@@ -426,10 +518,42 @@ export default {
     nextTask () {
       this.$emit('nextTask')
     },
+    changeFocus (uid, value) {
+      this.$store.dispatch(TASK.CHANGE_TASK_FOCUS, { uid: uid, value: value })
+    },
     takeTask () {
       if (this.task.type === 5 || this.task.type === 1) {
         console.log(this.task)
       }
+    },
+    onChangeAccess (checkEmails) {
+      const emails = checkEmails.join('..')
+      const data = {
+        uid: this.task.uid,
+        value: emails
+      }
+      this.$store.dispatch(TASK.CHANGE_TASK_ACCESS, data)
+    },
+    onChangeProject (projectUid) {
+      const data = {
+        uid: this.task.uid,
+        value: projectUid
+      }
+      this.$store.dispatch(TASK.CHANGE_TASK_PROJECT, data)
+    },
+    onChangeColor (colorUid) {
+      const data = {
+        uid: this.task.uid,
+        value: colorUid
+      }
+      this.$store.dispatch(TASK.CHANGE_TASK_COLOR, data)
+    },
+    onChangeTags (tags) {
+      const data = {
+        uid: this.task.uid,
+        tags: tags
+      }
+      this.$store.dispatch(TASK.CHANGE_TASK_TAGS, data)
     },
     onClick () {
       this.$emit('clickTask', this.task)

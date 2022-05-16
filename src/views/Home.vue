@@ -252,7 +252,7 @@ onBeforeMount(() => {
     <div v-if="mainSectionState === 'greed'">
       <projects
         v-if="greedPath === 'new_private_projects'"
-        :projects="greedSource"
+        :items="greedSource"
       />
       <boards
         v-if="greedPath === 'new_private_boards'"

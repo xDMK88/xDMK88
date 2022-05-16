@@ -30,18 +30,13 @@
     v-if="tasksCount"
     :task="firstTask"
     :colors="colors"
+    :tasksCount="tasksCount"
     :tags="tags"
     :employees="employees"
     :projects="projects"
     @clickTask="onClickTask"
+    @nextTask="nextTask"
   />
-  <button
-    v-if="tasksCount"
-    class="bg-orange-500 py-1 mt-10 px-2 rounded-xl text-white mr-1 ml-1 hover:bg-orange-500 bg-opacity-70"
-    @click="nextTask"
-  >
-    Дальше
-  </button>
   <DoitnowEmpty
     v-if="tasksCount === 0 && !isLoading"
     @clickPlanning="goToNextDay"

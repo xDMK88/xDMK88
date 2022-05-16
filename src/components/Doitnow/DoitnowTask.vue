@@ -7,11 +7,13 @@
         isTaskComplete &&
         task.uid_marker == '00000000-0000-0000-0000-000000000000'
     }"
-    @click="onClick"
   >
-    <div class="flex">
+    <div
+      class="flex"
+      @click="onClick"
+    >
       <div class="flex items-center">
-        <div
+        <!-- <div
           class="border-2 relative border-gray-300 rounded-md mr-1 flex items-center justify-center mt-0.5"
           style="min-width: 20px; min-height: 20px"
         >
@@ -32,7 +34,8 @@
             :width="repeat.width"
             :height="repeat.height"
           />
-        </div>
+        </div> -->
+        <TaskStatus :task="task"/>
         <div
           class="taskName p-0.5 ring-0 outline-none max-w-7xl"
           :no-nl="true"
@@ -186,13 +189,60 @@
         icon-class="text-red-600"
       />
     </div>
+
+    <!-- Buttons -->
+    <div class="flex mt-3">
+      <!-- next -->
+      <button
+        class="bg-orange-500 py-1 px-2 rounded-xl text-white mr-1 hover:bg-orange-500 bg-opacity-70"
+        @click="nextTask"
+      >
+        Дальше
+      </button>
+      <!-- take task -->
+      <TaskPropsButtonPerform
+        v-if="task.status !== 3 && task.type !== 4"
+        :task-type="task.type"
+        :current-user-uid="this.$store.state.user.user.current_user_uid"
+        :performer-email="task.email_performer"
+        @changePerformer="onChangePerformer"
+        @reAssign="onReAssignToUser"
+      />
+      <!-- change date -->
+      <TaskPropsButtonSetDate
+        :date-begin="task.date_begin"
+        :date-end="task.date_end"
+        :date-text="task.term_user"
+        @changeDates="onChangeDates"
+      />
+      <!-- redo -->
+      <button
+        class="bg-orange-500 py-1 px-2 rounded-xl text-white mr-1 hover:bg-orange-500 bg-opacity-70"
+        @click="reDo"
+      >
+        Отправить на доработку
+      </button>
+      <!-- decline -->
+      <button
+        class="bg-orange-500 py-1 px-2 rounded-xl text-white mr-1 hover:bg-orange-500 bg-opacity-70"
+        @click="decline"
+      >
+        Отложить
+      </button>
+    </div>
   </div>
+  <icon/>
 </template>
 
 <script>
 import TaskListIconLabel from '@/components/TasksList/TaskListIconLabel.vue'
 import TaskListTagLabel from '@/components/TasksList/TaskListTagLabel.vue'
+import TaskPropsButtonPerform from '@/components/TaskProperties/TaskPropsButtonPerform.vue'
+import TaskPropsButtonSetDate from '@/components/TaskProperties/TaskPropsButtonSetDate.vue'
+import TaskStatus from '@/components/TasksList/TaskStatus.vue'
 import Icon from '@/components/Icon.vue'
+
+import * as TASK from '@/store/actions/tasks'
 
 /* Icons */
 import file from '@/icons/file.js'
@@ -220,7 +270,10 @@ export default {
   components: {
     TaskListIconLabel,
     TaskListTagLabel,
-    Icon
+    Icon,
+    TaskStatus,
+    TaskPropsButtonPerform,
+    TaskPropsButtonSetDate
   },
   props: {
     task: {
@@ -339,8 +392,72 @@ export default {
       }
       return data
     },
+    nextTask () {
+      this.$emit('nextTask')
+    },
+    takeTask () {
+      if (this.task.type === 5 || this.task.type === 1) {
+        console.log(this.task)
+      }
+    },
     onClick () {
       this.$emit('clickTask', this.task)
+    },
+    reDo () {
+      this.$store.dispatch(TASK.CHANGE_TASK_STATUS, { uid: this.task.uid, value: 9 })
+    },
+    decline () {
+      this.$store.dispatch(TASK.CHANGE_TASK_STATUS, { uid: this.task.uid, value: 6 })
+    },
+    onReAssignToUser: function (userEmail) {
+      console.log('onReAssignToUser', userEmail)
+      console.log('onReAssignToUser is not resolved')
+      const data = {
+        uid: this.selectedTask.uid,
+        value: userEmail
+      }
+      this.$store.dispatch(TASK.CHANGE_TASK_REDELEGATE, data).then(
+        resp => {
+          console.log(resp.data)
+          this.$store.commit(TASK.SUBTASKS_REQUEST, resp.data)
+        }
+      )
+    },
+    onChangePerformer: function (userEmail) {
+      console.log('onChangePerformer', userEmail)
+      const user = this.$store.state.user.user
+      const taskUid = this.selectedTask.uid
+      const data = {
+        uid: this.selectedTask.uid,
+        value: userEmail
+      }
+      this.$store.dispatch(TASK.CHANGE_TASK_PERFORMER, data).then(
+        resp => {
+          this.selectedTask.email_performer = resp.data.email_performer
+          this.selectedTask.perform_time = resp.data.perform_time
+          this.selectedTask.performerreaded = resp.data.performerreaded
+          this.selectedTask.uid_performer = resp.data.uid_performer
+          this.selectedTask.type = resp.data.type
+        }
+      )
+      if (user.current_user_email !== userEmail) {
+        this.$store.commit(TASK.REMOVE_TASK, taskUid)
+        this.$store.dispatch('asidePropertiesToggle', false)
+      }
+    },
+    onChangeDates: function (begin, end) {
+      const data = {
+        uid_task: this.selectedTask.uid,
+        str_date_begin: begin,
+        str_date_end: end,
+        reset: 0
+      }
+      this.$store.dispatch(TASK.CHANGE_TASK_DATE, data).then(
+        resp => {
+          this.selectedTask.term_user = resp.term
+          this.selectedTask.date_begin = resp.str_date_begin
+          this.selectedTask.date_end = resp.str_date_end
+        })
     }
   }
 }

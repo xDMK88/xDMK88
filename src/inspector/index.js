@@ -1,6 +1,7 @@
 import store from '@/store/index.js'
 import { notify } from 'notiwind'
 import { computed } from 'vue'
+import { getInspectorMessage } from '@/inspector/message.js'
 
 function showNotify (notification) {
   notify(notification, 30000)
@@ -37,7 +38,7 @@ export default function initInspectorSocket () {
 function parseMessage (data) {
   try {
     const parsedData = JSON.parse(data)
-    showNotify({ group: 'top', title: 'Инспектор', text: parsedData.message })
+    showNotify({ group: 'inspector', title: 'Инспектор', text: getInspectorMessage(parsedData.message) })
   } catch (e) {
     console.log(e)
   }

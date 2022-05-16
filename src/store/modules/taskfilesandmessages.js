@@ -291,7 +291,9 @@ const mutations = {
     state.inspectorMessages.forEach(item => {
       item.msg = 'helloworld'
       item.uid_creator = 'inspector'
-      item.date_create = item.creation_date
+      const date = new Date(item.creation_date)
+      date.setTime(date.getTime() + (3 * 60 * 60 * 1000))
+      item.date_create = date.toISOString()
     })
 
     state.files.forEach(item => {

@@ -102,8 +102,41 @@
             >
               <div
                 v-linkify:options="{ className: 'text-blue-600' }"
-                v-html="getInspectorMessage(message.type).replaceAll('\n', '<br/>')"
+                v-html="getInspectorMessage(message.type, selectedTask).replaceAll('\n', '<br/>')"
               />
+
+              <!-- Origin message -->
+              <div
+                v-if="message.type == 1"
+                class="flex mt-2"
+              >
+                <div
+                  class="flex items-center bg-white rounded-lg p-1 px-2 mt-1 cursor-pointer mr-1"
+                  @click="answerInspectorMessage(message.id, 1, 'Да')"
+                >
+                  <span class="text-sm text-gray-600"> Да </span>
+                </div>
+                <div
+                  class="flex items-center bg-white rounded-lg p-1 px-2 mt-1 cursor-pointer mr-1"
+                  @click="answerInspectorMessage(message.id, 0, 'Нет')"
+                >
+                  <span class="text-sm text-gray-600"> Нет </span>
+                </div>
+              </div>
+
+              <!-- Ignore message -->
+              <div
+                v-if="message.type == 2"
+                class="flex mt-2"
+              >
+                <div
+                  class="flex items-center bg-white rounded-lg p-1 px-2 mt-1 cursor-pointer mr-1"
+                  @click="answerInspectorMessage(message.id, 1, 'Вопросов нет - приступаю - будет готово ' + dateToLabelFormat(new Date(selectedTask.customer_date_end)) + ' до ' + dateToTimeFormat(new Date(selectedTask.customer_date_end)))"
+                >
+                  <span class="text-sm text-gray-600"> Вопросов нет - приступаю - будет готово {{ dateToLabelFormat(new Date(selectedTask.customer_date_end)) }} до {{ dateToTimeFormat(new Date(selectedTask.customer_date_end)) }} </span>
+                </div>
+              </div>
+
               <div
                 v-if="message.date_create"
                 class="time-chat dark:text-gray-300"
@@ -243,7 +276,11 @@
 <script>
 import ChatLoader from '@/components/properties/ChatLoader'
 import FileMessage from '@/components/properties/FileMessage.vue'
+import { getInspectorMessage } from '@/inspector/message'
 import linkify from 'vue-linkify'
+
+import * as INSPECTOR from '@/store/actions/inspector'
+import { CREATE_MESSAGE_REQUEST } from '@/store/actions/taskmessages'
 
 export default {
   directives: {
@@ -271,25 +308,79 @@ export default {
       default: false
     }
   },
+  data: () => {
+    return { getInspectorMessage }
+  },
   computed: {
+    user () {
+      return this.$store.state.user.user
+    },
     employees () {
       return this.$store.state.employees.employees
+    },
+    // need for inspector messages
+    selectedTask () {
+      return this.$store.state.tasks.selectedTask
     },
     uploadStarted () {
       return this.$store.state.taskfilesandmessages.uploadStarted
     }
   },
   methods: {
+    uuidv4 () {
+      return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
+        (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+      )
+    },
+    sendTaskMsg (msg) {
+      const date = new Date()
+      const month = this.pad2(date.getUTCMonth() + 1)
+      const day = this.pad2(date.getUTCDate())
+      const year = this.pad2(date.getUTCFullYear())
+      const hours = this.pad2(date.getUTCHours())
+      const minutes = this.pad2(date.getUTCMinutes())
+      const seconds = this.pad2(date.getUTCSeconds())
+      const dateCreate = year + '-' + month + '-' + day + 'T' + hours + ':' + minutes + ':' + seconds
+      const data = {
+        uid_task: this.selectedTask.uid,
+        uid_creator: this.user.current_user_uid,
+        uid_msg: this.uuidv4(),
+        date_create: dateCreate,
+        text: msg,
+        msg: msg
+      }
+      this.$store.dispatch(CREATE_MESSAGE_REQUEST, data).then(
+        resp => {
+          this.selectedTask.has_msgs = true
+          if (this.selectedTask.type === 2 || this.selectedTask.type === 3) {
+            if ([1, 5, 7, 8].includes(this.selectedTask.status)) {
+              this.selectedTask.status = 9
+            }
+          }
+          const elment = document.getElementById('content').lastElementChild
+          elment.scrollIntoView({ behavior: 'smooth' })
+        })
+    },
+    answerInspectorMessage (id, answerType, answer) {
+      this.$store.dispatch(INSPECTOR.ANSWER_INSPECTOR_TASK, { id: id, answer: answerType }).then(() => {
+        this.sendTaskMsg(answer)
+      })
+    },
+    pad2 (n) {
+      return (n < 10 ? '0' : '') + n
+    },
+    dateToTimeFormat (date) {
+      const hours = this.pad2(date.getHours())
+      const seconds = this.pad2(date.getSeconds())
+      return hours + ':' + seconds
+    },
+    dateToLabelFormat (calendarDate) {
+      const day = calendarDate.getDate()
+      const month = calendarDate.toLocaleString('default', { month: 'short' })
+      return day + ' ' + month
+    },
     print (val) {
       console.log(val)
-    },
-    getInspectorMessage (type) {
-      switch (type) {
-        case 1: return 'Вам все понятно по задаче? вопросов нет?'
-        case 2: return 'Вы не ответили после того как получили задачу от Семен Петровича. Пожалуйста напишите вопросы если есть, или нажмите “Вопросов нет- приступаю - будет готово завтра до 14:00'
-        case 3: return 'Вы просрочили задачу - напишите причину почему задача еще не выполнена и когда ожидать выполнения? А лучше свяжитесь с заказачиком и обсудите эту ситуацию'
-        case 4: return 'Как у вас дела? Пожалуйста, приложите результат!'
-      }
     },
     getMessageTimeString (dateCreate) {
       // добавляем Z в конец, чтобы он посчитал что это UTC время

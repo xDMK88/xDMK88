@@ -15,8 +15,8 @@
       <!-- performer info -->
       <div class="flex">
         <img
+          class="h-[32px] w-[32px] rounded-full"
           :src="employees[task.uid_performer] ? employees[task.uid_performer].fotolink : ''"
-          style="height: 30px, width: 30px"
         />
         <span
           class="px-2 py-1 ml-1 rounded-xl text-white"

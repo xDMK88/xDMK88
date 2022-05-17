@@ -293,7 +293,8 @@ const mutations = {
       item.uid_creator = 'inspector'
       const date = new Date(item.creation_date)
       date.setTime(date.getTime() + (3 * 60 * 60 * 1000))
-      item.date_create = date.toISOString()
+      // remove two last characters to make date same as other messages
+      item.date_create = date.toISOString().slice(0, -2)
     })
 
     state.files.forEach(item => {

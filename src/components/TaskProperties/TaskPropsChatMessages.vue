@@ -112,13 +112,13 @@
               >
                 <div
                   class="flex items-center bg-white rounded-lg p-1 px-2 mt-1 cursor-pointer mr-1"
-                  @click="answerInspectorMessage(message.id, 1, 'Да')"
+                  @click="answerInspectorMessage(message, 1, 'Да'); message.performer_answer = 1"
                 >
                   <span class="text-sm text-gray-600"> Да </span>
                 </div>
                 <div
                   class="flex items-center bg-white rounded-lg p-1 px-2 mt-1 cursor-pointer mr-1"
-                  @click="answerInspectorMessage(message.id, 0, 'Нет')"
+                  @click="answerInspectorMessage(message, 0, 'Нет'); message.performer_answer = 0"
                 >
                   <span class="text-sm text-gray-600"> Нет </span>
                 </div>
@@ -131,7 +131,7 @@
               >
                 <div
                   class="flex items-center bg-white rounded-lg p-1 px-2 mt-1 cursor-pointer mr-1"
-                  @click="answerInspectorMessage(message.id, 1, 'Вопросов нет - приступаю - будет готово ' + dateToLabelFormat(new Date(selectedTask.customer_date_end)) + ' до ' + dateToTimeFormat(new Date(selectedTask.customer_date_end)))"
+                  @click="answerInspectorMessage(message, 1, 'Вопросов нет - приступаю - будет готово ' + dateToLabelFormat(new Date(selectedTask.customer_date_end)) + ' до ' + dateToTimeFormat(new Date(selectedTask.customer_date_end))); message.performer_answer = 1"
                 >
                   <span class="text-sm text-gray-600"> Вопросов нет - приступаю - будет готово {{ dateToLabelFormat(new Date(selectedTask.customer_date_end)) }} до {{ dateToTimeFormat(new Date(selectedTask.customer_date_end)) }} </span>
                 </div>
@@ -361,10 +361,13 @@ export default {
           elment.scrollIntoView({ behavior: 'smooth' })
         })
     },
-    answerInspectorMessage (id, answerType, answer) {
-      this.$store.dispatch(INSPECTOR.ANSWER_INSPECTOR_TASK, { id: id, answer: answerType }).then(() => {
-        this.sendTaskMsg(answer)
-      })
+    answerInspectorMessage (message, answerType, answer) {
+      if (message.performer_answer === null) {
+        this.$store.dispatch(INSPECTOR.ANSWER_INSPECTOR_TASK, { id: message.id, answer: answerType }).then(() => {
+          message.peformer_answer = answerType
+          this.sendTaskMsg(answer)
+        })
+      }
     },
     pad2 (n) {
       return (n < 10 ? '0' : '') + n

@@ -1,9 +1,9 @@
 <script setup>
 import { useStore } from 'vuex'
 import { computed } from 'vue'
-import Employee from '@/components/Notifications/Employee'
 
 const store = useStore()
+const currentLocation = window.location.href
 const employees = computed(() => store.state.employees.employees)
 
 </script>
@@ -41,21 +41,24 @@ const employees = computed(() => store.state.employees.employees)
                   <p class="font-semibold text-gray-800">
                     {{ notification.title }}
                   </p>
-                  <Employee
-                    v-if="notification.obj && notification.obj.obj && employees[notification.obj.obj.uid_creator]"
-                    class="mt-1"
-                    :fotolink="employees[notification.obj.obj.uid_creator].fotolink"
-                    :name="employees[notification.obj.obj.uid_creator].name"
-                  />
-                  <Employee
-                    v-if="notification.obj && notification.obj.obj && employees[notification.obj.obj.uid_customer]"
-                    class="mt-1"
-                    :fotolink="employees[notification.obj.obj.uid_customer].fotolink"
-                    :name="employees[notification.obj.obj.uid_customer].name"
-                  />
                   <p class="text-sm font-semibold text-gray-500">
                     {{ notification.text }}
                   </p>
+                  <div class="flex items-center mt-3">
+                    <img
+                      v-if="employees[notification.task.uid_customer]"
+                      :src="employees[notification.task.uid_customer].fotolink"
+                      class="rounded-full mr-2"
+                      width="40"
+                      height="40"
+                    >
+                    <a
+                      class="text-sm font-semibold text-blue-500"
+                      :href="currentLocation + 'task/' + notification.task.uid"
+                    >
+                      {{ notification.task.name }}
+                    </a>
+                  </div>
                 </div>
                 <div class="flex ml-4 shrink-0">
                   <button

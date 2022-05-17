@@ -1,54 +1,68 @@
 <template>
   <div
-    class="bg-white shadow rounded-[15px] p-3"
+    class="bg-white shadow rounded-xl p-3"
   >
     <div
       v-if="haveCover"
-      class="rounded-[4px] display-inline"
+      class="rounded display-inline mb-4"
       :style="{ background: card.cover_color, height: `${coverHeight}px` }"
     >
+      <!-- сюда сделать загрузку картинки -->
       <div>&nbsp;</div>
     </div>
     <div>
-      <div class="flex justify-between mt-4">
-        <p
-          class="text-gray-700 font-tahoma font-style-normal tracking-wide text-base w-full float-left"
+      <div class="flex items-start justify-between">
+        <div>
+          <p
+            class="text-[#444444] font-['Tahoma'] text-sm"
+          >
+            {{ card.name }}
+          </p>
+          <p
+            v-if="card.comment"
+            class="text-[#555555] font-['Tahoma'] whitespace-pre-line text-xs mt-1"
+          >
+            {{ card.comment }}
+          </p>
+        </div>
+        <!-- кнопка три точки -->
+        <div
+          v-if="!readOnly"
+          class="hover:-m-px hover:border border-black"
+          @click="showCardMenu(card, $event)"
         >
-          {{ card.name }}
-        </p>
-        <svg
-          width="22"
-          height="22"
-          viewBox="0 0 18 18"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            fill-rule="evenodd"
-            clip-rule="evenodd"
-            d="M9.35445 16.1053C8.37341 16.1053 7.57812 15.31 7.57812 14.3289C7.57812 13.3479 8.37341 12.5526 9.35445 12.5526C10.3355 12.5526 11.1308 13.3479 11.1308 14.3289C11.1308 15.31 10.3355 16.1053 9.35445 16.1053ZM9.35445 10.7763C8.37341 10.7763 7.57812 9.981 7.57812 8.99996C7.57813 8.01892 8.37341 7.22364 9.35445 7.22364C10.3355 7.22364 11.1308 8.01892 11.1308 8.99996C11.1308 9.981 10.3355 10.7763 9.35445 10.7763ZM7.57813 3.67098C7.57813 4.65202 8.37341 5.4473 9.35445 5.4473C10.3355 5.4473 11.1308 4.65202 11.1308 3.67098C11.1308 2.68995 10.3355 1.89466 9.35445 1.89466C8.37341 1.89466 7.57813 2.68995 7.57813 3.67098Z"
-            fill="black"
-            fill-opacity="0.5"
-          />
-        </svg>
+          <svg
+            class="m-0.5"
+            width="16"
+            height="16"
+            viewBox="0 0 18 18"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              fill-rule="evenodd"
+              clip-rule="evenodd"
+              d="M9.35445 16.1053C8.37341 16.1053 7.57812 15.31 7.57812 14.3289C7.57812 13.3479 8.37341 12.5526 9.35445 12.5526C10.3355 12.5526 11.1308 13.3479 11.1308 14.3289C11.1308 15.31 10.3355 16.1053 9.35445 16.1053ZM9.35445 10.7763C8.37341 10.7763 7.57812 9.981 7.57812 8.99996C7.57813 8.01892 8.37341 7.22364 9.35445 7.22364C10.3355 7.22364 11.1308 8.01892 11.1308 8.99996C11.1308 9.981 10.3355 10.7763 9.35445 10.7763ZM7.57813 3.67098C7.57813 4.65202 8.37341 5.4473 9.35445 5.4473C10.3355 5.4473 11.1308 4.65202 11.1308 3.67098C11.1308 2.68995 10.3355 1.89466 9.35445 1.89466C8.37341 1.89466 7.57813 2.68995 7.57813 3.67098Z"
+              fill="black"
+              fill-opacity="0.5"
+            />
+          </svg>
+        </div>
       </div>
-      <p
-        v-if="card.comment"
-        class="text-gray-700 font-tahoma tracking-wide text-xs mt-1"
-      >
-        {{ card.comment }}
-      </p>
     </div>
-    <div class="flex mt-4 justify-between items-center">
-      <div class="flex">
+    <div
+      v-if="showDate || cost || card.has_files || card.has_msgs"
+      class="flex mt-4 justify-between"
+    >
+      <div class="flex flex-wrap">
         <!-- выводим дату -->
         <div
           v-if="showDate"
-          class="flex justify-between"
+          class="flex items-center m-0.5"
         >
           <svg
-            width="18"
-            height="18"
+            width="16"
+            height="16"
             viewBox="0 0 18 18"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
@@ -61,18 +75,18 @@
               fill-opacity="0.5"
             />
           </svg>
-          <span class="text-sm text-gray-500 mx-1">
+          <span class="text-[11px] leading-[11px] text-[#777777] font-['Tahoma'] mx-0.5">
             {{ date }}
           </span>
         </div>
         <!-- выводим бюджет -->
         <div
           v-if="cost"
-          class="flex justify-between"
+          class="flex items-center m-0.5"
         >
           <svg
-            width="18"
-            height="18"
+            width="16"
+            height="16"
             viewBox="0 0 18 18"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
@@ -88,7 +102,7 @@
               fill-opacity="0.5"
             />
           </svg>
-          <span class="text-sm text-gray-500 mx-1">
+          <span class="text-[11px] leading-[11px] text-[#777777] font-['Tahoma'] mx-0.5">
             {{ cost }}
           </span>
         </div>
@@ -96,13 +110,14 @@
       <!-- Иконки справа -->
       <div
         v-if="card.has_files || card.has_msgs"
-        class="text-left text-gray-400 flex"
+        class="flex items-center"
       >
         <!-- Иконка сообщений -->
         <svg
           v-if="card.has_msgs"
-          width="18"
-          height="18"
+          class="m-0.5"
+          width="16"
+          height="16"
           viewBox="0 0 18 18"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
@@ -131,8 +146,9 @@
         <!-- Иконка файлов -->
         <svg
           v-if="card.has_files"
-          width="18"
-          height="18"
+          class="m-0.5"
+          width="16"
+          height="16"
           viewBox="0 0 18 18"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
@@ -147,18 +163,17 @@
     </div>
     <div
       v-if="card.user"
-      class="flex mt-2 items-center justify-between"
+      class="flex mt-4 mx-0.5 items-center"
+      :class="{ 'mt-2': showDate || cost || card.has_files || card.has_msgs }"
     >
-      <span class="flex justify-between">
-        <img
-          v-if="employeesByEmail[card.user]"
-          class="w-5 h-5 rounded-full mr-2"
-          :src="employeesByEmail[card.user].fotolink"
-          alt="Avatar"
-        >
-        <span class="text-sm text-gray-600">{{
-          getEmpNameByEmail(card.user)
-        }}</span>
+      <img
+        v-if="employeesByEmail[card.user]"
+        class="w-4 h-4 rounded-full mr-1"
+        :src="employeesByEmail[card.user].fotolink"
+        alt="Avatar"
+      >
+      <span class="text-[13px] leading-[13px] text-[#757575] font-['Tahoma']">
+        {{ getEmpNameByEmail(card.user) }}
       </span>
     </div>
   </div>
@@ -176,6 +191,10 @@ export default {
       default: () => ({})
     },
     showDate: {
+      type: Boolean,
+      default: false
+    },
+    readOnly: {
       type: Boolean,
       default: false
     }
@@ -286,6 +305,9 @@ export default {
     },
     getEmpNameByEmail (userEmail) {
       return this.employeesByEmail[userEmail.toLowerCase()]?.name ?? userEmail
+    },
+    showCardMenu (card, e) {
+      console.log('showCardMenu', card, e)
     }
   }
 }

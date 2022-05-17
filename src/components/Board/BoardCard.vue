@@ -269,7 +269,12 @@ export default {
     date () {
       const today = new Date()
       today.setHours(0, 0, 0, 0)
-      const dateMove = new Date(this.card.date_move)
+      // добавляем Z в конец, чтобы он посчитал что это UTC время
+      let dateMoveString = this.card.date_move
+      if (dateMoveString[dateMoveString.length - 1] !== 'Z') {
+        dateMoveString = dateMoveString + 'Z'
+      }
+      const dateMove = new Date(dateMoveString)
       const dateMoveTime = dateMove.toLocaleString('default', {
         hour: 'numeric',
         minute: 'numeric'

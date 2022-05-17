@@ -5,17 +5,47 @@ import properties from '@/icons/properties.js'
 import { useStore } from 'vuex'
 import * as TASK from '@/store/actions/tasks'
 import { SELECT_EMPLOYEE } from '@/store/actions/employees'
-import { SELECT_DEPARTMENT } from '@/store/actions/departments'
+import { SELECT_DEPARTMENT, UPDATE_DEPARTMENT_REQUEST } from '@/store/actions/departments'
 import gridView from '@/icons/grid-view.js'
 import listView from '@/icons/list-view.js'
-
+import draggable from 'vuedraggable'
 const props = defineProps({
   employees: {
     type: Array,
     default: () => []
-  }
+  },
+  components: {
+    draggable
+  },
+  methods: {
+    startDrag (evt, item) {
+      evt.dataTransfer.dropEffect = 'move'
+      evt.dataTransfer.effectAllowed = 'move'
+      evt.dataTransfer.setData('itemID', item.id)
+    },
+    change: function (evt) {
+      console.log(evt)
+    },
+    start: function (evt) {
+      console.log(evt)
+    },
+    end: function (evt) {
+      console.log(evt)
+    },
+    move: function (evt, originalEvent) {
+      console.log(evt)
+      console.log(originalEvent)
+    },
+    onDrop (evt, list) {
+      const itemID = evt.dataTransfer.getData('itemID')
+      const item = this.items.find(item => item.id === itemID)
+      item.list = list
+    }
+  },
+  data: () => ({
+    somelist: ['first', 'second']
+  })
 })
-
 const store = useStore()
 
 // Serves as linkage between requests from storage and tree view navigator
@@ -45,7 +75,7 @@ const openDepartmentProperties = (department) => {
       uid_parent: '',
       name: '',
       //  password: '',
-      order: 0,
+      order: 1,
       collapsed: 0,
       emails: []
     }
@@ -53,7 +83,39 @@ const openDepartmentProperties = (department) => {
   store.commit('basic', { key: 'propertiesState', value: 'department' })
   store.commit(SELECT_DEPARTMENT, department)
 }
-
+const UpdateDepOrder = (depOrder, order) => {
+  console.log('drag n, drop resp: ', depOrder.uid + ', приоритет: ' + order)
+  const dep = {
+    uid: depOrder.uid,
+    uid_parent: '',
+    name: depOrder.name,
+    order: order,
+    collapsed: depOrder.collapsed,
+    emails: depOrder.emails
+  }
+  store.dispatch(UPDATE_DEPARTMENT_REQUEST, dep)
+    .then(resp => {
+      console.log('drag n, drop success: ', resp.data + ', приоритет: ' + resp.data.order)
+    })
+}
+const draggables = document.querySelectorAll('.draggable')
+draggables.forEach(node => {
+  node.addEventListener('drag', e => {
+    stop.value = true
+    console.log(e.originalEvent.clientY)
+    if (e.originalEvent.clientY < 300) {
+      stop.value = false
+      scroll(-1)
+    }
+    if (e.originalEvent.clientY > (window.innerHeight - 150)) {
+      stop.value = false
+      scroll(1)
+    }
+  })
+  node.addEventListener('dragend', e => {
+    stop.value = true
+  })
+})
 const openEmployeeProperties = (employee) => {
   if (!isPropertiesMobileExpanded.value) {
     store.dispatch('asidePropertiesToggle', true)
@@ -174,25 +236,30 @@ const clickOnGridCard = (value) => {
       </p>
     </div>
   </div>
-  <div
-    v-for="(value, index) in moviesLocalRef"
-    :key="index"
-  >
-    <div
+  <draggable tag="div" item-key="order" :list="moviesLocalRef" v-model="moviesLocalRef"  :options="{group:'div',animation:150,ghostClass:'sortable-ghost',chosenClass:'chosenClass',scroll:true,scrollSensitivity:200}"
+             @change="change"
+             @start="start"
+             @end="end"
+             :move="move"
+             class="list-group"
+             ghost-class="ghost">
+    <template #item="{ element, index }">
+  <div @dragend="UpdateDepOrder(element.dep, index)">
+    <div :id="element.dep.order"
       class="flex items-center"
       :class="index !=0 ? 'mt-5' : ''"
     >
       <p class="text-2xl text-gray-800 font-bold dark:text-gray-100 mr-2">
-        {{ value.dep.name }}
+        {{ element.dep.name }}
       </p>
       <icon
-        v-if="value.dep.uid"
+        v-if="element.dep.uid"
         :path="properties.path"
         :width="properties.width"
         :height="properties.height"
         :box="properties.viewBox"
         class="text-gray-400 cursor-pointer hover:text-gray-800 mt-1"
-        @click="openDepartmentProperties(value.dep)"
+        @click="openDepartmentProperties(element.dep)"
       />
     </div>
     <div
@@ -200,7 +267,7 @@ const clickOnGridCard = (value) => {
       :class="{ 'md:grid-cols-2 lg:grid-cols-4': isGridView, 'grid-cols-1': !isGridView, 'grid-cols-1': isPropertiesMobileExpanded && !isGridView, 'lg:grid-cols-2': isPropertiesMobileExpanded && isGridView }"
     >
       <template
-        v-for="(employee, pindex) in value.items"
+        v-for="(employee, pindex) in element.items"
         :key="pindex"
       >
         <div
@@ -270,4 +337,6 @@ const clickOnGridCard = (value) => {
       </template>
     </div>
   </div>
+    </template>
+  </draggable>
 </template>

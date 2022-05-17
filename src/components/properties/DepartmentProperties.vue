@@ -40,7 +40,6 @@ function arrayRemove (arr, value) {
     return ele !== value
   })
 }
-
 const addRemoveMember = (email) => {
   hasChanged.value = true
   if (email.included) {
@@ -53,9 +52,10 @@ const addRemoveMember = (email) => {
 const removeMember = (member) => {
   selectedDepartment.value.emails = arrayRemove(selectedDepartment.value.emails, member.email)
 }
-const createOrUpdateDepartment = (department) => {
+const createOrUpdateDepartment = (department, index) => {
   if (!department.uid) {
     department.uid = uuidv4()
+    department.order = department.order + 1
     console.log('Обработчик на добавление', department)
     store.dispatch(CREATE_DEPARTMENT_REQUEST, department)
       .then(() => {

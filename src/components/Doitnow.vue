@@ -32,6 +32,7 @@
     :colors="colors"
     :tasksCount="tasksCount"
     :tags="tags"
+    :user="user"
     :employees="employees"
     :projects="projects"
     @clickTask="onClickTask"
@@ -94,6 +95,9 @@ export default {
     },
     isLoading () {
       return this.$store.state.tasks.status === 'loading'
+    },
+    user () {
+      return this.$store.state.user.user
     }
   },
   mounted: function () {

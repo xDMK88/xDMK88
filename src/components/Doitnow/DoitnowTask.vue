@@ -1,4 +1,7 @@
 <template>
+  <pre>{{ user }}</pre>
+  <pre>{{ task }}</pre>
+  <pre>{{ employees }}</pre>
   <div
     class="group task-node flex-col items-center w-full bg-white p-2 rounded-lg dark:bg-gray-900 dark:border-gray-700 border border-gray-300 my-0.5 relative"
     :style="{ backgroundColor: backgroundColor }"
@@ -8,6 +11,28 @@
         task.uid_marker == '00000000-0000-0000-0000-000000000000'
     }"
   >
+    <div class="flex justify-between">
+      <!-- performer info -->
+      <div class="flex">
+        <img
+          :src="employees[task.uid_performer].fotolink ? employees[task.uid_performer].fotolink : ''"
+          style="height: 30px, width: 30px"
+        />
+        <span
+          class="px-2 py-1 ml-1 rounded-xl text-white"
+          :class="task.uid_performer === user.current_user_uid ? 'bg-green-400' : 'bg-yellow-400'"
+        >
+          {{ employees[task.uid_performer].name ? employees[task.uid_performer].name : '' }}
+        </span>
+      </div>
+      <!-- next -->
+      <button
+        class="bg-orange-600 py-1 px-3 rounded-full text-white mr-1 hover:bg-orange-500 bg-opacity-70"
+        @click="nextTask"
+      >
+        Следующая задача
+      </button>
+    </div>
     <div
       class="flex"
       @click="onClick"
@@ -54,7 +79,7 @@
     </div>
 
     <!-- Tags, Overdue, Customer, Performer -->
-    <div
+    <!-- <div
       v-if="
         task.uid_customer !== '00000000-0000-0000-0000-000000000000' ||
           task.email_performer ||
@@ -69,9 +94,9 @@
           task.focus
       "
       class="flex items-center mt-1.5"
-    >
+    > -->
       <!-- Customer -->
-      <TaskListTagLabel
+      <!-- <TaskListTagLabel
         v-if="task.type !== 1 && task.type !== 2"
         :text="customerName"
         :color-bg-class="{
@@ -79,9 +104,9 @@
           'bg-gray-400': task.type !== 3,
           'bg-opacity-50': isTaskComplete
         }"
-      />
+      /> -->
       <!-- Performer -->
-      <TaskListTagLabel
+      <!-- <TaskListTagLabel
         v-if="task.type === 2 || task.type === 4"
         :text="performerName"
         :icon-width="
@@ -103,16 +128,16 @@
           'bg-green-500': task.type === 2,
           'bg-opacity-50': isTaskComplete
         }"
-      />
+      /> -->
       <!-- Overdue -->
-      <TaskListTagLabel
+      <!-- <TaskListTagLabel
         v-if="task.is_overdue"
         text="Просрочено"
         color-text-class="text-red-600"
         color-bg-class="bg-red-300 opacity-70"
-      />
+      /> -->
       <!-- Tags -->
-      <template
+      <!-- <template
         v-for="(tag, index) in task.tags"
         :key="index"
       >
@@ -122,9 +147,9 @@
           :text="tags[tag]?.name ?? '???'"
           :color-bg-style="{ backgroundColor: tags[tag]?.back_color ?? '' }"
         />
-      </template>
+      </template> -->
       <!-- Project -->
-      <TaskListTagLabel
+      <!-- <TaskListTagLabel
         v-if="task.uid_project != '00000000-0000-0000-0000-000000000000'"
         :icon-path="project.path"
         :icon-box="project.viewBox"
@@ -133,77 +158,70 @@
           'bg-yellow-400': true,
           'bg-opacity-50': isTaskComplete
         }"
-      />
+      /> -->
       <!-- Data -->
-      <TaskListIconLabel
+      <!-- <TaskListIconLabel
         v-if="task.term_user"
         :icon-path="clock.path"
         :icon-box="clock.viewBox"
         :text="task.term_user"
-      />
-      <TaskListIconLabel
+      /> -->
+      <!-- <TaskListIconLabel
         v-if="task.type !== 1 && task.type !== 2 && task.term_customer"
         :icon-path="clock.path"
         :icon-box="clock.viewBox"
         :text="task.term_customer"
         icon-class="text-red-600"
-      />
+      /> -->
       <!-- Checklist -->
-      <TaskListIconLabel
+      <!-- <TaskListIconLabel
         v-if="task.checklist"
         :icon-path="checklist.path"
         :icon-box="checklist.viewBox"
         :text="checkBoxText"
-      />
+      /> -->
       <!-- Access -->
-      <TaskListIconLabel
+      <!-- <TaskListIconLabel
         v-if="task.emails"
         :icon-path="inaccess.path"
         :icon-box="inaccess.viewBox"
         icon-width="14"
         icon-height="14"
-      />
+      /> -->
       <!-- Files -->
-      <TaskListIconLabel
+      <!-- <TaskListIconLabel
         v-if="task.has_files"
         :icon-path="file.path"
         :icon-box="file.viewBox"
-      />
+      /> -->
       <!-- Messages -->
-      <TaskListIconLabel
+      <!-- <TaskListIconLabel
         v-if="task.has_msgs"
         :icon-path="msgs.path"
         :icon-box="msgs.viewBox"
-      />
+      /> -->
       <!-- Comment -->
-      <TaskListIconLabel
+      <!-- <TaskListIconLabel
         v-if="task.comment.replace(/\r?\n|\r/g, '')"
         :icon-path="taskcomment.path"
         :icon-box="taskcomment.viewBox"
-      />
+      /> -->
       <!-- Focus -->
-      <TaskListIconLabel
+      <!-- <TaskListIconLabel
         v-if="task.focus"
         :icon-path="taskfocus.path"
         :icon-box="taskfocus.viewBox"
         icon-class="text-red-600"
       />
-    </div>
+    </div> -->
 
     <!-- Buttons -->
     <div class="flex mt-3">
-      <!-- next -->
-      <button
-        class="bg-orange-500 py-1 px-2 rounded-xl text-white mr-1 hover:bg-orange-500 bg-opacity-70"
-        @click="nextTask"
-      >
-        Дальше
-      </button>
       <!-- take task -->
       <TaskPropsButtonPerform
         v-if="task.status !== 3 && task.type !== 4"
         :task-type="task.type"
-        :current-user-uid="this.$store.state.user.user.current_user_uid"
+        :current-user-uid="user.current_user_uid"
         :performer-email="task.email_performer"
         @changePerformer="onChangePerformer"
         @reAssign="onReAssignToUser"
@@ -250,7 +268,7 @@
             <!-- Доступ -->
             <TaskPropsButtonAccess
               v-if="isAccessVisible"
-              :current-user-uid="this.$store.state.user.user.current_user_uid"
+              :current-user-uid="user.current_user_uid"
               :access-emails="task.emails ? task.emails.split('..') : []"
               :can-edit="task.type === 1 || task.type === 2"
               @changeAccess="onChangeAccess"
@@ -329,8 +347,8 @@
 
 <script>
 import { ref } from 'vue'
-import TaskListIconLabel from '@/components/TasksList/TaskListIconLabel.vue'
-import TaskListTagLabel from '@/components/TasksList/TaskListTagLabel.vue'
+// import TaskListIconLabel from '@/components/TasksList/TaskListIconLabel.vue'
+// import TaskListTagLabel from '@/components/TasksList/TaskListTagLabel.vue'
 import TaskPropsButtonPerform from '@/components/TaskProperties/TaskPropsButtonPerform.vue'
 import TaskPropsButtonSetDate from '@/components/TaskProperties/TaskPropsButtonSetDate.vue'
 import TaskPropsButtonAccess from '@/components/TaskProperties/TaskPropsButtonAccess.vue'
@@ -369,8 +387,8 @@ import repeat from '@/icons/repeat.js'
 
 export default {
   components: {
-    TaskListIconLabel,
-    TaskListTagLabel,
+    // TaskListIconLabel,
+    // TaskListTagLabel,
     Icon,
     TaskStatus,
     TaskPropsButtonPerform,
@@ -400,6 +418,10 @@ export default {
       default: () => ({})
     },
     projects: {
+      type: Object,
+      default: () => ({})
+    },
+    user: {
       type: Object,
       default: () => ({})
     }

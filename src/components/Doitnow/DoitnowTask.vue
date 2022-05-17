@@ -1,9 +1,10 @@
 <template>
+  <!-- <pre>{{ this.$store.state.taskfilesandmessages }}</pre>
   <pre>{{ user }}</pre>
-  <pre>{{ task }}</pre>
-  <pre>{{ employees }}</pre>
+  <pre>{{ subTasks }}</pre>
+  <pre>{{ employees }}</pre> -->
   <div
-    class="group task-node flex-col items-center w-full bg-white p-2 rounded-lg dark:bg-gray-900 dark:border-gray-700 border border-gray-300 my-0.5 relative font-SfProDisplayNormal"
+    class="group task-node flex-col items-center w-full bg-white p-2 rounded-lg dark:bg-gray-900 dark:border-gray-700 border border-gray-300 my-0.5 relative font-SfProTextNormal"
     :style="{ backgroundColor: backgroundColor }"
     :class="{
       'bg-gray-200 dark:bg-gray-800':
@@ -26,7 +27,7 @@
         </span>
         <!-- unread -->
         <span
-          v-if="!task.performerreaded"
+          v-if="!task.readed"
           class="text-white py-1 px-2 rounded-xl ml-1 bg-sky-500"
         >
           Непрочитанная задача
@@ -40,7 +41,7 @@
         </span>
         <!-- readed -->
         <span
-          v-if="task.performerreaded"
+          v-if="task.readed"
           class="text-white py-1 px-2 rounded-xl ml-1 bg-gray-300"
         >
           Прочитано
@@ -387,7 +388,6 @@
       </div>
     </div>
   </div>
-  <icon/>
 </template>
 
 <script>
@@ -396,6 +396,7 @@ import { ref } from 'vue'
 // import TaskListTagLabel from '@/components/TasksList/TaskListTagLabel.vue'
 import TaskPropsButtonPerform from '@/components/TaskProperties/TaskPropsButtonPerform.vue'
 import TaskPropsButtonSetDate from '@/components/TaskProperties/TaskPropsButtonSetDate.vue'
+// import TaskPropsChatMessages from '@/components/TaskProperties/TaskPropsChatMessages.vue'
 import TaskPropsButtonAccess from '@/components/TaskProperties/TaskPropsButtonAccess.vue'
 import TaskPropsButtonTags from '@/components/TaskProperties/TaskPropsButtonTags.vue'
 import TaskPropsButtonFocus from '@/components/TaskProperties/TaskPropsButtonFocus.vue'
@@ -443,10 +444,15 @@ export default {
     TaskPropsButtonTags,
     TaskPropsButtonFocus,
     TaskPropsButtonProject,
+    // TaskPropsChatMessages,
     Popper
   },
   props: {
     task: {
+      type: Object,
+      default: () => ({})
+    },
+    subTasks: {
       type: Object,
       default: () => ({})
     },
@@ -469,6 +475,10 @@ export default {
     user: {
       type: Object,
       default: () => ({})
+    },
+    taskMessages: {
+      type: Array,
+      default: () => ([])
     }
   },
   emits: ['clickTask'],

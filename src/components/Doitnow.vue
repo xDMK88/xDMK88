@@ -26,13 +26,16 @@
   >
     У вас запланированы дела на сегодня. Пора приступить к делу
   </div>
+  <pre>{{ taskMessages }}</pre>
   <DoitnowTask
     v-if="tasksCount"
     :task="firstTask"
+    :subTasks="subTasks"
     :colors="colors"
     :tasksCount="tasksCount"
     :tags="tags"
     :user="user"
+    :taskMessages="taskMessages"
     :employees="employees"
     :projects="projects"
     @clickTask="onClickTask"
@@ -77,6 +80,24 @@ export default {
         return this.overdueTasks[0]
       }
       if (this.todayTasks.length) {
+        return this.todayTasks[0]
+      }
+      return null
+    },
+    taskMessages () {
+      return this.$store.state.taskfilesandmessages.messages
+    },
+    subTasks () {
+      if (this.unreadTasks.length) {
+        this.$store.dispatch(TASK.SUBTASKS_REQUEST, this.unreadTasks[0].uid)
+        return this.unreadTasks[0]
+      }
+      if (this.overdueTasks.length) {
+        this.$store.dispatch(TASK.SUBTASKS_REQUEST, this.overdueTasks[0].uid)
+        return this.overdueTasks[0]
+      }
+      if (this.todayTasks.length) {
+        this.$store.dispatch(TASK.SUBTASKS_REQUEST, this.todayTasks[0].uid)
         return this.todayTasks[0]
       }
       return null

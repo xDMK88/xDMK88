@@ -375,14 +375,11 @@ export default {
     TaskStatus,
     TaskPropsButtonPerform,
     TaskPropsButtonSetDate,
-<<<<<<< HEAD
-=======
     TaskPropsButtonColor,
     TaskPropsButtonAccess,
     TaskPropsButtonTags,
     TaskPropsButtonFocus,
     TaskPropsButtonProject,
->>>>>>> 8337d4133166303875cdfe62101c9cebeb522152
     Popper
   },
   props: {
@@ -429,7 +426,6 @@ export default {
       canceled,
       improve
     ]
-    const isTaskHoverPopperActive = ref(false)
     return {
       isTaskHoverPopperActive,
       toggleTaskHoverPopper,

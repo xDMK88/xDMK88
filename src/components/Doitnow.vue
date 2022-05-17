@@ -26,7 +26,6 @@
   >
     У вас запланированы дела на сегодня. Пора приступить к делу
   </div>
-  <pre>{{ taskMessages }}</pre>
   <DoitnowTask
     v-if="tasksCount"
     :task="firstTask"

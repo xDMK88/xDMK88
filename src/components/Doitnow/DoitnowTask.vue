@@ -3,7 +3,7 @@
   <pre>{{ task }}</pre>
   <pre>{{ employees }}</pre>
   <div
-    class="group task-node flex-col items-center w-full bg-white p-2 rounded-lg dark:bg-gray-900 dark:border-gray-700 border border-gray-300 my-0.5 relative"
+    class="group task-node flex-col items-center w-full bg-white p-2 rounded-lg dark:bg-gray-900 dark:border-gray-700 border border-gray-300 my-0.5 relative font-SfProDisplayNormal"
     :style="{ backgroundColor: backgroundColor }"
     :class="{
       'bg-gray-200 dark:bg-gray-800':
@@ -15,19 +15,40 @@
       <!-- performer info -->
       <div class="flex">
         <img
-          :src="employees[task.uid_performer].fotolink ? employees[task.uid_performer].fotolink : ''"
+          :src="employees[task.uid_performer] ? employees[task.uid_performer].fotolink : ''"
           style="height: 30px, width: 30px"
         />
         <span
           class="px-2 py-1 ml-1 rounded-xl text-white"
           :class="task.uid_performer === user.current_user_uid ? 'bg-green-400' : 'bg-yellow-400'"
         >
-          {{ employees[task.uid_performer].name ? employees[task.uid_performer].name : '' }}
+          {{ employees[task.uid_performer] ? employees[task.uid_performer].name : '' }}
+        </span>
+        <!-- unread -->
+        <span
+          v-if="!task.performerreaded"
+          class="text-white py-1 px-2 rounded-xl ml-1 bg-sky-500"
+        >
+          Непрочитанная задача
+        </span>
+        <!-- overdue -->
+        <span
+          v-if="task.is_overdue"
+          class="text-white py-1 px-2 rounded-xl ml-1 bg-red-300"
+        >
+          Просрочено
+        </span>
+        <!-- readed -->
+        <span
+          v-if="task.performerreaded"
+          class="text-white py-1 px-2 rounded-xl ml-1 bg-gray-300"
+        >
+          Прочитано
         </span>
       </div>
       <!-- next -->
       <button
-        class="bg-orange-600 py-1 px-3 rounded-full text-white mr-1 hover:bg-orange-500 bg-opacity-70"
+        class="bg-orange-500 py-1 px-3 rounded-full text-white mr-1 hover:bg-orange-600 bg-opacity-70"
         @click="nextTask"
       >
         Следующая задача
@@ -60,20 +81,31 @@
             :height="repeat.height"
           />
         </div> -->
-        <TaskStatus :task="task"/>
-        <div
-          class="taskName p-0.5 ring-0 outline-none max-w-7xl"
-          :no-nl="true"
-          :no-html="true"
-          :class="{
-            uppercase: uppercase,
-            'text-gray-500': isTaskComplete,
-            'line-through': isTaskComplete,
-            'font-extrabold': task.readed == 0
-          }"
-          :style="{ color: forecolor }"
-        >
-          {{ task.name }}
+        <div class="flex flex-col">
+          <div
+            class="taskName p-0.5 ring-0 outline-none max-w-7xl text-xl font-semibold flex"
+            :no-nl="true"
+            :no-html="true"
+            :class="{
+              uppercase: uppercase,
+              'text-gray-500': isTaskComplete,
+              'line-through': isTaskComplete,
+              'font-extrabold': task.readed == 0
+            }"
+            :style="{ color: forecolor }"
+          >
+            <TaskStatus
+              :task="task"
+              class="self-center"
+            />
+            {{ task.name }}
+          </div>
+          <div v-if="task.comment.length">
+            <article class="text-sm break-all">
+              <span class="font-bold block">Описание задачи:</span>
+              {{ task.comment }}
+            </article>
+          </div>
         </div>
       </div>
     </div>
@@ -216,130 +248,143 @@
     </div> -->
 
     <!-- Buttons -->
-    <div class="flex mt-3">
-      <!-- take task -->
-      <TaskPropsButtonPerform
-        v-if="task.status !== 3 && task.type !== 4"
-        :task-type="task.type"
-        :current-user-uid="user.current_user_uid"
-        :performer-email="task.email_performer"
-        @changePerformer="onChangePerformer"
-        @reAssign="onReAssignToUser"
-      />
-      <!-- change date -->
-      <TaskPropsButtonSetDate
-        :date-begin="task.date_begin"
-        :date-end="task.date_end"
-        :date-text="task.term_user"
-        @changeDates="onChangeDates"
-      />
-      <!-- redo -->
-      <button
-        class="bg-orange-500 py-1 px-2 rounded-xl text-white mr-1 hover:bg-orange-500 bg-opacity-70"
-        @click="reDo"
-      >
-        Отправить на доработку
-      </button>
-      <!-- decline -->
-      <button
-        class="bg-orange-500 py-1 px-2 rounded-xl text-white mr-1 hover:bg-orange-500 bg-opacity-70"
-        @click="decline"
-      >
-        Отложить
-      </button>
-      <!-- popper menu -->
-      <Popper
-        arrow
-        placement="bottom"
-        @click.stop="toggleTaskHoverPopper(true)"
-        @open:popper="toggleTaskHoverPopper(true)"
-        @close:popper="toggleTaskHoverPopper(false)"
-      >
-        <Icon
-          :path="taskoptions.path"
-          class="text-gray-600 dark:text-white cursor-pointer h-full"
-          :box="taskoptions.viewBox"
-          :width="taskoptions.width"
-          :style="{ color: 'gray' }"
-          :height="taskoptions.height"
+    <div class="flex mt-3 justify-between">
+      <!-- take/change date -->
+      <div class="flex">
+        <!-- take -->
+        <TaskPropsButtonPerform
+          v-if="task.status !== 3 && task.type !== 4"
+          :task-type="task.type"
+          :current-user-uid="user.current_user_uid"
+          :performer-email="task.email_performer"
+          @changePerformer="onChangePerformer"
+          @reAssign="onReAssignToUser"
         />
-        <template #content>
-          <div class="flex flex-col bg-white rounded-xl p-2 border-2 items-stretch">
-            <!-- Доступ -->
-            <TaskPropsButtonAccess
-              v-if="isAccessVisible"
-              :current-user-uid="user.current_user_uid"
-              :access-emails="task.emails ? task.emails.split('..') : []"
-              :can-edit="task.type === 1 || task.type === 2"
-              @changeAccess="onChangeAccess"
-            />
-            <!-- Проекты -->
-            <TaskPropsButtonProject
-              :selected-project="task.uid_project"
-              :can-edit="task.type === 1 || task.type === 2"
-              @changeProject="onChangeProject"
-            />
-            <!-- Цвет -->
-            <TaskPropsButtonColor
-              :selected-color="task.uid_marker"
-              :can-edit="task.type === 1 || task.type === 2"
-              @changeColor="onChangeColor"
-            />
-            <!-- Теги -->
-            <TaskPropsButtonTags
-              v-if="task.type === 1 || task.type === 2"
-              :selected-tags="task.tags"
-              @changeTags="onChangeTags"
-            />
-            <!-- Чек лист -->
-            <div
-              v-if="!task.checklist && task.type!==4 && task.type!==3"
-              class="mt-3 tags-custom dark:bg-gray-800 dark:text-gray-100"
-              @click="createChecklist"
-            >
-              <svg
-                width="24"
-                height="24"
-                viewBox="0 0 72 96"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
+        <!-- change date -->
+        <TaskPropsButtonSetDate
+          :date-begin="task.date_begin"
+          :date-end="task.date_end"
+          :date-text="task.term_user"
+          @changeDates="onChangeDates"
+        />
+      </div>
+      <!-- accept/redo/decline/popper -->
+      <div class="flex">
+        <!-- accept -->
+        <button
+          class="bg-green-500 py-1 px-2 rounded-xl text-white mr-1 hover:bg-green-600 bg-opacity-90"
+          @click="accept"
+        >
+          Принять и завершить задачу
+        </button>
+        <!-- redo -->
+        <button
+          class="bg-red-500 py-1 px-2 rounded-xl text-white mr-1 hover:bg-red-600 bg-opacity-90"
+          @click="reDo"
+        >
+          Отправить на доработку
+        </button>
+        <!-- decline -->
+        <button
+          class="bg-indigo-400 py-1 px-2 rounded-xl text-white mr-1 hover:bg-indigo-500 bg-opacity-90"
+          @click="decline"
+        >
+          Отложить
+        </button>
+        <!-- popper menu -->
+        <Popper
+          arrow
+          placement="bottom"
+          @click.stop="toggleTaskHoverPopper(true)"
+          @open:popper="toggleTaskHoverPopper(true)"
+          @close:popper="toggleTaskHoverPopper(false)"
+        >
+          <Icon
+            :path="taskoptions.path"
+            class="text-gray-600 dark:text-white cursor-pointer h-full"
+            :box="taskoptions.viewBox"
+            :width="taskoptions.width"
+            :style="{ color: 'gray' }"
+            :height="taskoptions.height"
+          />
+          <template #content>
+            <div class="flex flex-col bg-white rounded-xl p-2 border-2 items-stretch">
+              <!-- Доступ -->
+              <TaskPropsButtonAccess
+                v-if="isAccessVisible"
+                :current-user-uid="user.current_user_uid"
+                :access-emails="task.emails ? task.emails.split('..') : []"
+                :can-edit="task.type === 1 || task.type === 2"
+                @changeAccess="onChangeAccess"
+              />
+              <!-- Проекты -->
+              <TaskPropsButtonProject
+                :selected-project="task.uid_project"
+                :can-edit="task.type === 1 || task.type === 2"
+                @changeProject="onChangeProject"
+              />
+              <!-- Цвет -->
+              <TaskPropsButtonColor
+                :selected-color="task.uid_marker"
+                :can-edit="task.type === 1 || task.type === 2"
+                @changeColor="onChangeColor"
+              />
+              <!-- Теги -->
+              <TaskPropsButtonTags
+                v-if="task.type === 1 || task.type === 2"
+                :selected-tags="task.tags"
+                @changeTags="onChangeTags"
+              />
+              <!-- Чек лист -->
+              <div
+                v-if="!task.checklist && task.type!==4 && task.type!==3"
+                class="mt-3 tags-custom dark:bg-gray-800 dark:text-gray-100"
+                @click="createChecklist"
               >
-                <path
-                  d="M30.8812 36.8813L21 46.7625L17.1188 42.8813C15.9563 41.7188 14.0437 41.7188 12.8812 42.8813C11.7187 44.0438 11.7187 45.9563 12.8812 47.1188L18.8812 53.1188C19.4625 53.7 20.2313 54 21 54C21.7687 54 22.5375 53.7 23.1188 53.1188L35.1188 41.1188C36.2812 39.9563 36.2812 38.0438 35.1188 36.8813C33.9562 35.7188 32.0438 35.7 30.8812 36.8813Z"
-                  fill="black"
-                  fill-opacity="0.5"
-                />
-                <path
-                  d="M30.8812 60.8813L21 70.7625L17.1188 66.8813C15.9563 65.7188 14.0437 65.7188 12.8812 66.8813C11.7187 68.0438 11.7187 69.9563 12.8812 71.1188L18.8812 77.1188C19.4625 77.7 20.2313 78 21 78C21.7687 78 22.5375 77.7 23.1188 77.1188L35.1188 65.1188C36.2812 63.9563 36.2812 62.0438 35.1188 60.8813C33.9562 59.7188 32.0438 59.7 30.8812 60.8813Z"
-                  fill="black"
-                  fill-opacity="0.5"
-                />
-                <path
-                  d="M42 45C42 46.65 43.35 48 45 48H57C58.65 48 60 46.65 60 45C60 43.35 58.65 42 57 42H45C43.35 42 42 43.35 42 45Z"
-                  fill="black"
-                  fill-opacity="0.5"
-                />
-                <path
-                  d="M57 66H45C43.35 66 42 67.35 42 69C42 70.65 43.35 72 45 72H57C58.65 72 60 70.65 60 69C60 67.35 58.65 66 57 66Z"
-                  fill="black"
-                  fill-opacity="0.5"
-                />
-                <path
-                  d="M51 6H44.4938C43.2563 2.5125 39.9188 0 36 0C32.0812 0 28.7437 2.5125 27.5062 6H21C19.35 6 18 7.35 18 9V12H6C2.7 12 0 14.7 0 18V90C0 93.3 2.7 96 6 96H66C69.3 96 72 93.3 72 90V18C72 14.7 69.3 12 66 12H54V9C54 7.35 52.65 6 51 6ZM24 12H30C31.65 12 33 10.65 33 9C33 7.35 34.35 6 36 6C37.65 6 39 7.35 39 9C39 10.65 40.35 12 42 12H48V18H24V12ZM66 18V90H6V18H18V21C18 22.65 19.35 24 21 24H51C52.65 24 54 22.65 54 21V18H66Z"
-                  fill="black"
-                  fill-opacity="0.5"
-                />
-              </svg>
-              <span class="rounded"> Чек-лист</span>
+                <svg
+                  width="24"
+                  height="24"
+                  viewBox="0 0 72 96"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M30.8812 36.8813L21 46.7625L17.1188 42.8813C15.9563 41.7188 14.0437 41.7188 12.8812 42.8813C11.7187 44.0438 11.7187 45.9563 12.8812 47.1188L18.8812 53.1188C19.4625 53.7 20.2313 54 21 54C21.7687 54 22.5375 53.7 23.1188 53.1188L35.1188 41.1188C36.2812 39.9563 36.2812 38.0438 35.1188 36.8813C33.9562 35.7188 32.0438 35.7 30.8812 36.8813Z"
+                    fill="black"
+                    fill-opacity="0.5"
+                  />
+                  <path
+                    d="M30.8812 60.8813L21 70.7625L17.1188 66.8813C15.9563 65.7188 14.0437 65.7188 12.8812 66.8813C11.7187 68.0438 11.7187 69.9563 12.8812 71.1188L18.8812 77.1188C19.4625 77.7 20.2313 78 21 78C21.7687 78 22.5375 77.7 23.1188 77.1188L35.1188 65.1188C36.2812 63.9563 36.2812 62.0438 35.1188 60.8813C33.9562 59.7188 32.0438 59.7 30.8812 60.8813Z"
+                    fill="black"
+                    fill-opacity="0.5"
+                  />
+                  <path
+                    d="M42 45C42 46.65 43.35 48 45 48H57C58.65 48 60 46.65 60 45C60 43.35 58.65 42 57 42H45C43.35 42 42 43.35 42 45Z"
+                    fill="black"
+                    fill-opacity="0.5"
+                  />
+                  <path
+                    d="M57 66H45C43.35 66 42 67.35 42 69C42 70.65 43.35 72 45 72H57C58.65 72 60 70.65 60 69C60 67.35 58.65 66 57 66Z"
+                    fill="black"
+                    fill-opacity="0.5"
+                  />
+                  <path
+                    d="M51 6H44.4938C43.2563 2.5125 39.9188 0 36 0C32.0812 0 28.7437 2.5125 27.5062 6H21C19.35 6 18 7.35 18 9V12H6C2.7 12 0 14.7 0 18V90C0 93.3 2.7 96 6 96H66C69.3 96 72 93.3 72 90V18C72 14.7 69.3 12 66 12H54V9C54 7.35 52.65 6 51 6ZM24 12H30C31.65 12 33 10.65 33 9C33 7.35 34.35 6 36 6C37.65 6 39 7.35 39 9C39 10.65 40.35 12 42 12H48V18H24V12ZM66 18V90H6V18H18V21C18 22.65 19.35 24 21 24H51C52.65 24 54 22.65 54 21V18H66Z"
+                    fill="black"
+                    fill-opacity="0.5"
+                  />
+                </svg>
+                <span class="rounded"> Чек-лист</span>
+              </div>
+              <!-- Фокус -->
+              <TaskPropsButtonFocus
+                :focus="task.focus === 1"
+                @toggle-focus="changeFocus(task.uid, task.focus === 1 ? 0 : 1)"
+              />
             </div>
-            <!-- Фокус -->
-            <TaskPropsButtonFocus
-              :focus="task.focus === 1"
-              @toggle-focus="changeFocus(task.uid, task.focus === 1 ? 0 : 1)"
-            />
-          </div>
-        </template>
-      </Popper>
+          </template>
+        </Popper>
+      </div>
     </div>
   </div>
   <icon/>
@@ -589,6 +634,10 @@ export default {
     },
     reDo () {
       this.$store.dispatch(TASK.CHANGE_TASK_STATUS, { uid: this.task.uid, value: 9 })
+    },
+    accept () {
+      this.$store.dispatch(TASK.CHANGE_TASK_STATUS, { uid: this.task.uid, value: 5 })
+      this.nextTask()
     },
     decline () {
       this.$store.dispatch(TASK.CHANGE_TASK_STATUS, { uid: this.task.uid, value: 6 })

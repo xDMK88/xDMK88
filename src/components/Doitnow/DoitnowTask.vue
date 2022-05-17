@@ -583,15 +583,12 @@ export default {
         value: userEmail
       }
       this.$store.dispatch(TASK.CHANGE_TASK_REDELEGATE, data)
-<<<<<<< HEAD
-=======
       // .then(
       //   resp => {
       //     console.log(resp.data)
       //     this.$store.commit(TASK.SUBTASKS_REQUEST, resp.data)
       //   }
       // )
->>>>>>> 8337d4133166303875cdfe62101c9cebeb522152
     },
     onChangePerformer: function (userEmail) {
       console.log('onChangePerformer', userEmail)
@@ -602,8 +599,6 @@ export default {
         value: userEmail
       }
       this.$store.dispatch(TASK.CHANGE_TASK_PERFORMER, data)
-<<<<<<< HEAD
-=======
       // .then(
       //   resp => {
       //     this.selectedTask.email_performer = resp.data.email_performer
@@ -613,7 +608,6 @@ export default {
       //     this.selectedTask.type = resp.data.type
       //   }
       // )
->>>>>>> 8337d4133166303875cdfe62101c9cebeb522152
       if (user.current_user_email !== userEmail) {
         this.$store.commit(TASK.REMOVE_TASK, taskUid)
         this.$store.dispatch('asidePropertiesToggle', false)
@@ -627,15 +621,12 @@ export default {
         reset: 0
       }
       this.$store.dispatch(TASK.CHANGE_TASK_DATE, data)
-<<<<<<< HEAD
-=======
       // .then(
       //   resp => {
       //     this.selectedTask.term_user = resp.term
       //     this.selectedTask.date_begin = resp.str_date_begin
       //     this.selectedTask.date_end = resp.str_date_end
       //   })
->>>>>>> 8337d4133166303875cdfe62101c9cebeb522152
     }
   }
 }

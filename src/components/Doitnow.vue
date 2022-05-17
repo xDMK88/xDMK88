@@ -89,15 +89,15 @@ export default {
     subTasks () {
       if (this.unreadTasks.length) {
         this.$store.dispatch(TASK.SUBTASKS_REQUEST, this.unreadTasks[0].uid)
-        return this.unreadTasks[0]
+        return this.$store.state.tasks.subtasks.tasks
       }
       if (this.overdueTasks.length) {
         this.$store.dispatch(TASK.SUBTASKS_REQUEST, this.overdueTasks[0].uid)
-        return this.overdueTasks[0]
+        return this.$store.state.tasks.subtasks.tasks
       }
       if (this.todayTasks.length) {
         this.$store.dispatch(TASK.SUBTASKS_REQUEST, this.todayTasks[0].uid)
-        return this.todayTasks[0]
+        return this.$store.state.tasks.subtasks.tasks
       }
       return null
     },

@@ -1,8 +1,7 @@
 <template>
-  <!-- <pre>{{ this.$store.state.taskfilesandmessages }}</pre>
-  <pre>{{ user }}</pre>
   <pre>{{ subTasks }}</pre>
-  <pre>{{ employees }}</pre> -->
+  <pre>{{ user }}</pre>
+  <pre>{{ employees }}</pre>
   <div
     class="group task-node flex-col items-center w-full bg-white p-2 rounded-lg dark:bg-gray-900 dark:border-gray-700 border border-gray-300 my-0.5 relative font-SfProTextNormal"
     :style="{ backgroundColor: backgroundColor }"
@@ -388,6 +387,12 @@
       </div>
     </div>
   </div>
+  <div
+    v-for="(subTask, i) in subTasks"
+    :key="i"
+  >
+    {{ i }}
+  </div>
 </template>
 
 <script>
@@ -453,8 +458,8 @@ export default {
       default: () => ({})
     },
     subTasks: {
-      type: Object,
-      default: () => ({})
+      type: Array,
+      default: () => ([])
     },
     colors: {
       type: Object,

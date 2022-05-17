@@ -1,7 +1,4 @@
 <template>
-  <pre>{{ subTasks }}</pre>
-  <pre>{{ user }}</pre>
-  <pre>{{ employees }}</pre>
   <div
     class="group task-node flex-col items-center w-full bg-white p-2 rounded-lg dark:bg-gray-900 dark:border-gray-700 border border-gray-300 my-0.5 relative font-SfProTextNormal"
     :style="{ backgroundColor: backgroundColor }"
@@ -387,11 +384,30 @@
       </div>
     </div>
   </div>
+  <!-- subtasks -->
   <div
-    v-for="(subTask, i) in subTasks"
-    :key="i"
+    v-if="subTasks.length"
+    class="flex flex-col items-end"
   >
-    {{ i }}
+    <div
+      class="group task-node flex-col items-center w-[99%] bg-white p-2 rounded-lg dark:bg-gray-900 dark:border-gray-700 border border-gray-300 my-0.5 relative font-SfProTextNormal"
+      v-for="(subTask, i) in subTasks"
+      :key="i"
+    >
+      <div class="flex flex-col">
+        <div class="flex">
+          <TaskStatus :task="subTask"/>
+          <span>{{ subTask.name }}</span>
+        </div>
+        <article
+          v-if="subTask.comment.length"
+          class="flex flex-col break-words text-sm"
+        >
+          <span class="font-semibold">Описание подзадачи:</span>
+          {{ subTask.comment }}
+        </article>
+      </div>
+    </div>
   </div>
 </template>
 

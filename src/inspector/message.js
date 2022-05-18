@@ -25,6 +25,7 @@ export function getInspectorMessage (type, task) {
     case 2: return 'Вы не ответили после того как получили задачу от ' + store?.state?.employees?.employees[task.uid_customer]?.name + '. Пожалуйста напишите вопросы если есть, или нажмите:'
     case 3: return 'Вы просрочили задачу - напишите причину почему задача еще не выполнена и когда ожидать выполнения? А лучше свяжитесь с заказачиком и обсудите эту ситуацию'
     case 4: return store?.state?.employees?.employees[task.uid_performer]?.name + ', как идут дела? Пожалуйста, приложите промежуточные результаты.'
-    case 5: return 'Я позвонил исполнителю на номер x, так как не увидел ответа за 24 часа'
+    case 5: return 'Я позвонил исполнителю на номер x'
+    case 6: return 'Я отправил смс исполнителю на номер x'
   }
 }

@@ -1,13 +1,21 @@
-import * as BOARD from '../actions/boards'
 import axios from 'axios'
 import { notify } from 'notiwind'
+import * as BOARD from '../actions/boards'
+
+function uuidv4 () {
+  return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, (c) =>
+    (
+      c ^
+      (crypto.getRandomValues(new Uint8Array(1))[0] & (15 >> (c / 4)))
+    ).toString(16)
+  )
+}
 
 const state = {
   boards: {},
   selectedBoard: undefined
 }
-const getters = {
-}
+const getters = {}
 // const getDefaultState = () => {
 //   return {
 //     boards: false,
@@ -64,7 +72,8 @@ const actions = {
   },
   [BOARD.REMOVE_BOARD_REQUEST]: ({ commit, dispatch }, uid) => {
     return new Promise((resolve, reject) => {
-      const url = process.env.VUE_APP_LEADERTASK_API + '/api/v1/board?uid=' + uid
+      const url =
+        process.env.VUE_APP_LEADERTASK_API + '/api/v1/board?uid=' + uid
       axios({ url: url, method: 'DELETE' })
         .then((resp) => {
           resolve(resp)
@@ -85,9 +94,7 @@ const actions = {
   },
   [BOARD.QUIT_BOARD_REQUEST]: ({ commit, dispatch }, data) => {
     return new Promise((resolve, reject) => {
-      const url =
-        process.env.VUE_APP_LEADERTASK_API +
-        '/api/v1/board/exit'
+      const url = process.env.VUE_APP_LEADERTASK_API + '/api/v1/board/exit'
       axios({ url: url, method: 'POST', data: data })
         .then((resp) => {
           resolve(resp)
@@ -102,6 +109,26 @@ const actions = {
             },
             15000
           )
+          reject(err)
+        })
+    })
+  },
+  [BOARD.ADD_STAGE_BOARD_REQUEST]: ({ commit, dispatch }, data) => {
+    return new Promise((resolve, reject) => {
+      const board = state.boards[data.boardUid]
+      if (!board) return reject(new Error(`not find board ${data.boardUid}`))
+      const newStage = {
+        Color: '',
+        Name: data.newStageTitle,
+        Order: board.stages.length,
+        UID: uuidv4()
+      }
+      board.stages.push(newStage)
+      dispatch(BOARD.UPDATE_BOARD_REQUEST, board)
+        .then((resp) => {
+          resolve(newStage)
+        })
+        .catch((err) => {
           reject(err)
         })
     })

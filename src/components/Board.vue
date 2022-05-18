@@ -2,6 +2,13 @@
   <div
     id="Board"
   >
+    <BoardModalBoxRename
+      v-show="showAddColumn"
+      :show="showAddColumn"
+      title="Добавить колонку"
+      @cancel="showAddColumn = false"
+      @save="onAddNewColumn"
+    />
     <div class="flex items-start">
       <template
         v-for="column in storeCards"
@@ -141,6 +148,37 @@
           </div>
         </div>
       </template>
+      <!-- кнопка Добавить колонку -->
+      <div
+        v-if="board.type_access === 1"
+        class="bg-[#e5e5e5] rounded-lg p-3 column-width mr-3"
+      >
+        <div
+          class="flex justify-center items-center h-full w-full cursor-pointer"
+          @click="addColumn"
+        >
+          <p
+            class="text-[#444444] font-['Tahoma'] text-sm"
+          >
+            Добавить колонку
+          </p>
+          <!-- Плюсик -->
+          <svg
+            class="ml-2"
+            width="11"
+            height="11"
+            viewBox="0 0 11 11"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M5.5 0.5C4.84625 0.5 4.31629 1.02997 4.31629 1.68371V4.31629H1.68371C1.02997 4.31629 0.5 4.84625 0.5 5.5C0.5 6.15375 1.02997 6.68371 1.68371 6.68371H4.31629V9.31629C4.31629 9.97003 4.84625 10.5 5.5 10.5C6.15375 10.5 6.68371 9.97003 6.68371 9.31629V6.68371H9.31629C9.97003 6.68371 10.5 6.15375 10.5 5.5C10.5 4.84625 9.97003 4.31629 9.31629 4.31629H6.68371V1.68371C6.68371 1.02997 6.15375 0.5 5.5 0.5Z"
+              fill="black"
+              fill-opacity="0.5"
+            />
+          </svg>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -148,8 +186,13 @@
 <script>
 import draggable from 'vuedraggable'
 import BoardCard from '@/components/Board/BoardCard.vue'
+import BoardModalBoxRename from '@/components/Board/BoardModalBoxRename.vue'
+import * as BOARD from '@/store/actions/boards'
+import * as CARD from '@/store/actions/cards'
+
 export default {
   components: {
+    BoardModalBoxRename,
     BoardCard,
     draggable
   },
@@ -165,7 +208,8 @@ export default {
   },
   data () {
     return {
-      isShowArchive: false
+      isShowArchive: false,
+      showAddColumn: false
     }
   },
   methods: {
@@ -219,6 +263,28 @@ export default {
     showColumnMenu (column, e) {
       // TODO: Здесь сделать вывпадающее меню колонки
       console.log('showColumnMenu', column, e)
+    },
+    addColumn (e) {
+      this.showAddColumn = true
+    },
+    uuidv4 () {
+      return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
+        (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+      )
+    },
+    onAddNewColumn (name) {
+      this.showAddColumn = false
+      const title = name.trim()
+      if (title) {
+        console.log('onAddNewColumn', title, this.board)
+        this.$store.dispatch(BOARD.ADD_STAGE_BOARD_REQUEST, {
+          boardUid: this.board.uid,
+          newStageTitle: title
+        })
+          .then((resp) => {
+            this.$store.dispatch(CARD.BOARD_CARDS_ADDSTAGE, resp)
+          })
+      }
     }
   }
 }

@@ -38,6 +38,21 @@ const actions = {
           reject(err)
         })
     })
+  },
+  [CARD.BOARD_CARDS_ADDSTAGE]: ({ commit, rootState }, newStage) => {
+    const board = rootState.boards.boards[state.boardUid]
+    const canChangeBoard = board.type_access === 1
+    const canAddCardsToBoard =
+      board.type_access === 1 || board.type_access === 2
+    //
+    const stage = { ...newStage }
+    stage.cards = []
+    stage.Unsorted = false
+    stage.Archive = false
+    stage.UserStage = true
+    stage.AddCard = canAddCardsToBoard
+    stage.CanEditStage = canChangeBoard
+    commit('AddStage', stage)
   }
 }
 
@@ -148,6 +163,18 @@ const mutations = {
     state.status = 'success'
     state.boardUid = resp.boardUid
     state.cards = stages
+  },
+  AddStage: (state, stage) => {
+    state.cards.push(stage)
+    state.cards.sort((stage1, stage2) => {
+      // сначала по порядку
+      if (stage1.Order > stage2.Order) return 1
+      if (stage1.Order < stage2.Order) return -1
+      // если одинаковый, то по имени
+      if (stage1.Name > stage2.Name) return 1
+      if (stage1.Name < stage2.Name) return -1
+      return 0
+    })
   }
 }
 

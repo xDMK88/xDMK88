@@ -287,14 +287,9 @@ const mutations = {
     state.files = []
   },
   [MERGE_FILES_WITH_MESSAGES]: state => {
-    console.log('MERGING FILES WITH MESSAGES')
     state.inspectorMessages.forEach(item => {
-      item.msg = 'helloworld'
       item.uid_creator = 'inspector'
-      const date = new Date(item.creation_date)
-      date.setTime(date.getTime() + (3 * 60 * 60 * 1000))
-      // remove two last characters to make date same as other messages
-      item.date_create = date.toISOString().slice(0, -2)
+      item.date_create = item.creation_date
     })
 
     state.files.forEach(item => {

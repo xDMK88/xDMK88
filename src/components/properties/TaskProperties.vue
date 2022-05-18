@@ -8,6 +8,7 @@ import close from '@/icons/close.js'
 import { CREATE_MESSAGE_REQUEST, DELETE_MESSAGE_REQUEST } from '@/store/actions/taskmessages'
 import { CREATE_FILES_REQUEST } from '@/store/actions/taskfiles'
 import * as TASK from '@/store/actions/tasks'
+import * as INSPECTOR from '@/store/actions/inspector'
 import { copyText } from 'vue3-clipboard'
 import linkify from 'vue-linkify'
 import ModalBoxConfirm from '@/components/modals/ModalBoxConfirm.vue'
@@ -226,9 +227,7 @@ export default {
         })
     }
 
-    const createTaskMsg = (event) => {
-      console.log(taskMsg.value)
-      //
+    const createTaskMsg = () => {
       const date = new Date()
       const month = pad2(date.getUTCMonth() + 1)
       const day = pad2(date.getUTCDate())
@@ -237,7 +236,7 @@ export default {
       const minutes = pad2(date.getUTCMinutes())
       const seconds = pad2(date.getUTCSeconds())
       const dateCreate = year + '-' + month + '-' + day + 'T' + hours + ':' + minutes + ':' + seconds
-      //
+
       const data = {
         uid_task: selectedTask.value.uid,
         uid_creator: user.value.current_user_uid,
@@ -246,6 +245,7 @@ export default {
         text: taskMsg.value,
         msg: taskMsg.value
       }
+
       store.dispatch(CREATE_MESSAGE_REQUEST, data).then(
         resp => {
           selectedTask.value.has_msgs = true
@@ -256,8 +256,8 @@ export default {
           }
           selectedTask.value.msg = decodeURIComponent(taskMsg.value)
           this.infoComplete = true
-          const elmnt = document.getElementById('content').lastElementChild
-          elmnt.scrollIntoView({ behavior: 'smooth' })
+          const wrapperElement = document.getElementById('content').lastElementChild
+          wrapperElement.scrollIntoView({ behavior: 'smooth' })
         })
       taskMsg.value = ''
     }
@@ -895,6 +895,9 @@ export default {
       if (this.selectedTask.emails) return true
       if (this.selectedTask.type === 1 || this.selectedTask.type === 2) return true
       return false
+    },
+    taskMessagesAndFiles () {
+      return this.$store.state.taskfilesandmessages.messages
     }
   },
   watch: {
@@ -932,6 +935,7 @@ export default {
       const seconds = this.pad2(date.getUTCSeconds())
       const dateCreate = year + '-' + month + '-' + day + 'T' + hours + ':' + minutes + ':' + seconds
       const msgtask = this._linkify(this.taskMsg)
+
       const data = {
         uid_task: this.selectedTask.uid,
         uid_creator: this.cusers.current_user_uid,
@@ -940,8 +944,18 @@ export default {
         text: this.taskMsg,
         msg: msgtask
       }
+
       this.$store.dispatch(CREATE_MESSAGE_REQUEST, data).then(
         resp => {
+          // Answer last inspector message
+          const lastInspectorMessage = this.taskMessagesAndFiles[this.taskMessagesAndFiles.length - 2].uid_creator === 'inspector' ? this.taskMessagesAndFiles[this.taskMessagesAndFiles.length - 2] : false
+          console.log('lastInspectorMessage: ', lastInspectorMessage)
+          if (lastInspectorMessage) {
+            this.$store.dispatch(INSPECTOR.ANSWER_INSPECTOR_TASK, { id: lastInspectorMessage.id, answer: 1 }).then(() => {
+              lastInspectorMessage.performer_answer = 1
+            })
+          }
+
           this.selectedTask.has_msgs = true
           if (this.selectedTask.type === 2 || this.selectedTask.type === 3) {
             if ([1, 5, 7, 8].includes(this.selectedTask.status)) {
@@ -949,8 +963,8 @@ export default {
             }
           }
           this.selectedTask.msg = decodeURIComponent(this.taskMsg)
-          const elmnt = document.getElementById('content').lastElementChild
-          elmnt.scrollIntoView({ behavior: 'smooth' })
+          const wrapperElement = document.getElementById('content').lastElementChild
+          wrapperElement.scrollIntoView({ behavior: 'smooth' })
         })
       this.taskMsg = ''
       this.$nextTick(function () {

@@ -50,6 +50,7 @@
           type="button"
           name="btn-send"
           class="btn-send-custom"
+          @click="sendTaskMsg"
         >
           <svg
             width="24"

@@ -383,6 +383,18 @@
         </Popper>
       </div>
     </div>
+    <div class="flex flex-col max-w-1/2">
+      <!-- chat -->
+      <TaskPropsChatMessages
+        v-if="taskMessages?.length"
+        id="content"
+        class="mt-3"
+        :task-messages="taskMessages"
+        :current-user-uid="user.current_user_uid"
+      />
+      <!-- input -->
+      <TaskPropsInputForm/>
+    </div>
   </div>
   <!-- subtasks -->
   <div
@@ -407,6 +419,15 @@
           {{ subTask.comment }}
         </article>
       </div>
+      <!-- <div class="flex flex-col max-w-1/2">
+        <TaskPropsChatMessages
+          v-if="taskMessages?.length"
+          id="content"
+          class="mt-3"
+          :task-messages="taskMessages"
+          :current-user-uid="user.current_user_uid"
+        />
+      </div> -->
     </div>
   </div>
 </template>
@@ -417,7 +438,8 @@ import { ref } from 'vue'
 // import TaskListTagLabel from '@/components/TasksList/TaskListTagLabel.vue'
 import TaskPropsButtonPerform from '@/components/TaskProperties/TaskPropsButtonPerform.vue'
 import TaskPropsButtonSetDate from '@/components/TaskProperties/TaskPropsButtonSetDate.vue'
-// import TaskPropsChatMessages from '@/components/TaskProperties/TaskPropsChatMessages.vue'
+import TaskPropsChatMessages from '@/components/TaskProperties/TaskPropsChatMessages.vue'
+import TaskPropsInputForm from '@/components/TaskProperties/TaskPropsInputForm'
 import TaskPropsButtonAccess from '@/components/TaskProperties/TaskPropsButtonAccess.vue'
 import TaskPropsButtonTags from '@/components/TaskProperties/TaskPropsButtonTags.vue'
 import TaskPropsButtonFocus from '@/components/TaskProperties/TaskPropsButtonFocus.vue'
@@ -465,9 +487,11 @@ export default {
     TaskPropsButtonTags,
     TaskPropsButtonFocus,
     TaskPropsButtonProject,
-    // TaskPropsChatMessages,
+    TaskPropsChatMessages,
+    TaskPropsInputForm,
     Popper
   },
+  emits: ['clickTask', 'nextTask'],
   props: {
     task: {
       type: Object,
@@ -502,7 +526,6 @@ export default {
       default: () => ([])
     }
   },
-  emits: ['clickTask'],
   setup () {
     const isTaskHoverPopperActive = ref(false)
     const checklistshow = ref(false)
@@ -730,4 +753,5 @@ export default {
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+</style>

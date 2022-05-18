@@ -7,7 +7,7 @@ import PropertiesRight from '@/components/PropertiesRight.vue'
 import ErrorNotification from '@/components/Notifications/ErrorNotification.vue'
 import Notification from '@/components/Notifications/Notification.vue'
 import InspectorNotification from '@/components/Notifications/InspectorNotification.vue'
-import Overlay from '@/components/Overlay.vue'
+import Overlay from '@/components/modals/Overlay.vue'
 
 import { LOCALIZATION_REQUEST } from '@/store/actions/localization'
 

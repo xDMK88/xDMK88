@@ -370,7 +370,7 @@ export default {
       }
     },
     pad2 (n) {
-      return (n < 10 ? '0' : '') + n
+      return (n < 10 ? '0' : '')
     },
     dateToTimeFormat (date) {
       const hours = this.pad2(date.getHours())
@@ -382,13 +382,10 @@ export default {
       const month = calendarDate.toLocaleString('default', { month: 'short' })
       return day + ' ' + month
     },
-    print (val) {
-      console.log(val)
-    },
     getMessageTimeString (dateCreate) {
       // добавляем Z в конец, чтобы он посчитал что это UTC время
       if (dateCreate[dateCreate.length - 1] !== 'Z') {
-        dateCreate = dateCreate + 'Z'
+        dateCreate += 'Z'
       }
       const date = new Date(dateCreate)
       return date.toLocaleString('default', {
@@ -426,6 +423,7 @@ export default {
 .msg-custom-chat-left {
   float: left;
   padding: 8px 10px;
+  width: 80%;
   min-height: 40px;
   display: table-cell;
   max-width: 85%;

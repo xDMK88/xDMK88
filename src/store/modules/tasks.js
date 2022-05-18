@@ -1370,6 +1370,12 @@ const actions = {
 }
 
 const mutations = {
+  [TASK.HAS_MSGS]: (state, uid, value) => {
+    state.tasks[uid].has_msgs = value
+  },
+  [TASK.MSG_EQUAL]: (state, uid, value) => {
+    state.tasks[uid].msg = value
+  },
   [TASK.HAS_FILES]: (state, task, value) => {
     state.tasks[task.uid] = value
   },

@@ -31,16 +31,19 @@
               type="file"
               multiple="multiple"
               name="file_attach"
-              @change="this.createTaskFile($event)"
+              @change="createTaskFile($event)"
             >
           </label>
         </div>
       </span>
       <textarea
         ref="taskMsgEdit"
+        v-model="taskMsg"
         class="form-control mt-[7px] text-group-design task-msg overflow-auto scroll-style dark:bg-gray-800 dark:text-gray-100"
         placeholder="Введите сообщение"
         rows="58"
+        @input="onInputTaskMsg"
+        @keydown.enter.exact.prevent="sendTaskMsg"
       />
       <span class="input-group-addon input-group-btn-send dark:bg-gray-800 dark:text-gray-100">
         <button
@@ -67,13 +70,17 @@
   </div>
 </template>
 <script>
+import { ref } from 'vue'
+import * as INSPECTOR from '@/store/actions/inspector.js'
 import * as TASK from '@/store/actions/tasks.js'
-import { CREATE_FILES_REQUEST } from '@/store/actions/taskfiles'
+import * as FILES from '@/store/actions/taskfiles.js'
+import * as MSG from '@/store/actions/taskmessages'
 
 export default {
   data: () => ({
     isloading: false,
-    files: []
+    files: [],
+    taskMsg: ref('')
   }),
   props: {
     task: {
@@ -86,8 +93,114 @@ export default {
       return this.$store.state.user.user
     }
   },
+  mounted: function () {
+    this.$nextTick(function () {
+      this.$refs.taskMsgEdit.addEventListener('paste', this.onPasteEvent, { once: true })
+    })
+  },
   methods: {
-    createTaskFile (event) {
+    pad2: function (n) {
+      return (n < 10 ? '0' : '') + n
+    },
+    uuidv4: function () {
+      return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
+        (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+      )
+    },
+    _linkify: function (text) {
+      return text.replace(/(lt?:\/\/[^\s]+)/g, '<a href="$1">$1</a>')
+    },
+    onPasteEvent: function (e) {
+      const items = (e.clipboardData || e.originalEvent.clipboardData).items
+      let loadFile = false
+      for (const index in items) {
+        const item = items[index]
+        if (item.kind === 'file') {
+          const blob = item.getAsFile()
+          const formData = new FormData()
+          formData.append('files', blob)
+          const data = {
+            uid_task: this.task.uid,
+            name: formData
+          }
+          loadFile = true
+          this.isloading = true
+          this.$store.dispatch(FILES.CREATE_FILES_REQUEST, data)
+            .then((resp) => {
+              this.isloading = false
+              if (this.task.type === 2 || this.task.uid.type === 3) {
+                if ([1, 5, 7, 8].includes(this.task.status)) {
+                  const status = {
+                    uid: this.task.uid,
+                    value: 9
+                  }
+                  this.$store.commit(TASK.CHANGE_TASK_STATUS, status)
+                }
+              }
+              this.$refs.taskMsgEdit.addEventListener('paste', this.onPasteEvent, { once: true })
+            })
+        }
+      }
+      if (!loadFile) {
+        this.$refs.taskMsgEdit.addEventListener('paste', this.onPasteEvent, { once: true })
+      }
+    },
+    onInputTaskMsg: function () {
+      this.$refs.taskMsgEdit.style.height = '40px'
+      const defSendHeight = 105
+      const defEditHeight = 40
+      const defEditHeightMax = 100
+      const scrollHeight = this.$refs.taskMsgEdit.scrollHeight
+      const scrollHeightFix = scrollHeight < defEditHeight ? defEditHeight : scrollHeight > defEditHeightMax ? defEditHeightMax : scrollHeight
+      const sendHeight = defSendHeight + scrollHeightFix - defEditHeight
+      this.$refs.taskMsgEdit.style.height = scrollHeight + 'px'
+      document.documentElement.style.setProperty('--hex-parent-height', sendHeight + 'px')
+    },
+    sendTaskMsg: function () {
+      const date = new Date()
+      const month = this.pad2(date.getUTCMonth() + 1)
+      const day = this.pad2(date.getUTCDate())
+      const year = this.pad2(date.getUTCFullYear())
+      const hours = this.pad2(date.getUTCHours())
+      const minutes = this.pad2(date.getUTCMinutes())
+      const seconds = this.pad2(date.getUTCSeconds())
+      const dateCreate = year + '-' + month + '-' + day + 'T' + hours + ':' + minutes + ':' + seconds
+      const msgtask = this._linkify(this.taskMsg)
+
+      const data = {
+        uid_task: this.task.uid,
+        uid_creator: this.user.current_user_uid,
+        uid_msg: this.uuidv4(),
+        date_create: dateCreate,
+        text: this.taskMsg,
+        msg: msgtask
+      }
+
+      this.$store.dispatch(MSG.CREATE_MESSAGE_REQUEST, data)
+        .then((resp) => {
+          const lastInspectorMessage = this.taskMessagesAndFiles[this.taskMessagesAndFiles.length - 2].uid_creator === 'inspector' ? this.taskMessagesAndFiles[this.taskMessagesAndFiles.length - 2] : false
+          console.log('lastInspectorMessage: ', lastInspectorMessage)
+          if (lastInspectorMessage) {
+            this.$store.dispatch(INSPECTOR.ANSWER_INSPECTOR_TASK, { id: lastInspectorMessage.id, answer: 1 }).then(() => {
+              lastInspectorMessage.performer_answer = 1
+            })
+          }
+
+          this.$store.commit(TASK.HAS_MSGS, this.task.uid, true)
+          if (this.task.type === 2 || this.task.type === 3) {
+            if ([1, 5, 7, 8].includes(this.task.status)) {
+              const status = {
+                uid: this.task.uid,
+                value: 9
+              }
+              this.$store.commit(TASK.CHANGE_TASK_STATUS, status)
+            }
+          }
+          this.$store.commit(TASK.MSG_EQUAL, this.task.uid, decodeURIComponent(this.taskMsg))
+        })
+      this.taskMsg = ''
+    },
+    createTaskFile: function (event) {
       console.log(event.target.files)
       this.files = event.target.files
       const formData = new FormData()
@@ -111,7 +224,7 @@ export default {
           })
       }
 
-      this.$store.dispatch(CREATE_FILES_REQUEST, data)
+      this.$store.dispatch(FILES.CREATE_FILES_REQUEST, data)
         .then((resp) => {
           if (this.task.type === 2 || this.task.type === 3) {
             if ([1, 5, 7, 8].includes(this.task.status)) {

@@ -393,7 +393,9 @@
         :current-user-uid="user.current_user_uid"
       />
       <!-- input -->
-      <TaskPropsInputForm/>
+      <TaskPropsInputForm
+        :task="task"
+      />
     </div>
   </div>
   <!-- subtasks -->

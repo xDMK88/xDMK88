@@ -84,7 +84,6 @@ const openDepartmentProperties = (department) => {
   store.commit(SELECT_DEPARTMENT, department)
 }
 const UpdateDepOrder = (depOrder, order) => {
-  console.log('drag n, drop resp: ', depOrder.uid + ', приоритет: ' + order)
   const dep = {
     uid: depOrder.uid,
     uid_parent: '',
@@ -236,7 +235,7 @@ const clickOnGridCard = (value) => {
       </p>
     </div>
   </div>
-  <draggable tag="div" item-key="order" :list="moviesLocalRef" v-model="moviesLocalRef"  :options="{group:'div',animation:150,ghostClass:'sortable-ghost',chosenClass:'chosenClass',scroll:true,scrollSensitivity:200}"
+  <draggable tag="div" item-key="order" :list="moviesLocalRef" :options="{group:'div',animation:150,ghostClass:'sortable-ghost',chosenClass:'chosenClass',scroll:true,scrollSensitivity:200}"
              @change="change"
              @start="start"
              @end="end"
@@ -244,7 +243,7 @@ const clickOnGridCard = (value) => {
              class="list-group"
              ghost-class="ghost">
     <template #item="{ element, index }">
-  <div @dragend="UpdateDepOrder(element.dep, index)">
+  <div @dragstart="UpdateDepOrder(element.dep, index)">
     <div :id="element.dep.order"
       class="flex items-center"
       :class="index !=0 ? 'mt-5' : ''"

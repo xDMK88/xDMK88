@@ -21,9 +21,7 @@ const getters = {
 const actions = {
   [BOARD.CREATE_BOARD_REQUEST]: ({ commit, dispatch }, data) => {
     return new Promise((resolve, reject) => {
-      const url =
-        process.env.VUE_APP_LEADERTASK_API +
-        '/api/v1/board'
+      const url = process.env.VUE_APP_LEADERTASK_API + '/api/v1/board'
       axios({ url: url, method: 'POST', data: data })
         .then((resp) => {
           resolve(resp)
@@ -44,9 +42,8 @@ const actions = {
   },
   [BOARD.UPDATE_BOARD_REQUEST]: ({ commit, dispatch }, data) => {
     return new Promise((resolve, reject) => {
-      const url =
-        process.env.VUE_APP_LEADERTASK_API +
-        '/api/v1/board'
+      console.log(data)
+      const url = process.env.VUE_APP_LEADERTASK_API + '/api/v1/board'
       axios({ url: url, method: 'PATCH', data: data })
         .then((resp) => {
           resolve(resp)
@@ -65,12 +62,10 @@ const actions = {
         })
     })
   },
-  [BOARD.REMOVE_BOARD_REQUEST]: ({ commit, dispatch }, data) => {
+  [BOARD.REMOVE_BOARD_REQUEST]: ({ commit, dispatch }, uid) => {
     return new Promise((resolve, reject) => {
-      const url =
-        process.env.VUE_APP_LEADERTASK_API +
-        '/api/v1/board'
-      axios({ url: url, method: 'DELETE', data: data })
+      const url = process.env.VUE_APP_LEADERTASK_API + '/api/v1/board?uid=' + uid
+      axios({ url: url, method: 'DELETE' })
         .then((resp) => {
           resolve(resp)
         })

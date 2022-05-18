@@ -57,12 +57,14 @@ const createOrUpdateDepartment = (department, index) => {
     department.uid = uuidv4()
     department.order = department.order + 1
     console.log('Обработчик на добавление', department)
+    localStorage.setItem('department', department)
     store.dispatch(CREATE_DEPARTMENT_REQUEST, department)
       .then(() => {
         hasChanged.value = false
         store.dispatch('asidePropertiesToggle', false)
         store.commit(NAVIGATOR_PUSH_DEPARTAMENT, [department])
         store.commit(PUSH_DEPARTMENT, department)
+        localStorage.getItem('department')
       })
   } else {
     console.log('Обработчик на обновление', department)

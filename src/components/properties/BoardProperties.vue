@@ -3,7 +3,6 @@ import { computed, ref, watch, onMounted } from 'vue'
 import { useStore } from 'vuex'
 import Icon from '@/components/Icon.vue'
 import ColorPicker from '@/components/properties/ColorPicker.vue'
-import Toggle from '@vueform/toggle'
 import add from '@/icons/add.js'
 import close from '@/icons/close.js'
 import Popper from 'vue3-popper'
@@ -16,7 +15,8 @@ import * as NAVIGATOR from '@/store/actions/navigator'
 const store = useStore()
 const selectedBoard = computed(() => store.state.boards.selectedBoard)
 const user = computed(() => store.state.user.user)
-const employeesByEmail = computed(() => store.state.employees.employeesByEmail)
+//  const employeesByEmail = computed(() => store.state.employees.employeesByEmail)
+const employees = computed(() => store.state.employees.employees)
 const isDark = computed(() => store.state.darkMode)
 const showConfirm = ref(false)
 const showConfirmQuit = ref(false)
@@ -55,9 +55,10 @@ function uuidv4 () {
 const createOrUpdateBoard = (board) => {
   board.quiet = board.quiet ? 1 : 0
   // TODO: should not be hardcoded
-  board.global_property_uid = '2e8dddd0-125a-49ef-a87c-0ea17b1b7f56'
+  board.global_property_uid = '1b30b42c-b77e-40a4-9b43-a19991809add'
   if (!board.uid) {
     board.uid = uuidv4()
+    console.log('create board c ' + ' uid: ' + board.uid, board)
     store.dispatch(BOARD.CREATE_BOARD_REQUEST, board)
       .then(() => {
         hasChanged.value = false
@@ -67,6 +68,7 @@ const createOrUpdateBoard = (board) => {
         store.commit(NAVIGATOR.NAVIGATOR_PUSH_BOARD, [board])
       })
   } else {
+    console.log('update board c ' + ' uid: ' + board.uid, board)
     store.dispatch(BOARD.UPDATE_BOARD_REQUEST, board)
       .then(() => {
         hasChanged.value = false
@@ -150,15 +152,6 @@ const removeBoard = (board) => {
       <div
         class="flex items-center mb-6"
       >
-        <p class="text-sm mr-3">
-          Не следить за изменениями
-        </p>
-        <Toggle
-          v-model="selectedBoard.quiet"
-          class="outline-none ring-0"
-          :classes="{ toggleOn: 'bg-blue-400 border-blue-400 justify-start text-white', container: 'focus:ring-0' }"
-          @change="hasChanged = true"
-        />
       </div>
       <p class="dark:text-gray-200">
         Доступ
@@ -176,7 +169,7 @@ const removeBoard = (board) => {
             class="overflow-scroll"
           >
             <div
-              v-for="(email, index) in employeesByEmail"
+              v-for="(email, key, index) in employees"
               :key="index"
               class="px-3 py-1 bg-gray-50 rounded-xl mt-1 flex items-center justify-between border border-gray-100"
             >
@@ -192,8 +185,8 @@ const removeBoard = (board) => {
               <input
                 v-model="email.included"
                 class="ml-2 bg-gray-300 rounded border border-gray-100"
-                :checked="selectedBoard.members[email.uid]"
                 type="checkbox"
+                :checked="selectedBoard.members[email.uid]"
                 @change="addRemoveMember(email)"
               >
             </div>
@@ -219,16 +212,16 @@ const removeBoard = (board) => {
         class="grid grid-cols-1"
       >
         <template
-          v-for="(employee, pindex) in selectedBoard.members"
-          :key="pindex"
+          v-for="(employee, key, index) in selectedBoard.members"
+          :key="index"
         >
           <div
-            v-if="employeesByEmail[employee]"
-            v-show="pindex < 4 || showAllMembers"
+            v-if="employees[key]"
+            v-show="index < 4 || showAllMembers"
             class="flex items-center bg-white dark:bg-gray-700 rounded-xl shadow h-30 px-3 py-5 mt-1"
           >
             <img
-              :src="employeesByEmail[employee].fotolink"
+              :src="employees[key].fotolink"
               class="rounded-lg mx-2 my-auto"
               width="38"
               height="38"
@@ -238,20 +231,20 @@ const removeBoard = (board) => {
                 <p
                   class="font-normal cursor-pointer"
                 >
-                  {{ employeesByEmail[employee].name }}
+                  {{ employees[key].name }}
                 </p>
                 <icon
-                  v-if="employeesByEmail[employee].uid !== user.current_user_uid && selectedBoard.email_creator == user.current_user_email"
+                  v-if="employees[key].uid !== user.current_user_uid && selectedBoard.email_creator == user.current_user_email"
                   :path="close.path"
                   :width="10"
                   :height="10"
                   :box="close.viewBox"
                   class="text-grayemployeesByEmail[employee]-400 cursor-pointer hover:text-gray-800"
-                  @click="removeMember(employeesByEmail[employee])"
+                  @click="removeMember(employees[key])"
                 />
               </div>
               <p class="font-light text-xs break-all">
-                {{ employeesByEmail[employee].email }}
+                {{ employees[key].email }}
               </p>
             </div>
           </div>
@@ -268,7 +261,7 @@ const removeBoard = (board) => {
         v-if="selectedBoard.email_creator == user.current_user_email"
         class="w-full bg-gray-100 dark:bg-gray-800 rounded-xl mt-4 p-3 text-gray-700 dark:text-gray-100 font-bold hover:bg-gray-200 hover:dark:bg-gray-700"
         :class="{ 'bg-orange-400 dark:bg-orange-400 hover:bg-orange-500 hover:dark:bg-orange-500': hasChanged }"
-        @click="createOrUpdateBoard(selectedBoard)"
+        @click="createOrUpdateBoard(selectedBoard, emails)"
       >
         {{ selectedBoard.uid ? 'Сохранить' : 'Создать' }}
       </button>

@@ -33,7 +33,11 @@ const updateGridView = (value) => {
 const isPropertiesMobileExpanded = computed(() => store.state.isPropertiesMobileExpanded)
 const user = computed(() => store.state.user.user)
 const focusedBoard = ref('')
-
+function uuidv4 () {
+  return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
+    (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+  )
+}
 const openProperties = (board, parentBoardUid = '') => {
   if (!isPropertiesMobileExpanded.value) {
     store.dispatch('asidePropertiesToggle', true)
@@ -45,6 +49,7 @@ const openProperties = (board, parentBoardUid = '') => {
   // create empty instanse of project
   if (!board || parentBoardUid) {
     board = {
+      uid: uuidv4(),
       uid_parent: parentBoardUid,
       color: '',
       comment: '',
@@ -57,11 +62,11 @@ const openProperties = (board, parentBoardUid = '') => {
       favorite: 0,
       quiet: 0,
       email_creator: user.value.current_user_email,
-      members: [user.value.current_user_email],
+      members: [user.value.current_user_uid], //  [user.value.current_user_email],
       children: [],
-      uid: '',
       name: '',
-      bold: 0
+      bold: 0,
+      type_access: 1
     }
   }
   store.commit(BOARD.SELECT_BOARD, board)

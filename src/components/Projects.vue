@@ -70,7 +70,6 @@ const createProject = () => {
   }
   store.commit(SELECT_PROJECT, project)
 }
-
 const createBoard = () => {
   focusedUid.value = ''
   if (!isPropertiesMobileExpanded.value) {
@@ -81,7 +80,7 @@ const createBoard = () => {
 
   // create empty instanse of board
   const board = {
-    uid_parent: '',
+    uid_parent: '00000000-0000-0000-0000-000000000000',
     color: '',
     comment: '',
     plugin: '',
@@ -93,9 +92,9 @@ const createBoard = () => {
     favorite: 0,
     quiet: 0,
     email_creator: user.value.current_user_email,
-    members: [user.value.current_user_email],
+    members: { [user.value.current_user_uid]: '1' },
     children: [],
-    uid: '',
+    uid: null,
     name: '',
     bold: 0
   }

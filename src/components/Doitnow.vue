@@ -31,7 +31,6 @@
     :task="firstTask"
     :subTasks="subTasks"
     :colors="colors"
-    :tasksCount="tasksCount"
     :tags="tags"
     :user="user"
     :taskMessages="taskMessages"
@@ -47,6 +46,7 @@
 </template>
 
 <script>
+import * as MSG from '@/store/actions/taskmessages.js'
 import * as TASK from '@/store/actions/tasks.js'
 import DoitnowEmpty from '@/components/Doitnow/DoitnowEmpty.vue'
 import DoitnowTask from '@/components/Doitnow/DoitnowTask.vue'
@@ -84,20 +84,9 @@ export default {
       return null
     },
     taskMessages () {
-      return this.$store.state.taskfilesandmessages.messages
-    },
-    subTasks () {
-      if (this.unreadTasks.length) {
-        this.$store.dispatch(TASK.SUBTASKS_REQUEST, this.unreadTasks[0].uid)
-        return this.$store.state.tasks.subtasks.tasks
-      }
-      if (this.overdueTasks.length) {
-        this.$store.dispatch(TASK.SUBTASKS_REQUEST, this.overdueTasks[0].uid)
-        return this.$store.state.tasks.subtasks.tasks
-      }
-      if (this.todayTasks.length) {
-        this.$store.dispatch(TASK.SUBTASKS_REQUEST, this.todayTasks[0].uid)
-        return this.$store.state.tasks.subtasks.tasks
+      if (this.firstTask) {
+        this.$store.dispatch(MSG.MESSAGES_REQUEST, this.firstTask.uid)
+        return this.$store.state.taskfilesandmessages.messages
       }
       return null
     },
@@ -118,6 +107,13 @@ export default {
     },
     user () {
       return this.$store.state.user.user
+    },
+    subTasks () {
+      if (this.firstTask) {
+        this.$store.dispatch(TASK.SUBTASKS_REQUEST, this.firstTask.uid)
+        return this.$store.state.tasks.subtasks.tasks
+      }
+      return null
     }
   },
   mounted: function () {

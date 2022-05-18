@@ -1370,6 +1370,9 @@ const actions = {
 }
 
 const mutations = {
+  [TASK.HAS_FILES]: (state, task, value) => {
+    state.tasks[task.uid] = value
+  },
   [TASK.UPDATE_TASK]: (state, task) => {
     if (state.newtasks[task.uid]) {
       state.newtasks[task.uid].info = task

@@ -423,6 +423,7 @@ export default {
 .msg-custom-chat-left {
   float: left;
   padding: 8px 10px;
+  width: 80%;
   min-height: 40px;
   display: table-cell;
   max-width: 85%;

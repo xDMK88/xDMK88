@@ -1,6 +1,11 @@
 <template>
 <div class="form-send-message">
+    <img
+      v-if="this.isloading"
+      src="/ajaxloader.gif"
+    >
     <div
+      :id="'copypaste_' + task.uid"
       class="сopypastefiles"
     />
     <div class="quote-request" />
@@ -26,6 +31,7 @@
               type="file"
               multiple="multiple"
               name="file_attach"
+              @change="this.createTaskFile($event)"
             >
           </label>
         </div>
@@ -61,4 +67,71 @@
   </div>
 </template>
 <script>
+import * as TASK from '@/store/actions/tasks.js'
+import { CREATE_FILES_REQUEST } from '@/store/actions/taskfiles'
+
+export default {
+  data: () => ({
+    isloading: false,
+    files: []
+  }),
+  props: {
+    task: {
+      type: Object,
+      default: () => ({})
+    }
+  },
+  computed: {
+    user () {
+      return this.$store.state.user.user
+    }
+  },
+  methods: {
+    createTaskFile (event) {
+      console.log(event.target.files)
+      this.files = event.target.files
+      const formData = new FormData()
+      for (let i = 0; i < this.files.length; i++) {
+        const file = this.files[i]
+        formData.append('files[' + i + ']', file)
+      }
+      const data = {
+        uid_task: this.task.uid,
+        name: formData
+      }
+
+      for (const formItem of formData) {
+        this.$store.commit(
+          'createLoadingFile',
+          {
+            msg: formItem[1].name,
+            uid_creator: this.user.current_user_uid,
+            date_create: new Date().toISOString(),
+            file_size: formItem[1].size
+          })
+      }
+
+      this.$store.dispatch(CREATE_FILES_REQUEST, data)
+        .then((resp) => {
+          if (this.task.type === 2 || this.task.type === 3) {
+            if ([1, 5, 7, 8].includes(this.task.status)) {
+              const status = {
+                uid: this.task.uid,
+                value: 9
+              }
+              this.$store.commit(TASK.CHANGE_TASK_STATUS, status)
+            }
+          }
+          this.$store.commit(TASK.HAS_FILES, this.task, true)
+          if (this.task.uid_customer === this.user.current_user_uid && (this.task.status === 5 || this.task.status === 7)) {
+            const status = {
+              uid: this.task.uid,
+              value: 9
+            }
+            this.$store.commit(TASK.CHANGE_TASK_STATUS, status)
+          }
+        })
+    }
+  }
+}
 </script>

@@ -419,7 +419,7 @@
           {{ subTask.comment }}
         </article>
       </div>
-      <div class="flex">
+      <!-- <div class="flex flex-col max-w-1/2">
         <TaskPropsChatMessages
           v-if="taskMessages?.length"
           id="content"
@@ -427,7 +427,7 @@
           :task-messages="taskMessages"
           :current-user-uid="user.current_user_uid"
         />
-      </div>
+      </div> -->
     </div>
   </div>
 </template>
@@ -491,6 +491,7 @@ export default {
     TaskPropsInputForm,
     Popper
   },
+  emits: ['clickTask', 'nextTask'],
   props: {
     task: {
       type: Object,
@@ -525,7 +526,6 @@ export default {
       default: () => ([])
     }
   },
-  emits: ['clickTask', 'nextTask'],
   setup () {
     const isTaskHoverPopperActive = ref(false)
     const checklistshow = ref(false)
@@ -753,4 +753,5 @@ export default {
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+</style>

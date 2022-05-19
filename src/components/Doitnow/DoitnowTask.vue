@@ -53,7 +53,6 @@
     </div>
     <div
       class="flex"
-      @click="onClick"
     >
       <div class="flex items-center">
         <!-- <div
@@ -419,7 +418,10 @@
       @click="showChat"
     >
       <div class="flex flex-col">
-        <div class="flex">
+        <div
+          class="flex"
+          @click="onClick(subTask)"
+        >
           <TaskStatus :task="subTask"/>
           <span>{{ subTask.name }}</span>
         </div>
@@ -728,8 +730,8 @@ export default {
       }
       this.$store.dispatch(TASK.CHANGE_TASK_TAGS, data)
     },
-    onClick () {
-      this.$emit('clickTask', this.task)
+    onClick (task) {
+      this.$emit('clickTask', task)
     },
     reDo () {
       this.$store.dispatch(TASK.CHANGE_TASK_STATUS, { uid: this.task.uid, value: 9 })

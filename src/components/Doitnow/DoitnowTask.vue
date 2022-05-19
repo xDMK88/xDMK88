@@ -384,6 +384,14 @@
       </div>
     </div>
     <div class="flex flex-col max-w-1/2">
+      <p
+        v-if="taskMessages.length > 2 && !showAllMessages"
+        class="text-gray-500 dark:text-gray-100 text-sm text-center cursor-pointer"
+        style="border-bottom: 1px dashed; padding-bottom: 0; width: 125px; margin: 0 auto;"
+        @click="scrollDown"
+      >
+        Show all messages
+      </p>
       <!-- chat -->
       <TaskPropsChatMessages
         v-if="taskMessages?.length"
@@ -391,6 +399,7 @@
         class="mt-3"
         :task-messages="taskMessages"
         :current-user-uid="user.current_user_uid"
+        :showAllMessages="showAllMessages"
       />
       <!-- input -->
       <TaskPropsInputForm
@@ -407,6 +416,7 @@
       class="group task-node flex-col items-center w-[99%] bg-white p-2 rounded-lg dark:bg-gray-900 dark:border-gray-700 border border-gray-300 my-0.5 relative font-SfProTextNormal"
       v-for="(subTask, i) in subTasks"
       :key="i - 1"
+      @click="showChat"
     >
       <div class="flex flex-col">
         <div class="flex">
@@ -421,15 +431,23 @@
           {{ subTask.comment }}
         </article>
       </div>
-      <!-- <div class="flex flex-col max-w-1/2">
-        <TaskPropsChatMessages
+      <div
+        class="flex flex-col max-w-1/2"
+        v-if="isChatVisible"
+      >
+        <!-- subtask chat -->
+        <!-- <TaskPropsChatMessages
           v-if="taskMessages?.length"
           id="content"
           class="mt-3"
           :task-messages="taskMessages"
           :current-user-uid="user.current_user_uid"
-        />
-      </div> -->
+        /> -->
+        <!-- input -->
+        <!-- <TaskPropsInputForm
+          :task="subTask"
+        /> -->
+      </div>
     </div>
   </div>
 </template>
@@ -534,6 +552,8 @@ export default {
     const toggleTaskHoverPopper = (val) => {
       isTaskHoverPopperActive.value = val
     }
+    const showAllMessages = ref(false)
+    const isChatVisible = ref(false)
     const createChecklist = () => {
       checklistshow.value = true
     }
@@ -552,8 +572,10 @@ export default {
     return {
       isTaskHoverPopperActive,
       toggleTaskHoverPopper,
+      isChatVisible,
       createChecklist,
       checklistshow,
+      showAllMessages,
       taskoptions,
       statuses,
       file,
@@ -579,6 +601,12 @@ export default {
   mutations: {
     PopperState (val) {
       this.isTaskHoverPopperActive = val
+    }
+  },
+  watch: {
+    task (newval, oldval) {
+      this.showAllMessages = false
+      this.isChatVisible = false
     }
   },
   computed: {
@@ -627,6 +655,21 @@ export default {
     }
   },
   methods: {
+    showChat () {
+      if (!this.isChatVisible) {
+        this.isChatVisible = true
+      } else {
+        this.isChatVisible = false
+      }
+    },
+    scrollDown () {
+      this.showAllMessages = true
+      this.infoComplete = true
+      setTimeout(() => {
+        const elem = document.getElementById('content').lastElementChild
+        elem.scrollIntoView()
+      }, 200)
+    },
     getValidForeColor (foreColor) {
       if (foreColor && foreColor !== '#A998B6') return foreColor
       return ''

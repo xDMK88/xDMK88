@@ -9,6 +9,14 @@
       @cancel="showAddColumn = false"
       @save="onAddNewColumn"
     />
+    <BoardModalBoxRename
+      v-show="showRenameColumn"
+      :show="showRenameColumn"
+      title="Название колонки"
+      :value="selectedColumnName"
+      @cancel="showRenameColumn = false"
+      @save="onRenameColumn"
+    />
     <div class="flex items-start">
       <template
         v-for="column in storeCards"
@@ -20,7 +28,7 @@
           :style="{ background: column.Color }"
         >
           <!--заголовок -->
-          <div class="flex justify-between">
+          <div class="flex justify-between items-start">
             <p
               class="text-[#333333] font-semibold font-['Tahoma'] text-sm"
               :style="{ color: getContrastYIQ(column.Color) }"
@@ -30,26 +38,63 @@
             <!-- Три точки -->
             <div
               v-if="column.CanEditStage"
-              class="hover:-m-px hover:border"
-              :style="{ 'border-color': getContrastYIQ(column.Color) ?? '#7f7f7f'}"
-              @click="showColumnMenu(column, $event)"
+              class="float-right"
             >
-              <svg
-                class="float-right"
-                width="20"
-                height="20"
-                viewBox="0 0 18 18"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
+              <Popper
+                arrow
+                class="light"
+                placement="bottom"
               >
-                <path
-                  fill-rule="evenodd"
-                  clip-rule="evenodd"
-                  d="M9.35445 16.1053C8.37341 16.1053 7.57812 15.31 7.57812 14.3289C7.57812 13.3479 8.37341 12.5526 9.35445 12.5526C10.3355 12.5526 11.1308 13.3479 11.1308 14.3289C11.1308 15.31 10.3355 16.1053 9.35445 16.1053ZM9.35445 10.7763C8.37341 10.7763 7.57812 9.981 7.57812 8.99996C7.57813 8.01892 8.37341 7.22364 9.35445 7.22364C10.3355 7.22364 11.1308 8.01892 11.1308 8.99996C11.1308 9.981 10.3355 10.7763 9.35445 10.7763ZM7.57813 3.67098C7.57813 4.65202 8.37341 5.4473 9.35445 5.4473C10.3355 5.4473 11.1308 4.65202 11.1308 3.67098C11.1308 2.68995 10.3355 1.89466 9.35445 1.89466C8.37341 1.89466 7.57813 2.68995 7.57813 3.67098Z"
-                  :fill="getContrastYIQ(column.Color) ?? 'black'"
-                  :fill-opacity="column.Color ? 1 : 0.5"
-                />
-              </svg>
+                <div
+                  class="hover:-m-px hover:border"
+                  :style="{ 'border-color': getContrastYIQ(column.Color) ?? '#7f7f7f'}"
+                >
+                  <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 18 18"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      clip-rule="evenodd"
+                      d="M9.35445 16.1053C8.37341 16.1053 7.57812 15.31 7.57812 14.3289C7.57812 13.3479 8.37341 12.5526 9.35445 12.5526C10.3355 12.5526 11.1308 13.3479 11.1308 14.3289C11.1308 15.31 10.3355 16.1053 9.35445 16.1053ZM9.35445 10.7763C8.37341 10.7763 7.57812 9.981 7.57812 8.99996C7.57813 8.01892 8.37341 7.22364 9.35445 7.22364C10.3355 7.22364 11.1308 8.01892 11.1308 8.99996C11.1308 9.981 10.3355 10.7763 9.35445 10.7763ZM7.57813 3.67098C7.57813 4.65202 8.37341 5.4473 9.35445 5.4473C10.3355 5.4473 11.1308 4.65202 11.1308 3.67098C11.1308 2.68995 10.3355 1.89466 9.35445 1.89466C8.37341 1.89466 7.57813 2.68995 7.57813 3.67098Z"
+                      :fill="getContrastYIQ(column.Color) ?? 'black'"
+                      :fill-opacity="column.Color ? 1 : 0.5"
+                    />
+                  </svg>
+                </div>
+                <template #content="{ close }">
+                  <div
+                    class="flex flex-col"
+                    @click="close"
+                  >
+                    <div
+                      class="flex items-center py-0.5 px-2 cursor-pointer hover:bg-gray-100 rounded text-sm font-['Tahoma']"
+                      @click="clickRenameColumn(column, $event)"
+                    >
+                      Переименовать
+                    </div>
+                    <div
+                      class="mt-2 flex items-center py-0.5 px-2 cursor-pointer hover:bg-gray-100 rounded text-sm font-['Tahoma']"
+                    >
+                      Цвет
+                    </div>
+                    <div
+                      class="mt-2 flex items-center py-0.5 px-2 cursor-pointer hover:bg-gray-100 rounded text-sm font-['Tahoma']"
+                    >
+                      Переместить
+                    </div>
+                    <div class="mt-2 flex h-px bg-[#dddddd]" />
+                    <div
+                      class="mt-2 flex items-center py-0.5 px-2 cursor-pointer hover:bg-gray-100 rounded text-sm font-['Tahoma']"
+                    >
+                      Удалить
+                    </div>
+                  </div>
+                </template>
+              </Popper>
             </div>
           </div>
           <!--под заголовок стат-колонки -->
@@ -155,7 +200,7 @@
       >
         <div
           class="flex justify-center items-center h-full w-full cursor-pointer"
-          @click="addColumn"
+          @click="clickAddColumn"
         >
           <p
             class="text-[#444444] font-['Tahoma'] text-sm"
@@ -184,6 +229,7 @@
 </template>
 
 <script>
+import Popper from 'vue3-popper'
 import draggable from 'vuedraggable'
 import BoardCard from '@/components/Board/BoardCard.vue'
 import BoardModalBoxRename from '@/components/Board/BoardModalBoxRename.vue'
@@ -192,6 +238,7 @@ import * as CARD from '@/store/actions/cards'
 
 export default {
   components: {
+    Popper,
     BoardModalBoxRename,
     BoardCard,
     draggable
@@ -209,7 +256,14 @@ export default {
   data () {
     return {
       isShowArchive: false,
-      showAddColumn: false
+      showAddColumn: false,
+      showRenameColumn: false,
+      selectedColumn: null
+    }
+  },
+  computed: {
+    selectedColumnName () {
+      return this.selectedColumn?.Name ?? ''
     }
   },
   methods: {
@@ -260,29 +314,37 @@ export default {
       // TODO: Здесь сделать добавление карточек
       console.log('addCard', column)
     },
-    showColumnMenu (column, e) {
-      // TODO: Здесь сделать вывпадающее меню колонки
-      console.log('showColumnMenu', column, e)
-    },
-    addColumn (e) {
+    clickAddColumn (e) {
       this.showAddColumn = true
-    },
-    uuidv4 () {
-      return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
-        (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
-      )
     },
     onAddNewColumn (name) {
       this.showAddColumn = false
       const title = name.trim()
       if (title) {
-        console.log('onAddNewColumn', title, this.board)
         this.$store.dispatch(BOARD.ADD_STAGE_BOARD_REQUEST, {
           boardUid: this.board.uid,
           newStageTitle: title
         })
           .then((resp) => {
             this.$store.dispatch(CARD.BOARD_CARDS_ADDSTAGE, resp)
+          })
+      }
+    },
+    clickRenameColumn (column, e) {
+      this.selectedColumn = column
+      this.showRenameColumn = true
+    },
+    onRenameColumn (name) {
+      this.showRenameColumn = false
+      const title = name.trim()
+      if (title) {
+        this.$store.dispatch(BOARD.RENAME_STAGE_BOARD_REQUEST, {
+          boardUid: this.board.uid,
+          stageUid: this.selectedColumn.UID,
+          newStageTitle: title
+        })
+          .then((resp) => {
+            this.$store.dispatch(CARD.BOARD_CARDS_RENAME_STAGE, resp)
           })
       }
     }
@@ -305,5 +367,16 @@ export default {
 }
 .margin-auto-4 {
   margin: 0.9rem auto 1px auto;
+}
+.light {
+  --popper-theme-background-color: #ffffff;
+  --popper-theme-background-color-hover: #ffffff;
+  --popper-theme-text-color: #444444;
+  --popper-theme-border-width: 1px;
+  --popper-theme-border-style: solid;
+  --popper-theme-border-color: rgba(0, 0, 0, 0.12);
+  --popper-theme-border-radius: 10px;
+  --popper-theme-padding: 17px 15px;
+  --popper-theme-box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.25);
 }
 </style>

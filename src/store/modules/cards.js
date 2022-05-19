@@ -53,6 +53,9 @@ const actions = {
     stage.AddCard = canAddCardsToBoard
     stage.CanEditStage = canChangeBoard
     commit('AddStage', stage)
+  },
+  [CARD.BOARD_CARDS_RENAME_STAGE]: ({ commit, rootState }, newStage) => {
+    commit('RenameStage', { stageUid: newStage.UID, stageName: newStage.Name })
   }
 }
 
@@ -175,6 +178,10 @@ const mutations = {
       if (stage1.Name < stage2.Name) return -1
       return 0
     })
+  },
+  RenameStage: (state, { stageUid, stageName }) => {
+    const stage = state.cards.find((stage) => stage.UID === stageUid)
+    if (stage) stage.Name = stageName
   }
 }
 

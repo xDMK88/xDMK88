@@ -35,7 +35,7 @@ const logout = () => {
         <input type="text" class="w-full border border-orange-400 rounded h-[36px] p-2" v-model="user.current_user_name" />
       </div>
       <div class="form-group text-right">
-        <button class="bg-orange-500 text-white p-2 rounded-md">Сохранить</button>
+        <button class="bg-orange-400 text-white p-2 rounded-md">Сохранить</button>
       </div>
     </form>
       <div> </div>
@@ -77,7 +77,7 @@ const logout = () => {
       </form>
       <form class="mt-4 ml-5">
         <div class="form-group text-right">
-          <button class="bg-orange-500 text-white p-2 rounded-md">Сохранить</button>
+          <button class="bg-orange-400 text-white p-2 rounded-md">Сохранить</button>
         </div>
       </form>
       <div> </div>

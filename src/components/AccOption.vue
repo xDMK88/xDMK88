@@ -19,7 +19,7 @@ const updateSettings = () => {
       cal_show_week_number: settings.value.cal_show_week_number ? 1 : 0,
       nav_show_tags: settings.value.nav_show_tags,
       nav_show_overdue: settings.value.nav_show_overdue ? 1 : 0,
-      nav_show_summary: settings.value.nav_show_summary ? 1 : 0,
+      nav_show_summary: settings.value.nav_show_summary,
       nav_show_emps: settings.value.nav_show_emps,
       nav_show_markers: settings.value.nav_show_markers,
       language: settings.value.language,
@@ -37,7 +37,7 @@ const updateSettings = () => {
         <div class="my-2">
             <div class="flex mt-2">
               <div class="checkbox">
-              <input type="checkbox" id="opt_1" :checked="settings.add_task_to_begin===true"  v-model="settings.add_task_to_begin" @change="updateSettings()" class="custom-checkbox-orange" />
+              <input type="checkbox" id="opt_1" v-model="settings.add_task_to_begin" @change="updateSettings()" class="custom-checkbox-orange" />
               <label class="text-base" for="opt_1">Добавлять задачи в начало списка</label>
               </div>
              <!--   <a class="ml-2" v-if="settings.add_task_to_begin === true">Вкл.</a>

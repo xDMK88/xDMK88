@@ -186,6 +186,33 @@ const actions = {
           reject(err)
         })
     })
+  },
+  [BOARD.CHANGE_COLOR_STAGE_BOARD_REQUEST]: ({ commit, dispatch }, data) => {
+    return new Promise((resolve, reject) => {
+      const board = state.boards[data.boardUid]
+      if (!board) return reject(new Error(`not find board ${data.boardUid}`))
+      const index = board.stages.findIndex(
+        (stage) => stage.UID === data.stageUid
+      )
+      if (index === -1) {
+        return reject(
+          new Error(`not find stage ${data.stageUid} at board ${data.boardUid}`)
+        )
+      }
+      const stage = board.stages[index]
+      const newStage = { ...stage }
+      newStage.Color = data.newColor
+      // заменяем
+      board.stages.splice(index, 1, newStage)
+      // отправляем на сервер изменения
+      dispatch(BOARD.UPDATE_BOARD_REQUEST, board)
+        .then((resp) => {
+          resolve(newStage)
+        })
+        .catch((err) => {
+          reject(err)
+        })
+    })
   }
 }
 

@@ -24,6 +24,12 @@
       @cancel="showRenameColumn = false"
       @save="onRenameColumn"
     />
+    <BoardModalBoxColor
+      v-show="showColorColumn"
+      :color="selectedColumnColor"
+      @cancel="showColorColumn = false"
+      @changeColor="onChangeColumnColor"
+    />
     <div class="flex items-start">
       <template
         v-for="column in storeCards"
@@ -85,6 +91,7 @@
                     </div>
                     <div
                       class="mt-2 flex items-center py-0.5 px-2 cursor-pointer hover:text-[#ebaa40] rounded text-sm font-['Tahoma']"
+                      @click="clickColorColumn(column, $event)"
                     >
                       Цвет
                     </div>
@@ -242,6 +249,7 @@ import draggable from 'vuedraggable'
 import BoardCard from '@/components/Board/BoardCard.vue'
 import BoardModalBoxRename from '@/components/Board/BoardModalBoxRename.vue'
 import BoardModalBoxDelete from '@/components/Board/BoardModalBoxDelete.vue'
+import BoardModalBoxColor from '@/components/Board/BoardModalBoxColor.vue'
 import * as BOARD from '@/store/actions/boards'
 import * as CARD from '@/store/actions/cards'
 
@@ -250,6 +258,7 @@ export default {
     Popper,
     BoardModalBoxRename,
     BoardModalBoxDelete,
+    BoardModalBoxColor,
     BoardCard,
     draggable
   },
@@ -269,12 +278,16 @@ export default {
       showAddColumn: false,
       showRenameColumn: false,
       selectedColumn: null,
-      showDeleteColumn: false
+      showDeleteColumn: false,
+      showColorColumn: false
     }
   },
   computed: {
     selectedColumnName () {
       return this.selectedColumn?.Name ?? ''
+    },
+    selectedColumnColor () {
+      return this.selectedColumn?.Color ?? ''
     }
   },
   methods: {
@@ -366,7 +379,6 @@ export default {
     onDeleteColumn () {
       this.showDeleteColumn = false
       if (this.selectedColumn) {
-        console.log('onDeleteColumn', this.selectedColumn)
         const data = {
           boardUid: this.board.uid,
           stageUid: this.selectedColumn.UID
@@ -374,6 +386,23 @@ export default {
         this.$store.dispatch(BOARD.DELETE_STAGE_BOARD_REQUEST, data)
           .then((resp) => {
             this.$store.dispatch(CARD.BOARD_CARDS_DELETE_STAGE, data)
+          })
+      }
+    },
+    clickColorColumn (column, e) {
+      this.selectedColumn = column
+      this.showColorColumn = true
+    },
+    onChangeColumnColor (color) {
+      this.showColorColumn = false
+      if (this.selectedColumn) {
+        this.$store.dispatch(BOARD.CHANGE_COLOR_STAGE_BOARD_REQUEST, {
+          boardUid: this.board.uid,
+          stageUid: this.selectedColumn.UID,
+          newColor: color
+        })
+          .then((resp) => {
+            this.$store.dispatch(CARD.BOARD_CARDS_CHANGE_COLOR_STAGE, resp)
           })
       }
     }

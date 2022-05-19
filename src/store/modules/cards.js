@@ -54,11 +54,17 @@ const actions = {
     stage.CanEditStage = canChangeBoard
     commit('AddStage', stage)
   },
-  [CARD.BOARD_CARDS_RENAME_STAGE]: ({ commit, rootState }, newStage) => {
+  [CARD.BOARD_CARDS_RENAME_STAGE]: ({ commit }, newStage) => {
     commit('RenameStage', { stageUid: newStage.UID, stageName: newStage.Name })
   },
   [CARD.BOARD_CARDS_DELETE_STAGE]: ({ commit }, { stageUid }) => {
     commit('DeleteStage', stageUid)
+  },
+  [CARD.BOARD_CARDS_CHANGE_COLOR_STAGE]: ({ commit }, newStage) => {
+    commit('ChangeColorStage', {
+      stageUid: newStage.UID,
+      stageColor: newStage.Color
+    })
   }
 }
 
@@ -197,6 +203,10 @@ const mutations = {
         stage.Order = index
       })
     }
+  },
+  ChangeColorStage: (state, { stageUid, stageColor }) => {
+    const stage = state.cards.find((stage) => stage.UID === stageUid)
+    if (stage) stage.Color = stageColor
   }
 }
 

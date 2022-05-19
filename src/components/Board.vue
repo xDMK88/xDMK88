@@ -367,6 +367,14 @@ export default {
       this.showDeleteColumn = false
       if (this.selectedColumn) {
         console.log('onDeleteColumn', this.selectedColumn)
+        const data = {
+          boardUid: this.board.uid,
+          stageUid: this.selectedColumn.UID
+        }
+        this.$store.dispatch(BOARD.DELETE_STAGE_BOARD_REQUEST, data)
+          .then((resp) => {
+            this.$store.dispatch(CARD.BOARD_CARDS_DELETE_STAGE, data)
+          })
       }
     }
   }

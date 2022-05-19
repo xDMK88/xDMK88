@@ -93,7 +93,7 @@
                       class="mt-2 flex items-center py-0.5 px-2 cursor-pointer hover:text-[#ebaa40] rounded text-sm font-['Tahoma']"
                       @click="clickColorColumn(column, $event)"
                     >
-                      Цвет
+                      Выбрать цвет
                     </div>
                     <div
                       class="mt-2 flex items-center py-0.5 px-2 cursor-pointer hover:text-[#ebaa40] rounded text-sm font-['Tahoma']"

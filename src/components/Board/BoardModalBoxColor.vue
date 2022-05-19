@@ -6,7 +6,7 @@
     <div class="rounded-xl shadow-lg w-[400px] p-6 bg-white z-50">
       <div class="flex items-start">
         <div class="flex-1 text-[#4c4c4d] font-medium text-[14px] leading-4">
-          Выбрать цвет
+          Цвет колонки
         </div>
         <!-- кнопка закрыть -->
         <div

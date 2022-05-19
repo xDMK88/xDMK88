@@ -252,7 +252,7 @@
             <div
               class="mt-1 msg-custom-chat-right bg-[#FCEAEA] dark:bg-gray-800 text-sm"
             >
-              <FileMessage :file="message" />
+              <FileMessage :file="message"/>
               <div>
                 <div>
                   {{ message.msg }}
@@ -409,6 +409,9 @@ export default {
 </script>
 
 <style scoped>
+img, video {
+  max-height: 150px;
+}
 .name-chat-custom {
   font-size: 13px;
   color: #a6a6a6;
@@ -429,8 +432,8 @@ export default {
   width: 80%;
   min-height: 40px;
   display: table-cell;
-  max-width: 85%;
-  min-width: 150px;
+  max-width: 50%;
+  min-width: 50%;
   border-top-right-radius: 10px;
   border-bottom-right-radius: 10px;
   border-bottom-left-radius: 10px;
@@ -440,8 +443,8 @@ export default {
   padding: 8px 10px;
   min-height: 40px;
   display: table-cell;
-  max-width: 85%;
-  min-width: 150px;
+  max-width: 50%;
+  min-width: 50%;
   border-top-left-radius: 10px;
   border-bottom-right-radius: 10px;
   border-bottom-left-radius: 10px;

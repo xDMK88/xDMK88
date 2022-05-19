@@ -37,6 +37,7 @@ const getImgUrl = (uid, extension, filename) => {
     document.getElementById('img_' + uid).appendChild(myImage)
     isImageLoaded.value = true
     document.getElementById('img_' + uid).setAttribute('href', fileURL)
+    document.getElementById('img_' + uid).style.maxHeight = '100px'
     return myImage
   })
 }

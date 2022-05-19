@@ -1,86 +1,163 @@
 <script setup>
 
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useStore } from 'vuex'
-
+import ModalBoxConfirm from '@/components/modals/ModalBoxCard.vue'
 const emit = defineEmits(['AccLogout'])
 const store = useStore()
 const user = computed(() => store.state.user.user)
-const lab = user.value.current_user_name
+const showEditname = ref(false)
+//  const showEditemail = ref(false)
+const showEditpassword = ref(false)
 const tarif = () => {
   store.commit('basic', { key: 'navig', value: 1 })
 }
-const pass = () => {
+/*  const pass = () => {
   store.commit('basic', { key: 'navig', value: 3 })
-}
+}  */
 const logout = () => {
   emit('AccLogout')
 }
 </script>
 
 <template>
-<form class=" mx-12 overscroll-auto">
-  <div class="flex pb-3">
-    <form class="text-left w-3/4">
-      <strong>Тариф</strong>
-      <br>
-      <p v-if="user.license_type === 0" class="font-bold">Пробный</p>
-      <p v-if="user.license_type === 1" class="font-bold">Премиум</p>
-      <p v-if="user.license_type === 2" class="font-bold">Бизнесс</p>
-      <a>{{ user.date_expired }}({{ user.days_left }})</a>
+  <modal-box-confirm
+    v-model="showEditname"
+    button="warning"
+    has-button
+    has-close
+    button-label="сохранить"
+  >
+    <span class="font-semibold text-base mb-4 relative bottom-1">Изменить имя</span>
+    <div>
+    <form>
+      <div class="form-group">
+        <input type="text" class="w-full border border-orange-400 rounded h-[36px] p-2" v-model="user.current_user_name" />
+      </div>
+      <div class="form-group text-right">
+        <button class="bg-orange-500 text-white p-2 rounded-md">Сохранить</button>
+      </div>
     </form>
-    <form class="text-right w-1/4">
-      <button class="bg-[#FF9123] hover:bg-[#EB7500]  rounded-xl text-white py-1 mt-4 px-2"
-      type="button"
-      @click="tarif()"
+      <div> </div>
+    </div>
+  </modal-box-confirm>
+  <modal-box-confirm
+    v-model="showEditpassword"
+    button="warning"
+    has-button
+    has-close
+    button-label="сохранить"
+  >
+    <span class="font-semibold text-base mb-4 relative bottom-1">Изменить пароль</span>
+    <div>
+      <form
+        class="mt-2"
+      >
+        <div class="form-group">
+        <p>Введите старый пароль</p>
+        <input
+          class="w-full border border-orange-400 rounded h-[36px] p-2"
+          type="password"
+        >
+        </div>
+        <div class="form-group">
+        <p>Новый пароль</p>
+        <input
+          class="w-full border border-orange-400 rounded h-[36px] p-2"
+          type="password"
+        >
+        </div>
+        <div class="form-group">
+        <p>Подтвердите пароль</p>
+        <input
+          class="w-full border border-orange-400 rounded h-[36px] p-2"
+          type="password"
+        >
+        </div>
+      </form>
+      <form class="mt-4 ml-5">
+        <div class="form-group text-right">
+          <button class="bg-orange-500 text-white p-2 rounded-md">Сохранить</button>
+        </div>
+      </form>
+      <div> </div>
+    </div>
+  </modal-box-confirm>
+<form class=" mx-6 overscroll-auto">
+  <div class="flex pb-3">
+    <form class="text-left w-40">
+      <div class="text-left mb-3">
+        <div class="pr-2">
+          <span class="circle-image">
+          <img
+            :src="user.foto_link"
+            class="rounded-lg content-center" style="border-radius: 27px;">
+            </span>
+        </div>
+        <div>
+          <input id="iconfile" type="file" class="hidden">
+          <label for="iconfile" class="rounded-xl text-base cursor-pointer">изменить фото</label>
+          <br>
+        </div>
+      </div>
+    </form>
+    <form class="text-left w-64">
+      <div class="font-semibold mb-4 text-base">Тип аккаунта</div>
+      <p v-if="user.license_type === 0" class="text-base font-semibold">Пробный тариф</p>
+      <p v-if="user.license_type === 1" class="text-base font-semibold">Премиум тариф</p>
+      <p v-if="user.license_type === 2" class="text-base font-semibold">Бизнес тариф</p>
+      <p class="text-sm mt-2" v-if="user.license_type === 0" >
+        Обновите тарифный план ЛидерТаск для неограниченных возможностей
+      </p>
+      <p class="mt-1 text-base"><a>{{ user.date_expired }}({{ user.days_left }})</a></p>
+      <div class="mt-2">
+        <button class="border-gray-400 border rounded-md p-2 text-gray-600 mt-2 text-base"
+              type="button"
+              @click="tarif()"
       >
         Управление тарифом
       </button>
+      </div>
+      <div class="mt-6">
+        <p class="text-base font-semibold mb-2">Имя</p>
+        <form class="mb-2">
+        <div class="text-base" contenteditable="true">{{user.current_user_name}}</div>
+          <button type="button" class="mt-2 text-base text-blue-600" @click="showEditname = true">Изменить имя</button>
+        </form>
+        <div class="mb-2 mt-6">
+          <p class="text-base font-semibold mb-2">Email</p>
+          <div contenteditable="true" class="text-base">{{ user.current_user_email }}</div>
+         <!-- <button type="button" class="mt-2 text-base text-blue-600" @click="showEditemail = true">Изменить email</button> -->
+        </div>
+        <div class="mb-2 mt-6">
+        <form>
+          <p class="text-base font-semibold">Пароль</p>
+          <button type="button" class="mt-2 text-base text-blue-600" @click="showEditpassword = true">Изменить пароль</button>
+        </form>
+        </div>
+        <div class="mb-2 mt-6">
+        <form >
+          <button class="bg-orange-400 text-white mt-2 text-base p-2 rounded-md"
+                  @click="logout()">
+            Выйти из аккаунта</button>
+        </form>
+        </div>
+      </div>
     </form>
+
   </div>
-  <hr>
-  <div class="text-left mt-3 mb-3 flex flex-wrap">
-    <strong class="w-full">Фото</strong>
-    <br>
-    <div class="pr-2 pt-3">
-      <img
-      :src="user.foto_link"
-      width="110"
-      height="110"
-      class=" rounded-full  content-center float-left-">
-    </div>
-    <div class="mt-[60px]">
-        <input id="iconfile" type="file" class="hidden">
-        <label for="iconfile" class="bg-gray-100 hover:bg-gray-200 rounded-xl ml-2 px-3 p-1">Выберите фото</label>
-        <br>
-    </div>
-  </div>
-    <strong>Имя пользователя</strong>
-    <br>
-    <input v-model="user.current_user_name" type="text" class="border mt-2">
-    <br>
-    <form class="mb-2">
-      <button
-      v-if="lab != user.current_user_name"
-      class="bg-gray-100 rounded-xl mt-4 px-3 p-1 hover:bg-gray-200">Изменить имя</button>
-    </form>
-    <div class="mb-2">
-      <strong>Email</strong>
-      <br>
-      <span>{{ user.current_user_email }}</span>
-    </div>
-    <strong>Пароль</strong>
-    <br>
-    <form>
-      <button
-      @click="pass()"
-      class="bg-gray-100 mt-2 rounded-xl px-3 p-1 hover:bg-gray-200">Изменить пароль</button>
-    </form>
-    <br>
-    <form class="text-center">
-      <button class="bg-gray-100 rounded-xl px-10 p-1 hover:bg-gray-200"
-      @click="logout()">
-      Выйти из аккаунта</button>
-    </form>
+
 </form>
 </template>
+<style scoped>
+
+.circle-image{
+  display: inline-block;
+  border-radius: 10px;
+
+}
+.circle-image img{
+  width: 110px;
+  height: 110px;
+}
+</style>

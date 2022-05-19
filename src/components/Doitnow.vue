@@ -38,6 +38,7 @@
     :projects="projects"
     @clickTask="onClickTask"
     @nextTask="nextTask"
+    @changeValue="changeValue"
   />
   <DoitnowEmpty
     v-if="tasksCount === 0 && !isLoading"
@@ -164,6 +165,11 @@ export default {
       }
       if (this.todayTasks.length) {
         this.todayTasks.shift()
+      }
+    },
+    changeValue: function (objWithValues) {
+      for (const elem in objWithValues) {
+        this.firstTask[elem] = objWithValues[elem]
       }
     },
     goToNextDay: function () {

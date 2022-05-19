@@ -338,7 +338,7 @@
               <div
                 v-if="!task.checklist && task.type!==4 && task.type!==3"
                 class="mt-3 tags-custom dark:bg-gray-800 dark:text-gray-100"
-                @click="createChecklist"
+                @click="print('Функция пока в разработке')"
               >
                 <svg
                   width="24"
@@ -516,7 +516,7 @@ export default {
     TaskPropsInputForm,
     Popper
   },
-  emits: ['clickTask', 'nextTask'],
+  emits: ['clickTask', 'nextTask', 'changeValue'],
   props: {
     task: {
       type: Object,
@@ -660,6 +660,9 @@ export default {
     }
   },
   methods: {
+    print (message) {
+      alert(message)
+    },
     showChat () {
       if (!this.isChatVisible) {
         this.isChatVisible = true
@@ -693,11 +696,20 @@ export default {
       }
       return data
     },
+    changeValue (value) {
+      this.$emit('changeValue', value)
+    },
     nextTask () {
       this.$emit('nextTask')
     },
     changeFocus (uid, value) {
       this.$store.dispatch(TASK.CHANGE_TASK_FOCUS, { uid: uid, value: value })
+        .then(() => {
+          const data = {
+            focus: value
+          }
+          this.$emit('changeValue', data)
+        })
     },
     takeTask () {
       if (this.task.type === 5 || this.task.type === 1) {
@@ -711,6 +723,12 @@ export default {
         value: emails
       }
       this.$store.dispatch(TASK.CHANGE_TASK_ACCESS, data)
+        .then((resp) => {
+          const data = {
+            emails: emails
+          }
+          this.$emit('changeValue', data)
+        })
     },
     onChangeProject (projectUid) {
       const data = {
@@ -718,6 +736,12 @@ export default {
         value: projectUid
       }
       this.$store.dispatch(TASK.CHANGE_TASK_PROJECT, data)
+        .then((resp) => {
+          const data = {
+            uid_project: projectUid
+          }
+          this.$emit('changeValue', data)
+        })
     },
     onChangeColor (colorUid) {
       const data = {
@@ -725,6 +749,12 @@ export default {
         value: colorUid
       }
       this.$store.dispatch(TASK.CHANGE_TASK_COLOR, data)
+        .then((resp) => {
+          const data = {
+            uid_marker: colorUid
+          }
+          this.$emit('changeValue', data)
+        })
     },
     onChangeTags (tags) {
       const data = {
@@ -732,6 +762,12 @@ export default {
         tags: tags
       }
       this.$store.dispatch(TASK.CHANGE_TASK_TAGS, data)
+        .then((resp) => {
+          const data = {
+            tags: [...tags]
+          }
+          this.$emit('changeValue', data)
+        })
     },
     onClick (task) {
       this.$emit('clickTask', task)
@@ -754,12 +790,12 @@ export default {
         value: userEmail
       }
       this.$store.dispatch(TASK.CHANGE_TASK_REDELEGATE, data)
-      // .then(
-      //   resp => {
-      //     console.log(resp.data)
-      //     this.$store.commit(TASK.SUBTASKS_REQUEST, resp.data)
-      //   }
-      // )
+        .then(
+          resp => {
+            console.log(resp.data)
+            this.$store.commit(TASK.SUBTASKS_REQUEST, resp.data)
+          }
+        )
     },
     onChangePerformer: function (userEmail) {
       console.log('onChangePerformer', userEmail)
@@ -770,15 +806,23 @@ export default {
         value: userEmail
       }
       this.$store.dispatch(TASK.CHANGE_TASK_PERFORMER, data)
-      // .then(
-      //   resp => {
-      //     this.selectedTask.email_performer = resp.data.email_performer
-      //     this.selectedTask.perform_time = resp.data.perform_time
-      //     this.selectedTask.performerreaded = resp.data.performerreaded
-      //     this.selectedTask.uid_performer = resp.data.uid_performer
-      //     this.selectedTask.type = resp.data.type
-      //   }
-      // )
+        .then(
+          resp => {
+            const data = {
+              email_performer: resp.data.email_performer,
+              perform_time: resp.data.perform_time,
+              performerreaded: resp.data.performerreaded,
+              uid_performer: resp.data.uid_performer,
+              type: resp.data.type
+            }
+            this.changeValue(data)
+            // this.selectedTask.email_performer = resp.data.email_performer
+            // this.selectedTask.perform_time = resp.data.perform_time
+            // this.selectedTask.performerreaded = resp.data.performerreaded
+            // this.selectedTask.uid_performer = resp.data.uid_performer
+            // this.selectedTask.type = resp.data.type
+          }
+        )
       if (user.current_user_email !== userEmail) {
         this.$store.commit(TASK.REMOVE_TASK, taskUid)
         this.$store.dispatch('asidePropertiesToggle', false)
@@ -792,12 +836,18 @@ export default {
         reset: 0
       }
       this.$store.dispatch(TASK.CHANGE_TASK_DATE, data)
-      // .then(
-      //   resp => {
-      //     this.selectedTask.term_user = resp.term
-      //     this.selectedTask.date_begin = resp.str_date_begin
-      //     this.selectedTask.date_end = resp.str_date_end
-      //   })
+        .then(
+          resp => {
+            const data = {
+              term_user: resp.term,
+              date_begin: resp.str_date_begin,
+              date_end: resp.str_date_end
+            }
+            this.$emit('changeValue', data)
+            // this.selectedTask.term_user = resp.term
+            // this.selectedTask.date_begin = resp.str_date_begin
+            // this.selectedTask.date_end = resp.str_date_end
+          })
     }
   }
 }

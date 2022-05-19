@@ -54,7 +54,10 @@
     <div
       class="flex"
     >
-      <div class="flex items-center">
+      <div
+        class="flex items-center"
+        @click="onClick(this.task)"
+      >
         <!-- <div
           class="border-2 relative border-gray-300 rounded-md mr-1 flex items-center justify-center mt-0.5"
           style="min-width: 20px; min-height: 20px"

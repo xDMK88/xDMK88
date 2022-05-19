@@ -102,6 +102,11 @@ export default {
       this.$refs.taskMsgEdit.addEventListener('paste', this.onPasteEvent, { once: true })
     })
   },
+  watch: {
+    task (newval, oldval) {
+      this.taskMsg = ''
+    }
+  },
   methods: {
     pad2: function (n) {
       return (n < 10 ? '0' : '') + n

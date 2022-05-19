@@ -8,7 +8,7 @@ const store = useStore()
 const props = defineProps({
   file: {
     type: Object,
-    default: () => {}
+    default: () => ({})
   },
   data: function () {
     return {
@@ -20,6 +20,7 @@ const props = defineProps({
     }
   }
 })
+
 const pics = ['jpg', 'png', 'jpeg', 'git', 'bmp', 'gif', 'PNG', 'JPG', 'JPEG', 'BMP', 'GIF']
 const movies = ['mov', 'mp4']
 const docs = ['doc', 'xls', 'xlsx', 'txt', 'pdf']

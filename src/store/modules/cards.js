@@ -53,6 +53,12 @@ const actions = {
     stage.AddCard = canAddCardsToBoard
     stage.CanEditStage = canChangeBoard
     commit('AddStage', stage)
+  },
+  [CARD.BOARD_CARDS_RENAME_STAGE]: ({ commit, rootState }, newStage) => {
+    commit('RenameStage', { stageUid: newStage.UID, stageName: newStage.Name })
+  },
+  [CARD.BOARD_CARDS_DELETE_STAGE]: ({ commit }, { stageUid }) => {
+    commit('DeleteStage', stageUid)
   }
 }
 
@@ -175,6 +181,22 @@ const mutations = {
       if (stage1.Name < stage2.Name) return -1
       return 0
     })
+  },
+  RenameStage: (state, { stageUid, stageName }) => {
+    const stage = state.cards.find((stage) => stage.UID === stageUid)
+    if (stage) stage.Name = stageName
+  },
+  DeleteStage: (state, stageUid) => {
+    const index = state.cards.findIndex((stage) => stage.UID === stageUid)
+    if (index !== -1) {
+      // удаляем
+      state.cards.splice(index, 1)
+      // пересчитываем порядок у колонок пользователя
+      const stages = state.cards.filter((stage) => stage.UserStage === true)
+      stages.forEach((stage, index) => {
+        stage.Order = index
+      })
+    }
   }
 }
 

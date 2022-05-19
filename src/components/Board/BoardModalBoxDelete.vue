@@ -30,21 +30,22 @@
         </div>
       </div>
       <div class="flex items-stretch mt-4">
-        <input
-          ref="inputValue"
-          v-model="currentValue"
-          type="text"
-          class="bg-white rounded-md border border-gray-300 focus:border-[#ff9123] w-full px-3.5 py-[11px] text-[14px] leading-4"
-          @keyup.enter="onSave"
-          @keyup.esc="onCancel"
-        >
+        <div class="text-[#7e7e80] text-[13px] leading-[18px] whitespace-pre-line">
+          {{ text }}
+        </div>
       </div>
       <div class="flex justify-end mt-4">
         <button
-          class="focus:ring focus:outline-none inline-flex cursor-pointer whitespace-nowrap justify-center items-center duration-150 px-3 py-2.5 rounded-md bg-[#ff9123] text-white text-[13px] leading-[15px] font-medium"
+          class="focus:ring w-24 focus:outline-none inline-flex cursor-pointer whitespace-nowrap justify-center items-center duration-150 px-3 py-2.5 rounded-md bg-[#ff9123] text-white text-[13px] leading-[15px] font-medium"
           @click="onSave"
         >
-          Сохранить
+          Да
+        </button>
+        <button
+          class="ml-2 w-24 focus:ring focus:outline-none inline-flex cursor-pointer whitespace-nowrap justify-center items-center duration-150 px-2.5 py-2 rounded-md border border-[#ff9123] bg-white text-[#ff9123] text-[13px] leading-[15px] font-medium"
+          @click="onCancel"
+        >
+          Нет
         </button>
       </div>
     </div>
@@ -63,32 +64,12 @@ export default {
       type: String,
       default: ''
     },
-    value: {
+    text: {
       type: String,
       default: ''
-    },
-    show: {
-      type: Boolean,
-      default: false
     }
   },
-  emits: ['cancel', 'save'],
-  data: () => ({
-    currentValue: ''
-  }),
-  watch: {
-    show: {
-      immediate: true,
-      handler: function (val) {
-        if (val) {
-          this.currentValue = this.value
-          this.$nextTick(function () {
-            this.$refs.inputValue.focus({ preventScroll: false })
-          })
-        }
-      }
-    }
-  },
+  emits: ['yes', 'cancel'],
   methods: {
     print (val) {
       console.log(val)
@@ -97,10 +78,12 @@ export default {
       this.$emit('cancel')
     },
     onSave () {
-      this.$emit('save', this.currentValue)
+      this.$emit('yes')
     }
   }
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+
+</style>

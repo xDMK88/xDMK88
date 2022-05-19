@@ -38,6 +38,8 @@ export const CHANGE_TASK_PARENT_AND_ORDER = 'CHANGE_TASK_PARENT_AND_ORDER'
 export const REMOVE_TASK = 'REMOVE_TASK'
 export const UPDATE_TASK = 'UPDATE_TASK'
 export const HAS_FILES = 'HAS_FILES'
+export const HAS_MSGS = 'HAS_MSGS'
+export const MSG_EQUAL = 'MSG_EQUAL'
 // Tasks inner processes and events
 export const TASKS_SUCCESS = 'TASKS_SUCCESS'
 export const SUBTASKS_SUCCESS = 'SUBTASKS_SUCCESS'

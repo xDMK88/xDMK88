@@ -17,7 +17,7 @@
       <path
         fill-rule="evenodd"
         clip-rule="evenodd"
-        stroke="#111111"
+        :stroke="getContrastYIQ(color)"
         stroke-width="2"
         stroke-linecap="round"
         stroke-linejoin="round"
@@ -41,6 +41,15 @@ export default {
   },
   emits: ['select'],
   methods: {
+    getContrastYIQ (hexcolor) {
+      if (!hexcolor) return '#111111'
+      hexcolor = hexcolor.replace('#', '')
+      const r = parseInt(hexcolor.substr(0, 2), 16)
+      const g = parseInt(hexcolor.substr(2, 2), 16)
+      const b = parseInt(hexcolor.substr(4, 2), 16)
+      const yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000
+      return (yiq >= 128) ? '#111111' : 'white'
+    },
     onClick () {
       if (!this.selected) this.$emit('select', this.color)
     }

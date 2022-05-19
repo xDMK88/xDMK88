@@ -31,18 +31,13 @@
       </div>
       <div class="flex items-stretch mt-4">
         <div class="grow flex flex-col items-center">
-          <div class="flex">
+          <div
+            v-for="(clrs, index) in colors"
+            :key="index"
+            class="flex"
+          >
             <BoardColorBoxItem
-              v-for="clr in colors[0]"
-              :key="clr.color"
-              :color="clr.color"
-              :selected="clr.selected"
-              @select="selectColor"
-            />
-          </div>
-          <div class="flex">
-            <BoardColorBoxItem
-              v-for="clr in colors[1]"
+              v-for="clr in clrs"
               :key="clr.color"
               :color="clr.color"
               :selected="clr.selected"
@@ -95,9 +90,12 @@ export default {
       if (!allColors.includes(this.color)) {
         allColors.splice(allColors.length - 1, 1, this.color)
       }
-      const colors1 = allColors.map(color => ({ color: color, selected: color === this.color }))
-      const colors2 = colors1.splice(8)
-      return [colors1, colors2]
+      const colors = allColors.map(color => ({ color: color, selected: color === this.color }))
+      // разбираем на ряды по 8
+      const rowLength = 8
+      const arrColors = []
+      while (colors.length) arrColors.push(colors.splice(0, rowLength))
+      return arrColors
     }
   },
   methods: {

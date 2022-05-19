@@ -12,6 +12,7 @@ import AccTarif from '@/components/AccTarif.vue'
 import AsideMenuList from '@/components/AsideMenuList.vue'
 import AccModalPass from '@/components/AccModalPass.vue'
 import AccOption from '@/components/AccOption.vue'
+import AccKarma from '@/components/AccKarma.vue'
 import 'v-calendar/dist/style.css'
 
 import * as TASK from '@/store/actions/tasks'
@@ -178,6 +179,7 @@ const TitleName = () => {
   else if (navig.value === 1) return ('Тариф')
   else if (navig.value === 2) return ('Основное')
   else if (navig.value === 3) return ('Изменение пароля')
+  else if (navig.value === 4) return ('Карма')
 }
 const accS = () => {
   store.commit('basic', { key: 'navig', value: 0 })
@@ -211,6 +213,10 @@ const tarifS = () => {
     />
     <acc-option
       v-if="navig === 2"
+      class="text-lg"
+    />
+    <acc-karma
+      v-if="navig === 4"
       class="text-lg"
     />
   </modal-box>

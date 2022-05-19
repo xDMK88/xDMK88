@@ -42,6 +42,7 @@ const confirmCancel = (mode) => {
 // const confirm = () => confirmCancel('confirm')
 const store = useStore()
 const user = computed(() => store.state.user.user)
+const employees = computed(() => store.state.employees.employees)
 const cancel = () => confirmCancel('cancel')
 
 const delegatedTask = {}
@@ -128,6 +129,17 @@ const createTask = () => {
       uid: delegatedTask.uid,
       uid_customer: delegatedTask.uid_customer,
       taskJson: JSON.stringify(resp.data)
+    })
+    // update both, performer and customer in inspector service
+    const performer = employees.value[resp.data.uid_performer]
+    const myself = employees.value[user.value.current_user_uid]
+    store.dispatch('CREATE_OR_UPDATE_INSPECTOR_USER', {
+      uid: performer.uid,
+      userJson: JSON.stringify(performer)
+    })
+    store.dispatch('CREATE_OR_UPDATE_INSPECTOR_USER', {
+      uid: myself.uid,
+      userJson: JSON.stringify(myself)
     })
   })
 }

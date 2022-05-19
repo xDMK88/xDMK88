@@ -11,6 +11,7 @@ function showNotify (notification) {
 }
 
 const user = computed(() => store.state.user.user)
+const employees = computed(() => store.state.employees.employees)
 
 export default function initInspectorSocket () {
   const socket = new WebSocket(process.env.VUE_APP_INSPECTOR_WS)
@@ -18,7 +19,8 @@ export default function initInspectorSocket () {
     const auth = {
       type: 'auth',
       message: user.value.current_user_uid,
-      data: user.value.current_user_email
+      data: user.value.current_user_email,
+      employee: JSON.stringify(employees.value[user.value.current_user_uid])
     }
     socket.send(JSON.stringify(auth))
   }

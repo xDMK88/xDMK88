@@ -32,7 +32,7 @@
       <div class="flex items-stretch mt-4">
         <input
           ref="inputValue"
-          v-model="value"
+          v-model="currentValue"
           type="text"
           class="bg-white rounded-md border border-gray-300 focus:border-[#ff9123] w-full px-3.5 py-[11px] text-[14px] leading-4"
           @keyup.enter="onSave"
@@ -63,6 +63,10 @@ export default {
       type: String,
       default: ''
     },
+    value: {
+      type: String,
+      default: ''
+    },
     show: {
       type: Boolean,
       default: false
@@ -70,14 +74,14 @@ export default {
   },
   emits: ['cancel', 'save'],
   data: () => ({
-    value: ''
+    currentValue: ''
   }),
   watch: {
     show: {
       immediate: true,
       handler: function (val) {
         if (val) {
-          this.value = ''
+          this.currentValue = this.value
           this.$nextTick(function () {
             this.$refs.inputValue.focus({ preventScroll: false })
           })
@@ -93,7 +97,7 @@ export default {
       this.$emit('cancel')
     },
     onSave () {
-      this.$emit('save', this.value)
+      this.$emit('save', this.currentValue)
     }
   }
 }

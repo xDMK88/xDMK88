@@ -2,6 +2,13 @@
   <div
     id="Board"
   >
+    <BoardModalBoxDelete
+      v-show="showDeleteColumn"
+      title="Удалить колонку"
+      text="Вы действительно хотите удалить колонку?"
+      @cancel="showDeleteColumn = false"
+      @yes="onDeleteColumn"
+    />
     <BoardModalBoxRename
       v-show="showAddColumn"
       :show="showAddColumn"
@@ -71,24 +78,25 @@
                     @click="close"
                   >
                     <div
-                      class="flex items-center py-0.5 px-2 cursor-pointer hover:bg-gray-100 rounded text-sm font-['Tahoma']"
+                      class="flex items-center py-0.5 px-2 cursor-pointer hover:text-[#ebaa40] rounded text-sm font-['Tahoma']"
                       @click="clickRenameColumn(column, $event)"
                     >
                       Переименовать
                     </div>
                     <div
-                      class="mt-2 flex items-center py-0.5 px-2 cursor-pointer hover:bg-gray-100 rounded text-sm font-['Tahoma']"
+                      class="mt-2 flex items-center py-0.5 px-2 cursor-pointer hover:text-[#ebaa40] rounded text-sm font-['Tahoma']"
                     >
                       Цвет
                     </div>
                     <div
-                      class="mt-2 flex items-center py-0.5 px-2 cursor-pointer hover:bg-gray-100 rounded text-sm font-['Tahoma']"
+                      class="mt-2 flex items-center py-0.5 px-2 cursor-pointer hover:text-[#ebaa40] rounded text-sm font-['Tahoma']"
                     >
                       Переместить
                     </div>
                     <div class="mt-2 flex h-px bg-[#dddddd]" />
                     <div
-                      class="mt-2 flex items-center py-0.5 px-2 cursor-pointer hover:bg-gray-100 rounded text-sm font-['Tahoma']"
+                      class="mt-2 flex items-center py-0.5 px-2 cursor-pointer hover:text-[#ebaa40] rounded text-sm font-['Tahoma']"
+                      @click="clickDeleteColumn(column, $event)"
                     >
                       Удалить
                     </div>
@@ -233,6 +241,7 @@ import Popper from 'vue3-popper'
 import draggable from 'vuedraggable'
 import BoardCard from '@/components/Board/BoardCard.vue'
 import BoardModalBoxRename from '@/components/Board/BoardModalBoxRename.vue'
+import BoardModalBoxDelete from '@/components/Board/BoardModalBoxDelete.vue'
 import * as BOARD from '@/store/actions/boards'
 import * as CARD from '@/store/actions/cards'
 
@@ -240,6 +249,7 @@ export default {
   components: {
     Popper,
     BoardModalBoxRename,
+    BoardModalBoxDelete,
     BoardCard,
     draggable
   },
@@ -258,7 +268,8 @@ export default {
       isShowArchive: false,
       showAddColumn: false,
       showRenameColumn: false,
-      selectedColumn: null
+      selectedColumn: null,
+      showDeleteColumn: false
     }
   },
   computed: {
@@ -346,6 +357,16 @@ export default {
           .then((resp) => {
             this.$store.dispatch(CARD.BOARD_CARDS_RENAME_STAGE, resp)
           })
+      }
+    },
+    clickDeleteColumn (column, e) {
+      this.selectedColumn = column
+      this.showDeleteColumn = true
+    },
+    onDeleteColumn () {
+      this.showDeleteColumn = false
+      if (this.selectedColumn) {
+        console.log('onDeleteColumn', this.selectedColumn)
       }
     }
   }

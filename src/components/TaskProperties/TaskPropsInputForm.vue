@@ -1,7 +1,7 @@
 <template>
 <div class="form-send-message">
     <img
-      v-if="this.isloading"
+      v-if="isloading"
       src="/ajaxloader.gif"
     >
     <div
@@ -43,6 +43,7 @@
         placeholder="Введите сообщение"
         rows="58"
         @input="onInputTaskMsg"
+        @keydown.enter.shift.exact.prevent="addNewLineTaskMsg"
         @keydown.enter.exact.prevent="sendTaskMsg"
       />
       <span class="input-group-addon input-group-btn-send dark:bg-gray-800 dark:text-gray-100">
@@ -50,7 +51,7 @@
           type="button"
           name="btn-send"
           class="btn-send-custom"
-          @click="sendTaskMsg"
+          @click="createTaskMsg"
         >
           <svg
             width="24"
@@ -64,7 +65,6 @@
               fill="#666666"
             />
           </svg>
-
         </button>
       </span>
     </div>
@@ -92,6 +92,9 @@ export default {
   computed: {
     user () {
       return this.$store.state.user.user
+    },
+    taskMessagesAndFiles () {
+      return this.$store.state.taskfilesandmessages.messages
     }
   },
   mounted: function () {
@@ -145,6 +148,13 @@ export default {
       if (!loadFile) {
         this.$refs.taskMsgEdit.addEventListener('paste', this.onPasteEvent, { once: true })
       }
+    },
+    addNewLineTaskMsg: function () {
+      this.taskMsg += '\n'
+      this.$nextTick(function () {
+        this.onInputTaskMsg()
+        this.$refs.taskMsgEdit.scrollTo(0, this.$refs.taskmsgEdit.scrollHeight)
+      })
     },
     onInputTaskMsg: function () {
       this.$refs.taskMsgEdit.style.height = '40px'
@@ -201,8 +211,45 @@ export default {
         })
       this.taskMsg = ''
     },
-    createTaskFile: function (event) {
-      console.log(event.target.files)
+    createTaskMsg: function () {
+      const date = new Date()
+      const month = this.pad2(date.getUTCMonth() + 1)
+      const day = this.pad2(date.getUTCDate())
+      const year = this.pad2(date.getUTCFullYear())
+      const hours = this.pad2(date.getUTCHours())
+      const minutes = this.pad2(date.getUTCMinutes())
+      const seconds = this.pad2(date.getUTCSeconds())
+      const dateCreate = year + '-' + month + '-' + day + 'T' + hours + ':' + minutes + ':' + seconds
+
+      const data = {
+        uid_task: this.task.uid,
+        uid_creator: this.user.current_user_uid,
+        uid_msg: this.uuidv4(),
+        date_create: dateCreate,
+        text: this.taskMsg,
+        msg: this.taskMsg
+      }
+
+      this.$store.dispatch(MSG.CREATE_MESSAGE_REQUEST, data)
+        .then((resp) => {
+          this.$store.commit(TASK.HAS_MSGS, this.task.uid, true)
+          if (this.task.type === 2 || this.task.type === 3) {
+            if ([1, 5, 7, 8].includes(this.task.status)) {
+              const data = {
+                uid: this.task.uid,
+                value: 9
+              }
+              this.$store.commit(TASK.CHANGE_TASK_STATUS, data)
+            }
+          }
+          this.$store.commit(TASK.MSG_EQUAL, this.task, decodeURIComponent(this.taskMsg))
+          this.infoComplete = true
+          // const wrapperElement = document.getElementById('content').lastElementChild
+          // wrapperElement.scrollIntoView({ behavior: 'smooth' })
+        })
+      this.taskMsg = ''
+    },
+    createTaskFile (event) {
       this.files = event.target.files
       const formData = new FormData()
       for (let i = 0; i < this.files.length; i++) {
@@ -245,6 +292,11 @@ export default {
             this.$store.commit(TASK.CHANGE_TASK_STATUS, status)
           }
         })
+      this.infoComplete = true
+      // setTimeout(() => {
+      //   const elem = document.getElementById('content').lastElementChild
+      //   elem.scrollIntoView({ behavior: 'smooth' })
+      // }, 100)
     }
   }
 }

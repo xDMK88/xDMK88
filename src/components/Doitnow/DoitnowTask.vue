@@ -406,7 +406,7 @@
     <div
       class="group task-node flex-col items-center w-[99%] bg-white p-2 rounded-lg dark:bg-gray-900 dark:border-gray-700 border border-gray-300 my-0.5 relative font-SfProTextNormal"
       v-for="(subTask, i) in subTasks"
-      :key="i"
+      :key="i - 1"
     >
       <div class="flex flex-col">
         <div class="flex">

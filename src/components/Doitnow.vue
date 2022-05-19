@@ -46,6 +46,7 @@
 </template>
 
 <script>
+import * as FILES from '@/store/actions/taskfiles.js'
 import * as MSG from '@/store/actions/taskmessages.js'
 import * as TASK from '@/store/actions/tasks.js'
 import DoitnowEmpty from '@/components/Doitnow/DoitnowEmpty.vue'
@@ -84,11 +85,10 @@ export default {
       return null
     },
     taskMessages () {
-      if (this.firstTask) {
-        this.$store.dispatch(MSG.MESSAGES_REQUEST, this.firstTask.uid)
-        return this.$store.state.taskfilesandmessages.messages
-      }
-      return null
+      return this.$store.state.taskfilesandmessages.messages
+    },
+    taskFiles () {
+      return this.$store.state.taskfilesandmessages.files
     },
     employees () {
       return this.$store.state.employees.employees
@@ -109,15 +109,29 @@ export default {
       return this.$store.state.user.user
     },
     subTasks () {
-      if (this.firstTask) {
-        this.$store.dispatch(TASK.SUBTASKS_REQUEST, this.firstTask.uid)
-        return this.$store.state.tasks.subtasks.tasks
-      }
-      return null
+      return this.$store.state.tasks.subtasks.tasks
     }
   },
   mounted: function () {
     this.loadAllTasks()
+  },
+  watch: {
+    firstTask (newtask, oldtask) {
+      if (newtask.uid) {
+        this.$store.dispatch(MSG.MESSAGES_REQUEST, this.firstTask.uid)
+          .then(() => {
+            this.$store.dispatch(FILES.FILES_REQUEST, this.firstTask.uid)
+              .then(() => {
+                this.$store.dispatch(MSG.INSPECTOR_MESSAGES_REQUEST, this.firstTask.uid)
+                  .then(() => {
+                    this.$store.commit(FILES.MERGE_FILES_WITH_MESSAGES)
+                  })
+              })
+          })
+        this.$store.dispatch(MSG.INSPECTOR_MESSAGES_REQUEST, this.firstTask.uid)
+        this.$store.dispatch(TASK.SUBTASKS_REQUEST, this.firstTask.uid)
+      }
+    }
   },
   methods: {
     loadAllTasks: function () {

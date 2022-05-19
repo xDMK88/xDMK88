@@ -361,6 +361,9 @@ export default {
           elment.scrollIntoView({ behavior: 'smooth' })
         })
     },
+    log (msg) {
+      console.log(msg)
+    },
     answerInspectorMessage (message, answerType, answer) {
       if (message.performer_answer === null) {
         this.$store.dispatch(INSPECTOR.ANSWER_INSPECTOR_TASK, { id: message.id, answer: answerType }).then(() => {

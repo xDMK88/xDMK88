@@ -2,7 +2,7 @@
 import { computed } from 'vue'
 import JbButton from '@/components/JbButton.vue'
 import CardComponent from '@/components/CardComponent.vue'
-import OverlayConfirm from '@/components/modals/OverlayConfirm.vue'
+import Overlay from '@/components/modals/Overlay.vue'
 
 const props = defineProps({
   title: {
@@ -43,7 +43,7 @@ const cancel = () => confirmCancel('cancel')
 </script>
 
 <template>
-  <overlay-confirm
+  <overlay
     v-show="value"
     @overlay-click="cancel"
   >
@@ -79,5 +79,5 @@ const cancel = () => confirmCancel('cancel')
         />
       </div>
     </card-component>
-  </overlay-confirm>
+  </overlay>
 </template>

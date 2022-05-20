@@ -2,25 +2,37 @@ export const chartColors = {
   default: {
     primary: '#00D1B2',
     info: '#209CEE',
-    danger: '#FF3860'
+    danger: '#FF3860',
+    success: '#198754'
   }
 }
 
-const randomChartData = n => {
-  const data = []
-
-  for (let i = 0; i < n; i++) {
-    data.push(Math.round(Math.random() * 200))
+export const generateEmptyDataSetNDaysAgo = (days = 7) => {
+  const data = {}
+  const now = new Date()
+  for (let i = 0; i <= days; i++) {
+    const iDay = new Date().setDate(now.getDate() - i)
+    data[new Date(iDay).toDateString()] = 0
   }
+  return data
+}
 
+export const fillDaysDataSet = arr => {
+  const data = generateEmptyDataSetNDaysAgo()
+  for (const item of arr) {
+    const itemDate = new Date(item.creation_date).toDateString()
+    if (itemDate in data) {
+      data[itemDate] += 1
+    }
+  }
   return data
 }
 
 const datasetObject = (color, points) => {
   return {
-    fill: false,
+    fill: true,
     borderColor: chartColors.default[color],
-    borderWidth: 2,
+    borderWidth: 1,
     borderDash: [],
     borderDashOffset: 0.0,
     pointBackgroundColor: chartColors.default[color],
@@ -29,14 +41,30 @@ const datasetObject = (color, points) => {
     pointBorderWidth: 20,
     pointHoverRadius: 4,
     pointHoverBorderWidth: 15,
-    pointRadius: 4,
-    data: randomChartData(points),
-    tension: 0.5,
+    pointRadius: 3,
+    data: points,
+    tension: 0.2,
     cubicInterpolationMode: 'default'
   }
 }
 
-export const sampleChartData = (points = 9) => {
+export const karmaChartData = (arr, color) => {
+  const data = fillDaysDataSet(arr)
+  const labels = Object.keys(data)
+  for (let i = 0; i < labels.length; i++) {
+    const splittedLabelValues = labels[i].split(' ')
+    labels[i] = splittedLabelValues[0]
+  }
+  const points = Object.values(data)
+  return {
+    labels,
+    datasets: [
+      datasetObject(color, points)
+    ]
+  }
+}
+
+export const sampleChartData = (points = 7) => {
   const labels = []
 
   for (let i = 1; i <= points; i++) {
@@ -46,8 +74,6 @@ export const sampleChartData = (points = 9) => {
   return {
     labels,
     datasets: [
-      datasetObject('primary', points),
-      datasetObject('info', points),
       datasetObject('danger', points)
     ]
   }

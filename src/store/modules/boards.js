@@ -213,6 +213,36 @@ const actions = {
           reject(err)
         })
     })
+  },
+  [BOARD.CHANGE_ORDER_STAGE_BOARD_REQUEST]: ({ commit, dispatch }, data) => {
+    return new Promise((resolve, reject) => {
+      const board = state.boards[data.boardUid]
+      if (!board) return reject(new Error(`not find board ${data.boardUid}`))
+      const index = board.stages.findIndex(
+        (stage) => stage.UID === data.stageUid
+      )
+      if (index === -1) {
+        return reject(
+          new Error(`not find stage ${data.stageUid} at board ${data.boardUid}`)
+        )
+      }
+      // вырезаем и вставляем на новое место
+      const stages = board.stages.splice(index, 1)
+      board.stages.splice(data.newOrder, 0, ...stages)
+      // пересчитываем порядок
+      board.stages.forEach((stage, index) => {
+        stage.Order = index
+      })
+      //
+      // отправляем на сервер изменения
+      dispatch(BOARD.UPDATE_BOARD_REQUEST, board)
+        .then((resp) => {
+          resolve(resp)
+        })
+        .catch((err) => {
+          reject(err)
+        })
+    })
   }
 }
 

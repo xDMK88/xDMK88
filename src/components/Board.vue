@@ -30,6 +30,14 @@
       @cancel="showColorColumn = false"
       @changeColor="onChangeColumnColor"
     />
+    <BoardModalBoxMove
+      v-show="showMoveColumn"
+      :show="showMoveColumn"
+      :position="selectedColumnOrder"
+      :count-all="usersColumnsCount"
+      @cancel="showMoveColumn = false"
+      @changePosition="onChangeColumnPosition"
+    />
     <div class="flex items-start">
       <template
         v-for="column in storeCards"
@@ -97,6 +105,7 @@
                     </div>
                     <div
                       class="mt-2 flex items-center py-0.5 px-2 cursor-pointer hover:text-[#ebaa40] rounded text-sm font-['Tahoma']"
+                      @click="clickMoveColumn(column, $event)"
                     >
                       Переместить
                     </div>
@@ -250,6 +259,7 @@ import BoardCard from '@/components/Board/BoardCard.vue'
 import BoardModalBoxRename from '@/components/Board/BoardModalBoxRename.vue'
 import BoardModalBoxDelete from '@/components/Board/BoardModalBoxDelete.vue'
 import BoardModalBoxColor from '@/components/Board/BoardModalBoxColor.vue'
+import BoardModalBoxMove from '@/components/Board/BoardModalBoxMove.vue'
 import * as BOARD from '@/store/actions/boards'
 import * as CARD from '@/store/actions/cards'
 
@@ -259,6 +269,7 @@ export default {
     BoardModalBoxRename,
     BoardModalBoxDelete,
     BoardModalBoxColor,
+    BoardModalBoxMove,
     BoardCard,
     draggable
   },
@@ -279,7 +290,8 @@ export default {
       showRenameColumn: false,
       selectedColumn: null,
       showDeleteColumn: false,
-      showColorColumn: false
+      showColorColumn: false,
+      showMoveColumn: false
     }
   },
   computed: {
@@ -288,6 +300,12 @@ export default {
     },
     selectedColumnColor () {
       return this.selectedColumn?.Color ?? ''
+    },
+    selectedColumnOrder () {
+      return this.selectedColumn?.Order ?? 0
+    },
+    usersColumnsCount () {
+      return this.storeCards.filter(stage => stage.UserStage === true).length
     }
   },
   methods: {
@@ -403,6 +421,23 @@ export default {
         })
           .then((resp) => {
             this.$store.dispatch(CARD.BOARD_CARDS_CHANGE_COLOR_STAGE, resp)
+          })
+      }
+    },
+    clickMoveColumn (column, e) {
+      this.selectedColumn = column
+      this.showMoveColumn = true
+    },
+    onChangeColumnPosition (order) {
+      this.showMoveColumn = false
+      if (this.selectedColumn) {
+        this.$store.dispatch(BOARD.CHANGE_ORDER_STAGE_BOARD_REQUEST, {
+          boardUid: this.board.uid,
+          stageUid: this.selectedColumn.UID,
+          newOrder: order
+        })
+          .then((resp) => {
+            this.$store.dispatch(CARD.BOARD_CARDS_CHANGE_ORDER_STAGE, resp.data)
           })
       }
     }

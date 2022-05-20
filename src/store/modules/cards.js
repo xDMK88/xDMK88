@@ -65,6 +65,9 @@ const actions = {
       stageUid: newStage.UID,
       stageColor: newStage.Color
     })
+  },
+  [CARD.BOARD_CARDS_CHANGE_ORDER_STAGE]: ({ commit }, board) => {
+    commit('ChangeStagesOrder', board)
   }
 }
 
@@ -207,6 +210,24 @@ const mutations = {
   ChangeColorStage: (state, { stageUid, stageColor }) => {
     const stage = state.cards.find((stage) => stage.UID === stageUid)
     if (stage) stage.Color = stageColor
+  },
+  ChangeStagesOrder: (state, board) => {
+    const stages = state.cards.filter((stage) => stage.UserStage === true)
+    stages.forEach((stage) => {
+      stage.Order =
+        board.stages.find((item) => item.UID === stage.UID)?.Order ??
+        stage.Order
+    })
+    // сортируем
+    state.cards.sort((stage1, stage2) => {
+      // сначала по порядку
+      if (stage1.Order > stage2.Order) return 1
+      if (stage1.Order < stage2.Order) return -1
+      // если одинаковый, то по имени
+      if (stage1.Name > stage2.Name) return 1
+      if (stage1.Name < stage2.Name) return -1
+      return 0
+    })
   }
 }
 

@@ -432,7 +432,7 @@ img, video {
   width: 80%;
   min-height: 40px;
   display: table-cell;
-  max-width: 50%;
+  max-width: 80%;
   min-width: 50%;
   border-top-right-radius: 10px;
   border-bottom-right-radius: 10px;
@@ -443,7 +443,7 @@ img, video {
   padding: 8px 10px;
   min-height: 40px;
   display: table-cell;
-  max-width: 50%;
+  max-width: 80%;
   min-width: 50%;
   border-top-left-radius: 10px;
   border-bottom-right-radius: 10px;

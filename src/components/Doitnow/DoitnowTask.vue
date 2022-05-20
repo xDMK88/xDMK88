@@ -56,7 +56,6 @@
     >
       <div
         class="flex items-center"
-        @click="onClick(this.task)"
       >
         <!-- <div
           class="border-2 relative border-gray-300 rounded-md mr-1 flex items-center justify-center mt-0.5"
@@ -93,10 +92,10 @@
             }"
             :style="{ color: forecolor }"
           >
-            <TaskStatus
+            <!-- <TaskStatus
               :task="task"
               class="self-center"
-            />
+            /> -->
             {{ task.name }}
           </div>
           <div v-if="task.comment.length">
@@ -266,30 +265,6 @@
           :date-text="task.term_user"
           @changeDates="onChangeDates"
         />
-      </div>
-      <!-- accept/redo/decline/popper -->
-      <div class="flex">
-        <!-- accept -->
-        <button
-          class="bg-green-500 py-1 px-2 rounded-xl text-white mr-1 hover:bg-green-600 bg-opacity-90"
-          @click="accept"
-        >
-          Принять и завершить задачу
-        </button>
-        <!-- redo -->
-        <button
-          class="bg-red-500 py-1 px-2 rounded-xl text-white mr-1 hover:bg-red-600 bg-opacity-90"
-          @click="reDo"
-        >
-          Отправить на доработку
-        </button>
-        <!-- decline -->
-        <button
-          class="bg-indigo-400 py-1 px-2 rounded-xl text-white mr-1 hover:bg-indigo-500 bg-opacity-90"
-          @click="decline"
-        >
-          Отложить
-        </button>
         <!-- popper menu -->
         <Popper
           arrow
@@ -300,7 +275,7 @@
         >
           <Icon
             :path="taskoptions.path"
-            class="text-gray-600 dark:text-white cursor-pointer h-full"
+            class="text-gray-600 dark:text-white cursor-pointer h-full ml-1"
             :box="taskoptions.viewBox"
             :width="taskoptions.width"
             :style="{ color: 'gray' }"
@@ -384,6 +359,30 @@
           </template>
         </Popper>
       </div>
+      <!-- accept/redo/decline/popper -->
+      <div class="flex">
+        <!-- accept -->
+        <button
+          class="bg-green-500 py-1 px-2 rounded-xl text-white mr-1 hover:bg-green-600 bg-opacity-90"
+          @click="accept"
+        >
+          Принять и завершить задачу
+        </button>
+        <!-- redo -->
+        <button
+          class="bg-red-500 py-1 px-2 rounded-xl text-white mr-1 hover:bg-red-600 bg-opacity-90"
+          @click="reDo"
+        >
+          Отправить на доработку
+        </button>
+        <!-- decline -->
+        <button
+          class="bg-indigo-400 py-1 px-2 rounded-xl text-white mr-1 hover:bg-indigo-500 bg-opacity-90"
+          @click="decline"
+        >
+          Отложить
+        </button>
+      </div>
     </div>
     <div class="flex flex-col max-w-1/2">
       <p
@@ -422,11 +421,19 @@
     >
       <div class="flex flex-col">
         <div
-          class="flex"
-          @click="onClick(subTask)"
+          class="flex items-center"
         >
-          <TaskStatus :task="subTask"/>
+          <!-- <TaskStatus :task="subTask"/> -->
           <span>{{ subTask.name }}</span>
+          <Icon
+            @click="onClick(subTask)"
+            :path="taskoptions.path"
+            class="text-gray-600 dark:text-white cursor-pointer h-full ml-2"
+            :box="taskoptions.viewBox"
+            :width="taskoptions.width"
+            :style="{ color: 'gray' }"
+            :height="taskoptions.height"
+          />
         </div>
         <article
           v-if="subTask.comment.length"
@@ -470,7 +477,7 @@ import TaskPropsButtonTags from '@/components/TaskProperties/TaskPropsButtonTags
 import TaskPropsButtonFocus from '@/components/TaskProperties/TaskPropsButtonFocus.vue'
 import TaskPropsButtonColor from '@/components/TaskProperties/TaskPropsButtonColor.vue'
 import TaskPropsButtonProject from '@/components/TaskProperties/TaskPropsButtonProject.vue'
-import TaskStatus from '@/components/TasksList/TaskStatus.vue'
+// import TaskStatus from '@/components/TasksList/TaskStatus.vue'
 import Popper from 'vue3-popper'
 import Icon from '@/components/Icon.vue'
 
@@ -504,7 +511,7 @@ export default {
     // TaskListIconLabel,
     // TaskListTagLabel,
     Icon,
-    TaskStatus,
+    // TaskStatus,
     TaskPropsButtonPerform,
     TaskPropsButtonSetDate,
     TaskPropsButtonColor,

@@ -7,25 +7,30 @@ export const chartColors = {
   }
 }
 
-export const generateEmptyDataSetNDaysAgo = (days = 7) => {
-  const data = {}
+export const generateDaysLablesNDaysAgo = (days = 7) => {
+  const data = []
   const now = new Date()
   for (let i = 0; i <= days; i++) {
     const iDay = new Date().setDate(now.getDate() - i)
-    data[new Date(iDay).toDateString()] = 0
+    data.unshift(new Date(iDay).toDateString())
   }
   return data
 }
 
 export const fillDaysDataSet = arr => {
-  const data = generateEmptyDataSetNDaysAgo()
-  for (const item of arr) {
-    const itemDate = new Date(item.creation_date).toDateString()
-    if (itemDate in data) {
-      data[itemDate] += 1
+  const labels = generateDaysLablesNDaysAgo()
+  const values = []
+  for (const label of labels) {
+    let counter = 0
+    for (const item of arr) {
+      if (label === new Date(item.creation_date).toDateString()) {
+        console.log(label, new Date(item.creation_date).toDateString())
+        counter++
+      }
     }
+    values.push(counter)
   }
-  return data
+  return { labels, values }
 }
 
 const datasetObject = (color, points) => {
@@ -50,16 +55,16 @@ const datasetObject = (color, points) => {
 
 export const karmaChartData = (arr, color) => {
   const data = fillDaysDataSet(arr)
-  const labels = Object.keys(data)
-  for (let i = 0; i < labels.length; i++) {
-    const splittedLabelValues = labels[i].split(' ')
-    labels[i] = splittedLabelValues[0]
+
+  for (let i = 0; i < data.labels.length; i++) {
+    console.log('splitting labels: ', data.labels[i].split(' ')[0])
+    data.labels[i] = data.labels[i].split(' ')[0]
   }
-  const points = Object.values(data)
+
   return {
-    labels,
+    labels: data.labels,
     datasets: [
-      datasetObject(color, points)
+      datasetObject(color, data.values)
     ]
   }
 }

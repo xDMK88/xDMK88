@@ -371,7 +371,9 @@ const mutations = {
   [NAVIGATOR_PUSH_DEPARTAMENT]: (state, departaments) => {
     for (const departament of departaments) {
       state.navigator.deps.items.push(departament)
-      if (departament.uid_parent === '00000000-0000-0000-0000-000000000000') {
+      if (departament.uid_parent ||
+        departament.uid_parent === '00000000-0000-0000-0000-000000000000'
+      ) {
         // adding departament to the root
         state.navigator.deps.items.push(departament)
       } else {

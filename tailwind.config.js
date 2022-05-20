@@ -9,6 +9,9 @@ module.exports = {
       zIndex: {
         '-1': '-1'
       },
+      fontFamily: {
+        'roboto': ['Roboto']
+      },
       flexGrow: {
         5: '5'
       },
@@ -33,11 +36,6 @@ module.exports = {
       animation: {
         fadeOut: 'fadeOut 250ms ease-in-out',
         fadeIn: 'fadeIn 250ms ease-in-out'
-      },
-      fontFamily: {
-        SfProDisplayBold: ['SFProDisplayBold'],
-        SfProDisplayNormal: ['SFProDisplayNormal'],
-        SfProTextNormal: ['SFProTextNormal']
       }
     }
   },

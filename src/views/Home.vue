@@ -34,7 +34,7 @@ const storeTasks = computed(() => store.state.tasks.newtasks)
 const newConfig = computed(() => store.state.tasks.newConfig)
 const navStack = computed(() => store.state.navbar.navStack)
 const storeNavigator = computed(() => store.state.navigator.navigator)
-
+const isPropertiesMobileExpanded = computed(() => store.state.isPropertiesMobileExpanded)
 const UID_TO_ACTION = {
   '901841d9-0016-491d-ad66-8ee42d2b496b': TASK.TASKS_REQUEST, // get today's day
   '46418722-a720-4c9e-b255-16db4e590c34': TASK.OVERDUE_TASKS_REQUEST,
@@ -68,6 +68,9 @@ const getTask = (uid) => {
       store.commit('updateStackWithInitValue', navElem)
       store.commit('basic', { key: 'mainSectionState', value: 'tasks' })
       store.commit('basic', { key: 'taskListSource', value: navElem.value })
+      if (!isPropertiesMobileExpanded.value) {
+        store.dispatch('asidePropertiesToggle', true)
+      }
       window.location = '/'
     })
   }

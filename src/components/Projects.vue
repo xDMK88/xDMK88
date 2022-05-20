@@ -96,6 +96,7 @@ const createBoard = () => {
     children: [],
     uid: null,
     name: '',
+    type_access: 1,
     bold: 0
   }
   store.commit(SELECT_BOARD, board)

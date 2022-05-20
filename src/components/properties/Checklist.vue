@@ -137,7 +137,6 @@ onMounted(() => {
           tag="div"
           style="max-width: 80%;"
           placeholder="write checklist here..."
-          class="focus:ring focus:ring-blue-300"
           :class="{ 'text-gray-500 line-through': check.checked }"
           :contenteditable="store.state.tasks.newtasks[props.taskUid].info.uid_customer === user.current_user_uid"
           :no-n-l="true"

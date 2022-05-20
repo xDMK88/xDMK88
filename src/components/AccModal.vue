@@ -103,9 +103,9 @@ const logout = () => {
     </form>
     <form class="text-left w-64">
       <div class="font-semibold mb-4 text-base">Тип аккаунта</div>
-      <p v-if="user.license_type === 0" class="text-base font-semibold">Пробный тариф</p>
-      <p v-if="user.license_type === 1" class="text-base font-semibold">Премиум тариф</p>
-      <p v-if="user.license_type === 2" class="text-base font-semibold">Бизнес тариф</p>
+      <p v-if="user.license_type === 0" class="text-sm font-semibold">Пробный тариф</p>
+      <p v-if="user.license_type === 1" class="text-sm font-semibold">Премиум тариф</p>
+      <p v-if="user.license_type === 2" class="text-sm font-semibold">Бизнес тариф</p>
       <p class="text-sm mt-2" v-if="user.license_type === 0" >
         Обновите тарифный план ЛидерТаск для неограниченных возможностей
       </p>

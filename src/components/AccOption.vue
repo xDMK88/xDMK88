@@ -87,7 +87,7 @@ const updateSettings = () => {
         <div class="my-2 mt-10">
           <p class="text-base font-semibold">Напиоминание о задаче за: </p>
           <div class="flex mt-2">
-            <select class="border border-gray-300 p-2 w-40 rounded-md text-base" v-model="settings.reminders_in_n_minutes" @change="updateSettings()">
+            <select class="border border-gray-300 p-2 w-40 rounded-md text-base custom-select" v-model="settings.reminders_in_n_minutes" @change="updateSettings()">
               <option value="0">0 мин</option>
               <option value="10">10 мин</option>
               <option value="15">15 мин</option>
@@ -131,7 +131,7 @@ const updateSettings = () => {
   height: 1.5em;
   flex-shrink: 0;
   flex-grow: 0;
-  border: 1px solid #adb5bd;
+  border: 1.63582px solid rgba(0, 0, 0, 0.15);
   border-radius: 0.25em;
   margin-right: 0.5em;
   background-repeat: no-repeat;
@@ -162,10 +162,14 @@ const updateSettings = () => {
 .custom-checkbox-orange:checked+label::before {
   background-color: rgb(251 146 60);
   background-image: url("data:image/svg+xml,%3csvg width='10' height='10' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 26 20'%3e%3cpath fill='%23fff' d='M24.4107 1.30299C25.2766 2.02718 25.3681 3.2892 24.6148 4.1218L11.8142 18.2718C10.8103 19.3815 9.06094 19.4991 7.9062 18.5344L0.902667 12.6839C0.0362917 11.9601 -0.0558157 10.6982 0.69694 9.86518C1.44969 9.0322 2.76226 8.94364 3.62864 9.66738L9.58691 14.6447L21.4789 1.49931C22.2321 0.666707 23.5447 0.578813 24.4107 1.30299z'/%3e%3c/svg%3e");
+  border: 1px solid #FF9123;
 }
 
 /* стили для чекбокса, находящегося в состоянии disabled */
 .custom-checkbox-orange:disabled+label::before {
   background-color: #e9ecef;
+}
+.custom-select
+{
 }
 </style>

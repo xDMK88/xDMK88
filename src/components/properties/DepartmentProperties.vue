@@ -55,7 +55,7 @@ const removeMember = (member) => {
 const createOrUpdateDepartment = (department, index) => {
   if (!department.uid) {
     department.uid = uuidv4()
-    department.order = department.order + 1
+    department.order = 1.0
     console.log('Обработчик на добавление', department)
     localStorage.setItem('department', department)
     store.dispatch(CREATE_DEPARTMENT_REQUEST, department)
@@ -167,7 +167,7 @@ const removeDepartment = (departament) => {
             class="overflow-scroll"
           >
             <div
-              v-for="(email, index) in employeesByEmail"
+              v-for="(email, index) in employees"
               :key="index"
               class="px-3 py-1 bg-gray-50 rounded-xl mt-1 flex items-center justify-between border border-gray-100"
             >
@@ -262,13 +262,13 @@ const removeDepartment = (departament) => {
       >
         {{ selectedDepartment.uid ? 'Сохранить' : 'Создать' }}
       </button>
-      <button
+    <!--  <button
         v-if="selectedDepartment.emails.includes(user.current_user_email)"
         class="w-full bg-gray-100 rounded-xl mt-4 p-3 text-gray-700 font-bold hover:bg-gray-200"
         @click="showConfirmQuit = true"
       >
         Выйти из отдела
-      </button>
+      </button> -->
       <button
         v-if="selectedDepartment.uid && employees[user.current_user_uid].type != 3 && selectedDepartment.type != 1"
         class="w-full bg-red-600 rounded-xl mt-4 p-3 text-white font-bold hover:bg-red-800"

@@ -75,7 +75,7 @@ const openDepartmentProperties = (department) => {
       uid_parent: '',
       name: '',
       //  password: '',
-      order: 1,
+      order: 0,
       collapsed: 0,
       emails: []
     }
@@ -92,6 +92,7 @@ const UpdateDepOrder = (depOrder, order) => {
     collapsed: depOrder.collapsed,
     emails: depOrder.emails
   }
+  console.log(dep)
   store.dispatch(UPDATE_DEPARTMENT_REQUEST, dep)
     .then(resp => {
       console.log('drag n, drop success: ', resp.data + ', приоритет: ' + resp.data.order)
@@ -240,10 +241,10 @@ const clickOnGridCard = (value) => {
              @start="start"
              @end="end"
              :move="move"
-             class="list-group"
+             class="list-group cursor-pointer"
              ghost-class="ghost">
     <template #item="{ element, index }">
-  <div @dragstart="UpdateDepOrder(element.dep, index)">
+  <div @dragleave="UpdateDepOrder(element.dep, index)">
     <div :id="element.dep.order"
       class="flex items-center"
       :class="index !=0 ? 'mt-5' : ''"
@@ -261,6 +262,7 @@ const clickOnGridCard = (value) => {
         @click="openDepartmentProperties(element.dep)"
       />
     </div>
+
     <div
       class="grid gap-4 mt-5"
       :class="{ 'md:grid-cols-2 lg:grid-cols-4': isGridView, 'grid-cols-1': !isGridView, 'grid-cols-1': isPropertiesMobileExpanded && !isGridView, 'lg:grid-cols-2': isPropertiesMobileExpanded && isGridView }"
@@ -335,6 +337,7 @@ const clickOnGridCard = (value) => {
         </div>
       </template>
     </div>
+
   </div>
     </template>
   </draggable>

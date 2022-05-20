@@ -12,7 +12,7 @@
       v-if="storeTasks[lastSelectedTaskUid]"
       class="text-center"
     >
-      Вы действительно хотите удалить выбраную <strong>"{{ storeTasks[lastSelectedTaskUid].info.name }}"</strong> задачу?
+      Вы действительно хотите удалить выбраную <strong>"{{ storeTasks[lastSelectedTaskUid].info.name.substr(0,255) }}"</strong> задачу?
       <span
         v-if="storeTasks[lastSelectedTaskUid].info.has_children"
       >
@@ -981,6 +981,7 @@ export default {
     }
   }
 }
+window.getSelection().removeAllRanges()
 </script>
 
 <style>

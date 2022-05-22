@@ -16,32 +16,36 @@
           :src="employees[task.uid_performer] ? employees[task.uid_performer].fotolink : ''"
         />
         <span
-          class="px-2 py-1 ml-1 rounded-xl text-white"
+          class="py-1 px-3 rounded-lg ml-1 text-white"
           :class="task.uid_performer === user.current_user_uid ? 'bg-green-400' : 'bg-yellow-400'"
         >
           {{ employees[task.uid_performer] ? employees[task.uid_performer].name : '' }}
         </span>
-        <!-- unread -->
-        <span
-          v-if="!task.readed"
-          class="text-white py-1 px-2 rounded-xl ml-1 bg-sky-500"
-        >
-          Непрочитанная задача
-        </span>
         <!-- overdue -->
         <span
           v-if="task.is_overdue"
-          class="text-white py-1 px-2 rounded-xl ml-1 bg-red-300"
+          class="text-white py-1 px-3 rounded-full ml-1 bg-red-400"
         >
           Просрочено
         </span>
-        <!-- readed -->
-        <span
-          v-if="task.readed"
-          class="text-white py-1 px-2 rounded-xl ml-1 bg-gray-300"
-        >
-          Прочитано
-        </span>
+        <div class="flex bg-gray-200 ml-1 px-2 rounded-full">
+          <!-- readed -->
+          <Icon
+            v-if="task.readed"
+            :height="doublecheck.height"
+            :width="doublecheck.width"
+            :view="doublecheck.viewbox"
+            :path="doublecheck.path"
+          />
+          <!-- unread -->
+          <Icon
+            v-if="!task.readed"
+            :height="checkmark.height"
+            :width="checkmark.width"
+            :view="checkmark.viewbox"
+            :path="checkmark.path"
+          />
+        </div>
       </div>
       <!-- next -->
       <button
@@ -251,7 +255,7 @@
       <div class="flex">
         <!-- take -->
         <TaskPropsButtonPerform
-          v-if="task.status !== 3 && task.type !== 4"
+          v-if="task.status !== 3 && task.type !== 4 && task.uid_customer === user.current_user_uid"
           :task-type="task.type"
           :current-user-uid="user.current_user_uid"
           :performer-email="task.email_performer"
@@ -360,24 +364,27 @@
         </Popper>
       </div>
       <!-- accept/redo/decline/popper -->
-      <div class="flex">
+      <div
+        class="flex"
+        v-if="task.uid_customer === user.current_user_uid || task.uid_performer === user.current_user_uid"
+      >
         <!-- accept -->
         <button
-          class="bg-green-500 py-1 px-2 rounded-xl text-white mr-1 hover:bg-green-600 bg-opacity-90"
+          class="bg-green-500 py-1 px-3 rounded-full text-white mr-1 hover:bg-green-600"
           @click="accept"
         >
-          Принять и завершить задачу
+          {{ task.uid_customer === user.current_user_uid ? (task.uid_performer === user.current_user_uid ? 'Завершить' : 'Принять и завершить задачу') : 'Готово к сдаче'}}
         </button>
         <!-- redo -->
         <button
-          class="bg-red-500 py-1 px-2 rounded-xl text-white mr-1 hover:bg-red-600 bg-opacity-90"
+          class="bg-red-500 py-1 px-3 rounded-full text-white mr-1 hover:bg-red-600"
           @click="reDo"
         >
-          Отправить на доработку
+          {{ task.uid_customer === user.current_user_uid ? (task.uid_performer === user.current_user_uid ? 'Отменить' : 'Отправить на доработку') : 'Отклонить'}}
         </button>
         <!-- decline -->
         <button
-          class="bg-indigo-400 py-1 px-2 rounded-xl text-white mr-1 hover:bg-indigo-500 bg-opacity-90"
+          class="bg-indigo-400 py-1 px-3 rounded-full text-white mr-1 hover:bg-indigo-500"
           @click="decline"
         >
           Отложить
@@ -487,6 +494,8 @@ import * as TASK from '@/store/actions/tasks'
 import taskoptions from '@/icons/taskoptions.js'
 import file from '@/icons/file.js'
 import inaccess from '@/icons/inaccess.js'
+import checkmark from '@/icons/checkmark.js'
+import doublecheck from '@/icons/doublecheck.js'
 import msgs from '@/icons/msgs.js'
 import taskcomment from '@/icons/taskcomment.js'
 import checklist from '@/icons/checklist.js'
@@ -593,6 +602,8 @@ export default {
       file,
       inaccess,
       msgs,
+      checkmark,
+      doublecheck,
       taskcomment,
       checklist,
       project,
@@ -780,14 +791,29 @@ export default {
       this.$emit('clickTask', task)
     },
     reDo () {
-      this.$store.dispatch(TASK.CHANGE_TASK_STATUS, { uid: this.task.uid, value: 9 })
+      if (this.task.uid_performer === this.user.current_user_uid && this.task.uid_customer === this.user.current_user_uid) {
+        this.$store.dispatch(TASK.CHANGE_TASK_STATUS, { uid: this.task.uid, value: 7 })
+      }
+      if (this.task.uid_performer === this.user.current_user_uid && this.task.uid_customer !== this.user.current_user_uid) {
+        this.$store.dispatch(TASK.CHANGE_TASK_STATUS, { uid: this.task.uid, value: 8 })
+      }
+      if (this.task.uid_performer !== this.user.current_user_uid && this.task.uid_customer === this.user.current_user_uid) {
+        this.$store.dispatch(TASK.CHANGE_TASK_STATUS, { uid: this.task.uid, value: 8 })
+      }
+      this.nextTask()
     },
     accept () {
-      this.$store.dispatch(TASK.CHANGE_TASK_STATUS, { uid: this.task.uid, value: 5 })
+      if ((this.task.uid_performer === this.user.current_user_uid && this.task.uid_customer === this.user.current_user_uid) ||
+      (this.task.uid_performer !== this.user.current_user_uid && this.task.uid_customer === this.user.current_user_uid)) {
+        this.$store.dispatch(TASK.CHANGE_TASK_STATUS, { uid: this.task.uid, value: 1 })
+      } else {
+        this.$store.dispatch(TASK.CHANGE_TASK_STATUS, { uid: this.task.uid, value: 5 })
+      }
       this.nextTask()
     },
     decline () {
       this.$store.dispatch(TASK.CHANGE_TASK_STATUS, { uid: this.task.uid, value: 6 })
+      this.nextTask()
     },
     onReAssignToUser: function (userEmail) {
       console.log('onReAssignToUser', userEmail)

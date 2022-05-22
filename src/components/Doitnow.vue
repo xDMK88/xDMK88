@@ -15,6 +15,12 @@
     Команда ждет ваших действий по задачам. Пожалуйста, ответьте им
   </div>
   <div
+    v-else-if="readyTasks.length"
+    class="font-normal mt-10"
+  >
+    У вас есть готовые задачи. Примите решение, что с ними делать
+  </div>
+  <div
     v-else-if="overdueTasks.length"
     class="font-normal mt-10"
   >
@@ -53,6 +59,7 @@ import * as TASK from '@/store/actions/tasks.js'
 import DoitnowEmpty from '@/components/Doitnow/DoitnowEmpty.vue'
 import DoitnowTask from '@/components/Doitnow/DoitnowTask.vue'
 import TasksSkeleton from '@/components/TasksList/TasksSkeleton.vue'
+import { PUSH_COLOR } from '@/store/actions/colors'
 
 export default {
   components: {
@@ -63,19 +70,32 @@ export default {
   data: () => ({
     unreadTasks: [],
     overdueTasks: [],
-    todayTasks: []
+    todayTasks: [],
+    readyTasks: [],
+    unreadDelegateByMe: [],
+    unreadDelegateToMe: [],
+    readyTasksReaded: [],
+    readyTasksUnreaded: [],
+    openedTasks: [],
+    projectTasks: [],
+    unsortedTasks: [],
+    overdueReaded: []
   }),
   computed: {
     tasksCount () {
       return (
         this.unreadTasks.length +
         this.overdueTasks.length +
+        this.readyTasks.length +
         this.todayTasks.length
       )
     },
     firstTask () {
       if (this.unreadTasks.length) {
         return this.unreadTasks[0]
+      }
+      if (this.readyTasks.length) {
+        return this.readyTasks[0]
       }
       if (this.overdueTasks.length) {
         return this.overdueTasks[0]
@@ -139,8 +159,65 @@ export default {
       this.$store.dispatch(TASK.DOITNOW_TASKS_REQUEST)
         .then((result) => {
           console.log('loadAllTasks', result)
-          this.unreadTasks = [...result[0]]
-          this.overdueTasks = [...result[1]]
+          // сортировка непрочитанных
+          for (let i = 0; i < result[0].length; i++) {
+            // Поручено мной
+            if (result[0][i].uid_customer === this.user.current_user_uid) {
+              this.unreadDelegateByMe.push(result[0][i])
+            } else {
+              // Поручено мне
+              if (result[0][i].uid_performer === this.user.current_user_uid) {
+                this.unreadDelegateToMe.push(result[0][i])
+              } else {
+                // Готово к сдаче
+                if (result[0][i].status === 5) {
+                  this.readyTasksUnreaded.push(result[0][i])
+                } else {
+                  // Доступ
+                  if (result[0][i].emails.includes(this.user.current_user_email)) {
+                    this.openedTasks.push(result[0][i])
+                  } else {
+                    // Проекты
+                    if (result[0][i].uid_project !== '00000000-0000-0000-0000-000000000000') {
+                      this.projectTasks.push(result[0][i])
+                    } else {
+                      // Неразобранное
+                      this.unsortedTasks.push(result[0][i])
+                    }
+                  }
+                }
+              }
+            }
+          }
+          // Сортировка просроченных
+          for (let i = 0; i < result[1].length; i++) {
+            if (result[1][i].readed) {
+              this.overdueReaded.push(result[1][i])
+            }
+          }
+          // Готово к сдаче
+          this.$store.dispatch(TASK.READY_FOR_COMPLITION_TASKS_REQUEST)
+            .then((resp) => {
+              if (resp.data.anothers_markers.length) {
+                this.$store.commit(PUSH_COLOR, resp.data.anothers_markers)
+              }
+              if (resp.data.anothers_tags.length) {
+                this.$store.commit(TASK.ADD_TASK_TAGS, resp.data.anothers_tags)
+              }
+              for (let i = 0; i < resp.data.tasks; i++) {
+                if (resp.data.tasks[i].readed) {
+                  this.readyTasksReaded.push(resp.data.tasks[i])
+                }
+              }
+            })
+          // Отправляем в главный массив (непрочитанное) отсортированные массивы по очереди
+          this.unreadTasks = [...this.unreadDelegateByMe, ...this.unreadDelegateToMe,
+            ...this.readyTasksUnreaded, ...this.openedTasks, ...this.openedTasks,
+            ...this.projectTasks, ...this.unsortedTasks]
+          // Отправляем в главный массив (просрочено) отсортированные данные
+          this.overdueTasks = [...this.overdueReaded]
+          // Отправляем в главный массив (готовые) отсортированные данные
+          this.readyTasks = [...this.readyTasksReaded]
           this.todayTasks = [...result[2]]
         })
     },
@@ -157,6 +234,10 @@ export default {
 
       if (this.unreadTasks.length) {
         this.unreadTasks.shift()
+        return
+      }
+      if (this.readyTasks.length) {
+        this.readyTasks.shift()
         return
       }
       if (this.overdueTasks.length) {

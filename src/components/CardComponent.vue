@@ -216,8 +216,8 @@ const submit = e => {
             </div>
             <ul class="networks">
               <li class="android" title="Android"><a href="https://play.google.com/store/apps/details?id=com.ashberrysoft.leadertask&utm_source=leadertask.ru" title="Android" target="_blank">android</a></li>
-              <li class="ios" title="ios"><a href="https://itunes.apple.com/ru/app/leadertask/id648864820?mt=8&ls=1" title="ios" target="_blank">ios</a></li>
-              <li class="mac" title="mac"><a href="https://itunes.apple.com/ru/app/leadertask/id648864820?mt=8&ls=1" title="mac" target="_blank">mac</a></li>
+              <li class="ios" title="ios"><a href="https://apps.apple.com/ru/app/leadertask/id648864820?ls=1" title="ios" target="_blank">ios</a></li>
+              <li class="mac" title="mac"><a href="https://apps.apple.com/ru/app/leadertask/id1537366700?mt=12" title="mac" target="_blank">mac</a></li>
               <li class="windows" title="windows"><a href="https://www.leadertask.com/download/leadertask.exe" title="windows" target="_blank">windows</a></li>
             </ul>
           </div>

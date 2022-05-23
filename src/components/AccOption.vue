@@ -9,11 +9,6 @@ const settings = computed(() => {
   return store.state.navigator.navigator.settings
 })
 
-//  const calnumberoffirstweek = !!settings.value.cal_number_of_first_week !== false
-const calshowweeknumber = !!settings.value.cal_show_week_number !== false
-//  const navshowtags = !!settings.value.nav_show_tags === false
-const navshowoverdue = !!settings.value.nav_show_overdue !== false
-const navshowsummary = !!settings.value.nav_show_summary !== false
 const updateSettings = () => {
   console.log(settings.value.cal_number_of_first_week)
   store.dispatch(
@@ -37,8 +32,6 @@ const updateSettings = () => {
     }
   ).then(resp => {
     console.log(resp.data)
-    settings.value.cal_number_of_first_week = resp.data.cal_number_of_first_week
-    settings.value.add_task_to_begin = resp.data.add_task_to_begin
   })
 }
 </script>
@@ -67,7 +60,7 @@ const updateSettings = () => {
         <div class="my-2 mt-4">
             <div class="flex mt-2">
               <div class="checkbox">
-                <input type="checkbox" id="opt_3" v-model="calshowweeknumber" @change="updateSettings()" class="custom-checkbox-orange outline-none" />
+                <input type="checkbox" id="opt_3" v-model="settings.cal_show_week_number" @change="updateSettings()" class="custom-checkbox-orange outline-none" />
                 <label class="text-base" for="opt_3">Показывать номера недель в календаре</label>
               </div>
             <!--    <a class="ml-2" v-if="settings.cal_show_week_number === true">Вкл.</a>
@@ -77,7 +70,7 @@ const updateSettings = () => {
         <div class="my-2 mt-4">
             <div class="flex mt-2">
               <div class="checkbox">
-                <input type="checkbox" id="opt_4" v-model="navshowoverdue" @change="updateSettings()" class="custom-checkbox-orange outline-none" />
+                <input type="checkbox" id="opt_4" v-model="settings.nav_show_overdue" @change="updateSettings()" class="custom-checkbox-orange outline-none" />
                 <label class="text-base" for="opt_4">Показывать раздел Просрочено</label>
               </div>
             <!--    <a class="ml-2" v-if="settings.nav_show_overdue === true">Вкл.</a>
@@ -87,7 +80,7 @@ const updateSettings = () => {
         <div class="my-2 mt-4">
             <div class="flex mt-2">
               <div class="checkbox">
-                <input type="checkbox" id="opt_5" v-model="navshowsummary" @change="updateSettings()" class="custom-checkbox-orange outline-none">
+                <input type="checkbox" id="opt_5" v-model="settings.nav_show_summary" @change="updateSettings()" class="custom-checkbox-orange outline-none">
                 <label class="text-base" for="opt_5">Показывать количество задач</label>
               </div>
              <!--   <a class="ml-2" v-if="settings.nav_show_summary === 1">Вкл.</a>

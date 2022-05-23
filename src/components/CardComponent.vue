@@ -209,6 +209,19 @@ const submit = e => {
             </button>
           </div>
         </div>
+        <div class="follow-us">
+          <div class="social">
+            <div class="title" style="display:none;">
+              <strong>Следите за нами</strong>
+            </div>
+            <ul class="networks">
+              <li class="android" title="Android"><a href="https://play.google.com/store/apps/details?id=com.ashberrysoft.leadertask&utm_source=leadertask.ru" title="Android" target="_blank">android</a></li>
+              <li class="ios" title="ios"><a href="https://itunes.apple.com/ru/app/leadertask/id648864820?mt=8&ls=1" title="ios" target="_blank">ios</a></li>
+              <li class="mac" title="mac"><a href="https://itunes.apple.com/ru/app/leadertask/id648864820?mt=8&ls=1" title="mac" target="_blank">mac</a></li>
+              <li class="windows" title="windows"><a href="https://www.leadertask.com/download/leadertask.exe" title="windows" target="_blank">windows</a></li>
+            </ul>
+          </div>
+        </div>
       </form>
       <div class="w-full flex-wrap">
         <header
@@ -288,3 +301,91 @@ const submit = e => {
     </fieldset>
   </component>
 </template>
+<style scoped>
+.follow-us {
+  width: auto !important;
+  margin: 5px 0;
+  text-align: left;
+}
+
+.follow-us .social li {
+  margin: 0 0px 0 10px;
+}
+.follow-us {
+}
+
+.follow-us .title {
+  margin: 0 0 10px;
+  background: none;
+  color: #444;
+  cursor: auto;
+}
+
+.follow-us .social ul {
+  font-size: 0;
+}
+
+.follow-us .social li {
+  display: inline-block;
+  margin: 0 5px;
+
+  text-indent: 0;
+  color: #fff;
+  border-radius: 0;
+  width: 40px;
+  height: 40px;
+  text-align: center;
+  line-height: 46px;
+}
+
+.follow-us .social li:hover {
+
+}
+
+.follow-us .social a {
+  width: 40px;
+  height: 40px;
+  font-size: 0;
+  display: block;
+  position: relative;
+  z-index: 0;
+}
+
+.follow-us .social a:before {
+  content: '';
+  position: absolute;
+
+  height: 50px;
+
+  top: 50%;
+  left: 50%;
+  margin-left: -10px;
+  margin-top: -10px;
+  background-size: 20px;
+}
+
+.follow-us .social .android a:before {
+  background: url('https://www.leadertask.ru/local/media/icons/android-platform.svg') no-repeat;
+  background-size: 35px;
+  width: 35px;
+}
+.follow-us .social .mac a:before {
+  background: url('https://www.leadertask.ru/local/media/icons/macos-platform.svg') no-repeat;
+  background-size: 35px;
+  width: 35px;
+}
+.follow-us .social .ios a:before {
+  background: url('https://www.leadertask.ru/local/media/icons/ios-platform.svg') no-repeat;
+  background-size: 35px;
+  width: 35px;
+}
+.follow-us .social .windows a:before {
+  background: url('https://www.leadertask.ru/local/media/icons/windows-platform.svg') no-repeat;
+  background-size: 35px;
+  width: 35px;
+}
+.follow-us .social li
+{
+
+}
+</style>

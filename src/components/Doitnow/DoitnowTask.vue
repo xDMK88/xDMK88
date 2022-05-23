@@ -1,6 +1,6 @@
 <template>
   <div
-    class="group task-node flex-col items-center w-full bg-white p-2 rounded-lg dark:bg-gray-900 dark:border-gray-700 border border-gray-300 my-0.5 relative font-SfProTextNormal"
+    class="group task-node flex-col items-center w-full bg-white p-2 rounded-lg dark:bg-gray-900 dark:border-gray-700 border border-gray-200 my-0.5 relative font-SfProTextNormal"
     :style="{ backgroundColor: backgroundColor }"
     :class="{
       'bg-gray-200 dark:bg-gray-800':
@@ -84,24 +84,21 @@
           />
         </div> -->
         <div class="flex flex-col">
-          <div
-            class="taskName p-0.5 ring-0 outline-none max-w-7xl text-xl font-semibold flex"
+          <!-- editable task name -->
+          <contenteditable
+            v-model="name"
+            tag="div"
+            class="taskName p-0.5 ring-0 outline-none max-w-7xl"
+            :contenteditable="task._isEditable"
+            placeholder="Введите название задачи"
             :no-nl="true"
             :no-html="true"
-            :class="{
-              uppercase: uppercase,
-              'text-gray-500': isTaskComplete,
-              'line-through': isTaskComplete,
-              'font-extrabold': task.readed == 0
-            }"
-            :style="{ color: forecolor }"
-          >
-            <!-- <TaskStatus
-              :task="task"
-              class="self-center"
-            /> -->
-            {{ task.name }}
-          </div>
+            :class="{ 'uppercase': !task._isEditable && colors[task.uid_marker] && colors[task.uid_marker].uppercase, 'text-gray-500': task.status == 1 || task.status == 7, 'line-through': task.status == 1 || task.status == 7, 'font-extrabold': task.readed == 0 }"
+            :style="{ color: getValidForeColor(colors[task.uid_marker]?.fore_color) }"
+            @focusout="clearTaskFocus(task)"
+            @dblclick.stop="editTaskName(task)"
+            @keyup.enter="updateTask($event, task); this.$emit('changeValue', {_isEditable: false})"
+          />
           <div v-if="task.comment.length">
             <article class="text-sm break-all">
               <span class="font-bold block">Описание задачи:</span>
@@ -352,7 +349,7 @@
                     fill-opacity="0.5"
                   />
                 </svg>
-                <span class="rounded"> Чек-лист</span>
+                <span class="rounded">Чек-лист</span>
               </div>
               <!-- Фокус -->
               <TaskPropsButtonFocus
@@ -475,6 +472,7 @@
 import { ref } from 'vue'
 // import TaskListIconLabel from '@/components/TasksList/TaskListIconLabel.vue'
 // import TaskListTagLabel from '@/components/TasksList/TaskListTagLabel.vue'
+import contenteditable from 'vue-contenteditable'
 import TaskPropsButtonPerform from '@/components/TaskProperties/TaskPropsButtonPerform.vue'
 import TaskPropsButtonSetDate from '@/components/TaskProperties/TaskPropsButtonSetDate.vue'
 import TaskPropsChatMessages from '@/components/TaskProperties/TaskPropsChatMessages.vue'
@@ -530,6 +528,7 @@ export default {
     TaskPropsButtonProject,
     TaskPropsChatMessages,
     TaskPropsInputForm,
+    contenteditable,
     Popper
   },
   emits: ['clickTask', 'nextTask', 'changeValue'],
@@ -567,12 +566,14 @@ export default {
       default: () => ([])
     }
   },
-  setup () {
+  setup (props) {
+    const name = ref(props.task.name)
     const isTaskHoverPopperActive = ref(false)
     const checklistshow = ref(false)
     const toggleTaskHoverPopper = (val) => {
       isTaskHoverPopperActive.value = val
     }
+    const showConfirm = ref(false)
     const showAllMessages = ref(false)
     const isChatVisible = ref(false)
     const createChecklist = () => {
@@ -595,6 +596,7 @@ export default {
       toggleTaskHoverPopper,
       isChatVisible,
       createChecklist,
+      showConfirm,
       checklistshow,
       showAllMessages,
       taskoptions,
@@ -602,6 +604,7 @@ export default {
       file,
       inaccess,
       msgs,
+      name,
       checkmark,
       doublecheck,
       taskcomment,
@@ -630,6 +633,7 @@ export default {
     task (newval, oldval) {
       this.showAllMessages = false
       this.isChatVisible = false
+      this.name = this.task.name
     }
   },
   computed: {
@@ -637,6 +641,9 @@ export default {
       if (this.task.emails) return true
       if (this.task.type === 1 || this.task.type === 2) return true
       return false
+    },
+    isPropertiesMobileExpanded () {
+      return this.$store.state.isPropertiesMobileExpanded
     },
     statusColor () {
       const statusColor = {
@@ -678,6 +685,56 @@ export default {
     }
   },
   methods: {
+    removeTask (uid) {
+      if (this.isPropertiesMobileExpanded) {
+        this.$store.dispatch('asidePropertiesToggle', false)
+      }
+      this.$store.dispatch(TASK.REMOVE_TASK, uid)
+    },
+    updateTask (event, task) {
+      this.$store.dispatch(TASK.CHANGE_TASK_NAME, { uid: task.uid, value: this.name.replace(/\r?\n|\r/g, '') })
+      if (task.name.length > 0) {
+        if (task._justCreated) {
+          this.$store.dispatch(TASK.CREATE_TASK, task)
+        } else {
+          this.$store.dispatch(TASK.CHANGE_TASK_NAME, { uid: task.uid, value: this.name })
+        }
+        const data = {
+          _isEditing: false
+        }
+        this.$emit('changeValue', data)
+      } else if (task.name.length === 0) {
+        if (task._justCreated) {
+          if (this.isPropertiesMobileExpanded) {
+            this.$store.dispatch('asidePropertiesToggle', false)
+          }
+          this.$store.commit(TASK.REMOVE_TASK, task.uid)
+        } else {
+          this.showConfirm = true
+          // removeTask(task.uid)
+        }
+      }
+    },
+    editTaskName (task) {
+      const data = {
+        _isEditable: this.user.current_user_uid === task.uid_customer
+      }
+      this.$emit('changeValue', data)
+    },
+    clearTaskFocus (task) {
+      if (task.name === '') {
+        this.removeTask(task.uid)
+      } else if (task.name !== '' && !task.enterPress) {
+        this.updateTask(event, task)
+      }
+      if (this.isPropertiesMobileExpanded) {
+        this.$store.dispatch('asidePropertiesToggle', false)
+      }
+      const data = {
+        _isEditing: false
+      }
+      this.$emit('changeValue', data)
+    },
     print (message) {
       alert(message)
     },

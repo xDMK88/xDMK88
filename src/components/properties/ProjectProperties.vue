@@ -284,7 +284,7 @@ const copyurl = (uid) => {
           class="text-gray-500 text-center decoration-dashed underline mt-3 cursor-pointer"
           @click="showAllMembers = true"
         >
-          Show all members
+          Показать всех участников
         </p>
       </div>
       <button

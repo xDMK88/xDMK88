@@ -76,7 +76,7 @@
         ref="root"
         v-model="createTaskText"
         class="w-full text-white"
-        :placeholder="'Enter task name'"
+        placeholder="Введите название задачи"
         borderless
         transparent
         @keyup.enter="createTask"
@@ -105,12 +105,12 @@
   >
     <template #before-input="props">
       <div
-        @keydown.esc="escapEvent"
-        @keyup.esc="escapEvent"
         :id="props.node.info.uid"
         class="group task-node flex-col items-center w-full bg-white p-2 rounded-lg dark:bg-gray-900 dark:border-gray-700 border border-gray-300 my-0.5 relative"
         :style="{ backgroundColor: getValidBackColor(colors[props.node.info.uid_marker]?.back_color) }"
         :class="{ 'bg-gray-200 dark:bg-gray-800': (props.node.info.status == 1 || props.node.info.status == 7) && props.node.info.uid_marker == '00000000-0000-0000-0000-000000000000', 'ring-2 ring-orange-400 border border-orange-400': props.node.id === lastSelectedTaskUid }"
+        @keydown.esc="escapEvent"
+        @keyup.esc="escapEvent"
         @click.shift="clickAndShift(props.node)"
         @click.exact="selectedTasks = {}"
       >
@@ -179,7 +179,7 @@
                       :width="copy.width"
                       :height="copy.height"
                     />
-                    <p>{{ props.node.info.taskNameCopied ? 'Copied!' : localization.copy_taskname }}</p>
+                    <p>{{ props.node.info.taskNameCopied ? 'Скопировано!' : localization.copy_taskname }}</p>
                   </div>
 
                   <!-- Copy task -->
@@ -196,7 +196,7 @@
                       :width="copy.width"
                       :height="copy.height"
                     />
-                    <p>{{ copiedTasks[props.node.info.uid] ? 'Copied' : 'Copy' }}</p>
+                    <p>{{ copiedTasks[props.node.info.uid] ? 'Скопировано' : 'Копировать' }}</p>
                   </div>
 
                   <!-- Paste task -->
@@ -212,7 +212,7 @@
                       :width="copy.width"
                       :height="copy.height"
                     />
-                    <p>Paste</p>
+                    <p>Вставить</p>
                   </div>
 
                   <!-- Cut task -->
@@ -228,7 +228,7 @@
                       :width="cut.width"
                       :height="cut.height"
                     />
-                    <p>Cut</p>
+                    <p>Вырезать</p>
                   </div>
 
                   <!-- Delete task -->
@@ -277,7 +277,7 @@
               tag="div"
               class="taskName p-0.5 ring-0 outline-none max-w-7xl"
               :contenteditable="props.node.info._isEditable"
-              placeholder="Enter task name"
+              placeholder="Введите название задачи"
               :no-nl="true"
               :no-html="true"
               :class="{ 'uppercase': !props.node.info._isEditable && colors[props.node.info.uid_marker] && colors[props.node.info.uid_marker].uppercase, 'text-gray-500': props.node.info.status == 1 || props.node.info.status == 7, 'line-through': props.node.info.status == 1 || props.node.info.status == 7, 'font-extrabold': props.node.info.readed == 0 }"
@@ -451,14 +451,6 @@ export default {
     EmptyTasksListPics,
     TaskStatus,
     contenteditable
-  },
-  created () {
-    const store = useStore()
-    document.addEventListener('keyup', function (evt) {
-      if (evt.keyCode === 27) {
-        store.dispatch('asidePropertiesToggle', false)
-      }
-    })
   },
   setup (props) {
     const store = useStore()
@@ -985,6 +977,14 @@ export default {
       cut,
       bin
     }
+  },
+  created () {
+    const store = useStore()
+    document.addEventListener('keyup', function (evt) {
+      if (evt.keyCode === 27) {
+        store.dispatch('asidePropertiesToggle', false)
+      }
+    })
   },
   methods: {
     print (value) {

@@ -57,4 +57,17 @@ router.afterEach((to) => {
   store.dispatch('fullScreenToggle', !!to.meta.fullScreen)
 })
 
+/* On error send error to Alex's server  */
+window.onerror = function (msg, url, lineNo, columnNo, error) {
+  console.log('Error: ', msg)
+  if (msg.indexOf('callback is not a function') !== -1) { return }
+  if (msg === 'NetworkError') { return }
+  if (!url) { url = 'https://web' }
+  axios({
+    url: process.env.VUE_APP_LEADERTASK_API + 'api/v1/errors/front',
+    method: 'POST',
+    data: { msg: msg, url: url, line: lineNo, column: columnNo }
+  })
+}
+
 createApp(App).use(store).use(router).use(Notifications).mount('#app')

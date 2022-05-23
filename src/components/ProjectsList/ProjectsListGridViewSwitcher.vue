@@ -2,7 +2,7 @@
   <div
     class="flex"
   >
-    <Icon
+   <!-- <Icon
       :path="listView.path"
       :width="listView.width"
       :height="listView.height"
@@ -19,18 +19,18 @@
       class="cursor-pointer hover:text-gray-800 mr-2 mt-0.5"
       :class="{ 'text-gray-800': isGridView, 'text-gray-400': !isGridView }"
       @click="onClick(true)"
-    />
+    />-->
   </div>
 </template>
 
 <script>
 import gridView from '@/icons/grid-view.js'
 import listView from '@/icons/list-view.js'
-import Icon from '@/components/Icon.vue'
+//  import Icon from '@/components/Icon.vue'
 
 export default {
   components: {
-    Icon
+    //  Icon
   },
   props: {
     isGridView: Boolean

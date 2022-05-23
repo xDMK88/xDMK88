@@ -9,7 +9,13 @@ const settings = computed(() => {
   return store.state.navigator.navigator.settings
 })
 
+//  const calnumberoffirstweek = !!settings.value.cal_number_of_first_week !== false
+const calshowweeknumber = !!settings.value.cal_show_week_number !== false
+//  const navshowtags = !!settings.value.nav_show_tags === false
+const navshowoverdue = !!settings.value.nav_show_overdue !== false
+const navshowsummary = !!settings.value.nav_show_summary !== false
 const updateSettings = () => {
+  console.log(settings.value.cal_number_of_first_week)
   store.dispatch(
     PATCH_SETTINGS,
     {
@@ -19,7 +25,7 @@ const updateSettings = () => {
       cal_show_week_number: settings.value.cal_show_week_number ? 1 : 0,
       nav_show_tags: settings.value.nav_show_tags,
       nav_show_overdue: settings.value.nav_show_overdue ? 1 : 0,
-      nav_show_summary: settings.value.nav_show_summary,
+      nav_show_summary: settings.value.nav_show_summary ? 1 : 0,
       nav_show_emps: settings.value.nav_show_emps,
       nav_show_markers: settings.value.nav_show_markers,
       language: settings.value.language,
@@ -29,7 +35,11 @@ const updateSettings = () => {
       cal_work_week: settings.value.cal_work_week,
       compact_mode: settings.value.compact_mode
     }
-  )
+  ).then(resp => {
+    console.log(resp.data)
+    settings.value.cal_number_of_first_week = resp.data.cal_number_of_first_week
+    settings.value.add_task_to_begin = resp.data.add_task_to_begin
+  })
 }
 </script>
     <template>
@@ -37,7 +47,7 @@ const updateSettings = () => {
         <div class="my-2">
             <div class="flex mt-2">
               <div class="checkbox">
-              <input type="checkbox" id="opt_1" v-model="settings.add_task_to_begin" @change="updateSettings()" class="custom-checkbox-orange" />
+              <input type="checkbox" id="opt_1" v-model="settings.show_completed_tasks" @change="updateSettings()" class="custom-checkbox-orange" />
               <label class="text-base" for="opt_1">Добавлять задачи в начало списка</label>
               </div>
              <!--   <a class="ml-2" v-if="settings.add_task_to_begin === true">Вкл.</a>
@@ -57,7 +67,7 @@ const updateSettings = () => {
         <div class="my-2 mt-4">
             <div class="flex mt-2">
               <div class="checkbox">
-                <input type="checkbox" id="opt_3" v-model="settings.cal_show_week_number" @change="updateSettings()" class="custom-checkbox-orange outline-none" />
+                <input type="checkbox" id="opt_3" v-model="calshowweeknumber" @change="updateSettings()" class="custom-checkbox-orange outline-none" />
                 <label class="text-base" for="opt_3">Показывать номера недель в календаре</label>
               </div>
             <!--    <a class="ml-2" v-if="settings.cal_show_week_number === true">Вкл.</a>
@@ -67,7 +77,7 @@ const updateSettings = () => {
         <div class="my-2 mt-4">
             <div class="flex mt-2">
               <div class="checkbox">
-                <input type="checkbox" id="opt_4" v-model="settings.nav_show_overdue" @change="updateSettings()" class="custom-checkbox-orange outline-none" />
+                <input type="checkbox" id="opt_4" v-model="navshowoverdue" @change="updateSettings()" class="custom-checkbox-orange outline-none" />
                 <label class="text-base" for="opt_4">Показывать раздел Просрочено</label>
               </div>
             <!--    <a class="ml-2" v-if="settings.nav_show_overdue === true">Вкл.</a>
@@ -77,7 +87,7 @@ const updateSettings = () => {
         <div class="my-2 mt-4">
             <div class="flex mt-2">
               <div class="checkbox">
-                <input type="checkbox" id="opt_5" class="custom-checkbox-orange outline-none">
+                <input type="checkbox" id="opt_5" v-model="navshowsummary" @change="updateSettings()" class="custom-checkbox-orange outline-none">
                 <label class="text-base" for="opt_5">Показывать количество задач</label>
               </div>
              <!--   <a class="ml-2" v-if="settings.nav_show_summary === 1">Вкл.</a>
@@ -99,7 +109,7 @@ const updateSettings = () => {
         <div class="my-2 mt-4">
             <p class="text-base font-semibold">Язык</p>
             <div class="flex mt-2">
-                <select class="border border-gray-300 p-2 w-40 rounded-md text-base" v-model="settings.language" @change="updateSettings()">
+                <select class="border border-gray-300 p-2 w-40 rounded-md text-base custom-select" v-model="settings.language" @change="updateSettings()">
                     <option value="russian">Русский</option>
                     <option value="english">Английский</option>
                 </select>
@@ -172,4 +182,27 @@ const updateSettings = () => {
 .custom-select
 {
 }
+/* remove the original arrow */
+.custom-select {
+  font-size: 16px;
+  border: 1px solid #ccc;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background: transparent url("http://cdn1.iconfinder.com/data/icons/cc_mono_icon_set/blacks/16x16/br_down.png") no-repeat 130px center;
+  background-size: 8%;
+}
+/* CAUTION: IE hackery ahead */
+.custom-select::-ms-expand {
+  display: none; /* remove default arrow on ie10 and ie11 */
+}
+
+/* target Internet Explorer 9 to undo the custom arrow */
+@media screen and (min-width:0\0) {
+  .custom-select {
+    background:none\9;
+    padding: 5px\9;
+  }
+}
+
 </style>

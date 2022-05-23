@@ -17,6 +17,14 @@ defineProps({
   items: {
     type: Array,
     default: () => []
+  },
+  created () {
+    const store = useStore()
+    document.addEventListener('keyup', function (evt) {
+      if (evt.keyCode === 27) {
+        store.dispatch('asidePropertiesToggle', false)
+      }
+    })
   }
 })
 // Serves as linkage between requests from storage and tree view navigator
@@ -28,9 +36,10 @@ const UID_TO_ACTION = {
 }
 
 const isGridView = computed(() => store.state.isGridView)
-
+localStorage.setItem('isGridView', true)
 const updateGridView = (value) => {
-  store.commit('basic', { key: 'isGridView', value: value })
+  console.log(value)
+  store.commit('basic', { key: 'isGridView', value: true })
   localStorage.setItem('isGridView', value)
 }
 

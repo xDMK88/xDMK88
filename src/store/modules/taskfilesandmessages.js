@@ -19,7 +19,8 @@ import {
   CREATE_FILE_REQUEST,
   CREATE_FILES_REQUEST,
   MERGE_FILES_WITH_MESSAGES,
-  TOGGLE_UPLOAD_STATUS
+  TOGGLE_UPLOAD_STATUS,
+  DELETE_FILE_REQUEST
 } from '../actions/taskfiles'
 import { AUTH_LOGOUT } from '../actions/auth'
 import { notify } from 'notiwind'
@@ -185,6 +186,25 @@ const actions = {
     return new Promise((resolve, reject) => {
       commit(MESSAGES_REQUEST)
       const url = process.env.VUE_APP_LEADERTASK_API + 'api/v1/tasksmsgs?uid=' + data.uid
+      axios({ url: url, method: 'DELETE' })
+        .then(resp => {
+          resolve(resp)
+          commit(DELETE_MESSAGE_REQUEST, data)
+        }).catch(err => {
+          notify({
+            group: 'api',
+            title: 'REST API Error, please make screenshot',
+            action: DELETE_MESSAGE_REQUEST,
+            text: err.response.data
+          }, 15000)
+          reject(err)
+        })
+    })
+  },
+  [DELETE_FILE_REQUEST]: ({ commit, dispatch }, data) => {
+    return new Promise((resolve, reject) => {
+      commit(FILES_REQUEST)
+      const url = process.env.VUE_APP_LEADERTASK_API + 'api/v1/tasksfiles?uid=' + data.uid
       axios({ url: url, method: 'DELETE' })
         .then(resp => {
           resolve(resp)

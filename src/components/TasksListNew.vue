@@ -105,6 +105,8 @@
   >
     <template #before-input="props">
       <div
+        @keydown.esc="escapEvent"
+        @keyup.esc="escapEvent"
         :id="props.node.info.uid"
         class="group task-node flex-col items-center w-full bg-white p-2 rounded-lg dark:bg-gray-900 dark:border-gray-700 border border-gray-300 my-0.5 relative"
         :style="{ backgroundColor: getValidBackColor(colors[props.node.info.uid_marker]?.back_color) }"
@@ -449,6 +451,14 @@ export default {
     EmptyTasksListPics,
     TaskStatus,
     contenteditable
+  },
+  created () {
+    const store = useStore()
+    document.addEventListener('keyup', function (evt) {
+      if (evt.keyCode === 27) {
+        store.dispatch('asidePropertiesToggle', false)
+      }
+    })
   },
   setup (props) {
     const store = useStore()
@@ -838,7 +848,18 @@ export default {
         store.dispatch('asidePropertiesToggle', true)
       }
     }
-
+    const escapEvent = () => {
+      console.log('work esc')
+      document.addEventListener('keyup', function (evt) {
+        console.log(evt.keyCode)
+        if (evt.keyCode === 27) {
+          if (this.isPropertiesMobileExpanded.value) {
+            store.dispatch('asidePropertiesToggle', false)
+          }
+        }
+      })
+      store.dispatch('asidePropertiesToggle', false)
+    }
     const nodeDragEnd = (node) => {
       if (storeTasks.value[node.dragged.node.id]) {
         // change order in children
@@ -886,6 +907,7 @@ export default {
     }
 
     return {
+      escapEvent,
       clearTaskFocus,
       editTaskName,
       navStack,

@@ -159,36 +159,38 @@ const actions = {
     })
   },
   [TASK.SEARCH_TASK]: ({ commit, dispatch }, text) => {
-    return new Promise((resolve, reject) => {
-      commit(TASK.TASKS_REQUEST)
-      const url =
-        process.env.VUE_APP_LEADERTASK_API + 'api/v1/tasks/search?text=' + text
-      axios({ url: url, method: 'GET' })
-        .then((resp) => {
-          commit(TASK.TASKS_SUCCESS, resp)
-          if (resp.data.anothers_tags.length) {
-            commit(TASK.ADD_TASK_TAGS, resp.data.anothers_tags)
-          }
-          if (resp.data.anothers_markers.length) {
-            commit(PUSH_COLOR, resp.data.anothers_markers)
-          }
-          resolve(resp)
-        })
-        .catch((err) => {
-          notify(
-            {
-              group: 'api',
-              title: 'REST API Error, please make screenshot',
-              action: TASK.SEARCH_TASK,
-              text: err.response.data
-            },
-            15000
-          )
-          commit(TASK.TASKS_ERROR, err)
-          // dispatch(AUTH_LOGOUT)
-          reject(err)
-        })
-    })
+    if (text !== '') {
+      return new Promise((resolve, reject) => {
+        commit(TASK.TASKS_REQUEST)
+        const url =
+          process.env.VUE_APP_LEADERTASK_API + 'api/v1/tasks/search?text=' + text
+        axios({ url: url, method: 'GET' })
+          .then((resp) => {
+            commit(TASK.TASKS_SUCCESS, resp)
+            if (resp.data.anothers_tags.length) {
+              commit(TASK.ADD_TASK_TAGS, resp.data.anothers_tags)
+            }
+            if (resp.data.anothers_markers.length) {
+              commit(PUSH_COLOR, resp.data.anothers_markers)
+            }
+            resolve(resp)
+          })
+          .catch((err) => {
+            notify(
+              {
+                group: 'api',
+                title: 'REST API Error, please make screenshot',
+                action: TASK.SEARCH_TASK,
+                text: err.response.data
+              },
+              15000
+            )
+            commit(TASK.TASKS_ERROR, err)
+            // dispatch(AUTH_LOGOUT)
+            reject(err)
+          })
+      })
+    }
   },
   [TASK.SUBTASKS_REQUEST]: ({ commit, dispatch }, taskUid) => {
     return new Promise((resolve, reject) => {

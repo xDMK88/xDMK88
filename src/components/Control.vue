@@ -20,6 +20,10 @@ const props = defineProps({
     type: String,
     default: null
   },
+  maxlength: {
+    type: String,
+    default: null
+  },
   iconClass: {
     type: String,
     default: null
@@ -154,6 +158,7 @@ if (props.ctrlKFocus) {
       ref="inputEl"
       v-model="computedValue"
       :name="name"
+      :maxlength="maxlength"
       :autocomplete="autocomplete"
       :required="required"
       :placeholder="placeholder"

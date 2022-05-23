@@ -6,8 +6,8 @@ import { useStore } from 'vuex'
 import * as TASK from '@/store/actions/tasks'
 import { SELECT_EMPLOYEE } from '@/store/actions/employees'
 import { SELECT_DEPARTMENT, UPDATE_DEPARTMENT_REQUEST } from '@/store/actions/departments'
-import gridView from '@/icons/grid-view.js'
-import listView from '@/icons/list-view.js'
+//  import gridView from '@/icons/grid-view.js'
+//  import listView from '@/icons/list-view.js'
 import draggable from 'vuedraggable'
 const props = defineProps({
   employees: {
@@ -54,11 +54,11 @@ const UID_TO_ACTION = {
 }
 
 const isGridView = computed(() => store.state.isGridView)
-
-const updateGridView = (value) => {
-  store.commit('basic', { key: 'isGridView', value: value })
+localStorage.setItem('isGridView', true)
+/*  const updateGridView = (value) => {
+  store.commit('basic', { key: 'isGridView', value: true })
   localStorage.setItem('isGridView', value)
-}
+} */
 
 const isPropertiesMobileExpanded = computed(() => store.state.isPropertiesMobileExpanded)
 const storeEmployees = computed(() => store.state.employees.employees)
@@ -159,7 +159,7 @@ const clickOnGridCard = (value) => {
     <div
       class="flex"
     >
-      <icon
+    <!--  <icon
         :path="listView.path"
         :width="listView.width"
         :height="listView.height"
@@ -176,7 +176,7 @@ const clickOnGridCard = (value) => {
         class="cursor-pointer hover:text-gray-800 mr-2 mt-0.5"
         :class="{ 'text-gray-800': isGridView, 'text-gray-400': !isGridView }"
         @click="updateGridView(true)"
-      />
+      />-->
     </div>
   </div>
   <div

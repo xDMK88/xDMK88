@@ -1,7 +1,7 @@
 import store from '@/store/index.js'
 
 export function createTask (obj) {
-  console.log(obj.obj)
+  // console.log(obj.obj)
   // store.commit('ADD_TASK', obj.obj)
 }
 

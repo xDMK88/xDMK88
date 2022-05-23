@@ -171,8 +171,7 @@ const removeDepartment = (departament) => {
               :key="index"
               class="px-3 py-1 bg-gray-50 rounded-xl mt-1 flex items-center justify-between border border-gray-100"
             >
-
-              <div class="flex items-center" >
+              <div class="flex items-center">
                 <img
                   :src="email.fotolink"
                   class="rounded-xl mr-2"
@@ -185,13 +184,14 @@ const removeDepartment = (departament) => {
                 v-model="email.included"
                 class="ml-2 bg-gray-300 rounded border border-gray-100"
                 type="checkbox"
-                @change="addRemoveMember(email)"
                 :checked="selectedDepartment.uid===email.uid_dep"
+                @change="addRemoveMember(email)"
               >
             </div>
           </div>
         </template>
-        <div v-if="!selectedDepartment.emails.includes(user.current_user_email) && employees[user.current_user_uid].type != 3 && selectedDepartment.type != 1"
+        <div
+          v-if="!selectedDepartment.emails.includes(user.current_user_email) && employees[user.current_user_uid].type != 3 && selectedDepartment.type != 1"
           class="flex items-center justify-center my-6 cursor-pointer"
         >
           <Icon
@@ -252,7 +252,7 @@ const removeDepartment = (departament) => {
           class="text-gray-500 text-center decoration-dashed underline mt-3 cursor-pointer"
           @click="showAllMembers = true"
         >
-          Show all members
+          Показать всех участников
         </p>
       </div>
       <button
@@ -262,7 +262,7 @@ const removeDepartment = (departament) => {
       >
         {{ selectedDepartment.uid ? 'Сохранить' : 'Создать' }}
       </button>
-    <!--  <button
+      <!--  <button
         v-if="selectedDepartment.emails.includes(user.current_user_email)"
         class="w-full bg-gray-100 rounded-xl mt-4 p-3 text-gray-700 font-bold hover:bg-gray-200"
         @click="showConfirmQuit = true"

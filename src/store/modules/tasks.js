@@ -1,6 +1,4 @@
 import {
-  // FILES_REQUEST,
-  // MERGE_FILES_WITH_MESSAGES,
   REFRESH_FILES
 } from '@/store/actions/taskfiles'
 import {
@@ -163,7 +161,9 @@ const actions = {
       return new Promise((resolve, reject) => {
         commit(TASK.TASKS_REQUEST)
         const url =
-          process.env.VUE_APP_LEADERTASK_API + 'api/v1/tasks/search?text=' + text
+          process.env.VUE_APP_LEADERTASK_API +
+          'api/v1/tasks/search?text=' +
+          text
         axios({ url: url, method: 'GET' })
           .then((resp) => {
             commit(TASK.TASKS_SUCCESS, resp)
@@ -1407,6 +1407,8 @@ const mutations = {
     state.status = 'loading'
   },
   [TASK.TASKS_SUCCESS]: (state, resp) => {
+    console.log('tasks ', resp)
+
     state.status = 'success'
     state.tasks = resp.data
     state.hasLoadedOnce = true

@@ -151,8 +151,7 @@ const removeBoard = (board) => {
       <hr class="my-6">
       <div
         class="flex items-center mb-6"
-      >
-      </div>
+      />
       <p class="dark:text-gray-200">
         Доступ
       </p>
@@ -254,7 +253,7 @@ const removeBoard = (board) => {
           class="text-gray-500 text-center decoration-dashed underline mt-3 cursor-pointer"
           @click="showAllMembers = true"
         >
-          Show all members
+          Показать всех участников
         </p>
       </div>
       <button

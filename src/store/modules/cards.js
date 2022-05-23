@@ -77,6 +77,8 @@ const mutations = {
     state.status = 'loading'
   },
   [CARD.BOARD_CARDS_SUCCESS]: (state, resp) => {
+    console.log('cards ', resp)
+
     const stageUnsorted = {
       UID: '00000000-0000-0000-0000-000000000000',
       Name: 'Неразобранное',

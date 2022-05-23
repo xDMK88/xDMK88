@@ -14,17 +14,17 @@ import { PUSH_DEPARTMENT } from '../actions/departments'
 import { PUSH_EMPLOYEE, PUSH_EMPLOYEE_BY_EMAIL } from '../actions/employees'
 import {
   NAVIGATOR_ERROR,
+  NAVIGATOR_PUSH_BOARD,
   NAVIGATOR_PUSH_COLOR,
   NAVIGATOR_PUSH_DEPARTAMENT,
   NAVIGATOR_PUSH_EMPLOYEE,
   NAVIGATOR_PUSH_PROJECT,
-  NAVIGATOR_PUSH_BOARD,
   NAVIGATOR_PUSH_TAG,
+  NAVIGATOR_REMOVE_BOARD,
   NAVIGATOR_REMOVE_COLOR,
   NAVIGATOR_REMOVE_DEPARTAMENT,
   NAVIGATOR_REMOVE_EMPLOYEE,
   NAVIGATOR_REMOVE_PROJECT,
-  NAVIGATOR_REMOVE_BOARD,
   NAVIGATOR_REMOVE_TAG,
   NAVIGATOR_REQUEST,
   NAVIGATOR_SUCCESS,
@@ -318,7 +318,6 @@ const mutations = {
         dep: department,
         items: getAllMembersByDepartmentUID(resp, department.uid)
       }
-      console.log(resp)
       newEmps.push(dep)
     }
     newEmps.push({
@@ -329,7 +328,6 @@ const mutations = {
       )
     })
     resp.data.new_emps = newEmps
-    console.log(resp.data.new_emps)
     // Merge common projects and private projects into my own data structure
     // Array of objects where object is { dep: 'Dependency name', items: items }
     const itemsInProjectView = []
@@ -371,7 +369,8 @@ const mutations = {
   [NAVIGATOR_PUSH_DEPARTAMENT]: (state, departaments) => {
     for (const departament of departaments) {
       state.navigator.deps.items.push(departament)
-      if (departament.uid_parent ||
+      if (
+        departament.uid_parent ||
         departament.uid_parent === '00000000-0000-0000-0000-000000000000'
       ) {
         // adding departament to the root
@@ -425,14 +424,11 @@ const mutations = {
         state.navigator.new_private_boards[0].items.push(board)
       } else {
         // adding projects recursively to subarrays
-        visitChildren(
-          state.navigator.new_private_boards[0].items,
-          (value) => {
-            if (value.uid === board.uid_parent) {
-              value.children.push(board)
-            }
+        visitChildren(state.navigator.new_private_boards[0].items, (value) => {
+          if (value.uid === board.uid_parent) {
+            value.children.push(board)
           }
-        )
+        })
       }
     }
   },
@@ -508,9 +504,7 @@ const mutations = {
         i < state.navigator.new_private_boards[0].items.length;
         i++
       ) {
-        if (
-          state.navigator.new_private_boards[0].items[i].uid === board.uid
-        ) {
+        if (state.navigator.new_private_boards[0].items[i].uid === board.uid) {
           state.navigator.new_private_boards[0].items.splice(i, 1)
         }
       }

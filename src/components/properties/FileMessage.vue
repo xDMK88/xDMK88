@@ -27,10 +27,21 @@ const docs = ['doc', 'xls', 'xlsx', 'txt', 'pdf']
 const audio = ['mp3', 'wav', 'm4a']
 const isImageLoaded = ref(false)
 
+// encode to base64 string and write to localStorage
+const writeCache = (uid, blob) => {
+  const reader = new FileReader()
+  reader.readAsDataURL(blob)
+  reader.onloadend = function () {
+    const base64data = reader.result
+    localStorage.setItem(uid, base64data)
+  }
+}
+
 const getImgUrl = (uid, extension, filename) => {
   // computed value triggered after template change
   if (isImageLoaded.value) return
   store.dispatch(GETFILES, uid).then(resp => {
+    writeCache(uid, new Blob([resp.data], { type: 'image/' + extension }))
     const fileURL = window.URL.createObjectURL(new Blob([resp.data], { type: 'image/' + extension }))
     const myImage = new Image()
     myImage.src = fileURL
@@ -110,11 +121,19 @@ const getAnyUrl = (uid, extension, filename) => {
     v-if="movies.includes(props.file.file_name.split('.').pop())"
   >
 
-   <video width="400" controls="controls" preload="metadata" :id="'video_' + props.file.uid">
-           {{ getMovUrl(props.file.uid, props.file.file_name.split('.').pop(), props.file.file_name) }}
-  <source :src="'https://web.leadertask.com/User/Files/GetFile?uid=' + props.file.uid + '#t=0.5'" type="video/mp4">
-</video>
-    <br/>
+    <video
+      :id="'video_' + props.file.uid"
+      width="400"
+      controls="controls"
+      preload="metadata"
+    >
+      {{ getMovUrl(props.file.uid, props.file.file_name.split('.').pop(), props.file.file_name) }}
+      <source
+        :src="'https://web.leadertask.com/User/Files/GetFile?uid=' + props.file.uid + '#t=0.5'"
+        type="video/mp4"
+      >
+    </video>
+    <br>
   <!--  <a
       :id="'mov_' + props.file.uid"
       :href="'https://web.leadertask.com/User/Files/GetFile?uid=' + props.file.uid"

@@ -10,7 +10,6 @@ const settings = computed(() => {
 })
 
 const updateSettings = () => {
-  console.log(settings.value.cal_number_of_first_week)
   store.dispatch(
     PATCH_SETTINGS,
     {
@@ -31,12 +30,12 @@ const updateSettings = () => {
       compact_mode: settings.value.compact_mode
     }
   ).then(resp => {
-    console.log(resp.data)
   })
 }
 </script>
     <template>
     <form class="px-5">
+
         <div class="my-2">
             <div class="flex mt-2">
               <div class="checkbox">

@@ -158,7 +158,6 @@ export default {
     loadAllTasks: function () {
       this.$store.dispatch(TASK.DOITNOW_TASKS_REQUEST)
         .then((result) => {
-          console.log('loadAllTasks', result)
           // сортировка непрочитанных
           for (let i = 0; i < result[0].length; i++) {
             // Поручено мной

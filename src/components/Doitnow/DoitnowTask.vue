@@ -786,11 +786,6 @@ export default {
           this.$emit('changeValue', data)
         })
     },
-    takeTask () {
-      if (this.task.type === 5 || this.task.type === 1) {
-        console.log(this.task)
-      }
-    },
     onChangeAccess (checkEmails) {
       const emails = checkEmails.join('..')
       const data = {

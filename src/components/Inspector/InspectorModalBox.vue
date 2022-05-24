@@ -128,6 +128,7 @@ const createTask = () => {
     store.dispatch('CREATE_INSPECTOR_TASK', {
       uid: delegatedTask.uid,
       uid_customer: delegatedTask.uid_customer,
+      is_inspectable: 1,
       taskJson: JSON.stringify(resp.data)
     })
     // update both, performer and customer in inspector service

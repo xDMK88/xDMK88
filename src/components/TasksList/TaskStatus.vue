@@ -91,7 +91,6 @@ const changeTaskStatus = (uid, status) => {
   if (!storeNavigator.value.settings.show_completed_tasks && [1, 5, 7, 8].includes(status)) {
     store.dispatch(TASK.REMOVE_TASK, uid)
       .then(() => {
-        console.log(lastVisitedDate.value)
         store.dispatch(TASK.TASKS_REQUEST, lastVisitedDate.value)
           .then((resp) => {
             if (!resp.data.tasks.length) {

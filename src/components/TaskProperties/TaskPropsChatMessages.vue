@@ -1,5 +1,8 @@
 <template>
-  <div class="messages">
+  <div
+    class="messages"
+    :print="print('taskMessages', messages)"
+  >
     <div
       v-for="(message, index) in taskMessages"
       :key="index"
@@ -12,6 +15,7 @@
             showAllMessages
         "
       >
+        <!-- День недели -->
         <div
           v-if="
             index == 0 ||
@@ -36,14 +40,9 @@
           </p>
         </div>
 
-        <!-- Chat message interlocutor -->
+        <!-- Сообщение других пользователей -->
         <div
-          v-if="
-            message.uid_creator !== currentUserUid &&
-              message.uid_creator !== 'inspector' &&
-              !message.uid_file &&
-              !showOnlyFiles
-          "
+          v-if="message.isUserMessage && message.isMessage && !showOnlyFiles"
         >
           <div
             v-if="
@@ -78,9 +77,9 @@
           </div>
         </div>
 
-        <!-- Chat message inspector -->
+        <!-- Сообщение от инспектора -->
         <div
-          v-if="message.uid_creator === 'inspector' && !message.uid_file && !showOnlyFiles"
+          v-if="message.isInspectorMessage && !showOnlyFiles"
         >
           <div
             v-if="
@@ -90,9 +89,7 @@
             "
             class="flex"
           >
-            <p
-              class="name-chat-custom dark:text-gray-100 font-bold"
-            >
+            <p class="name-chat-custom dark:text-gray-100 font-bold">
               Inspector
             </p>
           </div>
@@ -102,7 +99,12 @@
             >
               <div
                 v-linkify:options="{ className: 'text-blue-600' }"
-                v-html="getInspectorMessage(message.type, selectedTask).replaceAll('\n', '<br/>')"
+                v-html="
+                  getInspectorMessage(message.type, selectedTask).replaceAll(
+                    '\n',
+                    '<br/>'
+                  )
+                "
               />
 
               <!-- Origin message -->
@@ -112,13 +114,17 @@
               >
                 <div
                   class="flex items-center bg-white rounded-lg p-1 px-2 mt-1 cursor-pointer mr-1"
-                  @click="answerInspectorMessage(message, 1, 'Да'); message.performer_answer = 1"
+                  @click="
+                    answerInspectorMessage(message, 1, 'Да')
+                  "
                 >
                   <span class="text-sm text-gray-600"> Да </span>
                 </div>
                 <div
                   class="flex items-center bg-white rounded-lg p-1 px-2 mt-1 cursor-pointer mr-1"
-                  @click="answerInspectorMessage(message, 0, 'Нет'); message.performer_answer = 0"
+                  @click="
+                    answerInspectorMessage(message, 0, 'Нет')
+                  "
                 >
                   <span class="text-sm text-gray-600"> Нет </span>
                 </div>
@@ -131,9 +137,33 @@
               >
                 <div
                   class="flex items-center bg-white rounded-lg p-1 px-2 mt-1 cursor-pointer mr-1"
-                  @click="answerInspectorMessage(message, 1, 'Вопросов нет - приступаю - будет готово ' + dateToLabelFormat(new Date(selectedTask.customer_date_end)) + ' до ' + dateToTimeFormat(new Date(selectedTask.customer_date_end))); message.performer_answer = 1"
+                  @click="
+                    answerInspectorMessage(
+                      message,
+                      1,
+                      'Вопросов нет - приступаю - будет готово ' +
+                        dateToLabelFormat(
+                          new Date(selectedTask.customer_date_end)
+                        ) +
+                        ' до ' +
+                        dateToTimeFormat(
+                          new Date(selectedTask.customer_date_end)
+                        )
+                    )
+                  "
                 >
-                  <span class="text-sm text-gray-600"> Вопросов нет - приступаю - будет готово {{ dateToLabelFormat(new Date(selectedTask.customer_date_end)) }} до {{ dateToTimeFormat(new Date(selectedTask.customer_date_end)) }} </span>
+                  <span class="text-sm text-gray-600">
+                    Вопросов нет - приступаю - будет готово
+                    {{
+                      dateToLabelFormat(
+                        new Date(selectedTask.customer_date_end)
+                      )
+                    }}
+                    до
+                    {{
+                      dateToTimeFormat(new Date(selectedTask.customer_date_end))
+                    }}
+                  </span>
                 </div>
               </div>
 
@@ -147,8 +177,8 @@
           </div>
         </div>
 
-        <!-- Chat file interlocutor -->
-        <div v-if="message.uid_creator !== currentUserUid && message.uid_file">
+        <!-- Файл от других пользователей -->
+        <div v-if="message.isUserMessage && message.isFile">
           <div
             v-if="
               index == 0 ||
@@ -185,13 +215,9 @@
           </div>
         </div>
 
-        <!-- Chat message from myself -->
+        <!-- Мое сообщение -->
         <div
-          v-if="
-            message.uid_creator == currentUserUid &&
-              !message.uid_file &&
-              !showOnlyFiles
-          "
+          v-if="message.isMyMessage && message.isMessage && !showOnlyFiles"
         >
           <div class="table-cell float-right">
             <div
@@ -230,7 +256,8 @@
           </div>
         </div>
 
-        <div v-if="message.uid_creator == currentUserUid && message.uid_file">
+        <!-- Мой файл -->
+        <div v-if="message.isMyMessage && message.isFile">
           <div class="table-cell float-right">
             <div
               v-if="
@@ -252,7 +279,7 @@
             <div
               class="mt-1 msg-custom-chat-right bg-[#FCEAEA] dark:bg-gray-800 text-sm"
             >
-              <FileMessage :file="message"/>
+              <FileMessage :file="message" />
               <div>
                 <div>
                   {{ message.msg }}
@@ -324,12 +351,27 @@ export default {
     },
     uploadStarted () {
       return this.$store.state.taskfilesandmessages.uploadStarted
+    },
+    messages () {
+      const messages = this.taskMessages.map((message) => ({
+        ...message,
+        isFile: !!message.uid_file,
+        isMessage: !message.uid_file,
+        isQuoteMessage: Boolean(message.uid_quote) && message.uid_quote !== '00000000-0000-0000-0000-000000000000',
+        isInspectorMessage: message.uid_creator === 'inspector',
+        isUserMessage: message.uid_creator !== this.currentUserUid && message.uid_creator !== 'inspector',
+        isMyMessage: message.uid_creator === this.currentUserUid
+      }))
+      return messages
     }
   },
   methods: {
     uuidv4 () {
-      return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
-        (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+      return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, (c) =>
+        (
+          c ^
+          (crypto.getRandomValues(new Uint8Array(1))[0] & (15 >> (c / 4)))
+        ).toString(16)
       )
     },
     sendTaskMsg (msg) {
@@ -340,7 +382,18 @@ export default {
       const hours = this.pad2(date.getUTCHours())
       const minutes = this.pad2(date.getUTCMinutes())
       const seconds = this.pad2(date.getUTCSeconds())
-      const dateCreate = year + '-' + month + '-' + day + 'T' + hours + ':' + minutes + ':' + seconds
+      const dateCreate =
+        year +
+        '-' +
+        month +
+        '-' +
+        day +
+        'T' +
+        hours +
+        ':' +
+        minutes +
+        ':' +
+        seconds
       const data = {
         uid_task: this.selectedTask.uid,
         uid_creator: this.user.current_user_uid,
@@ -349,31 +402,35 @@ export default {
         text: msg,
         msg: msg
       }
-      this.$store.dispatch(CREATE_MESSAGE_REQUEST, data).then(
-        resp => {
-          this.selectedTask.has_msgs = true
-          if (this.selectedTask.type === 2 || this.selectedTask.type === 3) {
-            if ([1, 5, 7, 8].includes(this.selectedTask.status)) {
-              this.selectedTask.status = 9
-            }
+      this.$store.dispatch(CREATE_MESSAGE_REQUEST, data).then((resp) => {
+        this.selectedTask.has_msgs = true
+        if (this.selectedTask.type === 2 || this.selectedTask.type === 3) {
+          if ([1, 5, 7, 8].includes(this.selectedTask.status)) {
+            this.selectedTask.status = 9
           }
-          const elment = document.getElementById('content').lastElementChild
-          elment.scrollIntoView({ behavior: 'smooth' })
-        })
+        }
+        const elment = document.getElementById('content').lastElementChild
+        elment.scrollIntoView({ behavior: 'smooth' })
+      })
     },
-    log (msg) {
-      console.log(msg)
+    print (type, obj) {
+      console.log(type, obj)
     },
     answerInspectorMessage (message, answerType, answer) {
       if (message.performer_answer === null) {
-        this.$store.dispatch(INSPECTOR.ANSWER_INSPECTOR_TASK, { id: message.id, answer: answerType }).then(() => {
-          message.peformer_answer = answerType
-          this.sendTaskMsg(answer)
-        })
+        this.$store
+          .dispatch(INSPECTOR.ANSWER_INSPECTOR_TASK, {
+            id: message.id,
+            answer: answerType
+          })
+          .then(() => {
+            message.performer_answer = answerType
+            this.sendTaskMsg(answer)
+          })
       }
     },
     pad2 (n) {
-      return (n < 10 ? '0' : '')
+      return n < 10 ? '0' : ''
     },
     dateToTimeFormat (date) {
       const hours = this.pad2(date.getHours())
@@ -409,7 +466,8 @@ export default {
 </script>
 
 <style scoped>
-img, video {
+img,
+video {
   max-height: 150px;
 }
 .name-chat-custom {

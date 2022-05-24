@@ -1,8 +1,9 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, nextTick } from 'vue'
 import { useStore } from 'vuex'
 import { GETFILES } from '@/store/actions/taskfiles'
-import ChatLoader from './ChatLoader.vue'
+import ChatLoader from '@/components/properties/ChatLoader.vue'
+import { writeCache } from '@/store/helpers/functions'
 // use the component
 const store = useStore()
 const props = defineProps({
@@ -27,38 +28,42 @@ const docs = ['doc', 'xls', 'xlsx', 'txt', 'pdf']
 const audio = ['mp3', 'wav', 'm4a']
 const isImageLoaded = ref(false)
 
-// encode to base64 string and write to localStorage
-const writeCache = (uid, blob) => {
-  const reader = new FileReader()
-  reader.readAsDataURL(blob)
-  reader.onloadend = function () {
-    const base64data = reader.result
-    localStorage.setItem(uid, base64data)
-  }
-}
-
 const getImgUrl = (uid, extension, filename) => {
   // computed value triggered after template change
   if (isImageLoaded.value) return
-  store.dispatch(GETFILES, uid).then(resp => {
-    writeCache(uid, new Blob([resp.data], { type: 'image/' + extension }))
-    const fileURL = window.URL.createObjectURL(new Blob([resp.data], { type: 'image/' + extension }))
-    const myImage = new Image()
-    myImage.src = fileURL
-    document.getElementById('img_' + uid).appendChild(myImage)
-    isImageLoaded.value = true
-    document.getElementById('img_' + uid).setAttribute('href', fileURL)
-    document.getElementById('img_' + uid).style.maxHeight = '100px'
-    return myImage
-  })
+  const cachedImageBase64 = localStorage.getItem(uid)
+  if (cachedImageBase64) {
+    // we nee to wait until hidden messages will be drawn
+    nextTick(() => {
+      const myImage = new Image()
+      myImage.src = cachedImageBase64
+      document.getElementById('img_' + uid).appendChild(myImage)
+      document.getElementById('img_' + uid).setAttribute('href', cachedImageBase64)
+      document.getElementById('img_' + uid).style.maxHeight = '100px'
+      isImageLoaded.value = true
+      return myImage
+    })
+  } else {
+    store.dispatch(GETFILES, uid).then(resp => {
+      writeCache(uid, new Blob([resp.data], { type: 'image/' + extension }))
+      const fileURL = window.URL.createObjectURL(new Blob([resp.data], { type: 'image/' + extension }))
+      const myImage = new Image()
+      myImage.src = fileURL
+      document.getElementById('img_' + uid).appendChild(myImage)
+      isImageLoaded.value = true
+      document.getElementById('img_' + uid).setAttribute('href', fileURL)
+      document.getElementById('img_' + uid).style.maxHeight = '100px'
+      return myImage
+    })
+  }
 }
 
 const getMovUrl = (uid, extension, filename) => {
   store.dispatch(GETFILES, uid).then(resp => {
-    const fileURL = window.URL.createObjectURL(new Blob([resp.data]))
-    //  document.getElementById('mov_' + uid).setAttribute('href', fileURL)
+    const fileURL = window.URL.createObjectURL(new Blob([resp.data], { type: 'video/' + extension }))
+    // document.getElementById('mov_' + uid).setAttribute('href', fileURL)
     document.getElementById('video_' + uid).setAttribute('src', fileURL)
-    //  document.getElementById('mov_' + uid).setAttribute('download', filename)
+    // document.getElementById('mov_' + uid).setAttribute('download', filename)
     return fileURL
   })
 }

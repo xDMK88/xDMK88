@@ -69,7 +69,6 @@ const getTask = (uid) => {
       store.commit('basic', { key: 'mainSectionState', value: 'tasks' })
       store.commit('basic', { key: 'taskListSource', value: navElem.value })
 
-      console.log(resp.data)
       store.commit('basic', { key: 'propertiesState', value: 'task' })
       store.dispatch(TASK.SELECT_TASK, resp.data.tasks[0])
       if (!isPropertiesMobileExpanded.value) {

@@ -3,6 +3,7 @@ import assignment from '@/icons/assignment.js'
 import calendar from '@/icons/calendar.js'
 import desktop from '@/icons/desktop.js'
 import employee from '@/icons/employee.js'
+import properties from '@/icons/properties.js'
 import project from '@/icons/project.js'
 import axios from 'axios'
 import { notify } from 'notiwind'
@@ -299,7 +300,19 @@ const mutations = {
         iconBackgroundClass: 'bg-cyan-500'
       }
     ])
-
+    state.menu.push([
+      {
+        label: 'Прочее',
+        uid: '757be87d-c269-40e0-b224-6b2bb0e4f97d',
+        bold: false,
+        icon: properties.path,
+        iconBox: properties.viewBox,
+        width: properties.width,
+        height: properties.height,
+        type: 'greed',
+        path: 'other'
+      }
+    ])
     const newAssignments = []
     newAssignments.push({
       dep: localization.value.Delegate_i,

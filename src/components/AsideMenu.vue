@@ -137,6 +137,19 @@ const menuClick = (event, item) => {
     return
   }
 
+  // other
+  if (item.uid === '757be87d-c269-40e0-b224-6b2bb0e4f97d') {
+    const navElem = {
+      name: item.label,
+      key: 'greedSource',
+      value: { uid: item.uid, param: null }
+    }
+    store.commit('updateStackWithInitValue', navElem)
+    store.commit('basic', { key: 'mainSectionState', value: 'greed' })
+    store.commit('basic', { key: 'greedPath', value: 'other' })
+    return
+  }
+
   // Tasks list source
   if (UID_TO_ACTION[item.uid] && item.type === 'uid') {
     store.dispatch(UID_TO_ACTION[item.uid])

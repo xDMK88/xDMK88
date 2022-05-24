@@ -14,6 +14,7 @@ import Tags from '@/components/Tags.vue'
 import Colors from '@/components/Colors.vue'
 import Assignments from '@/components/Assignments.vue'
 import Dashboard from '@/components/Dashboard.vue'
+import Other from '@/components/Other.vue'
 import Doitnow from '@/components/Doitnow.vue'
 
 import { NAVIGATOR_REQUEST } from '@/store/actions/navigator'
@@ -269,6 +270,9 @@ onBeforeMount(() => {
       />
       <dashboard
         v-if="greedPath === 'dashboard'"
+      />
+      <other
+        v-if="greedPath === 'other'"
       />
       <projects-children
         v-if="greedPath === 'projects_children'"

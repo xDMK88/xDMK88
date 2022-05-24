@@ -24,7 +24,9 @@ function parseObject (obj) {
 export default function initWebSync () {
   const clientProperty = 'client'
   const client = new window.fm.websync[clientProperty](
-    process.env.VUE_APP_SYNC_LEADERTASK_API + 'websync.ashx?uid_session=' + storeNavigator.value.push_channel
+    process.env.VUE_APP_SYNC_LEADERTASK_API +
+      'websync.ashx?uid_session=' +
+      storeNavigator.value.push_channel
   )
   client.connect({
     onSuccess: function (e) {
@@ -56,7 +58,7 @@ export default function initWebSync () {
         // никак не получить доступ к полю obj.obj.type
         // возвращает не то что там записано
         const obj = { ...JSON.parse(str) }
-        console.log('websync', obj)
+        // console.log('websync', obj)
 
         parseObject(obj)
       } catch (e) {

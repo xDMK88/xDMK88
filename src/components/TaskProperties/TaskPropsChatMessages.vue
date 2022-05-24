@@ -4,14 +4,14 @@
     :print="print('taskMessages', messages)"
   >
     <div
-      v-for="(message, index) in taskMessages"
+      v-for="(message, index) in messages"
       :key="index"
       class="message"
     >
       <div
         v-if="
-          index == taskMessages.length - 1 ||
-            index == taskMessages.length - 2 ||
+          index == messages.length - 1 ||
+            index == messages.length - 2 ||
             showAllMessages
         "
       >
@@ -19,8 +19,8 @@
         <div
           v-if="
             index == 0 ||
-              (taskMessages[index - 1] &&
-                new Date(taskMessages[index - 1].date_create).toDateString() !=
+              (messages[index - 1] &&
+                new Date(messages[index - 1].date_create).toDateString() !=
                 new Date(message.date_create).toDateString())
           "
           class="text-center"
@@ -47,8 +47,8 @@
           <div
             v-if="
               index == 0 ||
-                (taskMessages[index - 1] &&
-                  taskMessages[index - 1].uid_creator != message.uid_creator)
+                (messages[index - 1] &&
+                  messages[index - 1].uid_creator != message.uid_creator)
             "
             class="flex"
           >
@@ -84,8 +84,8 @@
           <div
             v-if="
               index == 0 ||
-                (taskMessages[index - 1] &&
-                  taskMessages[index - 1].uid_creator != message.uid_creator)
+                (messages[index - 1] &&
+                  messages[index - 1].uid_creator != message.uid_creator)
             "
             class="flex"
           >
@@ -182,8 +182,8 @@
           <div
             v-if="
               index == 0 ||
-                (taskMessages[index - 1] &&
-                  taskMessages[index - 1].uid_creator != message.uid_creator)
+                (messages[index - 1] &&
+                  messages[index - 1].uid_creator != message.uid_creator)
             "
             class="flex"
           >
@@ -223,8 +223,8 @@
             <div
               v-if="
                 index == 0 ||
-                  (taskMessages[index - 1] &&
-                    taskMessages[index - 1].uid_creator != message.uid_creator)
+                  (messages[index - 1] &&
+                    messages[index - 1].uid_creator != message.uid_creator)
               "
               class="chat-author-custom-right"
             >
@@ -262,8 +262,8 @@
             <div
               v-if="
                 index == 0 ||
-                  (taskMessages[index - 1] &&
-                    taskMessages[index - 1].uid_creator != message.uid_creator)
+                  (messages[index - 1] &&
+                    messages[index - 1].uid_creator != message.uid_creator)
               "
               class="chat-author-custom-right"
             >

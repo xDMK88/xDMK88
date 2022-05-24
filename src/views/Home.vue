@@ -165,6 +165,15 @@ const getNavigator = () => {
             } else if (navStackUid === '2cf6b167-6506-4b05-bc34-70a8d88e3b25') {
               store.commit('basic', { key: 'mainSectionState', value: 'greed' })
               store.commit('basic', { key: 'greedPath', value: 'doitnow' })
+            } else if (navStackUid === 'ed8039ae-f3de-4369-8f32-829d401056e9') {
+              store.commit('basic', { key: 'mainSectionState', value: 'greed' })
+              store.commit('basic', { key: 'greedPath', value: 'colors' })
+            } else if (navStackUid === '00a5b3de-9474-404d-b3ba-83f488ac6d30') {
+              store.commit('basic', { key: 'mainSectionState', value: 'greed' })
+              store.commit('basic', { key: 'greedPath', value: 'tags' })
+            } else if (navStackUid === '757be87d-c269-40e0-b224-6b2bb0e4f97d') {
+              store.commit('basic', { key: 'mainSectionState', value: 'greed' })
+              store.commit('basic', { key: 'greedPath', value: 'other' })
             } else {
               store.commit('basic', { key: 'greedPath', value: navStack.value[navStack.value.length - 1].greedPath })
               store.commit('basic', { key: 'mainSectionState', value: 'greed' })

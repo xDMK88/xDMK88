@@ -1,5 +1,6 @@
 <script setup>
 import * as TASK from '@/store/actions/tasks.js'
+// import { computed } from 'vue'
 import { useStore } from 'vuex'
 import Icon from '@/components/Icon.vue'
 import overdue from '@/icons/overdue.js'
@@ -7,10 +8,13 @@ import unread from '@/icons/unread.js'
 import inwork from '@/icons/inprogress.js'
 import open from '@/icons/inaccess.js'
 import focus from '@/icons/focus.js'
+import tag from '@/icons/tag.js'
+import color from '@/icons/color.js'
 import unsorted from '@/icons/unsorted.js'
 import ready from '@/icons/ready.js'
 
 const store = useStore()
+// const storeNavigator = computed(() => store.state.navigator.navigator)
 const categories = {
   overdue: {
     name: 'Просроченные',
@@ -46,6 +50,16 @@ const categories = {
     name: 'Задачи в фокусе',
     icon: focus,
     link: '6fc44cc6-9d45-4052-917e-25b1189ab141'
+  },
+  tags: {
+    name: 'Метки',
+    icon: tag,
+    link: 'ed8039ae-f3de-4369-8f32-829d401056e9'
+  },
+  color: {
+    name: 'Цвета',
+    icon: color,
+    link: '00a5b3de-9474-404d-b3ba-83f488ac6d30'
   }
 }
 
@@ -57,7 +71,9 @@ const UID_TO_ACTION = {
   'fa042915-a3d2-469c-bd5a-708cf0339b89': TASK.UNREAD_TASKS_REQUEST,
   '2a5cae4b-e877-4339-8ca1-bd61426864ec': TASK.IN_WORK_TASKS_REQUEST,
   '6fc44cc6-9d45-4052-917e-25b1189ab141': TASK.IN_FOCUS_TASKS_REQUEST,
-  'd35fe0bc-1747-4eb1-a1b2-3411e07a92a0': TASK.READY_FOR_COMPLITION_TASKS_REQUEST
+  'd35fe0bc-1747-4eb1-a1b2-3411e07a92a0': TASK.READY_FOR_COMPLITION_TASKS_REQUEST,
+  'ed8039ae-f3de-4369-8f32-829d401056e9': TASK.COLOR_TASKS_REQUEST,
+  '00a5b3de-9474-404d-b3ba-83f488ac6d30': TASK.TAG_TASKS_REQUEST
 }
 
 function redirect (category) {
@@ -75,9 +91,9 @@ function redirect (category) {
 </script>
 <template>
 <div class="flex">
-  <div class="flex flex-col w-full">
+  <div class="flex w-full flex-wrap">
       <div
-        class="flex w-full bg-white mb-5 text-lg rounded-lg p-5 items-center cursor-pointer"
+        class="flex w-1/5 bg-white mb-5 mr-5 text-lg rounded-xl p-5 items-center cursor-pointer shadow"
         v-for="category in categories"
         :key="category"
         @click="redirect(category)"

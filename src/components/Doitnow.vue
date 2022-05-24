@@ -35,11 +35,11 @@
   <DoitnowTask
     v-if="tasksCount"
     :task="firstTask"
-    :subTasks="subTasks"
+    :sub-tasks="subTasks"
     :colors="colors"
     :tags="tags"
     :user="user"
-    :taskMessages="taskMessages"
+    :task-messages="taskMessages"
     :employees="employees"
     :projects="projects"
     @clickTask="onClickTask"
@@ -133,9 +133,6 @@ export default {
       return this.$store.state.tasks.subtasks.tasks
     }
   },
-  mounted: function () {
-    this.loadAllTasks()
-  },
   watch: {
     firstTask (newtask, oldtask) {
       if (newtask) {
@@ -153,6 +150,9 @@ export default {
         this.$store.dispatch(TASK.SUBTASKS_REQUEST, this.firstTask.uid)
       }
     }
+  },
+  mounted: function () {
+    this.loadAllTasks()
   },
   methods: {
     loadAllTasks: function () {

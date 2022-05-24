@@ -116,14 +116,22 @@
       >
         <!--
         DEBUG TASK INFO, don't remove this comment
-        <pre class="text-[10px] leading-none font-bold text-green-900">state: {{ props.node.info }}</pre>
-        <p class="text-[10px] leading-none">parent: {{ props.node.parent }}</p>
+        <pre class="text-[10px] leading-none font-bold text-green-900">state: {{ props.node.info.has_children }}</pre>
+        <p class="text-[10px] leading-none">
+          parent: {{ props.node.parent }}
+        </p>
         <pre class="text-[10px] leading-none font-bold text-rose-500">state: {{ props.node.state }}</pre>
-        <p class="text-[10px] leading-none">type: {{ props.node.info.type }}</p>
-        <p class="text-[10px] leading-none mb-5">order_new: <strong>{{ props.node.info.order_new }}</strong></p>
-        <p class="text-[10px] leading-none">id: <strong>{{ props.node.id  }}</strong></p>
-        <pre class="text-[10px] leading-none font-bold text-yellow-500">children: {{ props.node.children  }}</pre>
-        <pre class="text-[10px] leading-none font-bold text-yellow-500">tags: {{ props.node.tags}}</pre>
+        <p class="text-[10px] leading-none">
+          type: {{ props.node.info.type }}
+        </p>
+        <p class="text-[10px] leading-none mb-5">
+          order_new: <strong>{{ props.node.info.order_new }}</strong>
+        </p>
+        <p class="text-[10px] leading-none">
+          id: <strong>{{ props.node.id }}</strong>
+        </p>
+        <pre class="text-[10px] leading-none font-bold text-yellow-500">children: {{ props.node.children }}</pre>
+        <pre class="text-[10px] leading-none font-bold text-yellow-500">tags: {{ props.node.tags }}</pre>
         -->
         <Transition>
           <div
@@ -475,7 +483,6 @@ export default {
     const lastVisitedDate = computed(() => {
       return (navStack.value && navStack.value.length && navStack.value[navStack.value.length - 1].value && navStack.value[navStack.value.length - 1].value.uid && navStack.value[navStack.value.length - 1].value.uid === '901841d9-0016-491d-ad66-8ee42d2b496b' && navStack.value[navStack.value.length - 1].value.param ? new Date(navStack.value[navStack.value.length - 1].value.param) : new Date())
     })
-
     watch(() => {
       if (storeTasks.value && settings.value) {
         if (settings.value.add_task_to_begin && navStack.value[0].greedPath === 'new_private_projects') {

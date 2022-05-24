@@ -1407,8 +1407,6 @@ const mutations = {
     state.status = 'loading'
   },
   [TASK.TASKS_SUCCESS]: (state, resp) => {
-    console.log('tasks ', resp)
-
     state.status = 'success'
     state.tasks = resp.data
     state.hasLoadedOnce = true
@@ -1423,12 +1421,14 @@ const mutations = {
     })
 
     const nodes = {}
+    console.log('leaves at the start:', state.newConfig)
     for (const node of resp.data.tasks) {
       if (node.has_children && !state.newConfig.listHasChildren) {
         state.newConfig.listHasChildren = true
       }
 
       state.newConfig.roots.push(node.uid)
+      console.log('process task: ', node.name, ' with should we add to leaves: ', !node.has_children)
       if (!node.has_children) {
         state.newConfig.leaves.push(node.uid)
       }
@@ -1442,7 +1442,6 @@ const mutations = {
         }
       }
     }
-
     state.newtasks = nodes
   },
   [TASK.SUBTASKS_SUCCESS]: (state, resp) => {

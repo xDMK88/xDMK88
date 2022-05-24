@@ -59,7 +59,7 @@ const UID_TO_ACTION = {
 
 const getTask = (uid) => {
   if (store.state.auth.token) {
-    store.dispatch(TASK.ONE_TASK_REQUEST, uid).then(() => {
+    store.dispatch(TASK.ONE_TASK_REQUEST, uid).then((resp) => {
       const navElem = {
         name: 'Поиск',
         key: 'taskListSource',
@@ -68,10 +68,14 @@ const getTask = (uid) => {
       store.commit('updateStackWithInitValue', navElem)
       store.commit('basic', { key: 'mainSectionState', value: 'tasks' })
       store.commit('basic', { key: 'taskListSource', value: navElem.value })
+
+      console.log(resp.data)
+      store.commit('basic', { key: 'propertiesState', value: 'task' })
+      store.dispatch(TASK.SELECT_TASK, resp.data.tasks[0])
       if (!isPropertiesMobileExpanded.value) {
         store.dispatch('asidePropertiesToggle', true)
       }
-      window.location = '/'
+      window.history.replaceState('smth', null, '/')
     })
   }
 }

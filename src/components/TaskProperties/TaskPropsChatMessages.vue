@@ -10,19 +10,14 @@
     >
       <div
         v-if="
-          index == messages.length - 1 ||
-            index == messages.length - 2 ||
-            showAllMessages
+          showAllMessages ||
+            index == messages.length - 1 ||
+            index == messages.length - 2
         "
       >
         <!-- День недели -->
         <div
-          v-if="
-            index == 0 ||
-              (messages[index - 1] &&
-                new Date(messages[index - 1].date_create).toDateString() !=
-                new Date(message.date_create).toDateString())
-          "
+          v-if="isChangedDate(index)"
           class="text-center"
         >
           <p class="text-xs text-gray-500 dark:text-gray-300 my-3">
@@ -40,53 +35,24 @@
           </p>
         </div>
 
-        <!-- Сообщение других пользователей -->
-        <div
-          v-if="message.isUserMessage && message.isMessage && !showOnlyFiles"
-        >
-          <div
-            v-if="
-              index == 0 ||
-                (messages[index - 1] &&
-                  messages[index - 1].uid_creator != message.uid_creator)
-            "
-            class="flex"
-          >
-            <p
-              v-if="employees[message.uid_creator]"
-              class="name-chat-custom dark:text-gray-100"
-            >
-              {{ employees[message.uid_creator].name }}
-            </p>
-          </div>
-          <div class="chat-main">
-            <div
-              class="mt-1 msg-custom-chat-left text-sm bg-[#EDF7ED] dark:bg-gray-800 dark:text-gray-100"
-            >
-              <div
-                v-linkify:options="{ className: 'text-blue-600' }"
-                v-html="message.msg.replaceAll('\n', '<br/>')"
-              />
-              <div
-                v-if="message.date_create"
-                class="time-chat dark:text-gray-300"
-              >
-                {{ getMessageTimeString(message.date_create) }}
-              </div>
-            </div>
-          </div>
-        </div>
+        <!-- Облачко с текстом -->
+        <TaskPropsChatMessageText
+          v-if="message.isMessage && !showOnlyFiles"
+          :is-my-message="message.isMyMessage"
+          :show-creator="isChangeCreator(index)"
+          :show-loader="uploadStarted && message.loading"
+          :quote="getMessageQuoteString(message.uid_quote)"
+          :creator-name="employees[message.uid_creator]?.name ?? '???'"
+          :message="message.msg"
+          :time="getMessageTimeString(message.date_create)"
+        />
 
         <!-- Сообщение от инспектора -->
         <div
           v-if="message.isInspectorMessage && !showOnlyFiles"
         >
           <div
-            v-if="
-              index == 0 ||
-                (messages[index - 1] &&
-                  messages[index - 1].uid_creator != message.uid_creator)
-            "
+            v-if="isChangeCreator(index)"
             class="flex"
           >
             <p class="name-chat-custom dark:text-gray-100 font-bold">
@@ -177,132 +143,26 @@
           </div>
         </div>
 
-        <!-- Файл от других пользователей -->
-        <div v-if="message.isUserMessage && message.isFile">
-          <div
-            v-if="
-              index == 0 ||
-                (messages[index - 1] &&
-                  messages[index - 1].uid_creator != message.uid_creator)
-            "
-            class="flex"
-          >
-            <p
-              v-if="employees[message.uid_creator]"
-              class="name-chat-custom"
-            >
-              {{ employees[message.uid_creator].name }}
-            </p>
-          </div>
-          <div class="chat-main">
-            <div
-              class="mt-1 msg-custom-chat-left bg-[#EDF7ED] dark:bg-gray-800 text-sm items-center"
-            >
-              <FileMessage :file="message" />
-              <div>
-                <div>
-                  {{ message.msg }}
-                </div>
-                <div
-                  v-if="message.date_create"
-                  class="mt-1 flex justify-between text-gray-400 dark:text-gray-300 text-xs"
-                >
-                  <p>{{ formatBytes(message.file_size) }}</p>
-                  <p>{{ getMessageTimeString(message.date_create) }}</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Мое сообщение -->
-        <div
-          v-if="message.isMyMessage && message.isMessage && !showOnlyFiles"
-        >
-          <div class="table-cell float-right">
-            <div
-              v-if="
-                index == 0 ||
-                  (messages[index - 1] &&
-                    messages[index - 1].uid_creator != message.uid_creator)
-              "
-              class="chat-author-custom-right"
-            >
-              <p
-                v-if="employees[message.uid_creator]"
-                class="name-chat-custom dark:text-gray-100"
-              >
-                {{ employees[message.uid_creator].name }}
-              </p>
-            </div>
-          </div>
-          <div class="chat-main">
-            <div
-              class="mt-1 msg-custom-chat-right bg-[#FCEAEA] dark:bg-gray-800 text-sm dark:text-gray-100"
-            >
-              <ChatLoader v-if="uploadStarted && message.loading" />
-              <div
-                v-linkify
-                v-linkify:options="{ className: 'text-blue-600' }"
-                v-html="message.msg.replaceAll('\n', '<br/>')"
-              />
-              <div
-                v-if="message.date_create"
-                class="time-chat dark:text-gray-300"
-              >
-                {{ getMessageTimeString(message.date_create) }}
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Мой файл -->
-        <div v-if="message.isMyMessage && message.isFile">
-          <div class="table-cell float-right">
-            <div
-              v-if="
-                index == 0 ||
-                  (messages[index - 1] &&
-                    messages[index - 1].uid_creator != message.uid_creator)
-              "
-              class="chat-author-custom-right"
-            >
-              <p
-                v-if="employees[message.uid_creator]"
-                class="name-chat-custom dark:text-gray-100"
-              >
-                {{ employees[message.uid_creator].name }}
-              </p>
-            </div>
-          </div>
-          <div class="chat-main">
-            <div
-              class="mt-1 msg-custom-chat-right bg-[#FCEAEA] dark:bg-gray-800 text-sm"
-            >
-              <FileMessage :file="message" />
-              <div>
-                <div>
-                  {{ message.msg }}
-                </div>
-                <div
-                  v-if="message.date_create && message.file_size"
-                  class="mt-1 flex justify-between text-gray-400 dark:text-gray-300 text-xs"
-                >
-                  <p>{{ formatBytes(message.file_size) }}</p>
-                  <p>{{ getMessageTimeString(message.date_create) }}</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+        <!-- Файл -->
+        <TaskPropsChatMessageFile
+          v-if="message.isFile"
+          :is-my-file="message.isMyMessage"
+          :show-creator="isChangeCreator(index)"
+          :creator-name="employees[message.uid_creator]?.name ?? '???'"
+          :file-name="message.msg"
+          :time="getMessageTimeString(message.date_create)"
+          :size="formatBytes(message.file_size)"
+          :file="message"
+        />
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import ChatLoader from '@/components/properties/ChatLoader'
-import FileMessage from '@/components/properties/FileMessage.vue'
+import TaskPropsChatMessageText from '@/components/TaskProperties/TaskPropsChatMessageText.vue'
+import TaskPropsChatMessageFile from '@/components/TaskProperties/TaskPropsChatMessageFile.vue'
+
 import { getInspectorMessage } from '@/inspector/message'
 import linkify from 'vue-linkify'
 
@@ -314,8 +174,8 @@ export default {
     linkify
   },
   components: {
-    ChatLoader,
-    FileMessage
+    TaskPropsChatMessageText,
+    TaskPropsChatMessageFile
   },
   props: {
     currentUserUid: {
@@ -357,7 +217,6 @@ export default {
         ...message,
         isFile: !!message.uid_file,
         isMessage: !message.uid_file,
-        isQuoteMessage: Boolean(message.uid_quote) && message.uid_quote !== '00000000-0000-0000-0000-000000000000',
         isInspectorMessage: message.uid_creator === 'inspector',
         isUserMessage: message.uid_creator !== this.currentUserUid && message.uid_creator !== 'inspector',
         isMyMessage: message.uid_creator === this.currentUserUid
@@ -373,6 +232,21 @@ export default {
           (crypto.getRandomValues(new Uint8Array(1))[0] & (15 >> (c / 4)))
         ).toString(16)
       )
+    },
+    isChangedDate (index) {
+      if (index === 0) return true
+      const messagePrev = this.messages[index - 1]
+      const messageCurr = this.messages[index]
+      if (!messagePrev || !messageCurr) return false
+      return new Date(messagePrev.date_create).toDateString() !==
+                new Date(messageCurr.date_create).toDateString()
+    },
+    isChangeCreator (index) {
+      if (index === 0) return true
+      const messagePrev = this.messages[index - 1]
+      const messageCurr = this.messages[index]
+      if (!messagePrev || !messageCurr) return false
+      return messagePrev.uid_creator !== messageCurr.uid_creator
     },
     sendTaskMsg (msg) {
       const date = new Date()
@@ -443,6 +317,7 @@ export default {
       return day + ' ' + month
     },
     getMessageTimeString (dateCreate) {
+      if (!dateCreate) return ''
       // добавляем Z в конец, чтобы он посчитал что это UTC время
       if (dateCreate[dateCreate.length - 1] !== 'Z') {
         dateCreate += 'Z'
@@ -460,6 +335,12 @@ export default {
       const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']
       const i = Math.floor(Math.log(bytes) / Math.log(k))
       return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i]
+    },
+    getMessageQuoteString (uidQuote) {
+      if (!uidQuote || uidQuote === '00000000-0000-0000-0000-000000000000') return ''
+      const quotedMessage = this.messages.find(message => message.uid === uidQuote)
+      if (!quotedMessage) return ''
+      return quotedMessage.msg
     }
   }
 }

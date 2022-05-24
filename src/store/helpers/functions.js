@@ -8,7 +8,6 @@ export function visitChildren (arr, callback) {
 }
 
 export function writeCache (key, blob) {
-  console.log(blob.size)
   if (blob.size > 2_000_000) return // Don't cache if blob size is over 2M
   const reader = new FileReader()
   reader.readAsDataURL(blob)

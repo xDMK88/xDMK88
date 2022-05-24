@@ -862,12 +862,12 @@ const actions = {
           resolve(resp)
         })
         .catch((err) => {
-          // notify({
-          //   group: 'api',
-          //   title: 'REST API Error, please make screenshot',
-          //   action: TASK.REMOVE_TASK,
-          //   text: err.response.data
-          // }, 15000)
+          notify({
+            group: 'api',
+            title: 'REST API Error, please make screenshot',
+            action: TASK.REMOVE_TASK,
+            text: err.response.data
+          }, 15000)
           reject(err)
         })
     })

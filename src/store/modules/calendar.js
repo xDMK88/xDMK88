@@ -31,6 +31,13 @@ const mutations = {
   },
   addDot (state, date) {
     state.calendar[1].dates.push(date)
+  },
+  deleteDot (state, date) {
+    for (let i = 0; i < state.calendar[1].dates.length; i++) {
+      if (state.calendar[1].dates[i] === date) {
+        state.calendar[1].dates.splice(state.calendar[1].dates.indexOf(date))
+      }
+    }
   }
 }
 

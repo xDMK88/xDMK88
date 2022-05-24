@@ -99,7 +99,7 @@ const changeTaskStatus = (uid, status) => {
                 const calendarDate = calendar.value[i].getDate() + calendar.value[i].getMonth() + calendar.value[i].getFullYear()
                 const lastDate = lastVisitedDate.value.getDate() + lastVisitedDate.value.getMonth() + lastVisitedDate.value.getFullYear()
                 if (calendarDate === lastDate) {
-                  store.state.calendar[1].dates.splice(store.state.calendar[1].dates.indexOf(calendar.value[i]), 1)
+                  store.commit('deleteDot', store.state.calendar[1].dates[i])
                 }
               }
               store.dispatch('setDots', store.state.calendar[1].dates)

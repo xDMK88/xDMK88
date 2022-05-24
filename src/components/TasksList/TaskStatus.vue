@@ -77,36 +77,33 @@ const showStatusOrNot = (type, status) => {
   }
 }
 
-// const navStack = computed(() => store.state.navbar.navStack)
-// const lastVisitedDate = computed(() => {
-//   return (navStack.value && navStack.value.length && navStack.value[navStack.value.length - 1].value && navStack.value[navStack.value.length - 1].value.uid && navStack.value[navStack.value.length - 1].value.uid === '901841d9-0016-491d-ad66-8ee42d2b496b' && navStack.value[navStack.value.length - 1].value.param ? new Date(navStack.value[navStack.value.length - 1].value.param) : new Date())
-// })
+const navStack = computed(() => store.state.navbar.navStack)
+const lastVisitedDate = computed(() => {
+  return (navStack.value && navStack.value.length && navStack.value[navStack.value.length - 1].value && navStack.value[navStack.value.length - 1].value.uid && navStack.value[navStack.value.length - 1].value.uid === '901841d9-0016-491d-ad66-8ee42d2b496b' && navStack.value[navStack.value.length - 1].value.param ? new Date(navStack.value[navStack.value.length - 1].value.param) : new Date())
+})
+const calendar = computed(() => {
+  return store.state.calendar[1].dates
+})
 
 const changeTaskStatus = (uid, status) => {
-  console.log(status)
+  console.log(uid, status)
   store.dispatch(TASK.CHANGE_TASK_STATUS, { uid: uid, value: status })
   if (!storeNavigator.value.settings.show_completed_tasks && [1, 5, 7, 8].includes(status)) {
-    const deleted = new Date(store.state.tasks.newtasks[uid].info.date_begin)
-    let counter = 0
     store.dispatch(TASK.REMOVE_TASK, uid)
       .then(() => {
-        for (const elem in store.state.tasks.newtasks) {
-          const taskDate = new Date(store.state.tasks.newtasks[elem].info.date_begin)
-          if (taskDate.getDate() + taskDate.getMonth() + taskDate.getFullYear() === deleted.getDate() + deleted.getMonth() + deleted.getFullYear()) {
-            counter++
-            break
-          }
-        }
-        if (!counter) {
-          for (const idx in store.state.calendar[1].dates) {
-            if (!store.state.calendar[1].dates.length) { break }
-            const calendarDate = store.state.calendar[1].dates[idx]
-            if (deleted.getDate() + deleted.getMonth() + deleted.getFullYear() === calendarDate.getDate() + calendarDate.getMonth() + calendarDate.getFullYear()) {
-              store.state.calendar[1].dates.splice(calendarDate, 1)
+        store.dispatch(TASK.TASKS_REQUEST, lastVisitedDate.value)
+          .then((resp) => {
+            if (!resp.data.tasks.length) {
+              for (let i = 0; i < calendar.value.length; i++) {
+                const calendarDate = calendar.value[i].getDate() + calendar.value[i].getMonth() + calendar.value[i].getFullYear()
+                const lastDate = lastVisitedDate.value.getDate() + lastVisitedDate.value.getMonth() + lastVisitedDate.value.getFullYear()
+                if (calendarDate === lastDate) {
+                  store.commit('deleteDot', store.state.calendar[1].dates[i])
+                }
+              }
+              store.dispatch('setDots', store.state.calendar[1].dates)
             }
-            store.dispatch('setDots')
-          }
-        }
+          })
       })
   }
 }

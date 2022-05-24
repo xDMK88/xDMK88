@@ -62,7 +62,7 @@ function redirect () {
           move-delay="delay-300"
         >
           <div
-            @click="redirect, close(notification.id)"
+            @click="close(notification.id), redirect()"
             v-for="notification in notifications"
             :key="notification.id"
             class="w-full max-w-sm mt-4 overflow-hidden bg-white rounded-lg shadow-lg pointer-events-auto ring-1 ring-black ring-opacity-5"

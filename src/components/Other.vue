@@ -1,6 +1,6 @@
 <script setup>
 import * as TASK from '@/store/actions/tasks.js'
-// import { computed } from 'vue'
+import { computed } from 'vue'
 import { useStore } from 'vuex'
 import Icon from '@/components/Icon.vue'
 import overdue from '@/icons/overdue.js'
@@ -14,7 +14,7 @@ import unsorted from '@/icons/unsorted.js'
 import ready from '@/icons/ready.js'
 
 const store = useStore()
-// const storeNavigator = computed(() => store.state.navigator.navigator)
+const storeNavigator = computed(() => store.state.navigator.navigator)
 const categories = {
   overdue: {
     name: 'Просроченные',
@@ -54,12 +54,14 @@ const categories = {
   tags: {
     name: 'Метки',
     icon: tag,
-    link: 'ed8039ae-f3de-4369-8f32-829d401056e9'
+    link: 'ed8039ae-f3de-4369-8f32-829d401056e9',
+    path: 'tags'
   },
   color: {
     name: 'Цвета',
     icon: color,
-    link: '00a5b3de-9474-404d-b3ba-83f488ac6d30'
+    link: '00a5b3de-9474-404d-b3ba-83f488ac6d30',
+    path: 'colors'
   }
 }
 
@@ -77,16 +79,30 @@ const UID_TO_ACTION = {
 }
 
 function redirect (category) {
-  store.commit(TASK.CLEAN_UP_LOADED_TASKS)
-  store.dispatch(UID_TO_ACTION[category.link])
-  const navElem = {
-    name: category.name,
-    key: 'taskListSource',
-    value: { uid: category.link, param: null }
+  if (!category.path) {
+    store.commit(TASK.CLEAN_UP_LOADED_TASKS)
+    store.dispatch(UID_TO_ACTION[category.link])
+    const navElem = {
+      name: category.name,
+      key: 'taskListSource',
+      value: { uid: category.link, param: null }
+    }
+    store.commit('updateStackWithInitValue', navElem)
+    store.commit('basic', { key: 'taskListSource', value: { uid: category.link, param: null } })
+    store.commit('basic', { key: 'mainSectionState', value: 'tasks' })
+  } else {
+    alert('m here')
+    store.commit('basic', { key: 'mainSectionState', value: 'greed' })
+    store.commit('basic', { key: 'greedPath', value: category.path })
+    const navElem = {
+      name: category.name,
+      key: 'greedSource',
+      greedPath: category.path,
+      value: storeNavigator.value[category.path].items
+    }
+    store.commit('updateStackWithInitValue', navElem)
+    store.commit('basic', { key: 'greedSource', value: storeNavigator.value[category.path].items })
   }
-  store.commit('updateStackWithInitValue', navElem)
-  store.commit('basic', { key: 'taskListSource', value: { uid: category.link, param: null } })
-  store.commit('basic', { key: 'mainSectionState', value: 'tasks' })
 }
 </script>
 <template>

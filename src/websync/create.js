@@ -30,6 +30,8 @@ export default function processCreate (obj) {
           obj: obj,
           text: obj.obj.name
         }, isNotificationSoundOn.value)
+        const websyncNotification = new Notification('Новый проект', { body: obj.obj.name })
+        console.log(websyncNotification)
       }
       createProject(obj)
       break
@@ -44,6 +46,8 @@ export default function processCreate (obj) {
           obj: obj,
           text: obj.obj.name
         }, isNotificationSoundOn.value)
+        const websyncNotification = new Notification('Новое поручение', { body: obj.obj.name })
+        console.log(websyncNotification)
       }
       createTask(obj)
       break

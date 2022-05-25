@@ -77,35 +77,13 @@ const showStatusOrNot = (type, status) => {
   }
 }
 
-const navStack = computed(() => store.state.navbar.navStack)
-const lastVisitedDate = computed(() => {
-  return (navStack.value && navStack.value.length && navStack.value[navStack.value.length - 1].value && navStack.value[navStack.value.length - 1].value.uid && navStack.value[navStack.value.length - 1].value.uid === '901841d9-0016-491d-ad66-8ee42d2b496b' && navStack.value[navStack.value.length - 1].value.param ? new Date(navStack.value[navStack.value.length - 1].value.param) : new Date())
-})
-const calendar = computed(() => {
-  return store.state.calendar[1].dates
-})
-
 const changeTaskStatus = (uid, status) => {
   console.log(uid, status)
-  store.dispatch(TASK.CHANGE_TASK_STATUS, { uid: uid, value: status })
-  if (!storeNavigator.value.settings.show_completed_tasks && [1, 5, 7, 8].includes(status)) {
-    store.dispatch(TASK.REMOVE_TASK, uid)
-      .then(() => {
-        store.dispatch(TASK.TASKS_REQUEST, lastVisitedDate.value)
-          .then((resp) => {
-            if (!resp.data.tasks.length) {
-              for (let i = 0; i < calendar.value.length; i++) {
-                const calendarDate = calendar.value[i].getDate() + calendar.value[i].getMonth() + calendar.value[i].getFullYear()
-                const lastDate = lastVisitedDate.value.getDate() + lastVisitedDate.value.getMonth() + lastVisitedDate.value.getFullYear()
-                if (calendarDate === lastDate) {
-                  store.commit('deleteDot', store.state.calendar[1].dates[i])
-                }
-              }
-              store.dispatch('setDots', store.state.calendar[1].dates)
-            }
-          })
-      })
-  }
+  store.dispatch(TASK.CHANGE_TASK_STATUS, { uid: uid, value: status }).then(() => {
+    if (!storeNavigator.value.settings.show_completed_tasks && [1, 5, 7, 8].includes(status)) {
+      store.commit(TASK.REMOVE_TASK, uid)
+    }
+  })
 }
 </script>
 

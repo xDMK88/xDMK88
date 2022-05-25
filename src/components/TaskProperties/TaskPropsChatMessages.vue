@@ -216,9 +216,8 @@ export default {
       const messages = this.taskMessages.map((message) => ({
         ...message,
         isFile: !!message.uid_file,
-        isMessage: !message.uid_file,
+        isMessage: !message.uid_file && message.uid_creator !== 'inspector',
         isInspectorMessage: message.uid_creator === 'inspector',
-        isUserMessage: message.uid_creator !== this.currentUserUid && message.uid_creator !== 'inspector',
         isMyMessage: message.uid_creator === this.currentUserUid
       }))
       return messages

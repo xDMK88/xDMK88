@@ -3,18 +3,14 @@ import { createProject } from '@/websync/project.js'
 import { createTask } from '@/websync/task.js'
 import { createMessage } from '@/websync/task_message.js'
 import * as TYPES from '@/websync/types.js'
-import { notify } from 'notiwind'
-
-// TODO: write this function in one place in helpers
-function showNotify (notification) {
-  notify(notification, 30000)
-  const nt = new Audio(require('@/assets/sounds/notification.mp3'))
-  nt.volume = 0.5
-  nt.play()
-}
+import { showNotify } from '@/store/helpers/functions'
 
 function currentUserUid () {
   return store?.state?.user?.user?.current_user_uid
+}
+
+function isNotificationSoundOn () {
+  return store?.state?.inspector?.is_notification_sound_on
 }
 
 function currentUserEmail () {
@@ -33,7 +29,7 @@ export default function processCreate (obj) {
           title: 'Новый проект',
           obj: obj,
           text: obj.obj.name
-        })
+        }, isNotificationSoundOn.value)
       }
       createProject(obj)
       break
@@ -47,7 +43,7 @@ export default function processCreate (obj) {
           title: 'Новое поручение',
           obj: obj,
           text: obj.obj.name
-        })
+        }, isNotificationSoundOn.value)
       }
       createTask(obj)
       break

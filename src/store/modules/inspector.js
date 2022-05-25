@@ -3,7 +3,8 @@ import axios from 'axios'
 import { notify } from 'notiwind'
 
 const state = {
-  karma: []
+  karma: [],
+  is_notification_sound_on: true
 }
 
 const getters = {
@@ -78,12 +79,54 @@ const actions = {
           reject(err)
         })
     })
+  },
+  [INSPECTOR.UPDATE_SOUND_SETTING]: ({ commit, dispatch }, data) => {
+    return new Promise((resolve, reject) => {
+      const url = process.env.VUE_APP_INSPECTOR_API + 'sound-setting'
+      axios({ url: url, method: 'POST', data })
+        .then(resp => {
+          commit(INSPECTOR.UPDATE_SOUND_SETTING, data.value)
+          resolve(resp)
+        }).catch(err => {
+          notify({
+            group: 'api',
+            title: 'INSPECTOR API Error, please make screenshot',
+            action: INSPECTOR.UPDATE_SOUND_SETTING,
+            text: err.response.data
+          }, 15000)
+          reject(err)
+        })
+    })
+  },
+  [INSPECTOR.GET_SOUND_SETTING]: ({ commit, dispatch }, uidUser) => {
+    return new Promise((resolve, reject) => {
+      const url = process.env.VUE_APP_INSPECTOR_API + 'sound-setting?uid_user=' + uidUser
+      axios({ url: url, method: 'GET' })
+        .then(resp => {
+          commit(INSPECTOR.GET_SOUND_SETTING, resp.data.is_notification_sound_on)
+          resolve(resp)
+        }).catch(err => {
+          notify({
+            group: 'api',
+            title: 'INSPECTOR API Error, please make screenshot',
+            action: INSPECTOR.GET_SOUND_SETTING,
+            text: err.response.data
+          }, 15000)
+          reject(err)
+        })
+    })
   }
 }
 
 const mutations = {
   [INSPECTOR.KARMA_REQUEST]: (state, karma) => {
     state.karma = karma
+  },
+  [INSPECTOR.GET_SOUND_SETTING]: (state, value) => {
+    state.is_notification_sound_on = value === 1
+  },
+  [INSPECTOR.UPDATE_SOUND_SETTING]: (state, value) => {
+    state.is_notification_sound_on = value
   }
 }
 

@@ -1,16 +1,10 @@
 import store from '@/store/index.js'
-import { notify } from 'notiwind'
 import { computed } from 'vue'
 import { getInspectorMessage } from '@/inspector/message.js'
-
-function showNotify (notification) {
-  notify(notification, 30000)
-  const nt = new Audio(require('@/assets/sounds/notification.mp3'))
-  nt.volume = 0.5
-  nt.play()
-}
+import { showNotify } from '@/store/helpers/functions'
 
 const user = computed(() => store.state.user.user)
+const isNotificationSoundOn = computed(() => store.state.inspector.is_notification_sound_on)
 const employees = computed(() => store.state.employees.employees)
 
 export default function initInspectorSocket () {
@@ -40,7 +34,7 @@ export default function initInspectorSocket () {
 function parseMessage (data) {
   try {
     const parsedData = JSON.parse(data)
-    showNotify({ group: 'inspector', title: 'Инспектор', text: getInspectorMessage(parsedData.message, parsedData.task.taskJson), task: parsedData.task.taskJson })
+    showNotify({ group: 'inspector', title: 'Инспектор', text: getInspectorMessage(parsedData.message, parsedData.task.taskJson), task: parsedData.task.taskJson }, isNotificationSoundOn.value)
   } catch (e) {
     console.log(e)
   }

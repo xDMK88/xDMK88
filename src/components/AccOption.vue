@@ -1,13 +1,20 @@
 <script setup>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useStore } from 'vuex'
 import { PATCH_SETTINGS } from '@/store/actions/navigator.js'
+import { UPDATE_SOUND_SETTING } from '@/store/actions/inspector'
 
 const store = useStore()
+const user = computed(() => store.state.user.user)
 const settings = computed(() => {
   return store.state.navigator.navigator.settings
 })
 
+const isNotificationSoundOn = ref(store.state.inspector.is_notification_sound_on)
+
+const updateSoundSetting = () => {
+  store.dispatch(UPDATE_SOUND_SETTING, { uid_user: user.value.current_user_uid, value: isNotificationSoundOn.value })
+}
 const updateSettings = () => {
   store.dispatch(
     PATCH_SETTINGS,
@@ -32,16 +39,24 @@ const updateSettings = () => {
   })
 }
 </script>
-    <template>
-    <form class="px-5">
-
-        <div class="my-2">
-            <div class="flex mt-2">
-              <div class="checkbox">
-              <input type="checkbox" id="opt_1" v-model="settings.show_completed_tasks" @change="updateSettings()" class="custom-checkbox-orange" />
-              <label class="text-base" for="opt_1">Добавлять задачи в начало списка</label>
-              </div>
-             <!--   <a class="ml-2" v-if="settings.add_task_to_begin === true">Вкл.</a>
+<template>
+  <form class="px-5">
+    <div class="my-2">
+      <div class="flex mt-2">
+        <div class="checkbox">
+          <input
+            id="opt_1"
+            v-model="settings.show_completed_tasks"
+            type="checkbox"
+            class="custom-checkbox-orange"
+            @change="updateSettings()"
+          >
+          <label
+            class="text-base"
+            for="opt_1"
+          >Добавлять задачи в начало списка</label>
+        </div>
+        <!--   <a class="ml-2" v-if="settings.add_task_to_begin === true">Вкл.</a>
                 <a class="ml-2" v-if="settings.add_task_to_begin === false">Выкл.</a> -->
       </div>
     </div>
@@ -116,6 +131,25 @@ const updateSettings = () => {
             class="text-base"
             for="opt_5"
           >Показывать количество задач</label>
+        </div>
+        <!--   <a class="ml-2" v-if="settings.nav_show_summary === 1">Вкл.</a>
+                <a class="ml-2" v-if="settings.nav_show_summary === 0">Выкл.</a> -->
+      </div>
+    </div>
+    <div class="my-2 mt-4">
+      <div class="flex mt-2">
+        <div class="checkbox">
+          <input
+            id="sound"
+            v-model="isNotificationSoundOn"
+            type="checkbox"
+            class="custom-checkbox-orange outline-none"
+            @change="updateSoundSetting"
+          >
+          <label
+            class="text-base"
+            for="sound"
+          >Сопровождать уведомления звуковым сообщением</label>
         </div>
         <!--   <a class="ml-2" v-if="settings.nav_show_summary === 1">Вкл.</a>
                 <a class="ml-2" v-if="settings.nav_show_summary === 0">Выкл.</a> -->

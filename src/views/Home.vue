@@ -247,7 +247,10 @@ onBeforeMount(() => {
   document.head.appendChild(fm)
   document.head.appendChild(websync)
 
-  store.dispatch(USER_REQUEST)
+  store.dispatch(USER_REQUEST).then(resp => {
+    console.log('RESP FROM USER REQUEST IN HOME.VUE: ', resp)
+    store.dispatch('GET_SOUND_SETTING', resp.data.current_user_uid)
+  })
   getNavigator()
   if (router.currentRoute.value.name === 'task' && router.currentRoute.value.params.id) {
     getTask(router.currentRoute.value.params.id)

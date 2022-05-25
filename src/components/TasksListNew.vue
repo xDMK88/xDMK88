@@ -407,7 +407,7 @@
 </template>
 
 <script>
-import { computed, ref, nextTick, watch } from 'vue'
+import { computed, ref, nextTick } from 'vue'
 import treeview from 'vue3-treeview'
 import { useStore } from 'vuex'
 import Icon from '@/components/Icon.vue'
@@ -483,6 +483,8 @@ export default {
     const lastVisitedDate = computed(() => {
       return (navStack.value && navStack.value.length && navStack.value[navStack.value.length - 1].value && navStack.value[navStack.value.length - 1].value.uid && navStack.value[navStack.value.length - 1].value.uid === '901841d9-0016-491d-ad66-8ee42d2b496b' && navStack.value[navStack.value.length - 1].value.param ? new Date(navStack.value[navStack.value.length - 1].value.param) : new Date())
     })
+
+    /*
     watch(() => {
       if (storeTasks.value && settings.value) {
         if (settings.value.add_task_to_begin && navStack.value[0].greedPath === 'new_private_projects') {
@@ -500,6 +502,7 @@ export default {
         }
       }
     })
+    */
 
     const isPropertiesMobileExpanded = computed(() => store.state.isPropertiesMobileExpanded)
     const copiedTasks = computed(() => store.state.tasks.copiedTasks)
@@ -803,7 +806,7 @@ export default {
       const newSubtask = {
         uid: uuidv4(),
         uid_customer: user.value.current_user_uid,
-        email_performer: parent.email_performer,
+        email_performer: parent.type === 2 ? parent.email_performer : '',
         name: '',
         emails: '',
         comment: '',

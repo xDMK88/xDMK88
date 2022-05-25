@@ -1,5 +1,5 @@
 <script setup>
-import { computed, watch, ref } from 'vue'
+import { computed, ref } from 'vue'
 import { visitChildren } from '@/store/helpers/functions'
 import { useStore } from 'vuex'
 import {
@@ -81,9 +81,6 @@ const toggleTaskHoverPopper = (val) => {
   isTaskHoverPopperActive.value = val
 }
 
-watch(settings, () => {
-  settings.value.show_completed_tasks = !!settings.value.show_completed_tasks
-})
 const isNavBarVisible = computed(() => !store.state.isFullScreen)
 
 const user = computed(() => store.state.user.user)
@@ -108,20 +105,20 @@ const updateSettings = () => {
     PATCH_SETTINGS,
     {
       show_completed_tasks: settings.value.show_completed_tasks ? 1 : 0,
-      add_task_to_begin: settings.value.add_task_to_begin,
-      cal_number_of_first_week: settings.value.cal_number_of_first_week,
-      cal_show_week_number: settings.value.cal_show_week_number,
-      nav_show_tags: settings.value.nav_show_tags,
-      nav_show_overdue: settings.value.nav_show_overdue,
-      nav_show_summary: settings.value.nav_show_summary,
-      nav_show_emps: settings.value.nav_show_emps,
-      nav_show_markers: settings.value.nav_show_markers,
+      add_task_to_begin: settings.value.add_task_to_begin ? 1 : 0,
+      cal_number_of_first_week: settings.value.cal_number_of_first_week ? 1 : 0,
+      cal_show_week_number: settings.value.cal_show_week_number ? 1 : 0,
+      nav_show_tags: settings.value.nav_show_tags ? 1 : 0,
+      nav_show_overdue: settings.value.nav_show_overdue ? 1 : 0,
+      nav_show_summary: settings.value.nav_show_summary ? 1 : 0,
+      nav_show_emps: settings.value.nav_show_emps ? 1 : 0,
+      nav_show_markers: settings.value.nav_show_markers ? 1 : 0,
       language: settings.value.language,
-      stopwatch: settings.value.stopwatch,
+      stopwatch: settings.value.stopwatch ? 1 : 0,
       cal_work_time: settings.value.cal_work_time,
       reminders_in_n_minutes: settings.value.reminders_in_n_minutes,
       cal_work_week: settings.value.cal_work_week,
-      compact_mode: settings.value.compact_mode
+      compact_mode: settings.value.compact_mode ? 1 : 0
     }
   ).then(() => {
     requestLastVisitedNav()
@@ -418,7 +415,10 @@ const openProjectProperties = (project, parentProjectUid = '') => {
         </div>
       </nav-bar-item>
     </div>
-    <div class="flex-none items-stretch flex h-14" v-if="navStack[0] && navStack[0].greedPath !== 'new_private_projects' && navStack[0].greedPath !== 'new_delegate' && navStack[0].name !== 'Рабочий стол'">
+    <div
+      v-if="navStack[0] && navStack[0].greedPath !== 'new_private_projects' && navStack[0].greedPath !== 'new_delegate' && navStack[0].name !== 'Рабочий стол'"
+      class="flex-none items-stretch flex h-14"
+    >
       <nav-bar-item class="px-3">
         <Popper
           class="items-center"

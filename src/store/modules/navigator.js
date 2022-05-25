@@ -231,7 +231,7 @@ const mutations = {
     ])
     state.menu.push([
       {
-        label: 'Делать сейчас',
+        label: 'Очередь',
         uid: '2cf6b167-6506-4b05-bc34-70a8d88e3b25',
         bold: 0,
         icon: desktop.path,

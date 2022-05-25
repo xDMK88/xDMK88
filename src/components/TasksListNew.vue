@@ -806,7 +806,7 @@ export default {
       const newSubtask = {
         uid: uuidv4(),
         uid_customer: user.value.current_user_uid,
-        email_performer: parent.email_performer,
+        email_performer: parent.type === 2 ? parent.email_performer : '',
         name: '',
         emails: '',
         comment: '',

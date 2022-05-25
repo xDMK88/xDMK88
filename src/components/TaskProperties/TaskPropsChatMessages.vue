@@ -42,6 +42,7 @@
           :show-creator="isChangeCreator(index)"
           :show-loader="uploadStarted && message.loading"
           :quote="getMessageQuoteString(message.uid_quote)"
+          :quote-user="getMessageQuoteUser(message.uid_quote)"
           :creator-name="employees[message.uid_creator]?.name ?? '???'"
           :message="message.msg"
           :time="getMessageTimeString(message.date_create)"
@@ -340,6 +341,12 @@ export default {
       const quotedMessage = this.messages.find(message => message.uid === uidQuote)
       if (!quotedMessage) return ''
       return quotedMessage.msg
+    },
+    getMessageQuoteUser (uidQuote) {
+      if (!uidQuote || uidQuote === '00000000-0000-0000-0000-000000000000') return ''
+      const quotedMessage = this.messages.find(message => message.uid === uidQuote)
+      if (!quotedMessage) return ''
+      return this.employees[quotedMessage.uid_creator]?.name ?? '???'
     }
   }
 }

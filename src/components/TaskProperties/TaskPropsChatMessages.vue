@@ -5,7 +5,7 @@
   >
     <div
       v-for="(message, index) in messages"
-      :key="index"
+      :key="message.uid"
       class="message"
     >
       <div

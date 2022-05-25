@@ -49,8 +49,10 @@
           <ChatLoader v-if="showLoader" />
           <div
             v-linkify:options="{ className: 'text-blue-600' }"
-            v-html="message.replaceAll('\n', '<br/>')"
-          />
+            class="whitespace-pre-line"
+          >
+            {{ messageText }}
+          </div>
           <div
             v-if="time"
             class="text-right text-[12px] text-[#a8afca] dark:text-gray-300"
@@ -106,6 +108,15 @@ export default {
     quote: {
       type: String,
       default: ''
+    }
+  },
+  computed: {
+    messageText () {
+      let text = this.message.trim()
+      text = text.replaceAll('&amp;', '&')
+      text = text.replaceAll('&lt;', '<')
+      text = text.replaceAll('&gt;', '>')
+      return text
     }
   }
 }

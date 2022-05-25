@@ -241,7 +241,8 @@
               fill="black"
               fill-opacity="0.5"
             />
-          </svg></button><span><span>Выбрать дату</span></span>
+          </svg>
+        </button><span><span>{{ name.length ? name : 'Выбрать дату' }}</span></span>
       </span>
     </a>
   </Popper>
@@ -261,6 +262,10 @@ export default {
     maska
   },
   props: {
+    name: {
+      type: String,
+      default: ''
+    },
     dateBegin: {
       type: String,
       default: ''

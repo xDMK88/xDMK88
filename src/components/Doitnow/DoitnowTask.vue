@@ -9,9 +9,32 @@
     }"
   >
     <div class="flex justify-between">
-      <!-- performer info -->
-      <div class="flex">
-        <img
+      <!-- task info/status -->
+      <div class="flex items-center">
+        <TaskStatus :task="task"/>
+        <contenteditable
+          v-model="name"
+          tag="div"
+          class="taskName p-0.5 ring-0 outline-none max-w-7xl mt-0.5"
+          :contenteditable="task._isEditable"
+          placeholder="Введите название задачи"
+          :no-nl="true"
+          :no-html="true"
+          :class="{ 'uppercase': !task._isEditable && colors[task.uid_marker] && colors[task.uid_marker].uppercase, 'text-gray-500': task.status == 1 || task.status == 7, 'line-through': task.status == 1 || task.status == 7, 'font-extrabold': task.readed == 0 }"
+          :style="{ color: getValidForeColor(colors[task.uid_marker]?.fore_color) }"
+          @focusout="clearTaskFocus(task)"
+          @dblclick.stop="editTaskName(task)"
+          @keyup.enter="updateTask($event, task); this.$emit('changeValue', {_isEditable: false})"
+        />
+        <Icon
+          :path="taskoptions.path"
+          class="text-gray-600 dark:text-white cursor-pointer h-full ml-1"
+          :box="taskoptions.viewBox"
+          :width="taskoptions.width"
+          :style="{ color: 'gray' }"
+          :height="taskoptions.height"
+        />
+        <!-- <img
           class="h-[32px] w-[32px] rounded-full"
           :src="employees[task.uid_performer] ? employees[task.uid_performer].fotolink : ''"
         />
@@ -20,85 +43,44 @@
           :class="task.uid_performer === user.current_user_uid ? 'bg-green-400' : 'bg-yellow-400'"
         >
           {{ employees[task.uid_performer] ? employees[task.uid_performer].name : '' }}
-        </span>
+        </span> -->
         <!-- overdue -->
-        <span
+        <!-- <span
           v-if="task.is_overdue"
           class="text-white py-1 px-3 rounded-full ml-1 bg-red-400"
         >
           Просрочено
-        </span>
-        <div class="flex bg-gray-200 ml-1 px-2 rounded-full">
+        </span> -->
+        <!-- <div class="flex bg-gray-200 ml-1 px-2 rounded-full"> -->
           <!-- readed -->
-          <Icon
+          <!-- <Icon
             v-if="task.readed"
             :height="doublecheck.height"
             :width="doublecheck.width"
             :view="doublecheck.viewbox"
             :path="doublecheck.path"
           />
-          <!-- unread -->
           <Icon
             v-if="!task.readed"
             :height="checkmark.height"
             :width="checkmark.width"
             :view="checkmark.viewbox"
             :path="checkmark.path"
-          />
-        </div>
+          /> -->
+        <!-- </div> -->
       </div>
       <!-- next -->
       <button
-        class="bg-orange-500 py-1 px-3 rounded-full text-white mr-1 hover:bg-orange-600 bg-opacity-70"
+        class="bg-orange-500 py-1 px-3 rounded-full text-white mr-1 hover:bg-orange-600 bg-opacity-70 w-[200px]"
         @click="nextTask"
       >
         Следующая задача
       </button>
     </div>
-    <div
-      class="flex"
-    >
-      <div
-        class="flex items-center"
-      >
-        <!-- <div
-          class="border-2 relative border-gray-300 rounded-md mr-1 flex items-center justify-center mt-0.5"
-          style="min-width: 20px; min-height: 20px"
-        >
-          <Icon
-            v-if="statuses[task.status]"
-            :path="statuses[task.status].path"
-            :class="statusColor"
-            :style="{ color: forecolor }"
-            :box="statuses[task.status].viewBox"
-            :width="statuses[task.status].width"
-            :height="statuses[task.status].height"
-          />
-          <Icon
-            v-if="task.SeriesType !== 0"
-            :path="repeat.path"
-            class="text-blue-500 bg-white absolute -bottom-1.5 -right-1.5 p-0.5 rounded-full"
-            :box="repeat.viewBox"
-            :width="repeat.width"
-            :height="repeat.height"
-          />
-        </div> -->
+    <div class="flex">
+      <div class="flex flex-col">
         <div class="flex flex-col">
           <!-- editable task name -->
-          <contenteditable
-            v-model="name"
-            tag="div"
-            class="taskName p-0.5 ring-0 outline-none max-w-7xl"
-            :contenteditable="task._isEditable"
-            placeholder="Введите название задачи"
-            :no-nl="true"
-            :no-html="true"
-            :class="{ 'uppercase': !task._isEditable && colors[task.uid_marker] && colors[task.uid_marker].uppercase, 'text-gray-500': task.status == 1 || task.status == 7, 'line-through': task.status == 1 || task.status == 7, 'font-extrabold': task.readed == 0 }"
-            :style="{ color: getValidForeColor(colors[task.uid_marker]?.fore_color) }"
-            @focusout="clearTaskFocus(task)"
-            @dblclick.stop="editTaskName(task)"
-            @keyup.enter="updateTask($event, task); this.$emit('changeValue', {_isEditable: false})"
-          />
           <div v-if="task.comment.length">
             <article class="text-sm break-all">
               <span class="font-bold block">Описание задачи:</span>
@@ -108,287 +90,75 @@
         </div>
       </div>
     </div>
-
-    <!-- Tags, Overdue, Customer, Performer -->
-    <!-- <div
-      v-if="
-        task.uid_customer !== '00000000-0000-0000-0000-000000000000' ||
-          task.email_performer ||
-          task.is_overdue ||
-          task.tags ||
-          task.uid_project !== '00000000-0000-0000-0000-000000000000' ||
-          task.term_customer ||
-          task.checklist ||
-          task.has_files ||
-          task.has_msgs ||
-          task.comment ||
-          task.focus
-      "
-      class="flex items-center mt-1.5"
-    > -->
-      <!-- Customer -->
-      <!-- <TaskListTagLabel
-        v-if="task.type !== 1 && task.type !== 2"
-        :text="customerName"
-        :color-bg-class="{
-          'bg-red-500': task.type === 3,
-          'bg-gray-400': task.type !== 3,
-          'bg-opacity-50': isTaskComplete
-        }"
-      /> -->
-      <!-- Performer -->
-      <!-- <TaskListTagLabel
-        v-if="task.type === 2 || task.type === 4"
-        :text="performerName"
-        :icon-width="
-          task.performerreaded ? performerRead.width : performerNotRead.width
-        "
-        :icon-height="
-          task.performerreaded ? performerRead.height : performerNotRead.height
-        "
-        :icon-box="
-          task.performerreaded
-            ? performerRead.viewBox
-            : performerNotRead.viewBox
-        "
-        :icon-path="
-          task.performerreaded ? performerRead.path : performerNotRead.path
-        "
-        :color-bg-class="{
-          'bg-gray-400': task.type === 4,
-          'bg-green-500': task.type === 2,
-          'bg-opacity-50': isTaskComplete
-        }"
-      /> -->
-      <!-- Overdue -->
-      <!-- <TaskListTagLabel
-        v-if="task.is_overdue"
-        text="Просрочено"
-        color-text-class="text-red-600"
-        color-bg-class="bg-red-300 opacity-70"
-      /> -->
-      <!-- Tags -->
-      <!-- <template
-        v-for="(tag, index) in task.tags"
-        :key="index"
-      >
-        <TaskListTagLabel
-          :icon-path="tagIcon.path"
-          :icon-box="tagIcon.viewBox"
-          :text="tags[tag]?.name ?? '???'"
-          :color-bg-style="{ backgroundColor: tags[tag]?.back_color ?? '' }"
-        />
-      </template> -->
-      <!-- Project -->
-      <!-- <TaskListTagLabel
-        v-if="task.uid_project != '00000000-0000-0000-0000-000000000000'"
-        :icon-path="project.path"
-        :icon-box="project.viewBox"
-        :text="projects[task.uid_project]?.name ?? '???'"
-        :color-bg-class="{
-          'bg-yellow-400': true,
-          'bg-opacity-50': isTaskComplete
-        }"
-      /> -->
-      <!-- Data -->
-      <!-- <TaskListIconLabel
-        v-if="task.term_user"
-        :icon-path="clock.path"
-        :icon-box="clock.viewBox"
-        :text="task.term_user"
-      /> -->
-      <!-- <TaskListIconLabel
-        v-if="task.type !== 1 && task.type !== 2 && task.term_customer"
-        :icon-path="clock.path"
-        :icon-box="clock.viewBox"
-        :text="task.term_customer"
-        icon-class="text-red-600"
-      /> -->
-      <!-- Checklist -->
-      <!-- <TaskListIconLabel
-        v-if="task.checklist"
-        :icon-path="checklist.path"
-        :icon-box="checklist.viewBox"
-        :text="checkBoxText"
-      /> -->
-      <!-- Access -->
-      <!-- <TaskListIconLabel
-        v-if="task.emails"
-        :icon-path="inaccess.path"
-        :icon-box="inaccess.viewBox"
-        icon-width="14"
-        icon-height="14"
-      /> -->
-      <!-- Files -->
-      <!-- <TaskListIconLabel
-        v-if="task.has_files"
-        :icon-path="file.path"
-        :icon-box="file.viewBox"
-      /> -->
-      <!-- Messages -->
-      <!-- <TaskListIconLabel
-        v-if="task.has_msgs"
-        :icon-path="msgs.path"
-        :icon-box="msgs.viewBox"
-      /> -->
-      <!-- Comment -->
-      <!-- <TaskListIconLabel
-        v-if="task.comment.replace(/\r?\n|\r/g, '')"
-        :icon-path="taskcomment.path"
-        :icon-box="taskcomment.viewBox"
-      /> -->
-      <!-- Focus -->
-      <!-- <TaskListIconLabel
-        v-if="task.focus"
-        :icon-path="taskfocus.path"
-        :icon-box="taskfocus.viewBox"
-        icon-class="text-red-600"
-      />
-    </div> -->
-
-    <!-- Buttons -->
-    <div class="flex mt-3 justify-between">
-      <!-- take/change date -->
-      <div class="flex">
-        <!-- take -->
-        <TaskPropsButtonPerform
-          v-if="task.status !== 3 && task.type !== 4 && task.uid_customer === user.current_user_uid"
-          :task-type="task.type"
-          :current-user-uid="user.current_user_uid"
-          :performer-email="task.email_performer"
-          @changePerformer="onChangePerformer"
-          @reAssign="onReAssignToUser"
-        />
-        <!-- change date -->
-        <TaskPropsButtonSetDate
-          :date-begin="task.date_begin"
-          :date-end="task.date_end"
-          :date-text="task.term_user"
-          @changeDates="onChangeDates"
-        />
-        <!-- popper menu -->
-        <Popper
-          arrow
-          placement="bottom"
-          @click.stop="toggleTaskHoverPopper(true)"
-          @open:popper="toggleTaskHoverPopper(true)"
-          @close:popper="toggleTaskHoverPopper(false)"
-        >
-          <Icon
-            :path="taskoptions.path"
-            class="text-gray-600 dark:text-white cursor-pointer h-full ml-1"
-            :box="taskoptions.viewBox"
-            :width="taskoptions.width"
-            :style="{ color: 'gray' }"
-            :height="taskoptions.height"
+    <div class="flex">
+      <div class="flex justify-between w-full mt-3">
+        <div class="flex flex-col">
+          <!-- <TaskPropsButtonPerform
+            v-if="task.status !== 3 && task.type !== 4 && task.uid_customer === user.current_user_uid"
+            :task-type="task.type"
+            :current-user-uid="user.current_user_uid"
+            :performer-email="task.email_performer"
+            @changePerformer="onChangePerformer"
+            @reAssign="onReAssignToUser"
+          /> -->
+          <TaskPropsButtonSetDate
+            :name="'Назначить срок'"
+            :date-begin="task.date_begin"
+            :date-end="task.date_end"
+            :date-text="task.term_user"
+            @changeDates="onChangeDates"
           />
-          <template #content>
-            <div class="flex flex-col bg-white rounded-xl p-2 border-2 items-stretch">
-              <!-- Доступ -->
-              <TaskPropsButtonAccess
-                v-if="isAccessVisible"
-                :current-user-uid="user.current_user_uid"
-                :access-emails="task.emails ? task.emails.split('..') : []"
-                :can-edit="task.type === 1 || task.type === 2"
-                @changeAccess="onChangeAccess"
-              />
-              <!-- Проекты -->
-              <TaskPropsButtonProject
-                :selected-project="task.uid_project"
-                :can-edit="task.type === 1 || task.type === 2"
-                @changeProject="onChangeProject"
-              />
-              <!-- Цвет -->
-              <TaskPropsButtonColor
-                :selected-color="task.uid_marker"
-                :can-edit="task.type === 1 || task.type === 2"
-                @changeColor="onChangeColor"
-              />
-              <!-- Теги -->
-              <TaskPropsButtonTags
-                v-if="task.type === 1 || task.type === 2"
-                :selected-tags="task.tags"
-                @changeTags="onChangeTags"
-              />
-              <!-- Чек лист -->
-              <div
-                v-if="!task.checklist && task.type!==4 && task.type!==3"
-                class="mt-3 tags-custom dark:bg-gray-800 dark:text-gray-100"
-                @click="print('Функция пока в разработке')"
-              >
-                <svg
-                  width="24"
-                  height="24"
-                  viewBox="0 0 72 96"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M30.8812 36.8813L21 46.7625L17.1188 42.8813C15.9563 41.7188 14.0437 41.7188 12.8812 42.8813C11.7187 44.0438 11.7187 45.9563 12.8812 47.1188L18.8812 53.1188C19.4625 53.7 20.2313 54 21 54C21.7687 54 22.5375 53.7 23.1188 53.1188L35.1188 41.1188C36.2812 39.9563 36.2812 38.0438 35.1188 36.8813C33.9562 35.7188 32.0438 35.7 30.8812 36.8813Z"
-                    fill="black"
-                    fill-opacity="0.5"
-                  />
-                  <path
-                    d="M30.8812 60.8813L21 70.7625L17.1188 66.8813C15.9563 65.7188 14.0437 65.7188 12.8812 66.8813C11.7187 68.0438 11.7187 69.9563 12.8812 71.1188L18.8812 77.1188C19.4625 77.7 20.2313 78 21 78C21.7687 78 22.5375 77.7 23.1188 77.1188L35.1188 65.1188C36.2812 63.9563 36.2812 62.0438 35.1188 60.8813C33.9562 59.7188 32.0438 59.7 30.8812 60.8813Z"
-                    fill="black"
-                    fill-opacity="0.5"
-                  />
-                  <path
-                    d="M42 45C42 46.65 43.35 48 45 48H57C58.65 48 60 46.65 60 45C60 43.35 58.65 42 57 42H45C43.35 42 42 43.35 42 45Z"
-                    fill="black"
-                    fill-opacity="0.5"
-                  />
-                  <path
-                    d="M57 66H45C43.35 66 42 67.35 42 69C42 70.65 43.35 72 45 72H57C58.65 72 60 70.65 60 69C60 67.35 58.65 66 57 66Z"
-                    fill="black"
-                    fill-opacity="0.5"
-                  />
-                  <path
-                    d="M51 6H44.4938C43.2563 2.5125 39.9188 0 36 0C32.0812 0 28.7437 2.5125 27.5062 6H21C19.35 6 18 7.35 18 9V12H6C2.7 12 0 14.7 0 18V90C0 93.3 2.7 96 6 96H66C69.3 96 72 93.3 72 90V18C72 14.7 69.3 12 66 12H54V9C54 7.35 52.65 6 51 6ZM24 12H30C31.65 12 33 10.65 33 9C33 7.35 34.35 6 36 6C37.65 6 39 7.35 39 9C39 10.65 40.35 12 42 12H48V18H24V12ZM66 18V90H6V18H18V21C18 22.65 19.35 24 21 24H51C52.65 24 54 22.65 54 21V18H66Z"
-                    fill="black"
-                    fill-opacity="0.5"
-                  />
-                </svg>
-                <span class="rounded">Чек-лист</span>
-              </div>
-              <!-- Фокус -->
-              <TaskPropsButtonFocus
-                :focus="task.focus === 1"
-                @toggle-focus="changeFocus(task.uid, task.focus === 1 ? 0 : 1)"
-              />
+          <!-- info -->
+          <div class="mt-2 flex flex-col">
+            <div class="mb-2">Заказчик: <span class="bg-green-400 p-1 rounded-lg text-white">{{ employees[task.uid_customer].name }}</span></div>
+            <div class="mb-2">Исполнитель: <span class="bg-gray-400 p-1 rounded-lg text-white">{{ employees[task.uid_performer].name }}</span></div>
+            <div
+              class="mb-2"
+              v-if="dateClear(task.date_end) !== '1-1-1'"
+            >
+              Выполнить до: {{ dateClear(task.date_end)  }}
             </div>
-          </template>
-        </Popper>
-      </div>
-      <!-- accept/redo/decline/popper -->
-      <div
-        class="flex"
-        v-if="task.uid_customer === user.current_user_uid || task.uid_performer === user.current_user_uid"
-      >
-        <!-- accept -->
-        <button
-          class="bg-green-500 py-1 px-3 rounded-full text-white mr-1 hover:bg-green-600"
-          @click="accept"
+            <div
+              class="mb-2"
+              v-if="task.is_overdue"
+            >
+              Задача просрочена на: {{ Math.floor((new Date() - new Date(task.perform_time)) / (60 * 60 * 24 * 1000)) }} дней!
+            </div>
+          </div>
+        </div>
+        <!-- accept/redo/decline/popper -->
+        <div
+          class="flex flex-col min-w-[200px]"
+          v-if="task.uid_customer === user.current_user_uid || task.uid_performer === user.current_user_uid"
         >
-          {{ task.uid_customer === user.current_user_uid ? (task.uid_performer === user.current_user_uid ? 'Завершить' : 'Принять и завершить задачу') : 'Готово к сдаче'}}
-        </button>
-        <!-- redo -->
-        <button
-          class="bg-red-500 py-1 px-3 rounded-full text-white mr-1 hover:bg-red-600"
-          @click="reDo"
-        >
-          {{ task.uid_customer === user.current_user_uid ? (task.uid_performer === user.current_user_uid ? 'Отменить' : 'Отправить на доработку') : 'Отклонить'}}
-        </button>
-        <!-- decline -->
-        <button
-          class="bg-indigo-400 py-1 px-3 rounded-full text-white mr-1 hover:bg-indigo-500"
-          @click="decline"
-        >
-          Отложить
-        </button>
+          <!-- accept -->
+          <button
+            class="bg-green-500 py-1 px-3 rounded-full text-white mr-1 mb-1 hover:bg-green-600"
+            @click="accept"
+          >
+            {{ task.uid_customer === user.current_user_uid ? (task.uid_performer === user.current_user_uid ? 'Завершить' : 'Принять и завершить задачу') : 'Готово к сдаче'}}
+          </button>
+          <!-- redo -->
+          <button
+            class="bg-red-500 py-1 px-3 rounded-full text-white mr-1 mb-1 hover:bg-red-600"
+            @click="reDo"
+          >
+            {{ task.uid_customer === user.current_user_uid ? (task.uid_performer === user.current_user_uid ? 'Отменить' : 'Отправить на доработку') : 'Отклонить'}}
+          </button>
+          <!-- decline -->
+          <button
+            class="bg-indigo-400 py-1 px-3 rounded-full text-white mr-1 mb-1 hover:bg-indigo-500"
+            @click="decline"
+          >
+            Отложить
+          </button>
+        </div>
       </div>
     </div>
-    <div class="flex flex-col max-w-1/2">
+    <div
+      class="flex flex-col max-w-1/2"
+      :class="task.uid_marker !== '00000000-0000-0000-0000-000000000000' ? 'bg-white p-1 mt-1 rounded-lg' : ''"
+    >
       <p
         v-if="taskMessages.length > 2 && !showAllMessages"
         class="text-gray-500 dark:text-gray-100 text-sm text-center cursor-pointer"
@@ -413,7 +183,7 @@
     </div>
   </div>
   <!-- subtasks -->
-  <div
+  <!-- <div
     v-if="subTasks.length"
     class="flex flex-col items-end"
   >
@@ -427,7 +197,7 @@
         <div
           class="flex items-center"
         >
-          <!-- <TaskStatus :task="subTask"/> -->
+          <TaskStatus :task="subTask"/>
           <span>{{ subTask.name }}</span>
           <Icon
             @click="onClick(subTask)"
@@ -451,7 +221,7 @@
         class="flex flex-col max-w-1/2"
         v-if="isChatVisible"
       >
-        <!-- subtask chat -->
+         subtask chat -->
         <!-- <TaskPropsChatMessages
           v-if="taskMessages?.length"
           id="content"
@@ -462,10 +232,10 @@
         <!-- input -->
         <!-- <TaskPropsInputForm
           :task="subTask"
-        /> -->
+        />
       </div>
     </div>
-  </div>
+  </div> -->
 </template>
 
 <script>
@@ -473,17 +243,11 @@ import { ref } from 'vue'
 // import TaskListIconLabel from '@/components/TasksList/TaskListIconLabel.vue'
 // import TaskListTagLabel from '@/components/TasksList/TaskListTagLabel.vue'
 import contenteditable from 'vue-contenteditable'
-import TaskPropsButtonPerform from '@/components/TaskProperties/TaskPropsButtonPerform.vue'
+// import TaskPropsButtonPerform from '@/components/TaskProperties/TaskPropsButtonPerform.vue'
 import TaskPropsButtonSetDate from '@/components/TaskProperties/TaskPropsButtonSetDate.vue'
 import TaskPropsChatMessages from '@/components/TaskProperties/TaskPropsChatMessages.vue'
 import TaskPropsInputForm from '@/components/TaskProperties/TaskPropsInputForm'
-import TaskPropsButtonAccess from '@/components/TaskProperties/TaskPropsButtonAccess.vue'
-import TaskPropsButtonTags from '@/components/TaskProperties/TaskPropsButtonTags.vue'
-import TaskPropsButtonFocus from '@/components/TaskProperties/TaskPropsButtonFocus.vue'
-import TaskPropsButtonColor from '@/components/TaskProperties/TaskPropsButtonColor.vue'
-import TaskPropsButtonProject from '@/components/TaskProperties/TaskPropsButtonProject.vue'
-// import TaskStatus from '@/components/TasksList/TaskStatus.vue'
-import Popper from 'vue3-popper'
+import TaskStatus from '@/components/TasksList/TaskStatus.vue'
 import Icon from '@/components/Icon.vue'
 
 import * as TASK from '@/store/actions/tasks'
@@ -518,18 +282,12 @@ export default {
     // TaskListIconLabel,
     // TaskListTagLabel,
     Icon,
-    // TaskStatus,
-    TaskPropsButtonPerform,
+    // TaskPropsButtonPerform,
     TaskPropsButtonSetDate,
-    TaskPropsButtonColor,
-    TaskPropsButtonAccess,
-    TaskPropsButtonTags,
-    TaskPropsButtonFocus,
-    TaskPropsButtonProject,
     TaskPropsChatMessages,
     TaskPropsInputForm,
     contenteditable,
-    Popper
+    TaskStatus
   },
   emits: ['clickTask', 'nextTask', 'changeValue'],
   props: {
@@ -685,6 +443,9 @@ export default {
     }
   },
   methods: {
+    dateClear (time) {
+      return new Date(time).getDate() + '-' + (new Date(time).getMonth() + 1) + '-' + new Date(time).getFullYear()
+    },
     removeTask (uid) {
       if (this.isPropertiesMobileExpanded) {
         this.$store.dispatch('asidePropertiesToggle', false)

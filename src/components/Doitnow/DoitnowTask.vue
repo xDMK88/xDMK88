@@ -161,10 +161,10 @@
           <Checklist
             v-if="task.checklist"
             class="mt-3 checklist-custom"
-            :isCustomer="task.uid_customer === user.current_user_uid"
-            :isFromDoitnow="true"
             :task-uid="task.uid"
             :checklist="task.checklist"
+            :isCustomer="task.uid_customer === user.current_user_uid"
+            :task="task"
           />
         </div>
         <!-- accept/redo/decline/popper -->

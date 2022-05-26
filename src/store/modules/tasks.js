@@ -1607,6 +1607,11 @@ const mutations = {
     }
     state.newtasks[task.uid_parent].state.opened = true
   },
+  [TASK.ADD_TO_NEWTASKS]: (state, task) => {
+    state.newtasks[task.uid] = {}
+    state.newtasks[task.uid].info = {}
+    state.newtasks[task.uid].info = task
+  },
   [TASK.OPENED_TASKS_REQUEST]: (state, resp) => {
     state.open = resp.data
     state.open.title = 'Открытые задачи'

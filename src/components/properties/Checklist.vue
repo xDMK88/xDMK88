@@ -1,5 +1,6 @@
 <script setup>
 import contenteditable from 'vue-contenteditable'
+import * as TASK from '@/store/actions/tasks.js'
 import { useStore } from 'vuex'
 import Icon from '@/components/Icon.vue'
 import { computed, reactive, ref, watch, nextTick, onMounted } from 'vue'
@@ -10,17 +11,13 @@ const props = defineProps({
     type: String,
     default: ''
   },
+  task: {
+    type: Object,
+    default: () => {}
+  },
   checklist: {
     type: String,
     default: ''
-  },
-  isCustomer: {
-    type: Boolean,
-    default: false
-  },
-  isFromDoitnow: {
-    type: Boolean,
-    default: false
   }
 })
 
@@ -64,6 +61,9 @@ const processChecklist = () => {
     if (i !== renderedChecklist.checklist.length - 1) {
       processedChecklist.value += '\r\n\r\n'
     }
+  }
+  if (!Object.keys(store.state.tasks.newtasks).includes(props.taskUid)) {
+    store.commit(TASK.ADD_TO_NEWTASKS, props.task)
   }
   store.state.tasks.newtasks[props.taskUid].info.cheklist = processedChecklist.value
   store.dispatch('CHANGE_TASK_CHECKLIST', { uid_task: props.taskUid, checklist: processedChecklist.value })
@@ -146,14 +146,14 @@ onMounted(() => {
           style="max-width: 80%;"
           placeholder="write checklist here..."
           :class="{ 'text-gray-500 line-through': check.checked }"
-          :contenteditable="isCustomer ? true : (isFromDoitnow ? false : store.state.tasks.newtasks[props.taskUid].info.uid_customer === user.current_user_uid)"
+          :contenteditable="store.state.tasks.newtasks[props.taskUid] ? store.state.tasks.newtasks[props.taskUid].info.uid_customer === user.current_user_uid : isCustomer"
           :no-n-l="true"
           :no-h-t-m-l="true"
           @keyup.enter="updateChecklist(index)"
           @blur="saveChecklist(index)"
         />
         <Icon
-          v-if="isCustomer ? true : (isFromDoitnow ? false : store.state.tasks.newtasks[props.taskUid].info.uid_customer === user.current_user_uid)"
+          v-if="store.state.tasks.newtasks[props.taskUid] ? store.state.tasks.newtasks[props.taskUid].info.uid_customer === user.current_user_uid : isCustomer"
           :path="close.path"
           class="invisible group-hover:visible px-2 py-1.5 text-gray-400 dark:text-white float-right mt-0.5 cursor-pointer"
           :box="close.viewBox"
@@ -164,7 +164,7 @@ onMounted(() => {
       </div>
     </div>
     <button
-      v-if="isCustomer ? true : (isFromDoitnow ? false : store.state.tasks.newtasks[props.taskUid].info.uid_customer === user.current_user_uid)"
+      v-if="store.state.tasks.newtasks[props.taskUid] ? store.state.tasks.newtasks[props.taskUid].info.uid_customer === user.current_user_uid : isCustomer"
       class="mt-2 text-sm border border-gray-500 p-1 px-2 rounded-lg"
       @click="addEmptyChecklist(false)"
     >

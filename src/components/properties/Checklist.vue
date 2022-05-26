@@ -13,6 +13,14 @@ const props = defineProps({
   checklist: {
     type: String,
     default: ''
+  },
+  isCustomer: {
+    type: Boolean,
+    default: false
+  },
+  isFromDoitnow: {
+    type: Boolean,
+    default: false
   }
 })
 
@@ -138,14 +146,14 @@ onMounted(() => {
           style="max-width: 80%;"
           placeholder="write checklist here..."
           :class="{ 'text-gray-500 line-through': check.checked }"
-          :contenteditable="store.state.tasks.newtasks[props.taskUid].info.uid_customer === user.current_user_uid"
+          :contenteditable="isCustomer ? true : (isFromDoitnow ? false : store.state.tasks.newtasks[props.taskUid].info.uid_customer === user.current_user_uid)"
           :no-n-l="true"
           :no-h-t-m-l="true"
           @keyup.enter="updateChecklist(index)"
           @blur="saveChecklist(index)"
         />
         <Icon
-          v-if="store.state.tasks.newtasks[props.taskUid].info.uid_customer === user.current_user_uid"
+          v-if="isCustomer ? true : (isFromDoitnow ? false : store.state.tasks.newtasks[props.taskUid].info.uid_customer === user.current_user_uid)"
           :path="close.path"
           class="invisible group-hover:visible px-2 py-1.5 text-gray-400 dark:text-white float-right mt-0.5 cursor-pointer"
           :box="close.viewBox"
@@ -156,7 +164,7 @@ onMounted(() => {
       </div>
     </div>
     <button
-      v-if="store.state.tasks.newtasks[props.taskUid].info.uid_customer === user.current_user_uid"
+      v-if="isCustomer ? true : (isFromDoitnow ? false : store.state.tasks.newtasks[props.taskUid].info.uid_customer === user.current_user_uid)"
       class="mt-2 text-sm border border-gray-500 p-1 px-2 rounded-lg"
       @click="addEmptyChecklist(false)"
     >

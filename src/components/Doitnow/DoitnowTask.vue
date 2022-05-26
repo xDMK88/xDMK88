@@ -135,28 +135,37 @@
     </div>
     <div class="flex">
       <div class="flex justify-between w-full mt-3">
-        <div class="flex flex-col">
+        <div class="flex flex-col text-sm">
           <!-- info -->
           <div class="flex flex-col">
-            <div class="mb-2 flex items-center">
-              <span class="p-2 bg-white rounded-xl border-2">Заказчик:</span><span class="bg-gray-300 p-2 ml-1 rounded-lg text-white">{{ employees[task.uid_customer].name }}</span>
+            <div class="mb-1 flex items-center">
+              <span class="p-1.5 bg-white rounded-xl border-2">Заказчик:</span><span class="bg-gray-300 p-1.5 ml-1 rounded-xl text-white">{{ employees[task.uid_customer].name }}</span>
             </div>
-            <div class="mb-3 flex items-center">
-              <span class="p-2 bg-white rounded-xl border-2">Исполнитель:</span><span class="p-2 ml-1 bg-green-400 text-white rounded-xl">{{ employees[task.uid_performer].name }}</span>
+            <div class="mb-1 flex items-center">
+              <span class="p-1.5 bg-white rounded-xl border-2">Исполнитель:</span><span class="p-1.5 ml-1 bg-green-400 text-white rounded-xl">{{ employees[task.uid_performer].name }}</span>
             </div>
             <div
               v-if="dateClear(task.date_end) !== '1.1.1'"
-              class="mb-2 flex items-center"
+              class="mb-1 flex items-center"
             >
-              <span class="p-2 bg-white rounded-xl border-2">Выполнить до:</span><span class="bg-cyan-400 text-white p-2 ml-1 rounded-xl"> {{ dateClear(task.date_end) }}</span>
+              <span class="p-1.5 bg-white rounded-xl border-2">Выполнить до:</span><span class="bg-cyan-400 text-white p-1.5 ml-1 rounded-xl"> {{ dateClear(task.date_end) }}</span>
             </div>
             <div
               v-if="task.is_overdue"
-              class="mb-2 flex items-center"
+              class="mb-1 flex items-center"
             >
-              <span class="bg-red-500 text-white p-2 rounded-xl">Просрочено на {{ plural(task) }}!</span>
+              <span class="p-1.5 bg-white rounded-xl border-2">Просрочено на:</span><span class="bg-red-500 ml-1 text-white p-1.5 rounded-xl">{{ plural(task) }}!</span>
             </div>
           </div>
+          <!-- checklist -->
+          <Checklist
+            v-if="task.checklist"
+            class="mt-3 checklist-custom"
+            :isCustomer="task.uid_customer === user.current_user_uid"
+            :isFromDoitnow="true"
+            :task-uid="task.uid"
+            :checklist="task.checklist"
+          />
         </div>
         <!-- accept/redo/decline/popper -->
         <div
@@ -279,6 +288,7 @@ import contenteditable from 'vue-contenteditable'
 import TaskPropsButtonPerform from '@/components/TaskProperties/TaskPropsButtonPerform.vue'
 import Popper from 'vue3-popper'
 import TaskPropsButtonSetDate from '@/components/TaskProperties/TaskPropsButtonSetDate.vue'
+import Checklist from '@/components/properties/Checklist.vue'
 import TaskPropsChatMessages from '@/components/TaskProperties/TaskPropsChatMessages.vue'
 import TaskPropsInputForm from '@/components/TaskProperties/TaskPropsInputForm'
 import TaskStatus from '@/components/TasksList/TaskStatus.vue'
@@ -319,6 +329,7 @@ export default {
     TaskPropsButtonPerform,
     TaskPropsButtonSetDate,
     TaskPropsChatMessages,
+    Checklist,
     TaskPropsInputForm,
     contenteditable,
     Popper,
@@ -362,7 +373,7 @@ export default {
   setup (props) {
     const name = ref(props.task.name)
     const isTaskHoverPopperActive = ref(false)
-    const checklistshow = ref(false)
+    const checklistshow = ref(true)
     const toggleTaskHoverPopper = (val) => {
       isTaskHoverPopperActive.value = val
     }
@@ -478,6 +489,9 @@ export default {
     }
   },
   methods: {
+    resetFocusChecklist () {
+      this.checklistshow = false
+    },
     plural (task) {
       const date = Math.floor((new Date() - new Date(task.perform_time)) / (60 * 60 * 24 * 1000))
       const dayName = date % 10 === 1 && date % 100 !== 11 ? 'день' : (((date >= 2) && (date % 10 <= 4)) && (date % 100 < 10 || date % 100 >= 20) ? 'дня' : 'дней')

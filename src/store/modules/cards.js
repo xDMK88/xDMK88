@@ -4,6 +4,7 @@ import * as CARD from '../actions/cards'
 
 const state = {
   cards: [],
+  selectedCard: false,
   boardUid: '',
   status: ''
 }
@@ -75,6 +76,9 @@ const mutations = {
   [CARD.BOARD_CARDS_REQUEST]: (state) => {
     state.cards = []
     state.status = 'loading'
+  },
+  [CARD.SELECT_CARD]: (state, card) => {
+    state.selectedCard = card
   },
   [CARD.BOARD_CARDS_SUCCESS]: (state, resp) => {
     console.log('cards ', resp)

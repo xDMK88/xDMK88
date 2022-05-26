@@ -21,17 +21,7 @@
           class="text-center"
         >
           <p class="text-xs text-gray-500 dark:text-gray-300 my-3">
-            {{
-              new Date(message.date_create).toLocaleString('default', {
-                weekday: 'long'
-              })
-            }},
-            {{ new Date(message.date_create).getDate() }}
-            {{
-              new Date(message.date_create).toLocaleString('default', {
-                month: 'short'
-              })
-            }}
+            {{ getMessageWeekDateString(message.date_create) }}
           </p>
         </div>
 
@@ -292,6 +282,22 @@ export default {
         hour: 'numeric',
         minute: 'numeric'
       })
+    },
+    getMessageWeekDateString (dateCreate) {
+      if (!dateCreate) return ''
+      // добавляем Z в конец, чтобы он посчитал что это UTC время
+      if (dateCreate[dateCreate.length - 1] !== 'Z') {
+        dateCreate += 'Z'
+      }
+      const today = new Date()
+      const date = new Date(dateCreate)
+      let weekDay = date.toLocaleString('default', { weekday: 'long' })
+      weekDay = weekDay.slice(0, 1).toUpperCase() + weekDay.slice(1)
+      const dayNum = date.getDate()
+      const day = (dayNum < 10 ? '0' : '') + dayNum
+      const month = date.toLocaleString('default', { month: 'short' }).slice(0, 3)
+      const year = (today.getFullYear() !== date.getFullYear()) ? date.getFullYear().toString() : ''
+      return `${weekDay}, ${day} ${month} ${year}`
     },
     formatBytes (bytes, decimals = 2) {
       if (bytes === 0) return '0 Bytes'

@@ -1,5 +1,5 @@
 <script setup>
-import { onBeforeMount, computed } from 'vue'
+import { onBeforeMount, computed, ref } from 'vue'
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
 import { visitChildren } from '@/store/helpers/functions'
@@ -13,6 +13,7 @@ import Employees from '@/components/Employees.vue'
 import Tags from '@/components/Tags.vue'
 import Colors from '@/components/Colors.vue'
 import Assignments from '@/components/Assignments.vue'
+import ModalBoxNotificationInstruction from '@/components/modals/ModalBoxNotificationInstruction.vue'
 import Dashboard from '@/components/Dashboard.vue'
 import Other from '@/components/Other.vue'
 import Doitnow from '@/components/Doitnow.vue'
@@ -36,6 +37,7 @@ const newConfig = computed(() => store.state.tasks.newConfig)
 const navStack = computed(() => store.state.navbar.navStack)
 const storeNavigator = computed(() => store.state.navigator.navigator)
 const isPropertiesMobileExpanded = computed(() => store.state.isPropertiesMobileExpanded)
+const shouldShowModalBox = ref(false)
 const UID_TO_ACTION = {
   '901841d9-0016-491d-ad66-8ee42d2b496b': TASK.TASKS_REQUEST, // get today's day
   '46418722-a720-4c9e-b255-16db4e590c34': TASK.OVERDUE_TASKS_REQUEST,
@@ -56,6 +58,37 @@ const UID_TO_ACTION = {
   '47a38aa5-19c4-40d0-b8c0-56c3a420935d': TASK.ONE_TASK_REQUEST,
   '2e8dddd0-125a-49ef-a87c-0ea17b1b7f56': CARD.BOARD_CARDS_REQUEST, // private
   '1b30b42c-b77e-40a4-9b43-a19991809add': CARD.BOARD_CARDS_REQUEST // shared
+}
+
+const setShouldShowModalValue = (value) => {
+  localStorage.setItem('shouldShowModal', value)
+}
+
+const requestNotificationPermissionOrShowModalBox = () => {
+  if (parseInt(localStorage.getItem('shouldShowModal')) === 0) {
+    return
+  }
+
+  if (!('Notification' in window)) {
+    alert('This browser does not support desktop notification')
+    localStorage.setItem('shouldShowModal', '0')
+  } else if (Notification.permission === 'granted') {
+    localStorage.setItem('shouldShowModal', '0')
+  } else if (Notification.permission === 'default') {
+    Notification.requestPermission().then(function (permission) {
+      if (permission === 'granted') {
+        localStorage.setItem('shouldShowModal', '0')
+      } else if (permission === 'denied') {
+        localStorage.setItem('shouldShowModal', '1')
+      }
+    })
+  } else if (Notification.permission === 'denied') { // handle denied case
+    localStorage.setItem('shouldShowModal', '1')
+  }
+
+  if (parseInt(localStorage.getItem('shouldShowModal')) === 1) {
+    shouldShowModalBox.value = true
+  }
 }
 
 const getTask = (uid) => {
@@ -240,7 +273,7 @@ const getNavigator = () => {
 }
 
 onBeforeMount(() => {
-  Notification.requestPermission()
+  requestNotificationPermissionOrShowModalBox()
   const fm = document.createElement('script')
   const websync = document.createElement('script')
   fm.setAttribute('src', process.env.VUE_APP_LEADERTASK_API + 'scripts/websync/fm.min.js')
@@ -262,6 +295,44 @@ onBeforeMount(() => {
 </script>
 
 <template>
+  <modal-box-notification-instruction
+    v-model="shouldShowModalBox"
+    button="warning"
+    has-button
+    has-cancel
+    button-label="Хорошо, я понял"
+    @confirm="setShouldShowModalValue('0')"
+  >
+    <p>
+      Добрый день, у вас <strong>запрещены системные уведомления</strong> на этом домене.
+    </p>
+    <p>
+      Мы используем системные уведомления для отображения важных событий в приложении, которые нельзя увидеть при свернутом браузере или в другой вкладке.
+    </p>
+    <p>
+      Чтобы всегда быть в курсе актуального положения дел, пожалуйста, разрешите отображение уведомлений в настройках браузера.
+    </p>
+    <p>
+      Инстрyкции как включить уведомления для разных браузеров:
+    </p>
+    <a
+      href="https://support.google.com/chrome/answer/3220216?hl=ru&co=GENIE.Platform%3DAndroid"
+      target="_blank"
+      class="text-blue-400"
+    >Google Chrome</a>
+    <br>
+    <a
+      href="https://support.apple.com/ru-ru/guide/safari/sfri40734/mac"
+      target="_blank"
+      class="text-blue-400"
+    >Safari</a>
+    <br>
+    <a
+      href="https://sendpulse.com/ru/knowledge-base/push-notifications/enable-disable-push-notifications-mozilla-firefox"
+      target="_blank"
+      class="text-blue-400"
+    >Firefox</a>
+  </modal-box-notification-instruction>
   <main-section>
     <TasksListNew
       v-if="mainSectionState === 'tasks'"

@@ -899,6 +899,22 @@ export default {
     },
     taskMessagesAndFiles () {
       return this.$store.state.taskfilesandmessages.messages
+    },
+    messageQuoteString () {
+      if (!this.currentAnswerMessageUid) return ''
+      const quotedMessage = this.taskMessages.find(message => message.uid === this.currentAnswerMessageUid)
+      if (!quotedMessage) return ''
+      let msg = quotedMessage.msg.trim()
+      msg = msg.replaceAll('&amp;', '&')
+      msg = msg.replaceAll('&lt;', '<')
+      msg = msg.replaceAll('&gt;', '>')
+      return msg
+    },
+    messageQuoteUser () {
+      if (!this.currentAnswerMessageUid) return ''
+      const quotedMessage = this.taskMessages.find(message => message.uid === this.currentAnswerMessageUid)
+      if (!quotedMessage) return ''
+      return this.employees[quotedMessage.uid_creator]?.name ?? '???'
     }
   },
   watch: {
@@ -906,6 +922,9 @@ export default {
       immediate: true,
       handler: function (val) {
         this.currentAnswerMessageUid = ''
+        this.$nextTick(function () {
+          this.onInputTaskMsg()
+        })
         console.log('selectedTask', val)
       }
     }
@@ -985,12 +1004,13 @@ export default {
       // после этого рассчитает новый scrollHeight
       this.$refs.taskMsgEdit.style.height = '40px'
       //
-      const defSendHeight = 105
+      const defAnswerHeight = this.currentAnswerMessageUid ? 36 + 8 : 0
+      const defSendHeight = 96
       const defEditHeight = 40
       const defEditHeightMax = 100
       const scrollHeight = this.$refs.taskMsgEdit.scrollHeight
       const scrollHeightFix = scrollHeight < defEditHeight ? defEditHeight : scrollHeight > defEditHeightMax ? defEditHeightMax : scrollHeight
-      const sendHeight = defSendHeight + scrollHeightFix - defEditHeight
+      const sendHeight = defSendHeight + scrollHeightFix + defAnswerHeight - defEditHeight
       //
       this.$refs.taskMsgEdit.style.height = scrollHeight + 'px'
       document.documentElement.style.setProperty('--hex-parent-height', sendHeight + 'px')
@@ -1009,83 +1029,6 @@ export default {
         const item = items[index]
         if (item.kind === 'file') {
           const blob = item.getAsFile()
-          /*
-          // по идее загружаться должно не сразу, а в div copypaste_
-          // и отправляться по кнопке отправить - но это не доделано
-          const fileExt = blob.name.split('.').pop()
-          const elementCopyPaste = 'copypaste_' + this.selectedTask.uid
-          const pics = ['jpg', 'png', 'jpeg', 'git', 'bmp', 'gif', 'PNG', 'JPG', 'JPEG', 'BMP', 'GIF']
-          const movies = ['mov', 'mp4']
-          const docs = ['doc', 'xls', 'xlsx', 'txt', 'pdf']
-          const audio = ['mp3', 'wav', 'm4a']
-          if (pics.includes(fileExt)) {
-            const fileURL = URL.createObjectURL(blob)
-            const div = document.createElement('div')
-            div.className = 'lineloadfile'
-            const img = document.createElement('img')
-            img.src = URL.createObjectURL(blob)
-            img.title = blob.name
-            img.className = 'img-preview-custom'
-            img.src = URL.createObjectURL(blob)
-            const href = document.createElement('a')
-            href.className = 'text-blue-600'
-            href.target = '_blank'
-            href.setAttribute('href', fileURL)
-            href.appendChild(img)
-            href.innerHTML += '<span class="img-title-custom">' + blob.name + '</span>'
-            div.appendChild(href)
-            document.getElementById(elementCopyPaste).appendChild(div)
-          } else if (movies.includes(fileExt)) {
-            const fileURL = URL.createObjectURL(blob)
-            const div = document.createElement('div')
-            div.className = 'lineloadfile'
-            const href = document.createElement('a')
-            href.target = '_blank'
-            href.className = 'text-blue-600'
-            href.innerHTML = blob.name
-            href.setAttribute('href', fileURL)
-            href.setAttribute('download', blob.name)
-            div.appendChild(href)
-            document.getElementById(elementCopyPaste).appendChild(div)
-          } else if (docs.includes(fileExt)) {
-            const fileURL = URL.createObjectURL(blob)
-            const div = document.createElement('div')
-            div.className = 'lineloadfile'
-            const href = document.createElement('a')
-            href.className = 'text-blue-600'
-            href.target = '_blank'
-            href.innerHTML = blob.name
-            href.setAttribute('href', fileURL)
-            href.setAttribute('download', blob.name)
-            div.appendChild(href)
-            document.getElementById(elementCopyPaste).appendChild(div)
-          } else if (audio.includes(fileExt)) {
-            const div = document.createElement('div')
-            div.className = 'lineloadfile'
-            const fileURL = URL.createObjectURL(blob)
-            const myAudio = new Audio()
-            myAudio.src = fileURL
-            const hrefaudio = document.createElement('audio')
-            hrefaudio.innerHTML = 'Your browser does not support the\n' +
-                '      <code>audio</code> element.'
-            hrefaudio.setAttribute('src', fileURL)
-            hrefaudio.setAttribute('controls', 'true')
-            div.appendChild(hrefaudio)
-            document.getElementById(elementCopyPaste).appendChild(div)
-          } else {
-            const fileURL = URL.createObjectURL(blob)
-            const div = document.createElement('div')
-            div.className = 'lineloadfile'
-            const href = document.createElement('a')
-            href.target = '_blank'
-            href.className = 'text-blue-600'
-            href.innerHTML = blob.name
-            href.setAttribute('href', fileURL)
-            href.setAttribute('download', blob.name)
-            div.appendChild(href)
-            document.getElementById(elementCopyPaste).appendChild(div)
-          }
-          */
           const formData = new FormData()
           formData.append('files', blob)
           const data = {
@@ -1234,7 +1177,9 @@ export default {
     },
     onAnswerMessage: function (uid) {
       this.currentAnswerMessageUid = uid
-      console.log('onAnswerMessage', uid)
+      this.$nextTick(function () {
+        this.onInputTaskMsg()
+      })
     }
   }
 }
@@ -2002,7 +1947,7 @@ export default {
         style="border-bottom: 1px dashed; padding-bottom: 0; width: 125px; margin: 0 auto;"
         @click="scrollDown"
       >
-        Show all messages
+        ПОКАЗАТЬ ВСЕ
       </p>
       <!-- Chat messages -->
       <TaskPropsChatMessages
@@ -2018,22 +1963,50 @@ export default {
       />
     </div>
   </div>
-  <div class="form-send-message">
+  <div class="w-full">
     <img
       v-if="isloading"
       src="/ajaxloader.gif"
     >
     <div
-      :id="'copypaste_' + selectedTask.uid"
-      class="сopypastefiles"
-    />
-    <!-- <div
       v-if="currentAnswerMessageUid"
-      class="quote-request"
+      class="quote-request border-l-2 border-[#e1e1e1] mt-2 h-9"
     >
-      Цитирование
-    </div> -->
-    <div class="input-group bg-gray-100 rounded-3xl">
+      <div class="flex flex-row items-center">
+        <div class="grow width100without20">
+          <div
+            class="mx-1"
+          >
+            <p class="text-[11px] leading-[16px] overflow-hidden text-black text-ellipsis whitespace-nowrap">
+              {{ messageQuoteUser }}
+            </p>
+            <p class="text-[12px] leading-[16px] overflow-hidden text-[#9a9fa6] text-ellipsis whitespace-nowrap">
+              {{ messageQuoteString }}
+            </p>
+          </div>
+        </div>
+        <div
+          class="flex-none p-0.5"
+          @click="onAnswerMessage('')"
+        >
+          <svg
+            width="18"
+            height="18"
+            viewBox="0 0 18 18"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              fill-rule="evenodd"
+              clip-rule="evenodd"
+              d="M4.28481 4.30107C4.67082 3.90608 5.30395 3.8988 5.69893 4.28481L9.25 7.75517L12.8011 4.28481C13.1961 3.8988 13.8292 3.90608 14.2152 4.30107C14.6012 4.69605 14.5939 5.32918 14.1989 5.71519L10.6808 9.15341L14.1989 12.5916C14.5939 12.9776 14.6012 13.6108 14.2152 14.0058C13.8292 14.4007 13.1961 14.408 12.8011 14.022L9.25 10.5516L5.69893 14.022C5.30395 14.408 4.67082 14.4007 4.28481 14.0058C3.8988 13.6108 3.90608 12.9776 4.30107 12.5916L7.81925 9.15341L4.30107 5.71519C3.90608 5.32918 3.8988 4.69605 4.28481 4.30107Z"
+              fill="#999999"
+            />
+          </svg>
+        </div>
+      </div>
+    </div>
+    <div class="input-group bg-gray-100 rounded-3xl mt-2">
       <span class="input-group-addon input-group-attach dark:bg-gray-800 dark:text-gray-100">
         <div class="example-1">
           <label class="label">
@@ -2456,5 +2429,9 @@ export default {
   opacity: 0;
   height: 0;
   padding: 0;
+}
+
+.width100without20 {
+  width: calc(100% - 20px);
 }
 </style>

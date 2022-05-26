@@ -305,7 +305,11 @@ export default {
       if (!uidQuote || uidQuote === '00000000-0000-0000-0000-000000000000') return ''
       const quotedMessage = this.messages.find(message => message.uid === uidQuote)
       if (!quotedMessage) return ''
-      return quotedMessage.msg
+      let msg = quotedMessage.msg.trim()
+      msg = msg.replaceAll('&amp;', '&')
+      msg = msg.replaceAll('&lt;', '<')
+      msg = msg.replaceAll('&gt;', '>')
+      return msg
     },
     getMessageQuoteUser (uidQuote) {
       if (!uidQuote || uidQuote === '00000000-0000-0000-0000-000000000000') return ''

@@ -4,13 +4,13 @@
   />
   <div
     v-if="tasksCount"
-    class="font-normal"
+    class="font-normal text-lg bg-white p-2 w-2/12 rounded-xl border-2"
   >
     В очереди задач: {{ tasksCount }}
   </div>
   <div
     v-if="unreadTasks.length"
-    class="font-normal mt-10"
+    class="font-normal mt-10 text-lg bg-white p-2 w-6/12 rounded-xl border-2"
   >
     Команда ждет ваших действий по задачам. Пожалуйста, ответьте им
   </div>

@@ -16,19 +16,19 @@
   </div>
   <div
     v-else-if="readyTasks.length"
-    class="font-normal mt-10"
+    class="font-normal mt-10 text-lg bg-white p-2 w-6/12 rounded-xl border-2"
   >
     У вас есть готовые задачи. Примите решение, что с ними делать
   </div>
   <div
     v-else-if="overdueTasks.length"
-    class="font-normal mt-10"
+    class="font-normal mt-10 text-lg bg-white p-2 w-6/12 rounded-xl border-2"
   >
     У вас есть просроченные задачи. Примите решение, что с ними делать
   </div>
   <div
     v-else-if="todayTasks.length"
-    class="font-normal mt-10"
+    class="font-normal mt-10 text-lg bg-white p-2 w-6/12 rounded-xl border-2"
   >
     У вас запланированы дела на сегодня. Пора приступить к делу
   </div>

@@ -1947,7 +1947,7 @@ export default {
         style="border-bottom: 1px dashed; padding-bottom: 0; width: 125px; margin: 0 auto;"
         @click="scrollDown"
       >
-        Show all messages
+        ПОКАЗАТЬ ВСЕ
       </p>
       <!-- Chat messages -->
       <TaskPropsChatMessages

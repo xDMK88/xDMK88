@@ -26,14 +26,57 @@
           @dblclick.stop="editTaskName(task)"
           @keyup.enter="updateTask($event, task); this.$emit('changeValue', {_isEditable: false})"
         />
-        <Icon
-          :path="taskoptions.path"
-          class="text-gray-600 dark:text-white cursor-pointer h-full ml-1"
-          :box="taskoptions.viewBox"
-          :width="taskoptions.width"
-          :style="{ color: 'gray' }"
-          :height="taskoptions.height"
-        />
+        <Popper
+          class="items-center"
+          :class="isDark ? 'dark' : 'light'"
+          placement="bottom"
+          @click.stop="toggleTaskHoverPopper(true)"
+          @open:popper="toggleTaskHoverPopper(true)"
+          @close:popper="toggleTaskHoverPopper(false)"
+        >
+          <Icon
+            :path="taskoptions.path"
+            class="text-gray-600 dark:text-white cursor-pointer h-full ml-1"
+            :box="taskoptions.viewBox"
+            :width="taskoptions.width"
+            :style="{ color: 'gray' }"
+            :height="taskoptions.height"
+          />
+          <template #content>
+            <div class="flex flex-col">
+              <!-- performer -->
+              <span
+                v-if="task.uid_customer === user.current_user_uid"
+              >
+                <TaskPropsButtonPerform
+                  v-if="task.status !== 3 && task.type !== 4 && task.uid_customer === user.current_user_uid"
+                  :task-type="task.type"
+                  :current-user-uid="user.current_user_uid"
+                  :performer-email="task.email_performer"
+                  @changePerformer="onChangePerformer"
+                  @reAssign="onReAssignToUser"
+                />
+              </span>
+              <!-- date -->
+              <span>
+                <TaskPropsButtonSetDate
+                  :name="'Назначить срок'"
+                  :date-begin="task.date_begin"
+                  :date-end="task.date_end"
+                  :date-text="task.term_user"
+                  @changeDates="onChangeDates"
+                />
+              </span>
+              <!-- link -->
+              <span
+                @click="copyUrl(task)"
+                class="hover:cursor-pointer hover:bg-gray-100 bg-gray-50 p-2 rounded-xl text-sm"
+              >
+                Ссылка
+              </span>
+            </div>
+          </template>
+        </Popper>
         <!-- <img
           class="h-[32px] w-[32px] rounded-full"
           :src="employees[task.uid_performer] ? employees[task.uid_performer].fotolink : ''"
@@ -82,7 +125,7 @@
         <div class="flex flex-col">
           <!-- editable task name -->
           <div v-if="task.comment.length">
-            <article class="text-sm break-all">
+            <article class="text-sm break-all whitespace-pre-line">
               <span class="font-bold block">Описание задачи:</span>
               {{ task.comment }}
             </article>
@@ -93,36 +136,25 @@
     <div class="flex">
       <div class="flex justify-between w-full mt-3">
         <div class="flex flex-col">
-          <!-- <TaskPropsButtonPerform
-            v-if="task.status !== 3 && task.type !== 4 && task.uid_customer === user.current_user_uid"
-            :task-type="task.type"
-            :current-user-uid="user.current_user_uid"
-            :performer-email="task.email_performer"
-            @changePerformer="onChangePerformer"
-            @reAssign="onReAssignToUser"
-          /> -->
-          <TaskPropsButtonSetDate
-            :name="'Назначить срок'"
-            :date-begin="task.date_begin"
-            :date-end="task.date_end"
-            :date-text="task.term_user"
-            @changeDates="onChangeDates"
-          />
           <!-- info -->
-          <div class="mt-2 flex flex-col">
-            <div class="mb-2">Заказчик: <span class="bg-green-400 p-1 rounded-lg text-white">{{ employees[task.uid_customer].name }}</span></div>
-            <div class="mb-2">Исполнитель: <span class="bg-gray-400 p-1 rounded-lg text-white">{{ employees[task.uid_performer].name }}</span></div>
-            <div
-              class="mb-2"
-              v-if="dateClear(task.date_end) !== '1-1-1'"
-            >
-              Выполнить до: {{ dateClear(task.date_end)  }}
+          <div class="flex flex-col">
+            <div class="mb-2 flex items-center">
+              <span class="p-2 bg-white rounded-xl border-2">Заказчик:</span><span class="bg-gray-300 p-2 ml-1 rounded-lg text-white">{{ employees[task.uid_customer].name }}</span>
+            </div>
+            <div class="mb-3 flex items-center">
+              <span class="p-2 bg-white rounded-xl border-2">Исполнитель:</span><span class="p-2 ml-1 bg-green-400 text-white rounded-xl">{{ employees[task.uid_performer].name }}</span>
             </div>
             <div
-              class="mb-2"
-              v-if="task.is_overdue"
+              v-if="dateClear(task.date_end) !== '1.1.1'"
+              class="mb-2 flex items-center"
             >
-              Задача просрочена на: {{ Math.floor((new Date() - new Date(task.perform_time)) / (60 * 60 * 24 * 1000)) }} дней!
+              <span class="p-2 bg-white rounded-xl border-2">Выполнить до:</span><span class="bg-cyan-400 text-white p-2 ml-1 rounded-xl"> {{ dateClear(task.date_end) }}</span>
+            </div>
+            <div
+              v-if="task.is_overdue"
+              class="mb-2 flex items-center"
+            >
+              <span class="bg-red-500 text-white p-2 rounded-xl">Просрочено на {{ plural(task) }}!</span>
             </div>
           </div>
         </div>
@@ -133,21 +165,21 @@
         >
           <!-- accept -->
           <button
-            class="bg-green-500 py-1 px-3 rounded-full text-white mr-1 mb-1 hover:bg-green-600"
+            class="bg-green-500 py-1 px-3 rounded-xl text-white mr-1 mb-1 hover:bg-green-600"
             @click="accept"
           >
             {{ task.uid_customer === user.current_user_uid ? (task.uid_performer === user.current_user_uid ? 'Завершить' : 'Принять и завершить задачу') : 'Готово к сдаче'}}
           </button>
           <!-- redo -->
           <button
-            class="bg-red-500 py-1 px-3 rounded-full text-white mr-1 mb-1 hover:bg-red-600"
+            class="bg-red-500 py-1 px-3 rounded-xl text-white mr-1 mb-1 hover:bg-red-600"
             @click="reDo"
           >
             {{ task.uid_customer === user.current_user_uid ? (task.uid_performer === user.current_user_uid ? 'Отменить' : 'Отправить на доработку') : 'Отклонить'}}
           </button>
           <!-- decline -->
           <button
-            class="bg-indigo-400 py-1 px-3 rounded-full text-white mr-1 mb-1 hover:bg-indigo-500"
+            class="bg-indigo-400 py-1 px-3 rounded-xl text-white mr-1 mb-1 hover:bg-indigo-500"
             @click="decline"
           >
             Отложить
@@ -242,8 +274,10 @@
 import { ref } from 'vue'
 // import TaskListIconLabel from '@/components/TasksList/TaskListIconLabel.vue'
 // import TaskListTagLabel from '@/components/TasksList/TaskListTagLabel.vue'
+import { copyText } from 'vue3-clipboard'
 import contenteditable from 'vue-contenteditable'
-// import TaskPropsButtonPerform from '@/components/TaskProperties/TaskPropsButtonPerform.vue'
+import TaskPropsButtonPerform from '@/components/TaskProperties/TaskPropsButtonPerform.vue'
+import Popper from 'vue3-popper'
 import TaskPropsButtonSetDate from '@/components/TaskProperties/TaskPropsButtonSetDate.vue'
 import TaskPropsChatMessages from '@/components/TaskProperties/TaskPropsChatMessages.vue'
 import TaskPropsInputForm from '@/components/TaskProperties/TaskPropsInputForm'
@@ -282,11 +316,12 @@ export default {
     // TaskListIconLabel,
     // TaskListTagLabel,
     Icon,
-    // TaskPropsButtonPerform,
+    TaskPropsButtonPerform,
     TaskPropsButtonSetDate,
     TaskPropsChatMessages,
     TaskPropsInputForm,
     contenteditable,
+    Popper,
     TaskStatus
   },
   emits: ['clickTask', 'nextTask', 'changeValue'],
@@ -443,8 +478,25 @@ export default {
     }
   },
   methods: {
+    plural (task) {
+      const date = Math.floor((new Date() - new Date(task.perform_time)) / (60 * 60 * 24 * 1000))
+      const dayName = date % 10 === 1 && date % 100 !== 11 ? 'день' : (((date >= 2) && (date % 10 <= 4)) && (date % 100 < 10 || date % 100 >= 20) ? 'дня' : 'дней')
+      return date + ' ' + dayName
+    },
+    copyUrl (task) {
+      copyText(`${window.location.origin}/task/${task.uid}`, undefined, (error, event) => {
+      // copyText('lt://planning?{' + selectedTask.value.uid.toUpperCase() + '}', undefined, (error, event) => {
+        if (error) {
+          alert('Can not copy')
+          console.log(error)
+        } else {
+          alert('Copied')
+          console.log(event)
+        }
+      })
+    },
     dateClear (time) {
-      return new Date(time).getDate() + '-' + (new Date(time).getMonth() + 1) + '-' + new Date(time).getFullYear()
+      return new Date(time).getDate() + '.' + (new Date(time).getMonth() + 1) + '.' + new Date(time).getFullYear()
     },
     removeTask (uid) {
       if (this.isPropertiesMobileExpanded) {

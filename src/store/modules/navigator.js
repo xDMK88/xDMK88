@@ -216,19 +216,19 @@ const mutations = {
     // Push statickly tasks to menu array from state
     state.memu = []
     // state.menu.push('separator')
-    state.menu.push([
-      {
-        label: 'Рабочий стол',
-        uid: '2bad1413-a373-4926-8a3c-58677a680714',
-        bold: 0,
-        icon: desktop.path,
-        width: desktop.width,
-        height: desktop.height,
-        iconBox: desktop.viewBox,
-        type: 'uid',
-        iconBackgroundClass: 'bg-white-500'
-      }
-    ])
+    // state.menu.push([
+    //   {
+    //     label: 'Рабочий стол',
+    //     uid: '2bad1413-a373-4926-8a3c-58677a680714',
+    //     bold: 0,
+    //     icon: desktop.path,
+    //     width: desktop.width,
+    //     height: desktop.height,
+    //     iconBox: desktop.viewBox,
+    //     type: 'uid',
+    //     iconBackgroundClass: 'bg-white-500'
+    //   }
+    // ])
     state.menu.push([
       {
         label: 'Очередь',

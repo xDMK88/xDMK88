@@ -91,7 +91,6 @@ function redirect (category) {
     store.commit('basic', { key: 'taskListSource', value: { uid: category.link, param: null } })
     store.commit('basic', { key: 'mainSectionState', value: 'tasks' })
   } else {
-    alert('m here')
     store.commit('basic', { key: 'mainSectionState', value: 'greed' })
     store.commit('basic', { key: 'greedPath', value: category.path })
     const navElem = {

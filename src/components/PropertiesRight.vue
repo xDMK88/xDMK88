@@ -2,6 +2,7 @@
 import { computed } from 'vue'
 import { useStore } from 'vuex'
 import TaskProperties from '@/components/properties/TaskProperties.vue'
+import CardProperties from '@/components/properties/CardProperties.vue'
 import ProjectProperties from '@/components/properties/ProjectProperties.vue'
 import BoardProperties from '@/components/properties/BoardProperties.vue'
 import ColorProperties from '@/components/properties/ColorProperties.vue'
@@ -14,6 +15,7 @@ import close from '@/icons/close.js'
 export default {
   components: {
     TaskProperties,
+    CardProperties,
     ProjectProperties,
     BoardProperties,
     ColorProperties,
@@ -58,6 +60,9 @@ export default {
     />
     <TaskProperties
       v-if="propertiesState == 'task'"
+    />
+    <CardProperties
+      v-if="propertiesState == 'card'"
     />
     <ProjectProperties
       v-if="propertiesState == 'project'"

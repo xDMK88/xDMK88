@@ -62,6 +62,13 @@ const UID_TO_ACTION = {
 
 const setShouldShowModalValue = (value) => {
   localStorage.setItem('shouldShowModal', value)
+  Notification.requestPermission().then(function (permission) {
+    if (permission === 'granted') {
+      localStorage.setItem('shouldShowModal', '0')
+    } else if (permission === 'denied') {
+      localStorage.setItem('shouldShowModal', '0')
+    }
+  })
 }
 
 const requestNotificationPermissionOrShowModalBox = () => {
@@ -75,13 +82,7 @@ const requestNotificationPermissionOrShowModalBox = () => {
   } else if (Notification.permission === 'granted') {
     localStorage.setItem('shouldShowModal', '0')
   } else if (Notification.permission === 'default') {
-    Notification.requestPermission().then(function (permission) {
-      if (permission === 'granted') {
-        localStorage.setItem('shouldShowModal', '0')
-      } else if (permission === 'denied') {
-        localStorage.setItem('shouldShowModal', '1')
-      }
-    })
+    localStorage.setItem('shouldShowModal', '1')
   } else if (Notification.permission === 'denied') { // handle denied case
     localStorage.setItem('shouldShowModal', '1')
   }
@@ -303,9 +304,6 @@ onBeforeMount(() => {
     button-label="Хорошо, я понял"
     @confirm="setShouldShowModalValue('0')"
   >
-    <p>
-      Добрый день, у вас <strong>запрещены системные уведомления</strong> на этом домене.
-    </p>
     <p>
       Мы используем системные уведомления для отображения важных событий в приложении, которые нельзя увидеть при свернутом браузере или в другой вкладке.
     </p>

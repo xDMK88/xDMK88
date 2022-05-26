@@ -876,8 +876,9 @@ export default {
       everyWeekRepeat: false,
       everyMonthRepeat: false,
       everyYearRepeat: false,
-      showpastefile: false
+      showpastefile: false,
       // Модели selectedTask.value.SeriesWeekMon selectedTask.value.SeriesWeekTue selectedTask.value.SeriesWeekWed selectedTask.value.SeriesWeekThu selectedTask.value.SeriesWeekFri selectedTask.value.SeriesWeekSat selectedTask.value.SeriesWeekSun
+      currentAnswerMessageUid: ''
     }
   },
   computed: {
@@ -904,6 +905,7 @@ export default {
     selectedTask: {
       immediate: true,
       handler: function (val) {
+        this.currentAnswerMessageUid = ''
         console.log('selectedTask', val)
       }
     }
@@ -924,7 +926,7 @@ export default {
         (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
       )
     },
-    sendTaskMsg: function () {
+    sendTaskMsg: function (msg) {
       this.showAllMessages = true
       const date = new Date()
       const month = this.pad2(date.getUTCMonth() + 1)
@@ -934,14 +936,21 @@ export default {
       const minutes = this.pad2(date.getUTCMinutes())
       const seconds = this.pad2(date.getUTCSeconds())
       const dateCreate = year + '-' + month + '-' + day + 'T' + hours + ':' + minutes + ':' + seconds
-      const msgtask = this._linkify(this.taskMsg)
+      let msgtask = msg || this.taskMsg
+      console.log('msgtask', msgtask, msg, this.taskMsg)
+      msgtask = msgtask.trim()
+      msgtask = msgtask.replaceAll('&', '&amp;')
+      msgtask = msgtask.replaceAll('<', '&lt;')
+      msgtask = msgtask.replaceAll('>', '&gt;')
 
       const data = {
         uid_task: this.selectedTask.uid,
         uid_creator: this.cusers.current_user_uid,
         uid_msg: this.uuidv4(),
         date_create: dateCreate,
-        text: this.taskMsg,
+        deleted: 0,
+        uid_quote: this.currentAnswerMessageUid,
+        text: msgtask,
         msg: msgtask
       }
 
@@ -966,13 +975,11 @@ export default {
           const wrapperElement = document.getElementById('content').lastElementChild
           wrapperElement.scrollIntoView({ behavior: 'smooth' })
         })
+      this.currentAnswerMessageUid = ''
       this.taskMsg = ''
       this.$nextTick(function () {
         this.onInputTaskMsg()
       })
-    },
-    _linkify: function (text) {
-      return text.replace(/(lt?:\/\/[^\s]+)/g, '<a href="$1">$1</a>')
     },
     onInputTaskMsg: function () {
       // после этого рассчитает новый scrollHeight
@@ -1224,6 +1231,10 @@ export default {
     },
     gotoParentNode (uid) {
       document.getElementById(uid).parentNode.click({ preventScroll: false })
+    },
+    onAnswerMessage: function (uid) {
+      this.currentAnswerMessageUid = uid
+      console.log('onAnswerMessage', uid)
     }
   }
 }
@@ -2002,6 +2013,8 @@ export default {
         :current-user-uid="cusers.current_user_uid"
         :show-all-messages="showAllMessages"
         :show-only-files="showOnlyFiles"
+        @answerMessage="onAnswerMessage"
+        @sendTaskMsg="sendTaskMsg"
       />
     </div>
   </div>
@@ -2014,7 +2027,12 @@ export default {
       :id="'copypaste_' + selectedTask.uid"
       class="сopypastefiles"
     />
-    <div class="quote-request" />
+    <!-- <div
+      v-if="currentAnswerMessageUid"
+      class="quote-request"
+    >
+      Цитирование
+    </div> -->
     <div class="input-group bg-gray-100 rounded-3xl">
       <span class="input-group-addon input-group-attach dark:bg-gray-800 dark:text-gray-100">
         <div class="example-1">
@@ -2049,7 +2067,7 @@ export default {
         placeholder="Введите сообщение"
         rows="58"
         @input="onInputTaskMsg"
-        @keydown.enter.exact.prevent="sendTaskMsg"
+        @keydown.enter.exact.prevent="sendTaskMsg()"
         @keydown.enter.shift.exact.prevent="addNewLineTaskMsg"
       />
       <span class="input-group-addon input-group-btn-send dark:bg-gray-800 dark:text-gray-100">
@@ -2077,6 +2095,7 @@ export default {
     </div>
   </div>
 </template>
+
 <style>
 .dark {
   --popper-theme-background-color: #333333;

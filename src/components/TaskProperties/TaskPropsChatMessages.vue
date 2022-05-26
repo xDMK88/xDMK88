@@ -46,6 +46,7 @@
           :creator-name="employees[message.uid_creator]?.name ?? '???'"
           :message="message.msg"
           :time="getMessageTimeString(message.date_create)"
+          @answer="answerMessage(message.uid)"
         />
 
         <!-- Сообщение от инспектора -->
@@ -168,7 +169,6 @@ import { getInspectorMessage } from '@/inspector/message'
 import linkify from 'vue-linkify'
 
 import * as INSPECTOR from '@/store/actions/inspector'
-import { CREATE_MESSAGE_REQUEST } from '@/store/actions/taskmessages'
 
 export default {
   directives: {
@@ -196,6 +196,7 @@ export default {
       default: false
     }
   },
+  emits: ['answerMessage', 'sendTaskMsg'],
   data: () => {
     return { getInspectorMessage }
   },
@@ -249,43 +250,7 @@ export default {
       return messagePrev.uid_creator !== messageCurr.uid_creator
     },
     sendTaskMsg (msg) {
-      const date = new Date()
-      const month = this.pad2(date.getUTCMonth() + 1)
-      const day = this.pad2(date.getUTCDate())
-      const year = this.pad2(date.getUTCFullYear())
-      const hours = this.pad2(date.getUTCHours())
-      const minutes = this.pad2(date.getUTCMinutes())
-      const seconds = this.pad2(date.getUTCSeconds())
-      const dateCreate =
-        year +
-        '-' +
-        month +
-        '-' +
-        day +
-        'T' +
-        hours +
-        ':' +
-        minutes +
-        ':' +
-        seconds
-      const data = {
-        uid_task: this.selectedTask.uid,
-        uid_creator: this.user.current_user_uid,
-        uid_msg: this.uuidv4(),
-        date_create: dateCreate,
-        text: msg,
-        msg: msg
-      }
-      this.$store.dispatch(CREATE_MESSAGE_REQUEST, data).then((resp) => {
-        this.selectedTask.has_msgs = true
-        if (this.selectedTask.type === 2 || this.selectedTask.type === 3) {
-          if ([1, 5, 7, 8].includes(this.selectedTask.status)) {
-            this.selectedTask.status = 9
-          }
-        }
-        const elment = document.getElementById('content').lastElementChild
-        elment.scrollIntoView({ behavior: 'smooth' })
-      })
+      this.$emit('sendTaskMsg', msg)
     },
     print (type, obj) {
       console.log(type, obj)
@@ -347,6 +312,9 @@ export default {
       const quotedMessage = this.messages.find(message => message.uid === uidQuote)
       if (!quotedMessage) return ''
       return this.employees[quotedMessage.uid_creator]?.name ?? '???'
+    },
+    answerMessage (uid) {
+      this.$emit('answerMessage', uid)
     }
   }
 }

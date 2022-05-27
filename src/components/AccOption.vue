@@ -40,6 +40,7 @@ const updateSettings = () => {
 }
 </script>
 <template>
+  {{settings.add_task_to_begin}}
   <form class="px-5">
     <div class="my-2">
       <div class="flex mt-2">

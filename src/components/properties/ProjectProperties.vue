@@ -154,6 +154,7 @@ const copyurl = (uid) => {
       <input
         v-model="selectedProject.name"
         type="text"
+        maxlength="100"
         placeholder="Название проекта"
         class="mt-2 rounded-xl bg-gray-100 font-bold text-gray-700 dark:text-gray-100 w-full border-none ring-0 outline-none p-3 bg-transparent"
         :disabled="selectedProject.email_creator.toLowerCase() != user.current_user_email.toLowerCase()"

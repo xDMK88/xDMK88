@@ -6,7 +6,7 @@ import ColorPicker from '@/components/properties/ColorPicker.vue'
 import add from '@/icons/add.js'
 import close from '@/icons/close.js'
 import Popper from 'vue3-popper'
-
+import { copyText } from 'vue3-clipboard'
 import ModalBoxConfirm from '@/components/modals/ModalBoxConfirm.vue'
 
 import * as BOARD from '@/store/actions/boards'
@@ -93,6 +93,15 @@ const removeBoard = (board) => {
       store.commit(NAVIGATOR.NAVIGATOR_REMOVE_BOARD, board)
     })
 }
+const copyurl = (uid) => {
+  copyText(`${window.location.origin}/board/${uid}`, undefined, (error, event) => {
+    if (error) {
+      console.log(error)
+    } else {
+      console.log(event)
+    }
+  })
+}
 </script>
 
 <template>
@@ -133,6 +142,7 @@ const removeBoard = (board) => {
       <input
         v-model="selectedBoard.name"
         type="text"
+        maxlength="100"
         placeholder="Название доски"
         class="mt-2 rounded-xl bg-gray-100 font-bold text-gray-700 dark:text-gray-100 w-full border-none ring-0 outline-none p-3 bg-transparent"
         :disabled="selectedBoard.email_creator != user.current_user_email"
@@ -277,6 +287,12 @@ const removeBoard = (board) => {
         @click="showConfirmQuit = true"
       >
         Выйти из доски
+      </button>
+      <button
+        class="w-full bg-gray-100 rounded-xl mt-4 p-3 text-gray-700 font-bold hover:bg-gray-200"
+        @click="copyurl(selectedBoard.uid)"
+      >
+        Скопировать как ссылку
       </button>
     </div>
   </div>

@@ -163,7 +163,29 @@ const initNavStackWithFoundProjects = (projectUid) => {
   }
   store.commit('pushIntoNavStack', navElem)
 }
+const initNavStackWithFoundBoards = (boardUid) => {
+  let board
+  visitChildren(storeNavigator.value.new_private_boards[0].items, value => {
+    if (value.uid === boardUid) {
+      board = value
+    }
+  })
+  visitChildren(storeNavigator.value.new_private_boards[1].items, value => {
+    if (value.uid === boardUid) {
+      board = value
+    }
+  })
 
+  const navElem = {
+    name: board.name,
+    key: 'greedSource',
+    uid: board.uid,
+    global_property_uid: board.global_property_uid,
+    greedPath: 'boards_children',
+    value: board.children
+  }
+  store.commit('pushIntoNavStack', navElem)
+}
 const getProject = (uid) => {
   console.log(uid)
   const navElem = {
@@ -176,7 +198,18 @@ const getProject = (uid) => {
   initNavStackWithFoundProjects(uid)
   window.location = '/'
 }
-
+const getBoard = (uid) => {
+  console.log(uid)
+  const navElem = {
+    name: 'Доски',
+    key: 'greedSource',
+    greedPath: 'new_private_boards',
+    value: storeNavigator.value.new_private_boards
+  }
+  store.commit('updateStackWithInitValue', navElem)
+  initNavStackWithFoundBoards(uid)
+  window.location = '/'
+}
 const getNavigator = () => {
   if (store.state.auth.token) {
     store.dispatch(NAVIGATOR_REQUEST)
@@ -186,6 +219,9 @@ const getNavigator = () => {
         initInspectorSocket()
         if (router.currentRoute.value.name === 'project' && router.currentRoute.value.params.id) {
           getProject(router.currentRoute.value.params.id)
+        }
+        if (router.currentRoute.value.name === 'board' && router.currentRoute.value.params.id) {
+          getBoard(router.currentRoute.value.params.id)
         }
         // After navigator is loaded we are trying to set up last visited navElement
         // Checking if last navElement is a gridSource

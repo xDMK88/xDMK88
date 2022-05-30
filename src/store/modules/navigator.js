@@ -1,7 +1,7 @@
 import assignment from '@/icons/assignment.js'
 // icons for navigator
 import calendar from '@/icons/calendar.js'
-import desktop from '@/icons/desktop.js'
+import doitnow from '@/icons/doitnow.js'
 import employee from '@/icons/employee.js'
 import properties from '@/icons/properties.js'
 import project from '@/icons/project.js'
@@ -234,10 +234,10 @@ const mutations = {
         label: 'Очередь',
         uid: '2cf6b167-6506-4b05-bc34-70a8d88e3b25',
         bold: 0,
-        icon: desktop.path,
-        width: desktop.width,
-        height: desktop.height,
-        iconBox: desktop.viewBox,
+        icon: doitnow.path,
+        width: doitnow.width,
+        height: doitnow.height,
+        iconBox: doitnow.viewBox,
         type: 'uid',
         iconBackgroundClass: 'bg-white-500'
       }

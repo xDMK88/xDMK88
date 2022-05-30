@@ -197,7 +197,7 @@
       </div>
     </div>
     <div
-      class="flex flex-col max-w-1/2"
+      class="flex flex-col max-w-1/2 "
       :class="task.uid_marker !== '00000000-0000-0000-0000-000000000000' ? 'bg-white p-1 mt-1 rounded-lg' : ''"
     >
       <p

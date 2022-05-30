@@ -60,6 +60,8 @@ const isDark = computed(() => store.state.darkMode)
 const localization = computed(() => store.state.localization.localization)
 const storeNavigator = computed(() => store.state.navigator.navigator)
 const colors = computed(() => store.state.colors.colors)
+const calendarDates = computed(() => store.state.calendar[1].dates)
+const daysWithTasks = computed(() => store.state.tasks.daysWithTasks)
 
 const toggleTaskStatusPopper = (val) => {
   isTaskStatusPopperActive.value = val
@@ -78,10 +80,18 @@ const showStatusOrNot = (type, status) => {
 }
 
 const changeTaskStatus = (uid, status) => {
-  console.log(uid, status)
   store.dispatch(TASK.CHANGE_TASK_STATUS, { uid: uid, value: status }).then(() => {
     if (!storeNavigator.value.settings.show_completed_tasks && [1, 5, 7, 8].includes(status)) {
       store.commit(TASK.REMOVE_TASK, uid)
+      store.dispatch(TASK.DAYS_WITH_TASKS)
+        .then(() => {
+          for (let i = 0; i < calendarDates.value.length; i++) {
+            const date = calendarDates.value[i].getDate() + '-' + (calendarDates.value[i].getMonth() + 1) + '-' + calendarDates.value[i].getFullYear()
+            if (!daysWithTasks.value.includes(date)) {
+              store.state.calendar[1].dates.splice(store.state.calendar[1].dates.indexOf(calendarDates.value[i]), 1)
+            }
+          }
+        })
     }
   })
 }

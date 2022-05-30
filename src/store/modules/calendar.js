@@ -30,11 +30,21 @@ const mutations = {
     state[payload.key] = payload.value
   },
   addDot (state, date) {
-    state.calendar[1].dates.push(date)
-  },
-  deleteDot (state, date) {
+    let count = 0
     for (let i = 0; i < state.calendar[1].dates.length; i++) {
-      if (state.calendar[1].dates[i] === date) {
+      const userDate = date.getDate() + '-' + (date.getMonth() + 1) + '-' + date.getFullYear()
+      if (state.calendar[1].dates[i].getDate() + '-' + (state.calendar[1].dates[i].getMonth() + 1) + '-' + state.calendar[1].dates[i].getFullYear() === userDate) {
+        count++
+      }
+    }
+    if (!count) {
+      state.calendar[1].dates.push(date)
+    }
+  },
+  deleteDate (state, date) {
+    for (let i = 0; i < state.calendar[1].dates.length; i++) {
+      const calDate = state.calendar[1].dates[i].getDate() + '-' + (state.calendar[1].dates[i].getMonth() + 1) + '-' + state.calendar[1].dates[i].getFullYear()
+      if (calDate === date) {
         state.calendar[1].dates.splice(state.calendar[1].dates.indexOf(date))
       }
     }

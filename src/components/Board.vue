@@ -45,7 +45,7 @@
       >
         <div
           v-if="isColumnVisible(column)"
-          class="flex-none bg-white rounded-xl px-3 py-4 w-[280px] mr-[10px]"
+          class="flex-none bg-white rounded-xl px-3 py-4 w-[280px] mr-[10px] stage-column"
           :style="{ background: column.Color }"
         >
           <!--заголовок -->
@@ -59,12 +59,15 @@
             <!-- Три точки -->
             <div
               v-if="column.CanEditStage"
-              class="flex-none h-[18px] w-[18px] cursor-pointer"
+              :ref="`stage-icon-${column.UID}`"
+              class="flex-none h-[18px] w-[18px] cursor-pointer invisible stage-column-hover:visible"
             >
               <Popper
                 arrow
                 class="light"
                 placement="bottom"
+                @open:popper="lockVisibility(column.UID)"
+                @close:popper="unlockVisibility(column.UID)"
               >
                 <div
                   class="hover:-m-px hover:border hover:rounded-sm"
@@ -190,6 +193,7 @@
                 :card="element"
                 :show-date="board?.show_date !== 0 ?? false"
                 :read-only="!board || board.type_access === 0"
+                :selected="selectedCard?.uid === element.uid"
                 class="mt-2"
               />
             </template>
@@ -255,6 +259,9 @@
           </svg>
         </div>
       </div>
+      <div class="flex-none w-[1px]">
+        &nbsp;
+      </div>
     </div>
   </div>
 </template>
@@ -313,6 +320,9 @@ export default {
     },
     usersColumnsCount () {
       return this.storeCards.filter(stage => stage.UserStage === true).length
+    },
+    selectedCard () {
+      return this.$store.state.cards.selectedCard
     }
   },
   methods: {
@@ -447,26 +457,27 @@ export default {
             this.$store.dispatch(CARD.BOARD_CARDS_CHANGE_ORDER_STAGE, resp.data)
           })
       }
+    },
+    lockVisibility (stageUid) {
+      const icon = this.$refs[`stage-icon-${stageUid}`][0]
+      icon.style.visibility = 'visible'
+    },
+    unlockVisibility (stageUid) {
+      const icon = this.$refs[`stage-icon-${stageUid}`][0]
+      icon.style.visibility = null
     }
   }
 }
 </script>
 
 <style scoped>
-.column-width {
-  min-width: 320px;
-  width: 320px;
+.stage-column:hover .stage-column-hover\:visible {
+  visibility: visible;
 }
 .ghost-card {
   opacity: 0.5;
   background: #f7fafc;
   border: 1px solid #4299e1;
-}
-.margin-auto {
-  margin: 0 auto;
-}
-.margin-auto-4 {
-  margin: 0.9rem auto 1px auto;
 }
 .light {
   --popper-theme-background-color: #ffffff;

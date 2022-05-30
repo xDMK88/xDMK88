@@ -32,7 +32,8 @@ onMounted(() => {
 })
 
 const UID_TO_ACTION = {
-  '2e8dddd0-125a-49ef-a87c-0ea17b1b7f56': CARD.BOARD_CARDS_REQUEST
+  '2e8dddd0-125a-49ef-a87c-0ea17b1b7f56': CARD.BOARD_CARDS_REQUEST, // private
+  '1b30b42c-b77e-40a4-9b43-a19991809add': CARD.BOARD_CARDS_REQUEST // shared
 }
 
 const openProperties = (board, parentUid = '') => {
@@ -79,6 +80,7 @@ const gotoChildren = (value) => {
     store.commit('basic', { key: 'cardSource', value: { uid: value.global_property_uid, param: value.uid } })
   }
   // store.commit(TASK.CLEAN_UP_LOADED_TASKS)
+
   const navElem = {
     name: value.name,
     key: 'greedSource',
@@ -87,6 +89,7 @@ const gotoChildren = (value) => {
     greedPath: 'boards_children',
     value: value.children
   }
+
   store.commit('pushIntoNavStack', navElem)
   store.commit('basic', { key: 'greedSource', value: value.children })
   store.commit('basic', { key: 'greedPath', value: 'boards_children' })

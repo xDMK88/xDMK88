@@ -3,8 +3,8 @@ import assignment from '@/icons/assignment.js'
 import calendar from '@/icons/calendar.js'
 import doitnow from '@/icons/doitnow.js'
 import employee from '@/icons/employee.js'
-import properties from '@/icons/properties.js'
 import project from '@/icons/project.js'
+import properties from '@/icons/properties.js'
 import axios from 'axios'
 import { notify } from 'notiwind'
 import { computed } from 'vue'
@@ -74,7 +74,7 @@ const actions = {
   [NAVIGATOR_REQUEST]: ({ commit, dispatch, rootState }) => {
     return new Promise((resolve, reject) => {
       commit(NAVIGATOR_REQUEST)
-      const url = process.env.VUE_APP_LEADERTASK_API + 'api/v1/navigator'
+      const url = process.env.VUE_APP_LEADERTASK_API + 'api/v1/navigator/info'
       axios({ url: url, method: 'GET' })
         .then((resp) => {
           resp.rootState = rootState

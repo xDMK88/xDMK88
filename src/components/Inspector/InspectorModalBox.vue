@@ -47,13 +47,13 @@ const cancel = () => confirmCancel('cancel')
 
 const delegatedTask = {}
 const input = ref()
-const currentState = ref('task_name')
+const currentState = ref('taskName')
 const inputMessage = ref('')
 const messages = ref([
   {
     message: 'Привет, что нужно сделать?',
     messageFromInspector: true,
-    type: 'task_name',
+    type: 'taskName',
     createDate: new Date().toISOString()
   }
 ])
@@ -102,10 +102,10 @@ watch(value, (newVal) => {
     messages.value.push({
       message: 'Привет, что нужно сделать?',
       messageFromInspector: true,
-      type: 'task_name',
+      type: 'taskName',
       createDate: new Date().toISOString()
     })
-    currentState.value = 'task_name'
+    currentState.value = 'taskName'
   } else {
     // ставим фокус в edit
     setTimeout(() => {
@@ -120,7 +120,6 @@ const createTask = () => {
   delegatedTask.uid_customer = user.value.current_user_uid
   delegatedTask.status = 0
   delegatedTask.type = 1
-  delegatedTask.comment = ''
   store.dispatch('CREATE_TASK', delegatedTask).then((resp) => {
     // manually setup uid_performer beacuse
     // we get empty uid_performer after CREATE_TASK request
@@ -243,14 +242,31 @@ const addCustomerMessage = () => {
     onMessageConfirm(inputMessage.value)
     return
   }
-  if (currentState.value !== 'task_name') return
+
+  if (currentState.value !== 'taskName' && currentState.value !== 'taskComment') return
   messages.value.push({
     message: inputMessage.value,
     messageFromInspector: false,
     createDate: new Date().toISOString()
   })
-  if (currentState.value === 'task_name') {
+
+  if (currentState.value === 'taskName') {
     delegatedTask.name = inputMessage.value
+    messages.value.push({
+      message:
+        'Теперь добавим заметку для задачи.',
+      messageFromInspector: true,
+      type: 'taskComment',
+      createDate: new Date().toISOString()
+    })
+    currentState.value = 'taskComment'
+    inputMessage.value = ''
+    return
+  }
+
+  if (currentState.value === 'taskComment') {
+    delegatedTask.comment = inputMessage.value
+
     messages.value.push({
       message:
         'Отлично, теперь выберите исполнителя. Если сотрудника нет в списке - начните вводить его имя, а я его найду.',
@@ -259,6 +275,8 @@ const addCustomerMessage = () => {
       createDate: new Date().toISOString()
     })
     currentState.value = 'employeeSelection'
+    inputMessage.value = ''
+    return
   }
   inputMessage.value = ''
 }
@@ -271,7 +289,6 @@ const selectEmployee = (emp) => {
     createDate: new Date().toISOString()
   })
   if (currentState.value === 'employeeSelection') {
-    console.log('emp', emp)
     delegatedTask.email_performer = emp.email
     delegatedTask.uid_performer = emp.uid
     messages.value.push({

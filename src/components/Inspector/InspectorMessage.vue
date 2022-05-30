@@ -282,6 +282,10 @@ const computedСonfirmDelegate = computed(() => {
   return newСonfirmParams
 })
 
+const addMinutes = (date, minutes) => {
+  return new Date(date.getTime() + minutes * 60_000)
+}
+
 const computedTimes = computed(() => {
   if (currentState.value !== 'timeSelection') return {}
   const inputLowerCase = inputMessage.value.toLowerCase()
@@ -299,6 +303,13 @@ const computedTimes = computed(() => {
       value: new Date(new Date().setDate(new Date().getDate() + 2))
     }
   }
+  let possibleDate = new Date()
+
+  for (let i = 0; i < 1000; i++) {
+    times['key' + i] = { uid: 'key' + i, name: possibleDate.toUTCString(), value: possibleDate }
+    possibleDate = addMinutes(possibleDate, 5)
+  }
+
   for (const key in times) {
     if (times[key].name.toLowerCase().includes(inputLowerCase)) {
       newTimes[key] = times[key]
@@ -515,10 +526,14 @@ const computedTimes = computed(() => {
           <div
             v-for="(time, _, index) in computedTimes"
             :key="index"
+          >
+          <div
+            v-if="index < 3"
             class="flex items-center bg-white rounded-lg p-1 px-2 mt-1 cursor-pointer mr-1"
             @click="props.selectTime({ name: time.name, date: time.value.toISOString() })"
           >
             <span class="text-sm text-gray-600"> {{ time.name }} </span>
+          </div>
           </div>
           <p
             v-if="Object.keys(computedTimes).length === 0"

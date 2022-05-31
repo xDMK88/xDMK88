@@ -17,14 +17,15 @@
           tag="div"
           class="taskName p-0.5 ring-0 outline-none max-w-7xl mt-0.5"
           :contenteditable="task._isEditable"
+          v-linkify:options="{ className: 'text-blue-600', tagName: 'a' }"
           placeholder="Введите название задачи"
-          :no-nl="true"
-          :no-html="true"
+          :no-nl="false"
+          :no-html="false"
           :class="{ 'uppercase': !task._isEditable && colors[task.uid_marker] && colors[task.uid_marker].uppercase, 'text-gray-500': task.status == 1 || task.status == 7, 'line-through': task.status == 1 || task.status == 7, 'font-extrabold': task.readed == 0 }"
           :style="{ color: getValidForeColor(colors[task.uid_marker]?.fore_color) }"
           @focusout="clearTaskFocus(task)"
           @dblclick.stop="editTaskName(task)"
-          @keyup.enter="updateTask($event, task); this.$emit('changeValue', {_isEditable: false})"
+          @keydown.enter="updateTask($event, task); this.$emit('changeValue', {_isEditable: false})"
         />
         <Popper
           class="items-center"
@@ -285,6 +286,7 @@ import { ref } from 'vue'
 // import TaskListTagLabel from '@/components/TasksList/TaskListTagLabel.vue'
 import { copyText } from 'vue3-clipboard'
 import contenteditable from 'vue-contenteditable'
+import linkify from 'vue-linkify'
 import TaskPropsButtonPerform from '@/components/TaskProperties/TaskPropsButtonPerform.vue'
 import Popper from 'vue3-popper'
 import TaskPropsButtonSetDate from '@/components/TaskProperties/TaskPropsButtonSetDate.vue'
@@ -334,6 +336,9 @@ export default {
     contenteditable,
     Popper,
     TaskStatus
+  },
+  directives: {
+    linkify
   },
   emits: ['clickTask', 'nextTask', 'changeValue'],
   props: {
@@ -496,6 +501,9 @@ export default {
       const date = Math.floor((new Date() - new Date(task.perform_time)) / (60 * 60 * 24 * 1000))
       const dayName = date % 10 === 1 && date % 100 !== 11 ? 'день' : (((date >= 2) && (date % 10 <= 4)) && (date % 100 < 10 || date % 100 >= 20) ? 'дня' : 'дней')
       return date + ' ' + dayName
+    },
+    _linkify (text) {
+      return text.replace(/(lt?:\/\/[^\s]+)/g, '<a href="$1">$1</a>')
     },
     copyUrl (task) {
       copyText(`${window.location.origin}/task/${task.uid}`, undefined, (error, event) => {

@@ -262,7 +262,7 @@ export default {
         return minCoverHeight < this.coverSize.y
           ? this.coverSize.y
           : minCoverHeight
-      } else if (this.card.cover_color !== '#A998B6') {
+      } else if (this.card.cover_color && this.card.cover_color !== '#A998B6') {
         const colorHeight = 11
         return colorHeight
       }

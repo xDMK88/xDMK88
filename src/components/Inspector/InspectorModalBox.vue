@@ -209,7 +209,23 @@ function onMessageConfirm (message) {
 }
 
 const addCustomerMessage = () => {
-  if (!inputMessage.value) return
+  if (!inputMessage.value) {
+    if (currentState.value === 'taskComment') {
+      delegatedTask.comment = ''
+      messages.value.push({
+        message:
+        'Отлично, теперь выберите исполнителя. Если сотрудника нет в списке - начните вводить его имя, а я его найду.',
+        messageFromInspector: true,
+        type: 'employeeSelection',
+        createDate: new Date().toISOString()
+      })
+      currentState.value = 'employeeSelection'
+      inputMessage.value = ''
+      return
+    } else {
+      return
+    }
+  }
   if (currentState.value === 'employeeSelection') {
     onMessageSelectEmployee(inputMessage.value)
     return
@@ -254,7 +270,7 @@ const addCustomerMessage = () => {
     delegatedTask.name = inputMessage.value
     messages.value.push({
       message:
-        'Теперь добавим заметку для задачи.',
+        'Теперь добавим заметку для задачи. Чтобы пропустить - нажмите Enter',
       messageFromInspector: true,
       type: 'taskComment',
       createDate: new Date().toISOString()

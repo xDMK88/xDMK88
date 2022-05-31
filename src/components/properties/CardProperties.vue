@@ -8,6 +8,11 @@ const selectedCard = computed(() => store.state.cards.selectedCard)
 
 <template>
   <div class="relative h-full">
+    <p
+      class="text-[#7E7E80] text-[12px]"
+    >
+      Дата создания: {{ selectedCard.date_create }}
+    </p>
     <div
       class="border-[1px] border-[rgba(0, 0, 0, 0.1) rounded-[8px] min-h-[93px] max-h-[93px]"
       :style="{ 'height': selectedCard.cover_size_y + 'px', 'background': selectedCard.cover_color !== '#A998B6' ? selectedCard.cover_color : '#F4F5F7' }"

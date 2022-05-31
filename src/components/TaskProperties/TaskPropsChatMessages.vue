@@ -1,7 +1,6 @@
 <template>
   <div
     class="messages"
-    :print="print('taskMessages', messages)"
   >
     <div
       v-for="(message, index) in messages"
@@ -241,9 +240,6 @@ export default {
     },
     sendTaskMsg (msg) {
       this.$emit('sendTaskMsg', msg)
-    },
-    print (type, obj) {
-      console.log(type, obj)
     },
     answerInspectorMessage (message, answerType, answer) {
       if (message.performer_answer === null) {

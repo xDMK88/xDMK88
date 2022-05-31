@@ -45,7 +45,7 @@ const actions = {
       const url = process.env.VUE_APP_LEADERTASK_API + 'api/v1/cards'
       axios({ url: url, method: 'POST', data })
         .then((resp) => {
-          commit('AddCard', resp.data)
+          commit('ChangeCard', resp.data)
           resolve(resp)
         })
         .catch((err) => {
@@ -88,9 +88,9 @@ const actions = {
   [CARD.MOVE_CARD]: ({ commit }, data) => {
     return new Promise((resolve, reject) => {
       let url =
-        process.env.VUE_APP_LEADERTASK_API + 'api/v1/cards?uid=' + data.uid
+        process.env.VUE_APP_LEADERTASK_API + 'api/v1/card/stage?uid=' + data.uid
       url = url + '&stage=' + data.stageUid
-      if (data.newOrder !== null) url = url + '&order=' + data.newOrder
+      if (data.newOrder !== undefined) url = url + '&order=' + data.newOrder
       axios({ url: url, method: 'PATCH' })
         .then((resp) => {
           commit('ChangeCard', resp.data)
@@ -255,11 +255,6 @@ const mutations = {
     state.boardUid = resp.boardUid
     state.cards = stages
   },
-  AddCard: (state, card) => {
-    console.log('Mutation AddCard', card)
-    const stage = state.cards.find((stage) => stage.UID === card.uid_stage)
-    if (stage) stage.cards.push(card)
-  },
   DeleteCard: (state, uid) => {
     state.cards.forEach((stage) => {
       const index = stage.cards.findIndex((card) => card.uid === uid)
@@ -270,7 +265,38 @@ const mutations = {
     })
   },
   ChangeCard: (state, card) => {
-    console.log('ChangeCard', card)
+    // найти карточку - вырезать из того места где она сейчас
+    state.cards.forEach((stage) => {
+      const index = stage.cards.findIndex((crd) => crd.uid === card.uid)
+      if (index !== -1) {
+        // удаляем
+        stage.cards.splice(index, 1)
+      }
+    })
+    // если карточка в текущей доске
+    if (state.boardUid === card.uid_board) {
+      // добавить карточку в тот стейдж который должен быть или неразобранное
+      let stage = state.cards.find((stage) => stage.UID === card.uid_stage)
+      if (!stage) {
+        stage = state.cards.find(
+          (stage) => stage.UID === '00000000-0000-0000-0000-000000000000'
+        )
+      }
+      if (stage) {
+        // добавляем карточку
+        stage.cards.push(card)
+        // пересортировать карточки в стедже
+        stage.cards.sort((card1, card2) => {
+          // сначала по порядку
+          if (card1.order > card2.order) return 1
+          if (card1.order < card2.order) return -1
+          // если одинаковый, то по имени
+          if (card1.name > card2.name) return 1
+          if (card1.name < card2.name) return -1
+          return 0
+        })
+      }
+    }
   },
   AddStage: (state, stage) => {
     state.cards.push(stage)

@@ -10,6 +10,13 @@
       @yes="onDeleteColumn"
     />
     <BoardModalBoxRename
+      v-show="showAddCard"
+      :show="showAddCard"
+      title="Добавить карточку"
+      @cancel="showAddCard = false"
+      @save="onAddNewCard"
+    />
+    <BoardModalBoxRename
       v-show="showAddColumn"
       :show="showAddColumn"
       title="Добавить колонку"
@@ -300,6 +307,7 @@ export default {
   data () {
     return {
       isShowArchive: false,
+      showAddCard: false,
       showAddColumn: false,
       showRenameColumn: false,
       selectedColumn: null,
@@ -370,8 +378,8 @@ export default {
       return ''
     },
     addCard (column) {
-      // TODO: Здесь сделать добавление карточек
-      console.log('addCard', column)
+      this.showAddCard = true
+      this.selectedColumn = column
     },
     clickAddColumn (e) {
       this.showAddColumn = true
@@ -465,6 +473,21 @@ export default {
     unlockVisibility (stageUid) {
       const icon = this.$refs[`stage-icon-${stageUid}`][0]
       icon.style.visibility = null
+    },
+    onAddNewCard (name) {
+      this.showAddCard = false
+      const title = name.trim()
+      if (title) {
+        this.$store.dispatch(CARD.ADD_CARD, {
+          name: title,
+          comment: '',
+          uid_board: this.board.uid,
+          uid_stage: this.selectedColumn.UID
+        })
+          .then((resp) => {
+            console.log('onAddNewCard ok', resp)
+          })
+      }
     }
   }
 }

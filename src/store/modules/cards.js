@@ -40,6 +40,28 @@ const actions = {
         })
     })
   },
+  [CARD.ADD_CARD]: ({ commit }, data) => {
+    return new Promise((resolve, reject) => {
+      const url = process.env.VUE_APP_LEADERTASK_API + 'api/v1/cards'
+      axios({ url: url, method: 'POST', data })
+        .then((resp) => {
+          commit('AddCard', resp.data)
+          resolve(resp)
+        })
+        .catch((err) => {
+          notify(
+            {
+              group: 'api',
+              title: 'REST API Error, please make screenshot',
+              action: CARD.ADD_CARD,
+              text: err.response?.data ?? err
+            },
+            15000
+          )
+          reject(err)
+        })
+    })
+  },
   [CARD.BOARD_CARDS_ADDSTAGE]: ({ commit, rootState }, newStage) => {
     const board = rootState.boards.boards[state.boardUid]
     const canChangeBoard = board.type_access === 1
@@ -184,6 +206,11 @@ const mutations = {
     state.status = 'success'
     state.boardUid = resp.boardUid
     state.cards = stages
+  },
+  AddCard: (state, card) => {
+    console.log('Mutation AddCard', card)
+    const stage = state.cards.find((stage) => stage.UID === card.uid_stage)
+    if (stage) stage.cards.push(card)
   },
   AddStage: (state, stage) => {
     state.cards.push(stage)

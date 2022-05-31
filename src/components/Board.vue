@@ -3,6 +3,13 @@
     id="Board"
   >
     <BoardModalBoxDelete
+      v-show="showDeleteCard"
+      title="Удалить карточку"
+      text="Вы действительно хотите удалить карточку?"
+      @cancel="showDeleteCard = false"
+      @yes="onDeleteCard"
+    />
+    <BoardModalBoxDelete
       v-show="showDeleteColumn"
       title="Удалить колонку"
       text="Вы действительно хотите удалить колонку?"
@@ -202,6 +209,10 @@
                 :read-only="!board || board.type_access === 0"
                 :selected="selectedCard?.uid === element.uid"
                 class="mt-2"
+                @select="selectCard(element)"
+                @delete="deleteCard(element)"
+                @moveSuccess="moveSuccessCard(element)"
+                @moveReject="moveRejectCard(element)"
               />
             </template>
           </draggable>
@@ -283,6 +294,7 @@ import BoardModalBoxColor from '@/components/Board/BoardModalBoxColor.vue'
 import BoardModalBoxMove from '@/components/Board/BoardModalBoxMove.vue'
 import * as BOARD from '@/store/actions/boards'
 import * as CARD from '@/store/actions/cards'
+import { FETCH_FILES_AND_MESSAGES } from '@/store/actions/cardfilesandmessages'
 
 export default {
   components: {
@@ -313,7 +325,9 @@ export default {
       selectedColumn: null,
       showDeleteColumn: false,
       showColorColumn: false,
-      showMoveColumn: false
+      showMoveColumn: false,
+      showDeleteCard: false,
+      currentCard: null
     }
   },
   computed: {
@@ -486,6 +500,37 @@ export default {
         })
           .then((resp) => {
             console.log('onAddNewCard ok', resp)
+          })
+      }
+    },
+    selectCard (card) {
+      this.$store.commit(CARD.SELECT_CARD, card)
+      this.$store.dispatch(FETCH_FILES_AND_MESSAGES, card.uid)
+      this.$store.commit('basic', { key: 'propertiesState', value: 'card' })
+      this.$store.dispatch('asidePropertiesToggle', true)
+    },
+    deleteCard (card) {
+      this.showDeleteCard = true
+      this.currentCard = card
+    },
+    moveSuccessCard (card) {
+      this.$store.dispatch(CARD.MOVE_CARD, { uid: card.uid, stageUid: 'f98d6979-70ad-4dd5-b3f8-8cd95cb46c67' })
+        .then((resp) => {
+          console.log('Card is moved')
+        })
+    },
+    moveRejectCard (card) {
+      this.$store.dispatch(CARD.MOVE_CARD, { uid: card.uid, stageUid: 'e70af5e2-6108-4c02-9a7d-f4efee78d28c' })
+        .then((resp) => {
+          console.log('Card is moved')
+        })
+    },
+    onDeleteCard () {
+      this.showDeleteCard = false
+      if (this.currentCard) {
+        this.$store.dispatch(CARD.DELETE_CARD, { uid: this.currentCard.uid })
+          .then((resp) => {
+            console.log('Card is deleted')
           })
       }
     }

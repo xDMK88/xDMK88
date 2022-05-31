@@ -33,49 +33,40 @@ watch(selectedBoard, () => {
   hasChanged.value = false
 })
 
-const addRemoveMember = (email) => {
-  hasChanged.value = true
-  if (email.included) {
-    selectedBoard.value.members[email.uid] = 1
-  } else {
-    delete selectedBoard.value.members[email.uid]
+const addRemoveMember = (board, email, type) => {
+  const b = []
+  console.log(board.members)
+  console.log(board)
+  const data = {
+    uid: board.uid,
+    name: board.name,
+    members: selectedBoard.value.members.push(email, type),
+    color: board.color
   }
-}
-
-const removeMember = (member) => {
-  delete selectedBoard.value.members[member.uid]
-}
-
-function uuidv4 () {
-  return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
-    (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
-  )
-}
-
-const createOrUpdateBoard = (board) => {
+  console.log(b)
+  hasChanged.value = true
+  board.name = selectedBoard.value.name
   board.quiet = board.quiet ? 1 : 0
   // TODO: should not be hardcoded
   board.global_property_uid = '1b30b42c-b77e-40a4-9b43-a19991809add'
-  if (!board.uid) {
-    board.uid = uuidv4()
-    console.log('create board c ' + ' uid: ' + board.uid, board)
-    store.dispatch(BOARD.CREATE_BOARD_REQUEST, board)
-      .then(() => {
-        hasChanged.value = false
-        board.quiet = !!board.quiet
-        store.dispatch('asidePropertiesToggle', false)
-        store.commit(BOARD.PUSH_BOARD, [board])
-        store.commit(NAVIGATOR.NAVIGATOR_PUSH_BOARD, [board])
-      })
-  } else {
-    console.log('update board c ' + ' uid: ' + board.uid, board)
-    store.dispatch(BOARD.UPDATE_BOARD_REQUEST, board)
-      .then(() => {
-        hasChanged.value = false
-        board.quiet = !!board.quiet
-        store.dispatch('asidePropertiesToggle', false)
-      })
+  board.members = { [user.value.current_user_uid]: type }
+  board.uid = selectedBoard.value.uid
+  console.log('update board c ' + ' uid: ' + board.uid, board)
+  store.dispatch(BOARD.UPDATE_BOARD_REQUEST, data).then(() => {
+  })
+}
+const updateName = (board) => {
+  const data = {
+    uid: board.uid,
+    name: board.name,
+    members: board.members,
+    color: board.color
   }
+  store.dispatch(BOARD.UPDATE_BOARD_REQUEST, data).then(() => {
+  })
+}
+const removeMember = (member) => {
+  delete selectedBoard.value.members[member.uid]
 }
 
 const quitBoard = (board) => {
@@ -85,7 +76,6 @@ const quitBoard = (board) => {
       store.commit(NAVIGATOR.NAVIGATOR_REMOVE_BOARD, board)
     })
 }
-
 const removeBoard = (board) => {
   store.dispatch(BOARD.REMOVE_BOARD_REQUEST, board.uid)
     .then(() => {
@@ -147,6 +137,7 @@ const copyurl = (uid) => {
         class="mt-2 rounded-xl bg-gray-100 font-bold text-gray-700 dark:text-gray-100 w-full border-none ring-0 outline-none p-3 bg-transparent"
         :disabled="selectedBoard.email_creator != user.current_user_email"
         @input="hasChanged = true"
+        @keyup="updateName(selectedBoard)"
       >
       <div
         class="mt-8"
@@ -192,11 +183,13 @@ const copyurl = (uid) => {
                 <p>{{ email.name }}</p>
               </div>
               <input
-                v-model="email.included"
                 class="ml-2 bg-gray-300 rounded border border-gray-100"
                 type="checkbox"
+                v-model="email.included"
+                value="1"
+                ref="type"
                 :checked="selectedBoard.members[email.uid]"
-                @change="addRemoveMember(email)"
+                @change="addRemoveMember(selectedBoard, email.uid, 1)"
               >
             </div>
           </div>
@@ -213,7 +206,116 @@ const copyurl = (uid) => {
             class="text-gray-500 dark:text-gray-100 mx-3"
           />
           <p class="text-gray-600 dark:text-gray-100">
-            Добавить участника проекта
+            Добавить с правами администратора
+          </p>
+        </div>
+      </Popper>
+      <Popper
+        arrow
+        :z-index="999999999999999999"
+        class="z-auto"
+        :class="isDark ? 'dark' : 'light'"
+        placement="top"
+      >
+        <template #content>
+          <div
+            style="max-height: 15rem;"
+            class="overflow-scroll"
+          >
+            <div
+              v-for="(email, key, index) in employees"
+              :key="index"
+              class="px-3 py-1 bg-gray-50 rounded-xl mt-1 flex items-center justify-between border border-gray-100"
+            >
+              <div class="flex items-center">
+                <img
+                  :src="email.fotolink"
+                  class="rounded-xl mr-2"
+                  width="35"
+                  height="35"
+                >
+                <p>{{ email.name }}</p>
+              </div>
+              <input
+                class="ml-2 bg-gray-300 rounded border border-gray-100"
+                type="checkbox"
+                v-model="email.included"
+                value="2"
+                ref="type"
+                :checked="selectedBoard.members[email.uid]"
+                @change="addRemoveMember(selectedBoard, email.uid, 2)"
+              >
+            </div>
+          </div>
+        </template>
+        <div
+          v-if="selectedBoard.email_creator == user.current_user_email"
+          class="flex items-center justify-center my-6 cursor-pointer"
+        >
+          <Icon
+            :path="add.path"
+            :box="add.viewBox"
+            :width="add.width"
+            :height="add.height"
+            class="text-gray-500 dark:text-gray-100 mx-3"
+          />
+          <p class="text-gray-600 dark:text-gray-100">
+            Добавить с правами на запись
+          </p>
+        </div>
+      </Popper>
+      <Popper
+        arrow
+        :z-index="999999999999999999"
+        class="z-auto"
+        :class="isDark ? 'dark' : 'light'"
+        placement="top"
+      >
+        <template #content>
+          <div
+            style="max-height: 15rem;"
+            class="overflow-scroll"
+          >
+            <div
+              v-for="(email, key, index) in employees"
+              :key="index"
+              class="px-3 py-1 bg-gray-50 rounded-xl mt-1 flex items-center justify-between border border-gray-100"
+            >
+              <div class="flex items-center">
+                <img
+                  :src="email.fotolink"
+                  class="rounded-xl mr-2"
+                  width="35"
+                  height="35"
+                >
+                <p>{{ email.name }}</p>
+              </div>
+              <input
+                class="ml-2 bg-gray-300 rounded border border-gray-100"
+                type="checkbox"
+                name="type"
+                v-model="email.included"
+                ref="type"
+                value="0"
+                :checked="selectedBoard.members[email.uid]"
+                @change="addRemoveMember(selectedBoard, email.uid, 0)"
+              >
+            </div>
+          </div>
+        </template>
+        <div
+          v-if="selectedBoard.email_creator == user.current_user_email"
+          class="flex items-center justify-center my-6 cursor-pointer"
+        >
+          <Icon
+            :path="add.path"
+            :box="add.viewBox"
+            :width="add.width"
+            :height="add.height"
+            class="text-gray-500 dark:text-gray-100 mx-3"
+          />
+          <p class="text-gray-600 dark:text-gray-100">
+            Добавить с правами на чтение
           </p>
         </div>
       </Popper>
@@ -266,14 +368,6 @@ const copyurl = (uid) => {
           Показать всех участников
         </p>
       </div>
-      <button
-        v-if="selectedBoard.email_creator == user.current_user_email"
-        class="w-full bg-gray-100 dark:bg-gray-800 rounded-xl mt-4 p-3 text-gray-700 dark:text-gray-100 font-bold hover:bg-gray-200 hover:dark:bg-gray-700"
-        :class="{ 'bg-orange-400 dark:bg-orange-400 hover:bg-orange-500 hover:dark:bg-orange-500': hasChanged }"
-        @click="createOrUpdateBoard(selectedBoard, emails)"
-      >
-        {{ selectedBoard.uid ? 'Сохранить' : 'Создать' }}
-      </button>
       <button
         v-if="selectedBoard.email_creator == user.current_user_email && selectedBoard.uid"
         class="w-full bg-red-600 rounded-xl mt-4 p-3 text-white font-bold hover:bg-red-800"

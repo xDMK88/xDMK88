@@ -9,9 +9,11 @@ import * as TASK from '@/store/actions/tasks'
 import * as CARD from '@/store/actions/cards.js'
 import { SELECT_PROJECT } from '@/store/actions/projects'
 import { SELECT_BOARD } from '@/store/actions/boards.js'
+import * as NAVIGATOR from '@/store/actions/navigator'
 import ProjectsListAddItem from '@/components/ProjectsList/ProjectsListAddItem.vue'
 import ProjectsListGridViewSwitcher from '@/components/ProjectsList/ProjectsListGridViewSwitcher.vue'
-
+import BoardModalBoxRename from '@/components/Board/BoardModalBoxRename.vue'
+import * as BOARD from '@/store/actions/boards'
 const store = useStore()
 defineProps({
   items: {
@@ -28,13 +30,13 @@ defineProps({
   }
 })
 // Serves as linkage between requests from storage and tree view navigator
+const showAddColumn = ref(false)
 const UID_TO_ACTION = {
   '2e8dddd0-125a-49ef-a87c-0ea17b1b7f56': CARD.BOARD_CARDS_REQUEST, // private
   '1b30b42c-b77e-40a4-9b43-a19991809add': CARD.BOARD_CARDS_REQUEST, // shared
   '7af232ff-0e29-4c27-a33b-866b5fd6eade': TASK.PROJECT_TASKS_REQUEST, // private
   '431a3531-a77a-45c1-8035-f0bf75c32641': TASK.PROJECT_TASKS_REQUEST // shared
 }
-
 const isGridView = computed(() => store.state.isGridView)
 localStorage.setItem('isGridView', true)
 const updateGridView = (value) => {
@@ -79,37 +81,6 @@ const createProject = () => {
   }
   store.commit(SELECT_PROJECT, project)
 }
-const createBoard = () => {
-  focusedUid.value = ''
-  if (!isPropertiesMobileExpanded.value) {
-    store.dispatch('asidePropertiesToggle', true)
-  }
-
-  store.commit('basic', { key: 'propertiesState', value: 'board' })
-
-  // create empty instanse of board
-  const board = {
-    uid_parent: '00000000-0000-0000-0000-000000000000',
-    color: '',
-    comment: '',
-    plugin: '',
-    collapsed: 0,
-    isclosed: 0,
-    order: 0,
-    group: 0,
-    show: 0,
-    favorite: 0,
-    quiet: 0,
-    email_creator: user.value.current_user_email,
-    members: { [user.value.current_user_uid]: '1' },
-    children: [],
-    uid: null,
-    name: '',
-    type_access: 1,
-    bold: 0
-  }
-  store.commit(SELECT_BOARD, board)
-}
 
 const createItem = (type) => {
   switch (type) {
@@ -117,7 +88,6 @@ const createItem = (type) => {
       createProject()
       break
     case 'boards':
-      createBoard()
       break
     default:
       console.error(`createItem ${type} - неизвестный тип у плитки в проектах!`)
@@ -239,9 +209,51 @@ const isHaveMembers = (type, value) => {
       return false
   }
 }
+function uuidv4 () {
+  return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
+    (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+  )
+}
+const onAddNewBoard = (name) => {
+  focusedUid.value = ''
+  store.commit('basic', { key: 'propertiesState', value: 'board' })
+  const data = {
+    uid: uuidv4(),
+    name: name,
+    uid_parent: '00000000-0000-0000-0000-000000000000',
+    color: '',
+    comment: '',
+    plugin: '',
+    collapsed: 0,
+    isclosed: 0,
+    order: 0,
+    group: 0,
+    show: 0,
+    favorite: 0,
+    quiet: 0,
+    email_creator: user.value.current_user_email,
+    members: { [user.value.current_user_uid]: '1' },
+    children: [],
+    type_access: 1,
+    bold: 0
+  }
+  store.dispatch(BOARD.CREATE_BOARD_REQUEST, data).then(() => {
+  })
+  store.commit(NAVIGATOR.NAVIGATOR_PUSH_BOARD, [data])
+  store.commit(SELECT_BOARD, data)
+}
 </script>
 
 <template class="w-full">
+  <BoardModalBoxRename
+    v-model="showAddColumn"
+    v-show="showAddColumn"
+    :show="showAddColumn"
+    title="Добавить доску"
+    @cancel="showAddColumn = false"
+    @save="onAddNewBoard"
+  />
+
   <div
     v-for="(value, index) in items"
     :key="index"
@@ -340,7 +352,7 @@ const isHaveMembers = (type, value) => {
       <!-- кнопка добавить доску -->
       <ProjectsListAddItem
         v-if="index == 2"
-        @onClick="createItem(value.type)"
+        @click="showAddColumn = true"
       />
     </div>
   </div>

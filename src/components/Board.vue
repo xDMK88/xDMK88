@@ -3,6 +3,13 @@
     id="Board"
   >
     <BoardModalBoxDelete
+      v-show="showDeleteCard"
+      title="Удалить карточку"
+      text="Вы действительно хотите удалить карточку?"
+      @cancel="showDeleteCard = false"
+      @yes="onDeleteCard"
+    />
+    <BoardModalBoxDelete
       v-show="showDeleteColumn"
       title="Удалить колонку"
       text="Вы действительно хотите удалить колонку?"
@@ -202,6 +209,10 @@
                 :read-only="!board || board.type_access === 0"
                 :selected="selectedCard?.uid === element.uid"
                 class="mt-2"
+                @select="selectCard(element)"
+                @delete="deleteCard(element)"
+                @moveSuccess="moveSuccessCard(element)"
+                @moveReject="moveRejectCard(element)"
               />
             </template>
           </draggable>
@@ -313,7 +324,9 @@ export default {
       selectedColumn: null,
       showDeleteColumn: false,
       showColorColumn: false,
-      showMoveColumn: false
+      showMoveColumn: false,
+      showDeleteCard: false,
+      currentCard: null
     }
   },
   computed: {
@@ -486,6 +499,30 @@ export default {
         })
           .then((resp) => {
             console.log('onAddNewCard ok', resp)
+          })
+      }
+    },
+    selectCard (card) {
+      this.$store.commit(CARD.SELECT_CARD, card)
+      this.$store.commit('basic', { key: 'propertiesState', value: 'card' })
+      this.$store.dispatch('asidePropertiesToggle', true)
+    },
+    deleteCard (card) {
+      this.showDeleteCard = true
+      this.currentCard = card
+    },
+    moveSuccessCard (card) {
+      console.log('moveSuccessCard', card)
+    },
+    moveRejectCard (card) {
+      console.log('moveRejectCard', card)
+    },
+    onDeleteCard () {
+      this.showDeleteCard = false
+      if (this.currentCard) {
+        this.$store.dispatch(CARD.DELETE_CARD, { uid: this.currentCard.uid })
+          .then((resp) => {
+            console.log('Card is deleted')
           })
       }
     }

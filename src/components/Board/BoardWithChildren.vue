@@ -216,18 +216,21 @@ export default {
           email_creator: user.current_user_email,
           order: maxOrder + 1,
           collapsed: 0,
-          color: '#A998B6',
-          type_access: 1,
+          color: '',
           public_link_status: 0,
           show_date: 0,
           favorite: 0,
           stages: [],
           children: [],
-          members,
-          global_property_uid: '1b30b42c-b77e-40a4-9b43-a19991809add'
+          members
         }
         console.log(`create board uid: ${board.uid}`, board)
-        this.$store.dispatch(BOARD.CREATE_BOARD_REQUEST, board).then(() => {
+        this.$store.dispatch(BOARD.CREATE_BOARD_REQUEST, board).then((res) => {
+          // заполняем недостающие параметры
+          board.global_property_uid = '1b30b42c-b77e-40a4-9b43-a19991809add'
+          board.type_access = res.data.type_access
+          board.color = '#A998B6'
+          //
           this.$store.commit(BOARD.PUSH_BOARD, [board])
           this.$store.commit(NAVIGATOR.NAVIGATOR_PUSH_BOARD, [board])
           this.gotoChildren(board)

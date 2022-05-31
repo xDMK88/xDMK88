@@ -2,15 +2,25 @@
   <div
     class="group bg-white rounded-[10px] border px-[18px] py-[20px]"
     :class="{ 'border-[#e5e5e5]': !selected, 'border-[#ff9123]': selected }"
-    @click="selectCard(card)"
+    @click="selectCard"
   >
     <div
       v-if="haveCover"
-      class="rounded-[10px] display-inline mb-[20px]"
+      class="overflow-hidden rounded-[10px] mb-[20px] flex place-content-center"
       :style="{ background: card.cover_color, height: `${coverHeight}px` }"
     >
-      <!-- сюда сделать загрузку картинки -->
-      <div>&nbsp;</div>
+      <div
+        v-if="card.cover_link"
+        class="bg-cover bg-center bg-origin-content bg-clip-content"
+        :style="{
+          'background-image': `url(${card.cover_link})`,
+          height: `${coverSize.y}px`,
+          width: `${coverSize.x}px`
+        }"
+      />
+      <div v-else>
+&nbsp;
+      </div>
     </div>
     <div class="flex items-start justify-between">
       <div class="width100without18">
@@ -27,27 +37,67 @@
         </p>
       </div>
       <!-- кнопка три точки -->
+
       <div
         v-if="!readOnly"
+        :ref="`card-icon-${card.uid}`"
         class="flex-none h-[18px] w-[18px] cursor-pointer invisible group-hover:visible"
-        @click.stop="showCardMenu(card, $event)"
+        @click.stop=""
       >
-        <div class="hover:-m-px hover:border hover:rounded-sm border-[#7e7e80]">
-          <svg
-            width="18"
-            height="18"
-            viewBox="0 0 18 18"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
+        <Popper
+          arrow
+          class="light"
+          placement="bottom"
+          @open:popper="lockVisibility(card.uid)"
+          @close:popper="unlockVisibility(card.uid)"
+        >
+          <div
+            class="hover:-m-px hover:border hover:rounded-sm border-[#7e7e80]"
           >
-            <path
-              fill-rule="evenodd"
-              clip-rule="evenodd"
-              d="M9.35524 16.1055C8.37421 16.1055 7.57892 15.3102 7.57892 14.3291C7.57892 13.3481 8.37421 12.5528 9.35524 12.5528C10.3363 12.5528 11.1316 13.3481 11.1316 14.3291C11.1316 15.3102 10.3363 16.1055 9.35524 16.1055ZM9.35524 10.7765C8.37421 10.7765 7.57892 9.9812 7.57892 9.00016C7.57892 8.01912 8.37421 7.22383 9.35524 7.22383C10.3363 7.22383 11.1316 8.01912 11.1316 9.00016C11.1316 9.9812 10.3363 10.7765 9.35524 10.7765ZM7.57892 3.67118C7.57892 4.65222 8.37421 5.4475 9.35524 5.4475C10.3363 5.4475 11.1316 4.65222 11.1316 3.67118C11.1316 2.69015 10.3363 1.89486 9.35524 1.89486C8.37421 1.89486 7.57892 2.69015 7.57892 3.67118Z"
-              fill="#7e7e80"
-            />
-          </svg>
-        </div>
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 18 18"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                fill-rule="evenodd"
+                clip-rule="evenodd"
+                d="M9.35524 16.1055C8.37421 16.1055 7.57892 15.3102 7.57892 14.3291C7.57892 13.3481 8.37421 12.5528 9.35524 12.5528C10.3363 12.5528 11.1316 13.3481 11.1316 14.3291C11.1316 15.3102 10.3363 16.1055 9.35524 16.1055ZM9.35524 10.7765C8.37421 10.7765 7.57892 9.9812 7.57892 9.00016C7.57892 8.01912 8.37421 7.22383 9.35524 7.22383C10.3363 7.22383 11.1316 8.01912 11.1316 9.00016C11.1316 9.9812 10.3363 10.7765 9.35524 10.7765ZM7.57892 3.67118C7.57892 4.65222 8.37421 5.4475 9.35524 5.4475C10.3363 5.4475 11.1316 4.65222 11.1316 3.67118C11.1316 2.69015 10.3363 1.89486 9.35524 1.89486C8.37421 1.89486 7.57892 2.69015 7.57892 3.67118Z"
+                fill="#7e7e80"
+              />
+            </svg>
+          </div>
+          <template #content="{ close }">
+            <div
+              class="flex flex-col"
+              @click="close"
+            >
+              <div
+                v-if="!isArchive"
+                class="flex items-center py-0.5 px-2 cursor-pointer hover:text-[#ebaa40] rounded text-sm font-['Tahoma']"
+                @click="clickSuccess"
+              >
+                Архивировать: Успех
+              </div>
+              <div
+                v-if="!isArchive"
+                class="mt-2 flex items-center py-0.5 px-2 cursor-pointer hover:text-[#ebaa40] rounded text-sm font-['Tahoma']"
+                @click="clickReject"
+              >
+                Архивировать: Отказ
+              </div>
+              <div
+                class="flex items-center py-0.5 px-2 cursor-pointer hover:text-[#ebaa40] rounded text-sm font-['Tahoma']"
+                :class="{ 'mt-2': !isArchive }"
+                @click="clickDelete"
+              >
+                Удалить
+              </div>
+            </div>
+          </template>
+        </Popper>
       </div>
     </div>
     <div
@@ -191,12 +241,12 @@
 </template>
 
 <script>
-//  import Popper from 'vue3-popper'
-import { SELECT_CARD } from '@/store/actions/cards'
+import Popper from 'vue3-popper'
+
 export default {
-  //  components: {
-  //  Popper
-  //  },
+  components: {
+    Popper
+  },
   props: {
     card: {
       type: Object,
@@ -215,7 +265,14 @@ export default {
       default: false
     }
   },
+  emits: ['select', 'moveSuccess', 'moveReject', 'delete'],
   computed: {
+    isArchive () {
+      return (
+        this.card.uid_stage === 'f98d6979-70ad-4dd5-b3f8-8cd95cb46c67' ||
+        this.card.uid_stage === 'e70af5e2-6108-4c02-9a7d-f4efee78d28c'
+      )
+    },
     employees () {
       return this.$store.state.employees.employees
     },
@@ -254,7 +311,7 @@ export default {
         return minCoverHeight < this.coverSize.y
           ? this.coverSize.y
           : minCoverHeight
-      } else if (this.card.cover_color !== '#A998B6') {
+      } else if (this.card.cover_color && this.card.cover_color !== '#A998B6') {
         const colorHeight = 11
         return colorHeight
       }
@@ -333,16 +390,28 @@ export default {
     print (val) {
       console.log(val)
     },
-    selectCard (card) {
-      this.$store.commit(SELECT_CARD, card)
-      this.$store.commit('basic', { key: 'propertiesState', value: 'card' })
-      this.$store.dispatch('asidePropertiesToggle', true)
+    selectCard () {
+      this.$emit('select')
     },
     getEmpNameByEmail (userEmail) {
       return this.employeesByEmail[userEmail.toLowerCase()]?.name ?? userEmail
     },
-    showCardMenu (card, e) {
-      console.log('showCardMenu', card, e)
+    lockVisibility (cardUid) {
+      const icon = this.$refs[`card-icon-${cardUid}`]
+      icon.style.visibility = 'visible'
+    },
+    unlockVisibility (cardUid) {
+      const icon = this.$refs[`card-icon-${cardUid}`]
+      icon.style.visibility = null
+    },
+    clickSuccess () {
+      this.$emit('moveSuccess')
+    },
+    clickReject () {
+      this.$emit('moveReject')
+    },
+    clickDelete () {
+      this.$emit('delete')
     }
   }
 }
@@ -351,5 +420,16 @@ export default {
 <style scoped>
 .width100without18 {
   width: calc(100% - 18px);
+}
+.light {
+  --popper-theme-background-color: #ffffff;
+  --popper-theme-background-color-hover: #ffffff;
+  --popper-theme-text-color: #444444;
+  --popper-theme-border-width: 1px;
+  --popper-theme-border-style: solid;
+  --popper-theme-border-color: rgba(0, 0, 0, 0.12);
+  --popper-theme-border-radius: 10px;
+  --popper-theme-padding: 17px 15px;
+  --popper-theme-box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.25);
 }
 </style>

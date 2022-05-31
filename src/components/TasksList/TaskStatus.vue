@@ -55,6 +55,7 @@ const statuses = [
 ]
 
 const store = useStore()
+const user = computed(() => store.state.user.user)
 const isTaskStatusPopperActive = ref(false)
 const isDark = computed(() => store.state.darkMode)
 const localization = computed(() => store.state.localization.localization)
@@ -108,7 +109,10 @@ const changeTaskStatus = (uid, status) => {
     @close:popper="toggleTaskStatusPopper(false)"
   >
     <template #content="{ close }">
-      <div class="flex flex-col">
+      <div
+        class="flex flex-col"
+        v-if="!((props.task.uid_customer !== user.current_user_uid) && (props.task.status === 1))"
+      >
         <div
           v-for="taskStatus in 10"
           :key="taskStatus"

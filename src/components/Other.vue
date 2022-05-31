@@ -87,7 +87,7 @@ function redirect (category) {
       key: 'taskListSource',
       value: { uid: category.link, param: null }
     }
-    store.commit('updateStackWithInitValue', navElem)
+    store.commit('pushIntoNavStack', navElem)
     store.commit('basic', { key: 'taskListSource', value: { uid: category.link, param: null } })
     store.commit('basic', { key: 'mainSectionState', value: 'tasks' })
   } else {
@@ -99,7 +99,7 @@ function redirect (category) {
       greedPath: category.path,
       value: storeNavigator.value[category.path].items
     }
-    store.commit('updateStackWithInitValue', navElem)
+    store.commit('pushIntoNavStack', navElem)
     store.commit('basic', { key: 'greedSource', value: storeNavigator.value[category.path].items })
   }
 }

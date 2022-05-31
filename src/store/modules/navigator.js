@@ -4,7 +4,7 @@ import calendar from '@/icons/calendar.js'
 import doitnow from '@/icons/doitnow.js'
 import employee from '@/icons/employee.js'
 import project from '@/icons/project.js'
-import properties from '@/icons/properties.js'
+import other from '@/icons/other.js'
 import axios from 'axios'
 import { notify } from 'notiwind'
 import { computed } from 'vue'
@@ -305,10 +305,10 @@ const mutations = {
         label: 'Прочее',
         uid: '757be87d-c269-40e0-b224-6b2bb0e4f97d',
         bold: false,
-        icon: properties.path,
-        iconBox: properties.viewBox,
-        width: properties.width,
-        height: properties.height,
+        icon: other.path,
+        iconBox: other.viewBox,
+        width: other.width,
+        height: other.height,
         type: 'greed',
         path: 'other'
       }

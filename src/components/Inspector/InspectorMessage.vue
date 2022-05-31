@@ -182,7 +182,7 @@ const computedEmployees = computed(() => {
   const newEmployees = {}
   for (const empUid in employees.value) {
     if (
-      // empUid !== currentUserUid.value &&
+      empUid !== currentUserUid.value &&
       includesWord(employees.value[empUid].name, inputLowerCase)
     ) {
       newEmployees[empUid] = employees.value[empUid]
@@ -282,34 +282,50 @@ const computedСonfirmDelegate = computed(() => {
   return newСonfirmParams
 })
 
-const addMinutes = (date, minutes) => {
-  return new Date(date.getTime() + minutes * 60_000)
+const getNearestDay = (d, weekDay) => { // weekDay is an int 1 - Monday, 2 - Tuesday etc
+  return new Date(d.setDate(d.getDate() + (((weekDay + 7 - d.getDay()) % 7) || 7)))
+}
+
+const russianMonths = {
+  Января: 0,
+  Февраля: 1,
+  Марта: 2,
+  Апреля: 3,
+  Мая: 4,
+  Июня: 5,
+  Июля: 6,
+  Августа: 7,
+  Сентября: 8,
+  Октября: 9,
+  Ноября: 10,
+  Декабря: 11
 }
 
 const computedTimes = computed(() => {
   if (currentState.value !== 'timeSelection') return {}
   const inputLowerCase = inputMessage.value.toLowerCase()
+  const re = /([0-9]){1,2} +/g
   const newTimes = {}
   const times = {
     today: { uid: 'today', name: 'Сегодня', value: new Date() },
-    tomorrow: {
-      uid: 'tomorrow',
-      name: 'Завтра',
-      value: new Date(new Date().setDate(new Date().getDate() + 1))
-    },
-    oneDayLater: {
-      uid: 'oneDayLater',
-      name: 'Послезавтра',
-      value: new Date(new Date().setDate(new Date().getDate() + 2))
+    tomorrow: { uid: 'tomorrow', name: 'Завтра', value: new Date(new Date().setDate(new Date().getDate() + 1)) },
+    oneDayLater: { uid: 'oneDayLater', name: 'Послезавтра', value: new Date(new Date().setDate(new Date().getDate() + 2)) },
+    monday: { uid: 'monday', name: 'Понедельник', value: getNearestDay(new Date(), 1) },
+    tuesday: { uid: 'tuesday', name: 'Вторник', value: getNearestDay(new Date(), 2) },
+    wednesday: { uid: 'wednesday', name: 'Среда', value: getNearestDay(new Date(), 3) },
+    thursday: { uid: 'thursday', name: 'Четверг', value: getNearestDay(new Date(), 4) },
+    friday: { uid: 'friday', name: 'Пятница', value: getNearestDay(new Date(), 5) },
+    saturday: { uid: 'saturday', name: 'Суббота', value: getNearestDay(new Date(), 6) },
+    sunday: { uid: 'sunday', name: 'Воскресенье', value: getNearestDay(new Date(), 7) }
+  }
+
+  console.log('before testing regular expression')
+  if (re.test(inputLowerCase) && parseInt(inputMessage.value.split(' ')[0]) <= 31) {
+    for (const key in russianMonths) {
+      const dayNumber = inputMessage.value.split(' ')[0]
+      times[key + dayNumber] = { uid: key + dayNumber, name: dayNumber + ' ' + key, value: new Date(2022, russianMonths[key], parseInt(dayNumber)) }
     }
   }
-  let possibleDate = new Date()
-
-  for (let i = 0; i < 1000; i++) {
-    times['key' + i] = { uid: 'key' + i, name: possibleDate.toUTCString(), value: possibleDate }
-    possibleDate = addMinutes(possibleDate, 5)
-  }
-
   for (const key in times) {
     if (times[key].name.toLowerCase().includes(inputLowerCase)) {
       newTimes[key] = times[key]
@@ -527,13 +543,13 @@ const computedTimes = computed(() => {
             v-for="(time, _, index) in computedTimes"
             :key="index"
           >
-          <div
-            v-if="index < 3"
-            class="flex items-center bg-white rounded-lg p-1 px-2 mt-1 cursor-pointer mr-1"
-            @click="props.selectTime({ name: time.name, date: time.value.toISOString() })"
-          >
-            <span class="text-sm text-gray-600"> {{ time.name }} </span>
-          </div>
+            <div
+              v-if="index < 3"
+              class="flex items-center bg-white rounded-lg p-1 px-2 mt-1 cursor-pointer mr-1"
+              @click="props.selectTime({ name: time.name, date: time.value.toISOString() })"
+            >
+              <span class="text-sm text-gray-600"> {{ time.name }} </span>
+            </div>
           </div>
           <p
             v-if="Object.keys(computedTimes).length === 0"

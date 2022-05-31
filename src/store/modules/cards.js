@@ -40,12 +40,82 @@ const actions = {
         })
     })
   },
+  [CARD.ADD_CARD]: ({ commit }, data) => {
+    return new Promise((resolve, reject) => {
+      const url = process.env.VUE_APP_LEADERTASK_API + 'api/v1/cards'
+      axios({ url: url, method: 'POST', data })
+        .then((resp) => {
+          commit('ChangeCard', resp.data)
+          resolve(resp)
+        })
+        .catch((err) => {
+          notify(
+            {
+              group: 'api',
+              title: 'REST API Error, please make screenshot',
+              action: CARD.ADD_CARD,
+              text: err.response?.data ?? err
+            },
+            15000
+          )
+          reject(err)
+        })
+    })
+  },
+  [CARD.DELETE_CARD]: ({ commit }, data) => {
+    return new Promise((resolve, reject) => {
+      const url =
+        process.env.VUE_APP_LEADERTASK_API + 'api/v1/cards?uid=' + data.uid
+      axios({ url: url, method: 'DELETE' })
+        .then((resp) => {
+          commit('DeleteCard', data.uid)
+          resolve(resp)
+        })
+        .catch((err) => {
+          notify(
+            {
+              group: 'api',
+              title: 'REST API Error, please make screenshot',
+              action: CARD.DELETE_CARD,
+              text: err.response?.data ?? err
+            },
+            15000
+          )
+          reject(err)
+        })
+    })
+  },
+  [CARD.MOVE_CARD]: ({ commit }, data) => {
+    return new Promise((resolve, reject) => {
+      let url =
+        process.env.VUE_APP_LEADERTASK_API + 'api/v1/card/stage?uid=' + data.uid
+      url = url + '&stage=' + data.stageUid
+      if (data.newOrder !== undefined) url = url + '&order=' + data.newOrder
+      axios({ url: url, method: 'PATCH' })
+        .then((resp) => {
+          commit('ChangeCard', resp.data)
+          resolve(resp)
+        })
+        .catch((err) => {
+          notify(
+            {
+              group: 'api',
+              title: 'REST API Error, please make screenshot',
+              action: CARD.MOVE_CARD,
+              text: err.response?.data ?? err
+            },
+            15000
+          )
+          reject(err)
+        })
+    })
+    //
+  },
   [CARD.BOARD_CARDS_ADDSTAGE]: ({ commit, rootState }, newStage) => {
     const board = rootState.boards.boards[state.boardUid]
     const canChangeBoard = board.type_access === 1
     const canAddCardsToBoard =
       board.type_access === 1 || board.type_access === 2
-    //
     const stage = { ...newStage }
     stage.cards = []
     stage.Unsorted = false
@@ -184,6 +254,49 @@ const mutations = {
     state.status = 'success'
     state.boardUid = resp.boardUid
     state.cards = stages
+  },
+  DeleteCard: (state, uid) => {
+    state.cards.forEach((stage) => {
+      const index = stage.cards.findIndex((card) => card.uid === uid)
+      if (index !== -1) {
+        // удаляем
+        stage.cards.splice(index, 1)
+      }
+    })
+  },
+  ChangeCard: (state, card) => {
+    // найти карточку - вырезать из того места где она сейчас
+    state.cards.forEach((stage) => {
+      const index = stage.cards.findIndex((crd) => crd.uid === card.uid)
+      if (index !== -1) {
+        // удаляем
+        stage.cards.splice(index, 1)
+      }
+    })
+    // если карточка в текущей доске
+    if (state.boardUid === card.uid_board) {
+      // добавить карточку в тот стейдж который должен быть или неразобранное
+      let stage = state.cards.find((stage) => stage.UID === card.uid_stage)
+      if (!stage) {
+        stage = state.cards.find(
+          (stage) => stage.UID === '00000000-0000-0000-0000-000000000000'
+        )
+      }
+      if (stage) {
+        // добавляем карточку
+        stage.cards.push(card)
+        // пересортировать карточки в стедже
+        stage.cards.sort((card1, card2) => {
+          // сначала по порядку
+          if (card1.order > card2.order) return 1
+          if (card1.order < card2.order) return -1
+          // если одинаковый, то по имени
+          if (card1.name > card2.name) return 1
+          if (card1.name < card2.name) return -1
+          return 0
+        })
+      }
+    }
   },
   AddStage: (state, stage) => {
     state.cards.push(stage)

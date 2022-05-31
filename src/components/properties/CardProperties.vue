@@ -2,8 +2,11 @@
 import { computed } from 'vue'
 import { useStore } from 'vuex'
 
+import CardChat from '@/components/properties/CardChat.vue'
+
 const store = useStore()
 const selectedCard = computed(() => store.state.cards.selectedCard)
+const cardMessages = computed(() => store.state.cardfilesandmessages.messages)
 const cardDateCreate = computed(() => {
   return new Date(selectedCard.value.date_create).toLocaleString()
 })
@@ -83,6 +86,11 @@ const cardDateCreate = computed(() => {
       class="border-[1px] border-[rgba(0, 0, 0, 0.1) rounded-[8px] p-[12px] focus:border-[rgba(0, 0, 0, 0.5) w-full h-[110px] font-[400] text-[14px] text-[#4C4C4D]"
       style="background-color: #F4F5F7; resize: none"
     />
+    <!-- Card chat -->
+    <card-chat
+      :messages="cardMessages"
+    />
+    <!-- Message input -->
     <div class="flex absolute bottom-[30px] w-full">
       <div class="rounded-l-[10px] flex items-center justify-center bg-[#F4F5F7] pl-[15px]">
         <svg

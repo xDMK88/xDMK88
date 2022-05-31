@@ -37,6 +37,9 @@ const actions = {
     })
   },
   [CARD_FILES_AND_MESSAGES.FETCH_FILES_AND_MESSAGES]: ({ commit, dispatch }, cardUid) => {
+    commit(CARD_FILES_AND_MESSAGES.REFRESH_FILES)
+    commit(CARD_FILES_AND_MESSAGES.REFRESH_MESSAGES)
+
     commit(CARD_FILES_AND_MESSAGES.MESSAGES_REQUEST)
 
     const messages = dispatch(CARD_FILES_AND_MESSAGES.MESSAGES_REQUEST, cardUid)
@@ -44,7 +47,7 @@ const actions = {
 
     return Promise.all([messages, files])
       .then(() => {
-        commit(CARD_FILES_AND_MESSAGES.MERGE_FILES_WITH_MESSAGES)
+        commit(CARD_FILES_AND_MESSAGES.MERGE_FILES_AND_MESSAGES)
       })
   }
 }
@@ -57,11 +60,11 @@ const mutations = {
     state.status = 'loading'
   },
   [CARD_FILES_AND_MESSAGES.MESSAGES_SUCCESS]: (state, resp) => {
-    state.messages = resp.data
+    state.messages = resp.data.msgs
     state.status = 'success'
   },
   [CARD_FILES_AND_MESSAGES.FILES_SUCCESS]: (state, resp) => {
-    state.messages = resp.data
+    state.messages = resp.data.files
     state.status = 'success'
   },
   [CARD_FILES_AND_MESSAGES.REFRESH_FILES]: (state, resp) => {
@@ -70,7 +73,7 @@ const mutations = {
   [CARD_FILES_AND_MESSAGES.REFRESH_MESSAGES]: (state, resp) => {
     state.messages = []
   },
-  [CARD_FILES_AND_MESSAGES.MERGE_FILES_AND_MESSAGES]: (state, resp) => {
+  [CARD_FILES_AND_MESSAGES.MERGE_FILES_AND_MESSAGES]: (state) => {
     state.files.forEach(item => {
       item.msg = item.file_name
     })

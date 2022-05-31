@@ -286,9 +286,25 @@ const getNearestDay = (d, weekDay) => { // weekDay is an int 1 - Monday, 2 - Tue
   return new Date(d.setDate(d.getDate() + (((weekDay + 7 - d.getDay()) % 7) || 7)))
 }
 
+const russianMonths = {
+  Января: 0,
+  Февраля: 1,
+  Марта: 2,
+  Апреля: 3,
+  Мая: 4,
+  Июня: 5,
+  Июля: 6,
+  Августа: 7,
+  Сентября: 8,
+  Октября: 9,
+  Ноября: 10,
+  Декабря: 11
+}
+
 const computedTimes = computed(() => {
   if (currentState.value !== 'timeSelection') return {}
   const inputLowerCase = inputMessage.value.toLowerCase()
+  const re = /([0-9]){1,2} +/g
   const newTimes = {}
   const times = {
     today: { uid: 'today', name: 'Сегодня', value: new Date() },
@@ -303,6 +319,13 @@ const computedTimes = computed(() => {
     sunday: { uid: 'sunday', name: 'Воскресенье', value: getNearestDay(new Date(), 7) }
   }
 
+  console.log('before testing regular expression')
+  if (re.test(inputLowerCase) && parseInt(inputMessage.value.split(' ')[0]) <= 31) {
+    for (const key in russianMonths) {
+      const dayNumber = inputMessage.value.split(' ')[0]
+      times[key + dayNumber] = { uid: key + dayNumber, name: dayNumber + ' ' + key, value: new Date(2022, russianMonths[key], parseInt(dayNumber)) }
+    }
+  }
   for (const key in times) {
     if (times[key].name.toLowerCase().includes(inputLowerCase)) {
       newTimes[key] = times[key]

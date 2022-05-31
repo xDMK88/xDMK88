@@ -294,6 +294,7 @@ import BoardModalBoxColor from '@/components/Board/BoardModalBoxColor.vue'
 import BoardModalBoxMove from '@/components/Board/BoardModalBoxMove.vue'
 import * as BOARD from '@/store/actions/boards'
 import * as CARD from '@/store/actions/cards'
+import { FETCH_FILES_AND_MESSAGES } from '@/store/actions/cardfilesandmessages'
 
 export default {
   components: {
@@ -504,6 +505,7 @@ export default {
     },
     selectCard (card) {
       this.$store.commit(CARD.SELECT_CARD, card)
+      this.$store.dispatch(FETCH_FILES_AND_MESSAGES, card.uid)
       this.$store.commit('basic', { key: 'propertiesState', value: 'card' })
       this.$store.dispatch('asidePropertiesToggle', true)
     },
@@ -512,10 +514,16 @@ export default {
       this.currentCard = card
     },
     moveSuccessCard (card) {
-      console.log('moveSuccessCard', card)
+      this.$store.dispatch(CARD.MOVE_CARD, { uid: card.uid, stageUid: 'f98d6979-70ad-4dd5-b3f8-8cd95cb46c67' })
+        .then((resp) => {
+          console.log('Card is moved')
+        })
     },
     moveRejectCard (card) {
-      console.log('moveRejectCard', card)
+      this.$store.dispatch(CARD.MOVE_CARD, { uid: card.uid, stageUid: 'e70af5e2-6108-4c02-9a7d-f4efee78d28c' })
+        .then((resp) => {
+          console.log('Card is moved')
+        })
     },
     onDeleteCard () {
       this.showDeleteCard = false

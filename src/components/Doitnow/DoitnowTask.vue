@@ -124,13 +124,15 @@
     <div class="flex">
       <div class="flex flex-col">
         <div class="flex flex-col">
-          <!-- editable task name -->
-          <div v-if="task.comment.length">
-            <article class="text-sm break-all whitespace-pre-line">
-              <span class="font-bold block">Описание задачи:</span>
-              {{ task.comment }}
-            </article>
-          </div>
+          <article class="text-sm break-all whitespace-pre-line">
+            <span class="font-bold block">Заметки к задаче:</span>
+            <TaskPropsCommentEditor
+              :comment="task.comment"
+              :can-edit="task.uid_customer === user.current_user_uid"
+              @endChangeComment="endChangeComment"
+              @changeComment="onChangeComment"
+            />
+          </article>
         </div>
       </div>
     </div>
@@ -287,6 +289,7 @@ import { ref } from 'vue'
 import { copyText } from 'vue3-clipboard'
 import contenteditable from 'vue-contenteditable'
 import linkify from 'vue-linkify'
+import TaskPropsCommentEditor from '@/components/TaskProperties/TaskPropsCommentEditor.vue'
 import TaskPropsButtonPerform from '@/components/TaskProperties/TaskPropsButtonPerform.vue'
 import Popper from 'vue3-popper'
 import TaskPropsButtonSetDate from '@/components/TaskProperties/TaskPropsButtonSetDate.vue'
@@ -331,6 +334,7 @@ export default {
     TaskPropsButtonPerform,
     TaskPropsButtonSetDate,
     TaskPropsChatMessages,
+    TaskPropsCommentEditor,
     Checklist,
     TaskPropsInputForm,
     contenteditable,
@@ -496,6 +500,16 @@ export default {
   methods: {
     resetFocusChecklist () {
       this.checklistshow = false
+    },
+    endChangeComment (text) {
+      this.$emit('changeValue', { comment: text })
+    },
+    onChangeComment (text) {
+      const data = {
+        uid: this.task.uid,
+        value: text
+      }
+      this.$store.dispatch(TASK.CHANGE_TASK_COMMENT, data)
     },
     plural (task) {
       const date = Math.floor((new Date() - new Date(task.perform_time)) / (60 * 60 * 24 * 1000))

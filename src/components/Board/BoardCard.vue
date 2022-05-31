@@ -6,11 +6,19 @@
   >
     <div
       v-if="haveCover"
-      class="rounded-[10px] display-inline mb-[20px]"
+      class="overflow-hidden rounded-[10px] mb-[20px] flex place-content-center"
       :style="{ background: card.cover_color, height: `${coverHeight}px` }"
     >
-      <!-- сюда сделать загрузку картинки -->
-      <div>&nbsp;</div>
+      <div
+        v-if="card.cover_link"
+        class="bg-cover bg-center bg-origin-content bg-clip-content"
+        :style="{ 'background-image': `url(${card.cover_link})`, height: `${coverSize.y}px`, width: `${coverSize.x}px` }"
+      />
+      <div
+        v-else
+      >
+        &nbsp;
+      </div>
     </div>
     <div class="flex items-start justify-between">
       <div class="width100without18">

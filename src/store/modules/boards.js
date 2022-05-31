@@ -171,18 +171,35 @@ const actions = {
           new Error(`not find stage ${data.stageUid} at board ${data.boardUid}`)
         )
       }
-      // удаляем
-      board.stages.splice(index, 1)
-      // пересчитываем порядок
-      board.stages.forEach((stage, index) => {
-        stage.Order = index
-      })
-      // отправляем на сервер изменения
-      dispatch(BOARD.UPDATE_BOARD_REQUEST, board)
+      //
+      const url =
+        process.env.VUE_APP_LEADERTASK_API +
+        '/api/v1/boardsstages?uid=' +
+        data.stageUid
+      axios({ url: url, method: 'DELETE' })
         .then((resp) => {
+          // В resp.data сервер возвращает всю доску
+          // по уму нужно мутировать доску, а не самим пересчитывать
+          // console.log('DELETE_STAGE_BOARD_REQUEST', resp)
+          // удаляем
+          board.stages.splice(index, 1)
+          // пересчитываем порядок
+          board.stages.forEach((stage, index) => {
+            stage.Order = index
+          })
+          //
           resolve(resp)
         })
         .catch((err) => {
+          notify(
+            {
+              group: 'api',
+              title: 'REST API Error, please make screenshot',
+              action: BOARD.DELETE_STAGE_BOARD_REQUEST,
+              text: err.response?.data ?? err.response
+            },
+            15000
+          )
           reject(err)
         })
     })

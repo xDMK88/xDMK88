@@ -144,7 +144,7 @@ onMounted(() => {
           v-model="check.text"
           tag="div"
           style="max-width: 80%;"
-          placeholder="write checklist here..."
+          placeholder="добавить чек-лист..."
           :class="{ 'text-gray-500 line-through': check.checked }"
           :contenteditable="store.state.tasks.newtasks[props.taskUid] ? store.state.tasks.newtasks[props.taskUid].info.uid_customer === user.current_user_uid : isCustomer"
           :no-n-l="true"

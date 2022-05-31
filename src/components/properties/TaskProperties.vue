@@ -1201,7 +1201,7 @@ export default {
     button="warning"
     has-button
     has-cancel
-    button-label="Delete"
+    button-label="Удалить"
     @confirm="delTask"
   >
     <p

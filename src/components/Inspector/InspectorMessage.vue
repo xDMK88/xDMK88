@@ -282,8 +282,8 @@ const computedСonfirmDelegate = computed(() => {
   return newСonfirmParams
 })
 
-const addMinutes = (date, minutes) => {
-  return new Date(date.getTime() + minutes * 60_000)
+const getNearestDay = (d, weekDay) => { // weekDay is an int 1 - Monday, 2 - Tuesday etc
+  return new Date(d.setDate(d.getDate() + (((weekDay + 7 - d.getDay()) % 7) || 7)))
 }
 
 const computedTimes = computed(() => {
@@ -292,22 +292,15 @@ const computedTimes = computed(() => {
   const newTimes = {}
   const times = {
     today: { uid: 'today', name: 'Сегодня', value: new Date() },
-    tomorrow: {
-      uid: 'tomorrow',
-      name: 'Завтра',
-      value: new Date(new Date().setDate(new Date().getDate() + 1))
-    },
-    oneDayLater: {
-      uid: 'oneDayLater',
-      name: 'Послезавтра',
-      value: new Date(new Date().setDate(new Date().getDate() + 2))
-    }
-  }
-  let possibleDate = new Date()
-
-  for (let i = 0; i < 1000; i++) {
-    times['key' + i] = { uid: 'key' + i, name: possibleDate.toUTCString(), value: possibleDate }
-    possibleDate = addMinutes(possibleDate, 5)
+    tomorrow: { uid: 'tomorrow', name: 'Завтра', value: new Date(new Date().setDate(new Date().getDate() + 1)) },
+    oneDayLater: { uid: 'oneDayLater', name: 'Послезавтра', value: new Date(new Date().setDate(new Date().getDate() + 2)) },
+    monday: { uid: 'monday', name: 'Понедельник', value: getNearestDay(new Date(), 1) },
+    tuesday: { uid: 'tuesday', name: 'Вторник', value: getNearestDay(new Date(), 2) },
+    wednesday: { uid: 'wednesday', name: 'Среда', value: getNearestDay(new Date(), 3) },
+    thursday: { uid: 'thursday', name: 'Четверг', value: getNearestDay(new Date(), 4) },
+    friday: { uid: 'friday', name: 'Пятница', value: getNearestDay(new Date(), 5) },
+    saturday: { uid: 'saturday', name: 'Суббота', value: getNearestDay(new Date(), 6) },
+    sunday: { uid: 'sunday', name: 'Воскресенье', value: getNearestDay(new Date(), 7) }
   }
 
   for (const key in times) {
@@ -527,13 +520,13 @@ const computedTimes = computed(() => {
             v-for="(time, _, index) in computedTimes"
             :key="index"
           >
-          <div
-            v-if="index < 3"
-            class="flex items-center bg-white rounded-lg p-1 px-2 mt-1 cursor-pointer mr-1"
-            @click="props.selectTime({ name: time.name, date: time.value.toISOString() })"
-          >
-            <span class="text-sm text-gray-600"> {{ time.name }} </span>
-          </div>
+            <div
+              v-if="index < 3"
+              class="flex items-center bg-white rounded-lg p-1 px-2 mt-1 cursor-pointer mr-1"
+              @click="props.selectTime({ name: time.name, date: time.value.toISOString() })"
+            >
+              <span class="text-sm text-gray-600"> {{ time.name }} </span>
+            </div>
           </div>
           <p
             v-if="Object.keys(computedTimes).length === 0"

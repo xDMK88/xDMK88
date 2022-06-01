@@ -57,7 +57,7 @@
               <div
                 v-linkify:options="{ className: 'text-blue-600' }"
                 v-html="
-                  getInspectorMessage(message.type, selectedTask).replaceAll(
+                  getInspectorMessage(message.type, (task.length ? task : selectedTask)).replaceAll(
                     '\n',
                     '<br/>'
                   )
@@ -100,11 +100,11 @@
                       1,
                       'Вопросов нет - приступаю - будет готово ' +
                         dateToLabelFormat(
-                          new Date(selectedTask.customer_date_end)
+                          new Date((task.length ? task.customer_date_end : selectedTask.customer_date_end))
                         ) +
                         ' до ' +
                         dateToTimeFormat(
-                          new Date(selectedTask.customer_date_end)
+                          new Date((task.length ? task.customer_date_end : selectedTask.customer_date_end))
                         )
                     )
                   "
@@ -113,12 +113,12 @@
                     Вопросов нет - приступаю - будет готово
                     {{
                       dateToLabelFormat(
-                        new Date(selectedTask.customer_date_end)
+                        new Date((task.length ? task.customer_date_end : selectedTask.customer_date_end))
                       )
                     }}
                     до
                     {{
-                      dateToTimeFormat(new Date(selectedTask.customer_date_end))
+                      dateToTimeFormat(new Date((task.length ? task.customer_date_end : selectedTask.customer_date_end)))
                     }}
                   </span>
                 </div>
@@ -168,6 +168,10 @@ export default {
     TaskPropsChatMessageFile
   },
   props: {
+    task: {
+      type: Object,
+      default: () => ({})
+    },
     currentUserUid: {
       type: String,
       default: ''

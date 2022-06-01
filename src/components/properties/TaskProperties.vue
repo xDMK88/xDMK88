@@ -985,7 +985,7 @@ export default {
           this.selectedTask.has_msgs = true
           if (this.selectedTask.type === 2 || this.selectedTask.type === 3) {
             if ([1, 5, 7, 8].includes(this.selectedTask.status)) {
-              if (((this.selectedTask.uid_customer === this.cusers.current_user_uid) && (this.selectedTask.status === 1))) {
+              if (((this.selectedTask.uid_customer === this.cusers.current_user_uid) && ((this.selectedTask.status === 1) || (this.selectedTask.status === 5)))) {
                 this.selectedTask.status = 9
                 this.$store.dispatch(TASK.CHANGE_TASK_STATUS, { uid: this.selectedTask.uid, value: 9 })
               } else if (((this.selectedTask.uid_customer !== this.cusers.current_user_uid) && (this.selectedTask.status === 1))) {
@@ -1047,7 +1047,7 @@ export default {
               // ставим статус "на доработку" когда прикладываем файл
               if (this.selectedTask.type === 2 || this.selectedTask.type === 3) {
                 if ([1, 5, 7, 8].includes(this.selectedTask.status)) {
-                  if (((this.selectedTask.uid_customer === this.cusers.current_user_uid) && (this.selectedTask.status === 1))) {
+                  if (((this.selectedTask.uid_customer === this.cusers.current_user_uid) && ((this.selectedTask.status === 1) || (this.selectedTask.status === 5)))) {
                     this.selectedTask.status = 9
                     this.$store.dispatch(TASK.CHANGE_TASK_STATUS, { uid: this.selectedTask.uid, value: 9 })
                   } else if (((this.selectedTask.uid_customer !== this.cusers.current_user_uid) && (this.selectedTask.status === 1))) {

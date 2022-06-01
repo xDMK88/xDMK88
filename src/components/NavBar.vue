@@ -416,7 +416,7 @@ const openProjectProperties = (project, parentProjectUid = '') => {
       </nav-bar-item>
     </div>
     <div
-      v-if="navStack[0] && navStack[0].greedPath !== 'new_private_projects' && navStack[0].greedPath !== 'new_delegate' && navStack[0].name !== 'Рабочий стол'"
+      v-if="navStack[0] && navStack[0].greedPath !== 'new_private_projects' && navStack[0].greedPath !== 'new_delegate' && navStack[0].name !== 'Рабочий стол' && navStack[0].name !== 'Очередь'"
       class="flex-none items-stretch flex h-14"
     >
       <nav-bar-item class="px-3">

@@ -6,6 +6,8 @@ import CardChat from '@/components/properties/CardChat.vue'
 
 const store = useStore()
 const selectedCard = computed(() => store.state.cards.selectedCard)
+const user = computed(() => store.state.user.user)
+const employees = computed(() => store.state.employees.employees)
 const cardMessages = computed(() => store.state.cardfilesandmessages.messages)
 const cardDateCreate = computed(() => {
   return new Date(selectedCard.value.date_create).toLocaleString()
@@ -89,6 +91,8 @@ const cardDateCreate = computed(() => {
     <!-- Card chat -->
     <card-chat
       :messages="cardMessages"
+      :current-user-uid="user.current_user_uid"
+      :employees="employees"
     />
     <!-- Message input -->
     <div class="flex absolute bottom-[30px] w-full">
@@ -118,7 +122,7 @@ const cardDateCreate = computed(() => {
         class="rounded-r-[10px] flex items-center justify-center bg-[#F4F5F7] pr-[12px]"
       >
         <div
-          class="rounded-[8px] flex items-center justify-center min-w-[32px] min-h-[32px] bg-[#E0E1E3]"
+          class="rounded-[8px] flex items-center justify-center min-w-[32px] min-h-[32px] bg-[#E0E1E3] hover:bg-white"
         >
           <svg
             width="14"

@@ -2,10 +2,11 @@
 import { computed } from 'vue'
 
 import CardChatInterlocutorMessage from '@/components/properties/CardChatInterlocutorMessage.vue'
+import CardChatSelfMessage from '@/components/properties/CardChatSelfMessage.vue'
 
 const props = defineProps({
   messages: Array,
-  currentUser: Object,
+  currentUserUid: String,
   employees: Object
 })
 
@@ -56,7 +57,7 @@ const getMessageWeekDateString = (dateCreate) => {
 </script>
 
 <template>
-  <div>
+  <div class="flex flex-col pb-[100px]">
     <div
       v-for="(message, index) in messages"
       :key="index"
@@ -73,12 +74,19 @@ const getMessageWeekDateString = (dateCreate) => {
       <div
         v-if="isChangedCreator(index)"
         class="text-[#7E7E80] text-[13px] font-[500] leading-[15px] tracking-wide mb-[6px]"
+        :class="{ 'text-left': !message.isMyMessage, 'text-right': message.isMyMessage }"
       >
         {{ props.employees[message.uid_creator].name }}
       </div>
 
       <card-chat-interlocutor-message
         v-if="!message.isMyMessage && message.isMessage"
+        :message="message"
+        :employee="props.employees[message.uid_creator]"
+      />
+
+      <card-chat-self-message
+        v-if="message.isMyMessage && message.isMessage"
         :message="message"
         :employee="props.employees[message.uid_creator]"
       />

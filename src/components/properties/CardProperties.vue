@@ -1,6 +1,7 @@
 <script setup>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useStore } from 'vuex'
+import { CREATE_MESSAGE_REQUEST } from '@/store/actions/cardfilesandmessages'
 
 import CardChat from '@/components/properties/CardChat.vue'
 
@@ -12,6 +13,24 @@ const cardMessages = computed(() => store.state.cardfilesandmessages.messages)
 const cardDateCreate = computed(() => {
   return new Date(selectedCard.value.date_create).toLocaleString()
 })
+
+function uuidv4 () {
+  return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
+    (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+  )
+}
+
+const cardMessageInputValue = ref('')
+const createCardMessage = () => {
+  const data = {
+    uid_card: selectedCard.value.uid,
+    uid_msg: uuidv4(),
+    text: cardMessageInputValue.value
+  }
+  store.dispatch(CREATE_MESSAGE_REQUEST, data).then(() => {
+    cardMessageInputValue.value = ''
+  })
+}
 </script>
 
 <template>
@@ -115,9 +134,11 @@ const cardDateCreate = computed(() => {
       </div>
 
       <input
+        v-model="cardMessageInputValue"
         class="bg-[#F4F5F7] py-[17px] pr-[15px] pl-[10px] text-[#656566] w-full text-[14px]"
         type="text"
         placeholder="Напишите сообщение..."
+        @keyup.enter="createCardMessage"
       >
 
       <div
@@ -125,6 +146,7 @@ const cardDateCreate = computed(() => {
       >
         <div
           class="rounded-[8px] flex items-center justify-center min-w-[32px] min-h-[32px] bg-[#E0E1E3] hover:bg-white"
+          @click="createCardMessage"
         >
           <svg
             width="14"

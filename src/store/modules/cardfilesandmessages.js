@@ -24,6 +24,18 @@ const actions = {
         })
     })
   },
+  [CARD_FILES_AND_MESSAGES.CREATE_MESSAGE_REQUEST]: ({ commit, dispatch }, data) => {
+    return new Promise((resolve, reject) => {
+      const url = process.env.VUE_APP_LEADERTASK_API + 'api/v1/cardsmsgs'
+      axios({ url: url, method: 'POST', data: data })
+        .then(resp => {
+          commit(CARD_FILES_AND_MESSAGES.CREATE_MESSAGE_REQUEST, resp)
+          resolve(resp)
+        }).catch(err => {
+          reject(err)
+        })
+    })
+  },
   [CARD_FILES_AND_MESSAGES.FILES_REQUEST]: ({ commit, dispatch }, cardUid) => {
     commit(CARD_FILES_AND_MESSAGES.REFRESH_FILES)
     return new Promise((resolve, reject) => {
@@ -55,6 +67,9 @@ const mutations = {
   [CARD_FILES_AND_MESSAGES.MESSAGES_REQUEST]: state => {
     state.status = 'loading'
   },
+  [CARD_FILES_AND_MESSAGES.CREATE_MESSAGES_REQUEST]: (state, resp) => {
+    state.messages.push(resp.data)
+  },
   [CARD_FILES_AND_MESSAGES.FILES_REQUEST]: state => {
     state.status = 'loading'
   },
@@ -70,6 +85,7 @@ const mutations = {
     state.files = []
   },
   [CARD_FILES_AND_MESSAGES.REFRESH_MESSAGES]: (state, resp) => {
+    console.log('WE ARE REFRESHING MESSAGES')
     state.messages = []
   },
   [CARD_FILES_AND_MESSAGES.MERGE_FILES_AND_MESSAGES]: (state) => {

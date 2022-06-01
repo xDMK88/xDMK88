@@ -120,6 +120,7 @@ const mutations = {
   },
   [AUTH_LOGOUT]: state => {
     state.token = ''
+    window.location.href += 'login'
   },
   [AUTH_RESET]: (state, index) => {
     if (index === state.navStack.length - 1 || state.navStack.length === 1) {

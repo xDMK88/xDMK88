@@ -784,7 +784,7 @@ export default {
 
     const cutTask = (task) => {
       store.commit(TASK.COPY_TASK, task)
-      removeTask(task.uid)
+      store.commit(TASK.REMOVE_TASK, task.uid)
     }
 
     const nodeSelected = (arg) => {

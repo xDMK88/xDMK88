@@ -866,11 +866,13 @@ export default {
       store.dispatch('asidePropertiesToggle', false)
     }
     const nodeDragEnd = (node) => {
+      console.log(node.dragged.node.id)
       if (storeTasks.value[node.dragged.node.id]) {
         // change order in children
         if (storeTasks.value[node.dragged.node.id].parent) {
+          console.log('Переместил в чилдрен')
           const parent = storeTasks.value[storeTasks.value[node.dragged.node.id].parent]
-          if (parent.children.length > 1) {
+          if (parent.children.length >= 1) {
             for (let i = 0; i < parent.children.length; i++) {
               if (parent.children[i] === node.dragged.node.id) {
                 if (i === 0) {

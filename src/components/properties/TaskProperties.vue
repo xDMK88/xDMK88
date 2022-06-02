@@ -1087,7 +1087,6 @@ export default {
     },
     onChangePerformer: function (userEmail) {
       console.log('onChangePerformer', userEmail)
-      const user = this.$store.state.user.user
       const taskUid = this.selectedTask.uid
       const data = {
         uid: this.selectedTask.uid,
@@ -1102,9 +1101,13 @@ export default {
           this.selectedTask.type = resp.data.type
         }
       )
-      if (user.current_user_email !== userEmail) {
-        this.$store.commit(TASK.REMOVE_TASK, taskUid)
-        this.$store.dispatch('asidePropertiesToggle', false)
+      const navStack = computed(() => this.$store.state.navbar.navStack)
+      if (navStack.value.length && navStack.value.length > 0) {
+        const navStackUid = navStack.value[0]?.value?.uid
+        if (navStackUid === '901841d9-0016-491d-ad66-8ee42d2b496b') {
+          this.$store.commit(TASK.REMOVE_TASK, taskUid)
+          this.$store.dispatch('asidePropertiesToggle', false)
+        }
       }
     },
     onChangeDates: function (begin, end) {

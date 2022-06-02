@@ -74,12 +74,9 @@
               :ref="`stage-icon-${column.UID}`"
               class="flex-none h-[18px] w-[18px] cursor-pointer invisible stage-column-hover:visible"
             >
-              <Popper
-                arrow
-                class="light"
-                placement="bottom"
-                @open:popper="lockVisibility(column.UID)"
-                @close:popper="unlockVisibility(column.UID)"
+              <PopMenu
+                @openMenu="lockVisibility(column.UID)"
+                @closeMenu="unlockVisibility(column.UID)"
               >
                 <div
                   class="hover:-m-px hover:border hover:rounded-sm"
@@ -102,39 +99,33 @@
                     />
                   </svg>
                 </div>
-                <template #content="{ close }">
-                  <div
-                    class="flex flex-col"
-                    @click="close"
+                <template #menu>
+                  <PopMenuItem
+                    icon="edit"
+                    @click="clickRenameColumn(column, $event)"
                   >
-                    <div
-                      class="flex items-center py-0.5 px-2 cursor-pointer hover:text-[#ebaa40] rounded text-sm font-['Tahoma']"
-                      @click="clickRenameColumn(column, $event)"
-                    >
-                      Переименовать
-                    </div>
-                    <div
-                      class="mt-2 flex items-center py-0.5 px-2 cursor-pointer hover:text-[#ebaa40] rounded text-sm font-['Tahoma']"
-                      @click="clickColorColumn(column, $event)"
-                    >
-                      Выбрать цвет
-                    </div>
-                    <div
-                      class="mt-2 flex items-center py-0.5 px-2 cursor-pointer hover:text-[#ebaa40] rounded text-sm font-['Tahoma']"
-                      @click="clickMoveColumn(column, $event)"
-                    >
-                      Переместить
-                    </div>
-                    <div class="mt-2 flex h-px bg-[#dddddd]" />
-                    <div
-                      class="mt-2 flex items-center py-0.5 px-2 cursor-pointer hover:text-[#ebaa40] rounded text-sm font-['Tahoma']"
-                      @click="clickDeleteColumn(column, $event)"
-                    >
-                      Удалить
-                    </div>
-                  </div>
+                    Переименовать
+                  </PopMenuItem>
+                  <PopMenuItem
+                    icon="color"
+                    @click="clickColorColumn(column, $event)"
+                  >
+                    Выбрать цвет
+                  </PopMenuItem>
+                  <PopMenuItem
+                    icon="move"
+                    @click="clickMoveColumn(column, $event)"
+                  >
+                    Переместить
+                  </PopMenuItem>
+                  <PopMenuItem
+                    icon="delete"
+                    @click="clickDeleteColumn(column, $event)"
+                  >
+                    Удалить
+                  </PopMenuItem>
                 </template>
-              </Popper>
+              </PopMenu>
             </div>
           </div>
           <!--под заголовок стат-колонки -->
@@ -286,7 +277,8 @@
 </template>
 
 <script>
-import Popper from 'vue3-popper'
+import PopMenu from '@/components/modals/PopMenu.vue'
+import PopMenuItem from '@/components/modals/PopMenuItem.vue'
 import draggable from 'vuedraggable'
 import BoardCard from '@/components/Board/BoardCard.vue'
 import BoardModalBoxRename from '@/components/Board/BoardModalBoxRename.vue'
@@ -299,7 +291,8 @@ import { FETCH_FILES_AND_MESSAGES } from '@/store/actions/cardfilesandmessages'
 
 export default {
   components: {
-    Popper,
+    PopMenu,
+    PopMenuItem,
     BoardModalBoxRename,
     BoardModalBoxDelete,
     BoardModalBoxColor,

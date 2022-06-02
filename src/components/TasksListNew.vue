@@ -147,113 +147,12 @@
             />
 
             <!-- Task action popper -->
-            <Popper
-              arrow
-              :class="isDark ? 'dark' : 'light'"
+            <PopMenu
               placement="auto"
               @click.stop="toggleTaskHoverPopper(true)"
-              @open:popper="toggleTaskHoverPopper(true)"
-              @close:popper="toggleTaskHoverPopper(false)"
+              @openMenu="toggleTaskHoverPopper(true)"
+              @closeMenu="toggleTaskHoverPopper(false)"
             >
-              <template #content="{ close }">
-                <div class="flex flex-col w-40">
-                  <!-- Set task for tomorrow -->
-                  <div
-                    v-if="props.node.info.uid_customer == user.current_user_uid"
-                    class="flex cursor-pointer items-center hover:bg-gray-100 hover:dark:bg-stone-800 py-0.5 px-1.5 rounded-xl"
-                    @click="moveTaskTomorrow(props.node.info)"
-                  >
-                    <Icon
-                      :path="fortomorrow.path"
-                      class="text-gray-600 dark:text-white mr-3 cursor-pointer"
-                      :box="fortomorrow.viewBox"
-                      :width="fortomorrow.width"
-                      :height="fortomorrow.height"
-                    />
-                    <p>{{ localization.Tomorrow }}</p>
-                  </div>
-
-                  <!-- Copy task name -->
-                  <div
-                    class="flex cursor-pointer items-center hover:bg-gray-100 hover:dark:bg-stone-800 py-0.5 px-1.5 rounded-xl"
-                    @click="copyTaskName(props.node.info); close();"
-                  >
-                    <Icon
-                      :path="copy.path"
-                      class="text-gray-600 dark:text-white mr-3 cursor-pointer"
-                      :box="copy.viewBox"
-                      :width="copy.width"
-                      :height="copy.height"
-                    />
-                    <p>{{ props.node.info.taskNameCopied ? 'Скопировано!' : localization.copy_taskname }}</p>
-                  </div>
-
-                  <!-- Copy task -->
-                  <div
-                    class="flex items-center py-0.5 px-1.5 rounded-xl"
-                    :class="{ 'cursor-pointer': !copiedTasks[props.node.info.uid], 'hover:bg-gray-100 hover:dark:bg-stone-800': !copiedTasks[props.node.info.uid], 'text-gray-200': copiedTasks[props.node.info.uid] }"
-                    @click="copyTask(props.node.info)"
-                  >
-                    <Icon
-                      :path="copy.path"
-                      class="text-gray-600 dark:text-white mr-3 cursor-pointer"
-                      :class="{ 'text-gray-200': copiedTasks[props.node.info.uid] }"
-                      :box="copy.viewBox"
-                      :width="copy.width"
-                      :height="copy.height"
-                    />
-                    <p>{{ copiedTasks[props.node.info.uid] ? 'Скопировано' : 'Копировать' }}</p>
-                  </div>
-
-                  <!-- Paste task -->
-                  <div
-                    v-if="Object.keys(copiedTasks).length"
-                    class="flex cursor-pointer items-center py-0.5 px-1.5 rounded-xl hover:dark:bg-stone-800"
-                    @click="pasteCopiedTasks(props.node.id)"
-                  >
-                    <Icon
-                      :path="copy.path"
-                      class="text-gray-600 dark:text-white mr-3 cursor-pointer"
-                      :box="copy.viewBox"
-                      :width="copy.width"
-                      :height="copy.height"
-                    />
-                    <p>Вставить</p>
-                  </div>
-
-                  <!-- Cut task -->
-                  <div
-                    v-if="props.node.info.uid_customer == user.current_user_uid"
-                    class="flex cursor-pointer items-center hover:bg-gray-100 hover:dark:bg-stone-800 py-0.5 px-1.5 rounded-xl"
-                    @click="cutTask(props.node.info); close();"
-                  >
-                    <Icon
-                      :path="cut.path"
-                      class="text-gray-600 dark:text-white mr-3 cursor-pointer"
-                      :box="cut.viewBox"
-                      :width="cut.width"
-                      :height="cut.height"
-                    />
-                    <p>Вырезать</p>
-                  </div>
-
-                  <!-- Delete task -->
-                  <div
-                    v-if="props.node.info.uid_customer == user.current_user_uid"
-                    class="flex cursor-pointer items-center hover:bg-gray-100 hover:dark:bg-stone-800 py-0.5 px-1.5 rounded-xl"
-                    @click="showConfirm = true; lastSelectedTaskUid = props.node.id"
-                  >
-                    <Icon
-                      :path="bin.path"
-                      class="text-gray-600 dark:text-white mr-3 cursor-pointer"
-                      :box="bin.viewBox"
-                      :width="bin.width"
-                      :height="bin.height"
-                    />
-                    <p>{{ localization.remove }}</p>
-                  </div>
-                </div>
-              </template>
               <Icon
                 :path="taskoptions.path"
                 class="text-gray-600 dark:text-white cursor-pointer h-full"
@@ -262,7 +161,49 @@
                 :style="{ color: getValidForeColor(colors[props.node.info.uid_marker]?.fore_color) }"
                 :height="taskoptions.height"
               />
-            </Popper>
+              <template #menu>
+                <PopMenuItem
+                  v-if="props.node.info.uid_customer == user.current_user_uid"
+                  icon="tomorrow"
+                  @click="moveTaskTomorrow(props.node.info)"
+                >
+                  {{ localization.Tomorrow }}
+                </PopMenuItem>
+                <PopMenuItem
+                  icon="copy"
+                  @click="copyTaskName(props.node.info)"
+                >
+                  {{ props.node.info.taskNameCopied ? 'Скопировано!' : localization.copy_taskname }}
+                </PopMenuItem>
+                <PopMenuItem
+                  icon="copy"
+                  @click="copyTask(props.node.info)"
+                >
+                  {{ copiedTasks[props.node.info.uid] ? 'Скопировано' : 'Копировать' }}
+                </PopMenuItem>
+                <PopMenuItem
+                  v-if="props.node.info.uid_customer == user.current_user_uid"
+                  icon="cut"
+                  @click="cutTask(props.node.info)"
+                >
+                  Вырезать
+                </PopMenuItem>
+                <PopMenuItem
+                  v-if="Object.keys(copiedTasks).length"
+                  icon="copy"
+                  @click="pasteCopiedTasks(props.node.id)"
+                >
+                  Вставить
+                </PopMenuItem>
+                <PopMenuItem
+                  v-if="props.node.info.uid_customer == user.current_user_uid"
+                  icon="delete"
+                  @click="showConfirm = true; lastSelectedTaskUid = props.node.id"
+                >
+                  {{ localization.remove }}
+                </PopMenuItem>
+              </template>
+            </PopMenu>
           </div>
         </Transition>
 
@@ -411,7 +352,8 @@ import { useStore } from 'vuex'
 import Icon from '@/components/Icon.vue'
 import TaskStatus from '@/components/TasksList/TaskStatus.vue'
 import EmptyTasksListPics from '@/components/TasksList/EmptyTasksListPics.vue'
-import Popper from 'vue3-popper'
+import PopMenu from '@/components/modals/PopMenu.vue'
+import PopMenuItem from '@/components/modals/PopMenuItem.vue'
 import ModalBoxConfirm from '@/components/modals/ModalBoxConfirm.vue'
 import InspectorModalBox from '@/components/Inspector/InspectorModalBox.vue'
 import contenteditable from 'vue-contenteditable'
@@ -451,7 +393,8 @@ export default {
     TaskListTagLabel,
     TaskListEdit,
     TasksSkeleton,
-    Popper,
+    PopMenu,
+    PopMenuItem,
     ModalBoxConfirm,
     InspectorModalBox,
     EmptyTasksListPics,

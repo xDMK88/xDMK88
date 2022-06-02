@@ -1,19 +1,48 @@
 <script setup>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useStore } from 'vuex'
+import { CREATE_MESSAGE_REQUEST } from '@/store/actions/cardfilesandmessages'
 
 import CardChat from '@/components/properties/CardChat.vue'
 
 const store = useStore()
 const selectedCard = computed(() => store.state.cards.selectedCard)
+const user = computed(() => store.state.user.user)
+const employees = computed(() => store.state.employees.employees)
 const cardMessages = computed(() => store.state.cardfilesandmessages.messages)
 const cardDateCreate = computed(() => {
   return new Date(selectedCard.value.date_create).toLocaleString()
 })
+
+function uuidv4 () {
+  return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
+    (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+  )
+}
+
+const cardMessageInputValue = ref('')
+
+const createCardMessage = () => {
+  const uid = uuidv4()
+  const data = {
+    uid_card: selectedCard.value.uid,
+    uid_msg: uid,
+    uid: uid,
+    date_create: new Date().toISOString(),
+    uid_creator: user.value.current_user_uid,
+    text: cardMessageInputValue.value,
+    msg: cardMessageInputValue.value,
+    order: 0,
+    deleted: 0
+  }
+  store.dispatch(CREATE_MESSAGE_REQUEST, data).then(() => {
+    cardMessageInputValue.value = ''
+  })
+}
 </script>
 
 <template>
-  <div class="relative h-full">
+  <div class="relative min-h-screen">
     <p
       class="text-[#7E7E80] text-[12px] mb-[10px]"
     >
@@ -86,12 +115,16 @@ const cardDateCreate = computed(() => {
       class="border-[1px] border-[rgba(0, 0, 0, 0.1) rounded-[8px] p-[12px] focus:border-[rgba(0, 0, 0, 0.5) w-full h-[110px] font-[400] text-[14px] text-[#4C4C4D]"
       style="background-color: #F4F5F7; resize: none"
     />
+
     <!-- Card chat -->
     <card-chat
       :messages="cardMessages"
+      :current-user-uid="user.current_user_uid"
+      :employees="employees"
     />
+
     <!-- Message input -->
-    <div class="flex absolute bottom-[30px] w-full">
+    <div class="flex fixed bottom-[30px] w-[340px]">
       <div class="rounded-l-[10px] flex items-center justify-center bg-[#F4F5F7] pl-[15px]">
         <svg
           width="18"
@@ -109,16 +142,19 @@ const cardDateCreate = computed(() => {
       </div>
 
       <input
+        v-model="cardMessageInputValue"
         class="bg-[#F4F5F7] py-[17px] pr-[15px] pl-[10px] text-[#656566] w-full text-[14px]"
         type="text"
         placeholder="Напишите сообщение..."
+        @keyup.enter="createCardMessage"
       >
 
       <div
         class="rounded-r-[10px] flex items-center justify-center bg-[#F4F5F7] pr-[12px]"
       >
         <div
-          class="rounded-[8px] flex items-center justify-center min-w-[32px] min-h-[32px] bg-[#E0E1E3]"
+          class="rounded-[8px] flex items-center justify-center min-w-[32px] min-h-[32px] bg-[#E0E1E3] hover:bg-white"
+          @click="createCardMessage"
         >
           <svg
             width="14"

@@ -216,6 +216,7 @@
         v-if="taskMessages?.length"
         id="content"
         class="mt-3"
+        :task="task"
         :task-messages="taskMessages"
         :current-user-uid="user.current_user_uid"
         :showAllMessages="showAllMessages"

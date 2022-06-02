@@ -1,7 +1,5 @@
 <template>
-  <div
-    id="Board"
-  >
+  <div id="Board">
     <BoardModalBoxDelete
       v-show="showDeleteCard"
       title="Удалить карточку"
@@ -85,7 +83,9 @@
               >
                 <div
                   class="hover:-m-px hover:border hover:rounded-sm"
-                  :style="{ 'border-color': getContrastYIQ(column.Color) ?? '#7e7e80'}"
+                  :style="{
+                    'border-color': getContrastYIQ(column.Color) ?? '#7e7e80'
+                  }"
                 >
                   <svg
                     width="18"
@@ -188,22 +188,27 @@
               v-else
               class="h-[16px]"
             >
-                <!--делаем неразрывный пробел - чтобы не скрыло и остался правильный отступ -->
-                &nbsp;
+              <!--делаем неразрывный пробел - чтобы не скрыло и остался правильный отступ -->
+              &nbsp;
             </div>
           </div>
           <!--карточки -->
           <draggable
+            :data-column-id="column.UID"
             :list="column.cards"
             ghost-class="ghost-card"
             item-key="uid"
             group="cards"
             :animation="100"
-            @start="drag = true"
-            @end="drag = false"
+            :disabled="!board || board.type_access === 0"
+            :move="checkMoveDragCard"
+            @start="startDragCard"
+            @end="endDragCard"
+            @change="changeDragCard"
           >
             <template #item="{ element }">
               <BoardCard
+                :data-card-id="element.uid"
                 :card="element"
                 :show-date="board?.show_date !== 0 ?? false"
                 :read-only="!board || board.type_access === 0"
@@ -226,9 +231,7 @@
               :style="{ color: getContrastYIQ(column.Color) }"
               @click="addCard(column)"
             >
-              <p
-                class="text-sm"
-              >
+              <p class="text-sm">
                 Добавить карточку
               </p>
               <svg
@@ -257,9 +260,7 @@
           class="flex justify-center items-center h-full w-full cursor-pointer font-['Roboto'] text-[#7e7e80]"
           @click="clickAddColumn"
         >
-          <p
-            class="text-sm"
-          >
+          <p class="text-sm">
             Добавить колонку
           </p>
           <svg
@@ -327,7 +328,8 @@ export default {
       showColorColumn: false,
       showMoveColumn: false,
       showDeleteCard: false,
-      currentCard: null
+      currentCard: null,
+      dragCardParam: null
     }
   },
   computed: {
@@ -341,7 +343,7 @@ export default {
       return this.selectedColumn?.Order ?? 0
     },
     usersColumnsCount () {
-      return this.storeCards.filter(stage => stage.UserStage === true).length
+      return this.storeCards.filter((stage) => stage.UserStage === true).length
     },
     selectedCard () {
       return this.$store.state.cards.selectedCard
@@ -357,8 +359,8 @@ export default {
       const r = parseInt(hexcolor.substr(0, 2), 16)
       const g = parseInt(hexcolor.substr(2, 2), 16)
       const b = parseInt(hexcolor.substr(4, 2), 16)
-      const yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000
-      return (yiq >= 128) ? 'black' : 'white'
+      const yiq = (r * 299 + g * 587 + b * 114) / 1000
+      return yiq >= 128 ? 'black' : 'white'
     },
     isColumnVisible (column) {
       if (this.isShowArchive) {
@@ -402,10 +404,11 @@ export default {
       this.showAddColumn = false
       const title = name.trim()
       if (title) {
-        this.$store.dispatch(BOARD.ADD_STAGE_BOARD_REQUEST, {
-          boardUid: this.board.uid,
-          newStageTitle: title
-        })
+        this.$store
+          .dispatch(BOARD.ADD_STAGE_BOARD_REQUEST, {
+            boardUid: this.board.uid,
+            newStageTitle: title
+          })
           .then((resp) => {
             this.$store.dispatch(CARD.BOARD_CARDS_ADDSTAGE, resp)
           })
@@ -419,11 +422,12 @@ export default {
       this.showRenameColumn = false
       const title = name.trim()
       if (title) {
-        this.$store.dispatch(BOARD.RENAME_STAGE_BOARD_REQUEST, {
-          boardUid: this.board.uid,
-          stageUid: this.selectedColumn.UID,
-          newStageTitle: title
-        })
+        this.$store
+          .dispatch(BOARD.RENAME_STAGE_BOARD_REQUEST, {
+            boardUid: this.board.uid,
+            stageUid: this.selectedColumn.UID,
+            newStageTitle: title
+          })
           .then((resp) => {
             this.$store.dispatch(CARD.BOARD_CARDS_RENAME_STAGE, resp)
           })
@@ -440,7 +444,8 @@ export default {
           boardUid: this.board.uid,
           stageUid: this.selectedColumn.UID
         }
-        this.$store.dispatch(BOARD.DELETE_STAGE_BOARD_REQUEST, data)
+        this.$store
+          .dispatch(BOARD.DELETE_STAGE_BOARD_REQUEST, data)
           .then((resp) => {
             this.$store.dispatch(CARD.BOARD_CARDS_DELETE_STAGE, data)
           })
@@ -453,11 +458,12 @@ export default {
     onChangeColumnColor (color) {
       this.showColorColumn = false
       if (this.selectedColumn) {
-        this.$store.dispatch(BOARD.CHANGE_COLOR_STAGE_BOARD_REQUEST, {
-          boardUid: this.board.uid,
-          stageUid: this.selectedColumn.UID,
-          newColor: color
-        })
+        this.$store
+          .dispatch(BOARD.CHANGE_COLOR_STAGE_BOARD_REQUEST, {
+            boardUid: this.board.uid,
+            stageUid: this.selectedColumn.UID,
+            newColor: color
+          })
           .then((resp) => {
             this.$store.dispatch(CARD.BOARD_CARDS_CHANGE_COLOR_STAGE, resp)
           })
@@ -470,11 +476,12 @@ export default {
     onChangeColumnPosition (order) {
       this.showMoveColumn = false
       if (this.selectedColumn) {
-        this.$store.dispatch(BOARD.CHANGE_ORDER_STAGE_BOARD_REQUEST, {
-          boardUid: this.board.uid,
-          stageUid: this.selectedColumn.UID,
-          newOrder: order
-        })
+        this.$store
+          .dispatch(BOARD.CHANGE_ORDER_STAGE_BOARD_REQUEST, {
+            boardUid: this.board.uid,
+            stageUid: this.selectedColumn.UID,
+            newOrder: order
+          })
           .then((resp) => {
             this.$store.dispatch(CARD.BOARD_CARDS_CHANGE_ORDER_STAGE, resp.data)
           })
@@ -492,12 +499,13 @@ export default {
       this.showAddCard = false
       const title = name.trim()
       if (title) {
-        this.$store.dispatch(CARD.ADD_CARD, {
-          name: title,
-          comment: '',
-          uid_board: this.board.uid,
-          uid_stage: this.selectedColumn.UID
-        })
+        this.$store
+          .dispatch(CARD.ADD_CARD, {
+            name: title,
+            comment: '',
+            uid_board: this.board.uid,
+            uid_stage: this.selectedColumn.UID
+          })
           .then((resp) => {
             console.log('onAddNewCard ok', resp)
           })
@@ -513,26 +521,93 @@ export default {
       this.showDeleteCard = true
       this.currentCard = card
     },
-    moveSuccessCard (card) {
-      this.$store.dispatch(CARD.MOVE_CARD, { uid: card.uid, stageUid: 'f98d6979-70ad-4dd5-b3f8-8cd95cb46c67' })
+    moveCard (cardUid, stageUid, newOrder) {
+      this.$store
+        .dispatch(CARD.MOVE_CARD, { uid: cardUid, stageUid, newOrder })
         .then((resp) => {
           console.log('Card is moved')
         })
     },
+    moveSuccessCard (card) {
+      this.moveCard(card.uid, 'f98d6979-70ad-4dd5-b3f8-8cd95cb46c67')
+    },
     moveRejectCard (card) {
-      this.$store.dispatch(CARD.MOVE_CARD, { uid: card.uid, stageUid: 'e70af5e2-6108-4c02-9a7d-f4efee78d28c' })
-        .then((resp) => {
-          console.log('Card is moved')
-        })
+      this.moveCard(card.uid, 'e70af5e2-6108-4c02-9a7d-f4efee78d28c')
     },
     onDeleteCard () {
       this.showDeleteCard = false
       if (this.currentCard) {
-        this.$store.dispatch(CARD.DELETE_CARD, { uid: this.currentCard.uid })
+        this.$store
+          .dispatch(CARD.DELETE_CARD, { uid: this.currentCard.uid })
           .then((resp) => {
             console.log('Card is deleted')
           })
       }
+    },
+    startDragCard (start) {
+      this.dragCardParam = {
+        change: [],
+        move: {
+          card: null,
+          column: null,
+          targetCard: null,
+          targetColumn: null,
+          willInsertAfter: true
+        }
+      }
+      //
+      const fromColumnId = start.from.dataset.columnId
+      const fromColumn = this.storeCards.find(
+        (column) => column.UID === fromColumnId
+      )
+      // const cardId = start.item.dataset.cardId
+      const card = fromColumn?.cards[start.oldIndex] || null
+      //
+      this.dragCardParam.move.column = fromColumn
+      this.dragCardParam.move.card = card
+    },
+    endDragCard (end) {
+      if (this.dragCardParam?.change?.length) {
+        const targetColumn = this.dragCardParam.move.targetColumn
+        // рассчитываем новый порядок у карточки
+        let newOrder = 1
+        if (this.dragCardParam.move.targetCard) {
+          const targetOrder = this.dragCardParam.move.targetCard.order
+          if (this.dragCardParam.move.willInsertAfter) {
+            const nextCard = targetColumn.cards[end.newIndex + 1] || null
+            newOrder = nextCard ? (nextCard.order + targetOrder) / 2 : targetOrder + 1
+          } else {
+            const prevCard = targetColumn.cards[end.newIndex - 1] || null
+            newOrder = prevCard ? (prevCard.order + targetOrder) / 2 : targetOrder - 1
+          }
+        }
+        // сохраняем изменение
+        this.moveCard(
+          this.dragCardParam.move.card.uid,
+          targetColumn.UID,
+          newOrder
+        )
+      }
+      this.dragCardParam = null
+    },
+    changeDragCard (change) {
+      // записываем что у нас произошли какие-то изменения
+      // это вызывается до endDrag
+      this.dragCardParam.change.push(change)
+    },
+    checkMoveDragCard ({ relatedContext, to, willInsertAfter }) {
+      const targetCard = relatedContext.element || null
+      const toColumnId = to.dataset.columnId
+      const toColumn = this.storeCards.find(
+        (column) => column.UID === toColumnId
+      )
+      if (!toColumn) return false
+      // если мы не отменили перемещение
+      // то записываем куда мы кидаем
+      this.dragCardParam.move.targetColumn = toColumn
+      this.dragCardParam.move.targetCard = targetCard
+      this.dragCardParam.move.willInsertAfter = willInsertAfter
+      return true
     }
   }
 }

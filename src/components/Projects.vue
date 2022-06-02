@@ -306,7 +306,7 @@ const onAddNewBoard = (name) => {
             />
           </div>
           <div
-            v-if="item.color != '#A998B6'"
+            v-if="item.color != '#A998B6' && item.color != '#000000'"
             :style="{ backgroundColor: item.color }"
             class="w-full h-4 absolute top-0 right-0 rounded-t-xl"
           />

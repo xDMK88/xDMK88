@@ -31,8 +31,7 @@
   <!-- Add task input -->
   <div
     v-if="taskListSource && !DONT_SHOW_TASK_INPUT_UIDS[taskListSource.uid]"
-    class="fixed-create flex"
-    :class="newConfig.listHasChildren ? 'pl-8' : 'pl-0'"
+    class="fixed-create flex pl-3"
   >
     <button
       class="bg-orange-500 px-2 rounded-lg text-white mr-1 ml-1 hover:bg-orange-500 bg-opacity-70"
@@ -91,7 +90,6 @@
   <!-- Skeleton -->
   <TasksSkeleton
     v-if="status == 'loading'"
-    :class="newConfig.listHasChildren ? 'pl-8' : 'pl-0'"
   />
   <!-- vue3-treeview -->
   <tree
@@ -1033,6 +1031,7 @@ window.getSelection().removeAllRanges()
   align-items: start;
   justify-content: center;
   width: 35px;
+  margin-left: -2rem;
 }
 
 .input-wrapper {
@@ -1049,6 +1048,7 @@ window.getSelection().removeAllRanges()
   display: flex;
   align-items: center;
   flex: 1;
+  margin-left: 1rem;
   word-wrap: break-word;
   font-size: 14px;
   outline: none

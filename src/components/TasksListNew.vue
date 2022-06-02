@@ -716,6 +716,10 @@ export default {
           if (navStack.value && navStack.value[navStack.value.length - 1].value.uid === '901841d9-0016-491d-ad66-8ee42d2b496b') {
             store.commit('addDot', new Date(navStack.value[navStack.value.length - 1].value.param))
           }
+          setTimeout(() => {
+            document.getElementById(data.uid).parentNode.draggable = false
+            gotoNode(data.uid)
+          }, 200)
         })
       createTaskText.value = ''
     }

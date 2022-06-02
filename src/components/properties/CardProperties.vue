@@ -4,15 +4,21 @@ import { useStore } from 'vuex'
 import { CREATE_MESSAGE_REQUEST } from '@/store/actions/cardfilesandmessages'
 
 import CardChat from '@/components/properties/CardChat.vue'
+import Icon from '@/components/Icon.vue'
+import close from '@/icons/close.js'
 
 const store = useStore()
 const selectedCard = computed(() => store.state.cards.selectedCard)
 const user = computed(() => store.state.user.user)
 const employees = computed(() => store.state.employees.employees)
 const cardMessages = computed(() => store.state.cardfilesandmessages.messages)
-const cardDateCreate = computed(() => {
-  return new Date(selectedCard.value.date_create).toLocaleString()
-})
+// const cardDateCreate = computed(() => {
+//   return new Date(selectedCard.value.date_create).toLocaleString()
+// })
+
+const closeProperties = () => {
+  store.dispatch('asidePropertiesToggle', false)
+}
 
 function uuidv4 () {
   return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
@@ -43,11 +49,19 @@ const createCardMessage = () => {
 
 <template>
   <div class="relative min-h-screen">
-    <p
-      class="text-[#7E7E80] text-[12px] mb-[10px]"
+    <div
+      class="flex justify-end"
     >
-      Дата создания: {{ cardDateCreate }}
-    </p>
+      <Icon
+        :path="
+          close.path"
+        class="text-[#7E7E80] dark:text-white cursor-pointer mb-[15px]"
+        :box="close.viewBox"
+        :width="close.width"
+        :height="close.height"
+        @click="closeProperties"
+      />
+    </div>
     <div
       class="border-[1px] border-[rgba(0, 0, 0, 0.1) rounded-[8px] min-h-[93px] max-h-[93px]"
       :style="{ 'height': selectedCard.cover_size_y + 'px', 'background': selectedCard.cover_color !== '#A998B6' ? selectedCard.cover_color : '#F4F5F7' }"
@@ -55,9 +69,9 @@ const createCardMessage = () => {
     <p class="text-[18px] font-[700] my-[25px] text-[#424242]">
       {{ selectedCard.name }}
     </p>
-    <div class="flex justify-start mb-[15px]">
+    <div class="flex justify-start mb-[15px] space-x-[4px]">
       <!-- Performer -->
-      <div class=" flex items-center bg-[#7B94EB] rounded-[6px] text-white text-[12px] px-[8px] py-[5px] cursor-pointer font-[500] mr-[5px]">
+      <div class=" flex items-center bg-[#7B94EB] rounded-[6px] text-white text-[12px] px-[8px] py-[5px] cursor-pointer font-[500]">
         <svg
           width="13"
           class="mr-[7px]"
@@ -107,6 +121,29 @@ const createCardMessage = () => {
         </svg>
 
         Бюджет
+      </div>
+      <!-- Options -->
+      <div class="flex items-center bg-[#F4F5F7] rounded-[6px] text-[#575758] text-[12px] px-[13px] py-[5px] cursor-pointer font-[500]">
+        <svg
+          width="4"
+          height="16"
+          viewBox="0 0 4 16"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M2 12C3.10457 12 4 12.8954 4 14C4 15.1046 3.10457 16 2 16C0.89543 16 0 15.1046 0 14C0 12.8954 0.89543 12 2 12Z"
+            fill="#7F7F80"
+          />
+          <path
+            d="M2 6C3.10457 6 4 6.89543 4 8C4 9.10457 3.10457 10 2 10C0.89543 10 0 9.10457 0 8C0 6.89543 0.89543 6 2 6Z"
+            fill="#7F7F80"
+          />
+          <path
+            d="M2 0C3.10457 0 4 0.895431 4 2C4 3.10457 3.10457 4 2 4C0.89543 4 0 3.10457 0 2C0 0.895431 0.89543 0 2 0Z"
+            fill="#7F7F80"
+          />
+        </svg>
       </div>
     </div>
     <textarea

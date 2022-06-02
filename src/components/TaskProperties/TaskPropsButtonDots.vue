@@ -1,7 +1,5 @@
 <template>
-  <Popper
-    arrow
-    class="light"
+  <PopMenu
     placement="bottom"
   >
     <div class="mt-3 tags-custom">
@@ -15,48 +13,42 @@
         />
       </svg>
     </div>
-    <template #content="{ close }">
-      <div
-        class="flex flex-col"
-        @click="close"
+    <template #menu>
+      <PopMenuHeader
+        title="Дата создания:"
       >
-        <div class="popper-item leading-4 text-gray-600 text-[13px] font-semibold">
-          Дата создания
-        </div>
-        <div class="mb-1 popper-item text-gray-400 text-[13px]">
-          {{ dateCreateText }}
-        </div>
-        <hr/>
-        <div
-          class="text-[13px] mt-1 popper-item popper-clickable"
-          @click="selectItem('toggleFiles')"
-        >
-          {{ onlyFiles ? 'Показать весь чат' : 'Показать только файлы' }}
-        </div>
-        <div
-          class="popper-item popper-clickable text-[13px]"
-          @click="selectItem('copyUrl')"
-        >
-          Копировать как ссылку
-        </div>
-        <div
-          v-if="showDelete"
-          class="popper-item popper-clickable text-[13px] mb-1"
-          @click="selectItem('deleteTask')"
-        >
-          Удалить
-        </div>
-      </div>
+        {{ dateCreateText }}
+      </PopMenuHeader>
+      <PopMenuItem
+        @click="selectItem('toggleFiles')"
+      >
+        {{ onlyFiles ? 'Показать весь чат' : 'Показать только файлы' }}
+      </PopMenuItem>
+      <PopMenuItem
+        @click="selectItem('copyUrl')"
+      >
+        Копировать как ссылку
+      </PopMenuItem>
+      <PopMenuItem
+        v-if="showDelete"
+        @click="selectItem('deleteTask')"
+      >
+        Удалить
+      </PopMenuItem>
     </template>
-  </Popper>
+  </PopMenu>
 </template>
 
 <script>
-import Popper from 'vue3-popper'
+import PopMenu from '@/components/modals/PopMenu.vue'
+import PopMenuItem from '@/components/modals/PopMenuItem.vue'
+import PopMenuHeader from '@/components/modals/PopMenuHeader.vue'
 
 export default {
   components: {
-    Popper
+    PopMenu,
+    PopMenuItem,
+    PopMenuHeader
   },
   props: {
     dateCreate: {
@@ -88,18 +80,6 @@ export default {
 </script>
 
 <style scoped>
-.popper-item {
-  @apply flex;
-  @apply items-center;
-  @apply py-0.5;
-  @apply px-1.5;
-}
-.popper-clickable {
-  @apply cursor-pointer;
-  @apply hover:bg-gray-100;
-  @apply hover:dark:bg-stone-800;
-  @apply rounded-xl;
-}
 .tags-custom {
   border-radius: 5px;
   background: #f4f5f7;

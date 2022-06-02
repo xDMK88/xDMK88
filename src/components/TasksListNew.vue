@@ -895,12 +895,18 @@ export default {
           }
         }
       }
-
+      let parentUid
+      // for (const elem in storeTasks.value) {
+      //   if (storeTasks.value[elem].children.includes(node.dragged.node.id)) {
+      //     parentUid = elem
+      //     store.state.tasks.newConfig.leaves.splice(store.state.tasks.newConfig.leaves.indexOf(elem), 1)
+      //   }
+      // }
       store.dispatch(
         TASK.CHANGE_TASK_PARENT_AND_ORDER,
         {
           uid: node.dragged.node.id,
-          parent: node.dragged.node.parent ?? '00000000-0000-0000-0000-000000000000',
+          parent: parentUid ?? '00000000-0000-0000-0000-000000000000',
           order: node.dragged.node.info.order_new ?? 0
         }
       )

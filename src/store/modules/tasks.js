@@ -1435,7 +1435,6 @@ const mutations = {
     state.status = 'success'
     state.tasks = resp.data
     state.hasLoadedOnce = true
-
     Object.assign(state.newtasks, {})
     Object.assign(state.newConfig, {
       roots: [],

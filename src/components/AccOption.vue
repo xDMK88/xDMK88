@@ -20,7 +20,7 @@ const updateSettings = () => {
     PATCH_SETTINGS,
     {
       show_completed_tasks: settings.value.show_completed_tasks ? 1 : 0,
-      add_task_to_begin: settings.value.add_task_to_begin ? 1 : 0,
+      add_task_to_begin: settings.value.add_task_to_begin === true ? 1 : 0,
       cal_number_of_first_week: settings.value.cal_number_of_first_week ? 1 : 0,
       cal_show_week_number: settings.value.cal_show_week_number ? 1 : 0,
       nav_show_tags: settings.value.nav_show_tags,
@@ -40,14 +40,13 @@ const updateSettings = () => {
 }
 </script>
 <template>
-  {{settings.add_task_to_begin}}
   <form class="px-5">
     <div class="my-2">
       <div class="flex mt-2">
         <div class="checkbox">
           <input
             id="opt_1"
-            v-model="settings.show_completed_tasks"
+            v-model="settings.add_task_to_begin"
             type="checkbox"
             class="custom-checkbox-orange"
             @change="updateSettings()"

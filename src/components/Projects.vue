@@ -27,6 +27,9 @@ defineProps({
         store.dispatch('asidePropertiesToggle', false)
       }
     })
+  },
+  data () {
+
   }
 })
 // Serves as linkage between requests from storage and tree view navigator
@@ -40,7 +43,6 @@ const UID_TO_ACTION = {
 const isGridView = computed(() => store.state.isGridView)
 localStorage.setItem('isGridView', true)
 const updateGridView = (value) => {
-  console.log(value)
   store.commit('basic', { key: 'isGridView', value: true })
   localStorage.setItem('isGridView', value)
 }
@@ -215,11 +217,12 @@ function uuidv4 () {
   )
 }
 const onAddNewBoard = (name) => {
+  showAddColumn.value = ref(false)
   focusedUid.value = ''
   store.commit('basic', { key: 'propertiesState', value: 'board' })
   const data = {
     uid: uuidv4(),
-    name: name,
+    name: name !== '' ? name : 'Тест',
     uid_parent: '00000000-0000-0000-0000-000000000000',
     color: '',
     comment: '',

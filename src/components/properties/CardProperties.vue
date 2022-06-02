@@ -21,11 +21,19 @@ function uuidv4 () {
 }
 
 const cardMessageInputValue = ref('')
+
 const createCardMessage = () => {
+  const uid = uuidv4()
   const data = {
     uid_card: selectedCard.value.uid,
-    uid_msg: uuidv4(),
-    text: cardMessageInputValue.value
+    uid_msg: uid,
+    uid: uid,
+    date_create: new Date().toISOString(),
+    uid_creator: user.value.current_user_uid,
+    text: cardMessageInputValue.value,
+    msg: cardMessageInputValue.value,
+    order: 0,
+    deleted: 0
   }
   store.dispatch(CREATE_MESSAGE_REQUEST, data).then(() => {
     cardMessageInputValue.value = ''
@@ -34,7 +42,7 @@ const createCardMessage = () => {
 </script>
 
 <template>
-  <div class="relative h-full">
+  <div class="relative min-h-screen">
     <p
       class="text-[#7E7E80] text-[12px] mb-[10px]"
     >

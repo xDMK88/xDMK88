@@ -241,7 +241,11 @@ export default {
       if (this.showAllMessages === true) {
         if (index === 0) return true
       } else {
-        if (index === this.messages.length - 2) return true
+        if (index === this.messages.length - 2) {
+          return true
+        } else if (index === 0) {
+          return true
+        }
       }
       const messagePrev = this.messages[index - 1]
       const messageCurr = this.messages[index]

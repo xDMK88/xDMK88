@@ -3,9 +3,9 @@
     z-index="z-40"
     @overlay-click="onCancel"
   >
-    <div class="rounded-xl shadow-lg w-[400px] p-6 bg-white z-50">
-      <div class="flex items-start">
-        <div class="flex-1 text-[#4c4c4d] font-medium text-[14px] leading-4">
+    <div class="rounded-xl shadow-lg w-[360px] p-6 bg-white z-50">
+      <div class="flex items-center">
+        <div class="flex-1 text-[#4c4c4d] font-medium text-[14px] leading-[16px] font-roboto">
           {{ title }}
         </div>
         <!-- кнопка закрыть -->
@@ -29,19 +29,19 @@
           </svg>
         </div>
       </div>
-      <div class="flex items-stretch mt-4">
+      <div class="flex items-stretch mt-[15px]">
         <input
           ref="inputValue"
           v-model="currentValue"
           type="text"
-          class="bg-white rounded-md border border-gray-300 focus:border-[#ff9123] w-full px-3.5 py-[11px] text-[14px] leading-4"
+          class="bg-[#f4f5f7]/50 rounded-[6px] border border-[#4c4c4d] focus:border-[#ff9123] w-full px-[14px] py-[11px] text-[14px] leading-[16px] text-[#4c4c4d] font-roboto"
           @keyup.enter="onSave"
           @keyup.esc="onCancel"
         >
       </div>
-      <div class="flex justify-end mt-4">
+      <div class="flex justify-end mt-[17px]">
         <button
-          class="focus:ring focus:outline-none inline-flex cursor-pointer whitespace-nowrap justify-center items-center duration-150 px-3 py-2.5 rounded-md bg-[#ff9123] text-white text-[13px] leading-[15px] font-medium"
+          class="focus:ring focus:outline-none inline-flex cursor-pointer whitespace-nowrap justify-center items-center duration-150 px-[12px] py-[10px] rounded-md bg-[#ff9123] text-white text-[13px] leading-[15px] font-medium font-roboto"
           @click="onSave"
         >
           Сохранить

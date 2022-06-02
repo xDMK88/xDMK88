@@ -901,8 +901,6 @@ export default {
         if (storeTasks.value[elem].children.includes(node.dragged.node.id)) {
           parentUid = elem
           store.commit(TASK.REMOVE_TASK_FROM_LEAVES, elem)
-        } else if (!storeTasks.value[elem].children.length) {
-          store.commit(TASK.ADD_TASK_TO_LEAVES, elem)
         }
       }
       store.dispatch(

@@ -2,8 +2,10 @@
 import { computed, ref } from 'vue'
 import { useStore } from 'vuex'
 import { CREATE_MESSAGE_REQUEST } from '@/store/actions/cardfilesandmessages'
+import { CHANGE_CARD_RESPONSIBLE_USER } from '@/store/actions/cards'
 
 import CardChat from '@/components/properties/CardChat.vue'
+import CardResponsibleUser from '@/components/properties/CardResponsibleUser.vue'
 import Icon from '@/components/Icon.vue'
 import close from '@/icons/close.js'
 import TaskPropsCommentEditor from '@/components/TaskProperties/TaskPropsCommentEditor.vue'
@@ -13,7 +15,13 @@ const selectedCard = computed(() => store.state.cards.selectedCard)
 const user = computed(() => store.state.user.user)
 const boards = computed(() => store.state.boards.boards)
 const employees = computed(() => store.state.employees.employees)
+const employeesByEmail = computed(() => store.state.employees.employeesByEmail)
 const cardMessages = computed(() => store.state.cardfilesandmessages.messages)
+const changeResponsible = (userEmail) => {
+  store.dispatch(CHANGE_CARD_RESPONSIBLE_USER, { cardUid: selectedCard.value.uid, email: userEmail }).then(() => {
+    selectedCard.value.user = userEmail
+  })
+}
 // const cardDateCreate = computed(() => {
 //   return new Date(selectedCard.value.date_create).toLocaleString()
 // })
@@ -30,7 +38,7 @@ function uuidv4 () {
 
 const cardMessageInputValue = ref('')
 
-const canEditComment = computed(() => boards.value[selectedCard.value.uid_board].type_access === 1)
+const canEdit = computed(() => boards.value[selectedCard.value.uid_board].type_access !== 0)
 const endChangeComment = (text) => {
   selectedCard.value.comment = text
 }
@@ -80,24 +88,12 @@ const createCardMessage = () => {
       {{ selectedCard.name }}
     </p>
     <div class="flex justify-start mb-[25px] space-x-[4px]">
-      <!-- Performer -->
-      <div class=" flex items-center bg-[#7B94EB] rounded-[6px] text-white text-[12px] px-[8px] py-[5px] cursor-pointer font-[500]">
-        <svg
-          width="13"
-          class="mr-[7px]"
-          height="14"
-          viewBox="0 0 13 14"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M11.5631 7.94595C11.1349 7.56757 10.6352 7.18919 10.1356 6.96216C10.0642 6.96216 9.99287 6.88649 9.9215 6.88649C9.70737 6.88649 9.49325 7.03784 9.3505 7.26487C9.27912 7.41622 9.27912 7.64324 9.3505 7.7946C9.42187 7.94595 9.49325 8.0973 9.636 8.0973C10.0642 8.24865 10.4211 8.55135 10.778 8.85405C11.1349 9.23243 11.349 9.68649 11.349 10.2162V12.4108C11.349 12.6378 11.2062 12.7135 11.0635 12.7135H1.99887C1.78475 12.7135 1.71337 12.5622 1.71337 12.4108V10.2162C1.71337 9.68649 1.9275 9.23243 2.28437 8.85405C2.71262 8.47568 4.06875 7.49189 6.4955 7.49189C8.42262 7.49189 10.0642 5.82703 10.0642 3.78378C10.0642 1.74054 8.494 0 6.4955 0C4.56837 0 2.92675 1.66487 2.92675 3.70811C2.92675 4.76757 3.355 5.75135 4.06875 6.50811C2.64125 6.88649 1.78475 7.56757 1.42787 7.94595C0.856875 8.47568 0.5 9.30811 0.5 10.2162V12.4108C0.5 13.3189 1.21375 14 1.99887 14H10.9921C11.8486 14 12.491 13.2432 12.491 12.4108V10.2162C12.5624 9.30811 12.2055 8.47568 11.5631 7.94595ZM6.4955 6.20541C5.21075 6.20541 4.14012 5.07027 4.14012 3.70811C4.14012 2.34595 5.21075 1.21081 6.4955 1.21081C7.78025 1.21081 8.85087 2.34595 8.85087 3.70811C8.85087 5.07027 7.85162 6.20541 6.4955 6.20541Z"
-            fill="white"
-          />
-        </svg>
-        Ответственный
-      </div>
-      <!-- Budget -->
+      <card-responsible-user
+        :responsible="selectedCard.user"
+        :employees-by-email="employeesByEmail"
+        :can-edit="canEdit"
+        @changeResponsible="changeResponsible"
+      />
       <div class="flex items-center bg-[#F4F5F7] rounded-[6px] text-[#575758] text-[12px] px-[8px] py-[5px] cursor-pointer font-[500]">
         <svg
           width="17"
@@ -160,7 +156,7 @@ const createCardMessage = () => {
     <TaskPropsCommentEditor
       class="mt-3 h-32 scroll-style overflow-auto"
       :comment="selectedCard.comment ?? ''"
-      :can-edit="canEditComment"
+      :can-edit="canEdit"
       @endChangeComment="endChangeComment"
       @changeComment="onChangeComment"
     />

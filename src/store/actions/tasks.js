@@ -65,6 +65,9 @@ export const ADD_TASK = 'ADD_TASK'
 export const ADD_SUBTASK = 'ADD_SUBTASK'
 export const PASTE_TO_SUBTASK = 'PASTE_TO_SUBTASK'
 export const REMOVE_TASK_FROM_LEAVES = 'REMOVE_TASK_FROM_LEAVES'
+export const REMOVE_TASK_FROM_ROOTS = 'REMOVE_TASK_FROM_ROOTS'
+export const ADD_TASK_TO_ROOTS = 'ADD_TASK_TO_ROOTS'
+export const ADD_TASK_TO_LEAVES = 'ADD_TASK_TO_LEAVES'
 export const SELECT_TAG = 'SELECT_TAG'
 
 // Tasks repeater

@@ -592,9 +592,10 @@ export default {
               arg.children.splice(i, 1)
             }
           }
-
           for (const task of store.state.tasks.subtasks.tasks) {
-            arg.children.push(task.uid)
+            if (!arg.children.includes(task.uid)) {
+              arg.children.push(task.uid)
+            }
           }
         })
     }
@@ -896,12 +897,14 @@ export default {
         }
       }
       let parentUid
-      // for (const elem in storeTasks.value) {
-      //   if (storeTasks.value[elem].children.includes(node.dragged.node.id)) {
-      //     parentUid = elem
-      //     store.state.tasks.newConfig.leaves.splice(store.state.tasks.newConfig.leaves.indexOf(elem), 1)
-      //   }
-      // }
+      for (const elem in storeTasks.value) {
+        if (storeTasks.value[elem].children.includes(node.dragged.node.id)) {
+          parentUid = elem
+          store.commit(TASK.REMOVE_TASK_FROM_LEAVES, elem)
+        } else if (!storeTasks.value[elem].children.length) {
+          store.commit(TASK.ADD_TASK_TO_LEAVES, elem)
+        }
+      }
       store.dispatch(
         TASK.CHANGE_TASK_PARENT_AND_ORDER,
         {

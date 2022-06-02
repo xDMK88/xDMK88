@@ -20,27 +20,28 @@
         class="flex flex-col"
         @click="close"
       >
-        <div class="popper-item text-gray-400">
+        <div class="popper-item leading-4 text-gray-600 text-[13px] font-semibold">
           Дата создания
         </div>
-        <div class="popper-item text-gray-400">
+        <div class="mb-1 popper-item text-gray-400 text-[13px]">
           {{ dateCreateText }}
         </div>
+        <hr/>
         <div
-          class="popper-item popper-clickable"
+          class="text-[13px] mt-1 popper-item popper-clickable"
           @click="selectItem('toggleFiles')"
         >
           {{ onlyFiles ? 'Показать весь чат' : 'Показать только файлы' }}
         </div>
         <div
-          class="popper-item popper-clickable"
+          class="popper-item popper-clickable text-[13px]"
           @click="selectItem('copyUrl')"
         >
           Копировать как ссылку
         </div>
         <div
           v-if="showDelete"
-          class="popper-item popper-clickable"
+          class="popper-item popper-clickable text-[13px] mb-1"
           @click="selectItem('deleteTask')"
         >
           Удалить

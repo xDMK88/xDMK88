@@ -348,6 +348,7 @@ export default {
       }
       store.dispatch(TASK.CHANGE_TASK_DATE, data).then(
         resp => {
+          console.log(resp.data.term)
           selectedTask.value.term_customer = resp.data.term
           this.timeStart = timestart !== '' ? '' : timestart
           this.timeEnd = timeend !== '' ? '' : timeend
@@ -1115,6 +1116,7 @@ export default {
       }
       this.$store.dispatch(TASK.CHANGE_TASK_DATE, data).then(
         resp => {
+          console.log(resp.term)
           this.selectedTask.term_user = resp.term
           this.selectedTask.date_begin = resp.str_date_begin
           this.selectedTask.date_end = resp.str_date_end
@@ -1297,7 +1299,7 @@ export default {
         />
         <!-- Повтор -->
         <Popper
-          v-if="selectedTask.term_customer && !((selectedTask.uid_customer !== user.current_user_uid) && (selectedTask.status === 1))"
+          v-if="selectedTask.term_user && !((selectedTask.uid_customer !== user.current_user_uid) && (selectedTask.status === 1))"
           class="popper-repeat"
           arrow
           trigger="hover"
@@ -2020,7 +2022,7 @@ export default {
         </div>
       </div>
     </div>
-    <div class="input-group bg-gray-100 rounded-3xl mt-2">
+    <div class="input-group bg-gray-100 rounded-[10px] mt-2">
       <span class="input-group-addon input-group-attach dark:bg-gray-800 dark:text-gray-100">
         <div class="example-1">
           <label class="label">
@@ -2064,7 +2066,7 @@ export default {
           class="btn-send-custom"
           @click="createTaskMsg"
         >
-          <svg
+       <!--   <svg
             width="24"
             height="26"
             viewBox="0 0 25 24"
@@ -2075,7 +2077,11 @@ export default {
               d="M23.8021 10.5763C23.541 10.054 23.1166 9.59697 22.5617 9.33583L3.82473 0.261142C3.43302 0.0979283 3.07395 0 2.64959 0C1.63767 0 0.723669 0.58757 0.26667 1.50157C-0.0597576 2.18707 -0.0924003 2.93785 0.201385 3.65599L3.43302 11.7514L0.201385 19.8142C-0.353542 21.1852 0.331955 22.7194 1.70295 23.2743C1.99674 23.4049 2.32316 23.4701 2.68223 23.4701C3.07395 23.4701 3.46566 23.3722 3.82473 23.209L22.5943 14.1343C23.2472 13.8405 23.7042 13.2856 23.9327 12.6327C24.1612 11.9473 24.1285 11.1965 23.8021 10.5763ZM2.02938 20.5649L5.16308 12.7307H20.8969L2.94338 21.4137C2.84545 21.4463 2.74752 21.4789 2.64959 21.4789C2.38845 21.4789 2.15995 21.3157 2.06202 21.0872C1.96409 20.924 1.96409 20.7282 2.02938 20.5649ZM5.16308 10.7395L2.02938 2.90521C1.93145 2.64406 1.99674 2.35028 2.19259 2.15442C2.32316 2.02385 2.48638 1.95857 2.64959 1.95857C2.74752 1.95857 2.84545 1.99121 2.94338 2.02385L20.8969 10.7068H5.16308V10.7395Z"
               fill="#666666"
             />
-          </svg>
+          </svg> -->
+<svg width="32" class="mr-2" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect width="32" height="32" rx="8" fill="#E0E1E3"/>
+<path d="M16 8L9 15L9.987 15.987L15.3 10.681V24.8H16.7V10.681L22.013 15.987L23 15L16 8Z" fill="#4C4C4D"/>
+</svg>
 
         </button>
       </span>

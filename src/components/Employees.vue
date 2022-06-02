@@ -6,6 +6,7 @@ import { useStore } from 'vuex'
 import * as TASK from '@/store/actions/tasks'
 import { SELECT_EMPLOYEE } from '@/store/actions/employees'
 import { SELECT_DEPARTMENT, UPDATE_DEPARTMENT_REQUEST } from '@/store/actions/departments'
+import { NAVIGATOR_PUSH_DEPARTAMENT } from '@/store/actions/navigator'
 //  import gridView from '@/icons/grid-view.js'
 //  import listView from '@/icons/list-view.js'
 import draggable from 'vuedraggable'
@@ -93,6 +94,7 @@ const UpdateDepOrder = (depOrder, order) => {
     emails: depOrder.emails
   }
   console.log(dep)
+  store.commit(NAVIGATOR_PUSH_DEPARTAMENT, [dep])
   store.dispatch(UPDATE_DEPARTMENT_REQUEST, dep)
     .then(resp => {
       console.log('drag n, drop success: ', resp.data + ', приоритет: ' + resp.data.order)
@@ -244,7 +246,7 @@ const clickOnGridCard = (value) => {
              class="list-group cursor-pointer"
              ghost-class="ghost">
     <template #item="{ element, index }">
-  <div @dragleave="UpdateDepOrder(element.dep, index)">
+  <div @dragleave="UpdateDepOrder(element.dep, index)" @dragend="UpdateDepOrder(element.dep, index)">
     <div :id="element.dep.order"
       class="flex items-center"
       :class="index !=0 ? 'mt-5' : ''"

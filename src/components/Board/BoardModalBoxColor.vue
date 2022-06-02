@@ -3,9 +3,9 @@
     z-index="z-40"
     @overlay-click="onCancel"
   >
-    <div class="rounded-xl shadow-lg w-[400px] p-6 bg-white z-50">
-      <div class="flex items-start">
-        <div class="flex-1 text-[#4c4c4d] font-medium text-[14px] leading-4">
+    <div class="rounded-xl shadow-lg w-[422px] p-6 bg-white z-50">
+      <div class="flex items-center">
+        <div class="flex-1 text-[#4c4c4d] font-medium text-[14px] leading-[16px] font-roboto">
           Цвет колонки
         </div>
         <!-- кнопка закрыть -->
@@ -29,12 +29,12 @@
           </svg>
         </div>
       </div>
-      <div class="flex items-stretch mt-4">
-        <div class="grow flex flex-col items-center">
+      <div class="flex items-stretch mt-[20px]">
+        <div class="grow gap-[4px] flex flex-col items-center">
           <div
             v-for="(clrs, index) in colors"
             :key="index"
-            class="flex"
+            class="flex gap-[4px]"
           >
             <BoardColorBoxItem
               v-for="clr in clrs"
@@ -72,11 +72,13 @@ export default {
         '',
         '#7fc870',
         '#69c494',
+        '#dff2e1',
         '#ffaf40',
         '#ffd7a0',
         '#5ba4cf',
         '#9eedff',
         '#b381b3',
+        '#e5e5e5',
         '#ddd1c2',
         '#ef7665',
         '#ffc6b5',
@@ -91,8 +93,8 @@ export default {
         allColors.splice(allColors.length - 1, 1, this.color)
       }
       const colors = allColors.map(color => ({ color: color, selected: color === this.color }))
-      // разбираем на ряды по 8
-      const rowLength = 8
+      // разбираем на ряды по 9
+      const rowLength = 9
       const arrColors = []
       while (colors.length) arrColors.push(colors.splice(0, rowLength))
       return arrColors

@@ -1,7 +1,10 @@
 <template>
   <div
-    class="w-[30px] h-[30px] rounded m-0.5 bg-[#e5e5e5]"
-    :class="{ 'flex justify-center items-center border-2 border-[#111111]': selected }"
+    class="w-[38px] h-[38px] rounded-[8px] bg-white"
+    :class="{
+      'flex justify-center items-center border-2 border-black': selected,
+      'border border-black/12': color === ''
+    }"
     :style="{ backgroundColor: color }"
     @click="onClick"
   >
@@ -42,13 +45,13 @@ export default {
   emits: ['select'],
   methods: {
     getContrastYIQ (hexcolor) {
-      if (!hexcolor) return '#111111'
+      if (!hexcolor) return 'black'
       hexcolor = hexcolor.replace('#', '')
       const r = parseInt(hexcolor.substr(0, 2), 16)
       const g = parseInt(hexcolor.substr(2, 2), 16)
       const b = parseInt(hexcolor.substr(4, 2), 16)
       const yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000
-      return (yiq >= 128) ? '#111111' : 'white'
+      return (yiq >= 128) ? 'black' : 'white'
     },
     onClick () {
       if (!this.selected) this.$emit('select', this.color)

@@ -44,12 +44,9 @@
         class="flex-none h-[18px] w-[18px] cursor-pointer invisible group-hover:visible"
         @click.stop=""
       >
-        <Popper
-          arrow
-          class="light"
-          placement="bottom"
-          @open:popper="lockVisibility(card.uid)"
-          @close:popper="unlockVisibility(card.uid)"
+        <PopMenu
+          @openMenu="lockVisibility(card.uid)"
+          @closeMenu="unlockVisibility(card.uid)"
         >
           <div
             class="hover:-m-px hover:border hover:rounded-sm border-[#7e7e80]"
@@ -69,35 +66,28 @@
               />
             </svg>
           </div>
-          <template #content="{ close }">
-            <div
-              class="flex flex-col"
-              @click="close"
+          <template #menu>
+            <PopMenuItem
+              v-if="!isArchive"
+              @click="clickSuccess"
             >
-              <div
-                v-if="!isArchive"
-                class="flex items-center py-0.5 px-2 cursor-pointer hover:text-[#ebaa40] rounded text-sm font-['Tahoma']"
-                @click="clickSuccess"
-              >
-                Архивировать: Успех
-              </div>
-              <div
-                v-if="!isArchive"
-                class="mt-2 flex items-center py-0.5 px-2 cursor-pointer hover:text-[#ebaa40] rounded text-sm font-['Tahoma']"
-                @click="clickReject"
-              >
-                Архивировать: Отказ
-              </div>
-              <div
-                class="flex items-center py-0.5 px-2 cursor-pointer hover:text-[#ebaa40] rounded text-sm font-['Tahoma']"
-                :class="{ 'mt-2': !isArchive }"
-                @click="clickDelete"
-              >
-                Удалить
-              </div>
-            </div>
+              Архивировать: Успех
+            </PopMenuItem>
+            <PopMenuItem
+              v-if="!isArchive"
+              @click="clickReject"
+            >
+              Архивировать: Отказ
+            </PopMenuItem>
+            <PopMenuDivider />
+            <PopMenuItem
+              icon="delete"
+              @click="clickDelete"
+            >
+              Удалить
+            </PopMenuItem>
           </template>
-        </Popper>
+        </PopMenu>
       </div>
     </div>
     <div
@@ -241,11 +231,15 @@
 </template>
 
 <script>
-import Popper from 'vue3-popper'
+import PopMenu from '@/components/modals/PopMenu.vue'
+import PopMenuItem from '@/components/modals/PopMenuItem.vue'
+import PopMenuDivider from '@/components/modals/PopMenuDivider.vue'
 
 export default {
   components: {
-    Popper
+    PopMenu,
+    PopMenuItem,
+    PopMenuDivider
   },
   props: {
     card: {

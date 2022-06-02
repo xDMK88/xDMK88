@@ -236,14 +236,16 @@ export default {
                 new Date(messageCurr.date_create).toDateString()
     },
     isChangeCreator (index) {
+      console.log(this.messages.length)
       console.log(index)
       if (this.showAllMessages === true) {
         if (index === 0) return true
       } else {
-        if (index === 1) return true
+        if (index === this.messages.length - 2) return true
       }
       const messagePrev = this.messages[index - 1]
       const messageCurr = this.messages[index]
+      console.log(this.messages.length)
       if (!messagePrev || !messageCurr) return false
       return messagePrev.uid_creator !== messageCurr.uid_creator
     },

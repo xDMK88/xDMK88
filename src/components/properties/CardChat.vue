@@ -72,7 +72,7 @@ const getMessageWeekDateString = (dateCreate) => {
 
       <!-- New creator -->
       <div
-        v-if="isChangedCreator(index)"
+        v-if="isChangedCreator(index) && props.employees[message.uid_creator]"
         class="text-[#7E7E80] text-[13px] font-[500] leading-[15px] tracking-wide mb-[6px]"
         :class="{ 'text-left': !message.isMyMessage, 'text-right': message.isMyMessage }"
       >

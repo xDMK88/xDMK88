@@ -29,7 +29,7 @@ const actions = {
       const url = process.env.VUE_APP_LEADERTASK_API + 'api/v1/cardsmsgs'
       axios({ url: url, method: 'POST', data: data })
         .then(resp => {
-          commit(CARD_FILES_AND_MESSAGES.CREATE_MESSAGE_REQUEST, resp)
+          commit(CARD_FILES_AND_MESSAGES.CREATE_MESSAGE_REQUEST, data)
           resolve(resp)
         }).catch(err => {
           reject(err)
@@ -67,8 +67,8 @@ const mutations = {
   [CARD_FILES_AND_MESSAGES.MESSAGES_REQUEST]: state => {
     state.status = 'loading'
   },
-  [CARD_FILES_AND_MESSAGES.CREATE_MESSAGES_REQUEST]: (state, resp) => {
-    state.messages.push(resp.data)
+  [CARD_FILES_AND_MESSAGES.CREATE_MESSAGE_REQUEST]: (state, data) => {
+    state.messages.push(data)
   },
   [CARD_FILES_AND_MESSAGES.FILES_REQUEST]: state => {
     state.status = 'loading'

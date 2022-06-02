@@ -6,9 +6,7 @@ import { UPDATE_SOUND_SETTING } from '@/store/actions/inspector'
 
 const store = useStore()
 const user = computed(() => store.state.user.user)
-const settings = computed(() => {
-  return store.state.navigator.navigator.settings
-})
+const settings = computed(() => store.state.navigator.navigator.settings)
 
 const isNotificationSoundOn = ref(store.state.inspector.is_notification_sound_on)
 
@@ -16,26 +14,24 @@ const updateSoundSetting = () => {
   store.dispatch(UPDATE_SOUND_SETTING, { uid_user: user.value.current_user_uid, value: isNotificationSoundOn.value })
 }
 const updateSettings = () => {
-  store.dispatch(
-    PATCH_SETTINGS,
-    {
-      show_completed_tasks: settings.value.show_completed_tasks ? 1 : 0,
-      add_task_to_begin: settings.value.add_task_to_begin ? 1 : 0,
-      cal_number_of_first_week: settings.value.cal_number_of_first_week ? 1 : 0,
-      cal_show_week_number: settings.value.cal_show_week_number ? 1 : 0,
-      nav_show_tags: settings.value.nav_show_tags,
-      nav_show_overdue: settings.value.nav_show_overdue ? 1 : 0,
-      nav_show_summary: settings.value.nav_show_summary ? 1 : 0,
-      nav_show_emps: settings.value.nav_show_emps,
-      nav_show_markers: settings.value.nav_show_markers,
-      language: settings.value.language,
-      stopwatch: settings.value.stopwatch,
-      cal_work_time: settings.value.cal_work_time,
-      reminders_in_n_minutes: settings.value.reminders_in_n_minutes,
-      cal_work_week: settings.value.cal_work_week,
-      compact_mode: settings.value.compact_mode
-    }
-  ).then(resp => {
+  const data = {
+    add_task_to_begin: settings.value.add_task_to_begin === true ? 1 : 0,
+    cal_number_of_first_week: settings.value.cal_number_of_first_week === true ? 1 : 0,
+    cal_show_week_number: settings.value.cal_show_week_number === true ? 1 : 0,
+    nav_show_tags: settings.value.nav_show_tags === true ? 1 : 0,
+    nav_show_overdue: settings.value.nav_show_overdue === true ? 1 : 0,
+    nav_show_summary: settings.value.nav_show_summary === true ? 1 : 0,
+    nav_show_emps: settings.value.nav_show_emps === true ? 1 : 0,
+    nav_show_markers: settings.value.nav_show_markers === true ? 1 : 0,
+    language: settings.value.language,
+    stopwatch: settings.value.stopwatch === true ? 1 : 0,
+    cal_work_time: settings.value.cal_work_time === true ? 1 : 0,
+    reminders_in_n_minutes: settings.value.reminders_in_n_minutes,
+    cal_work_week: settings.value.cal_work_week === true ? 1 : 0,
+    compact_mode: settings.value.compact_mode === true ? 1 : 0
+  }
+  console.log(data)
+  store.dispatch(PATCH_SETTINGS, data).then(resp => {
   })
 }
 </script>
@@ -47,8 +43,9 @@ const updateSettings = () => {
         <div class="checkbox">
           <input
             id="opt_1"
-            v-model="settings.show_completed_tasks"
+            v-model="settings.add_task_to_begin"
             type="checkbox"
+            value="0"
             class="custom-checkbox-orange"
             @change="updateSettings()"
           >

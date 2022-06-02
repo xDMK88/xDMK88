@@ -29,7 +29,7 @@
           </svg>
         </div>
       </div>
-      <div class="flex items-stretch mt-[15px]">
+      <div class="flex items-stretch mt-4">
         <input
           ref="inputValue"
           v-model="currentValue"
@@ -39,7 +39,7 @@
           @keyup.esc="onCancel"
         >
       </div>
-      <div class="flex justify-end mt-[17px]">
+      <div class="flex justify-end mt-4">
         <button
           class="focus:ring focus:outline-none inline-flex cursor-pointer whitespace-nowrap justify-center items-center duration-150 px-[12px] py-[10px] rounded-md bg-[#ff9123] text-white text-[13px] leading-[15px] font-medium font-roboto"
           @click="onSave"

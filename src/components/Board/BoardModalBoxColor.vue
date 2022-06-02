@@ -29,7 +29,7 @@
           </svg>
         </div>
       </div>
-      <div class="flex items-stretch mt-[20px]">
+      <div class="flex items-stretch mt-4">
         <div class="grow gap-[4px] flex flex-col items-center">
           <div
             v-for="(clrs, index) in colors"

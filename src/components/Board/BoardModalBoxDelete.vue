@@ -3,9 +3,9 @@
     z-index="z-40"
     @overlay-click="onCancel"
   >
-    <div class="rounded-xl shadow-lg w-[400px] p-6 bg-white z-50">
+    <div class="rounded-xl shadow-lg w-[360px] p-6 bg-white z-50">
       <div class="flex items-start">
-        <div class="flex-1 text-[#4c4c4d] font-medium text-[14px] leading-4">
+        <div class="flex-1 text-[#4c4c4d] font-medium text-[14px] leading-[16px] font-roboto">
           {{ title }}
         </div>
         <!-- кнопка закрыть -->
@@ -34,15 +34,15 @@
           {{ text }}
         </div>
       </div>
-      <div class="flex justify-end mt-4">
+      <div class="flex gap-[4px] justify-end mt-4">
         <button
-          class="focus:ring w-24 focus:outline-none inline-flex cursor-pointer whitespace-nowrap justify-center items-center duration-150 px-3 py-2.5 rounded-md bg-[#ff9123] text-white text-[13px] leading-[15px] font-medium"
+          class="focus:ring min-w-[90px] focus:outline-none inline-flex cursor-pointer whitespace-nowrap justify-center items-center duration-150 px-[12px] py-[10px] rounded-md bg-[#ff9123] text-white text-[13px] leading-[15px] font-medium font-roboto"
           @click="onSave"
         >
           Да
         </button>
         <button
-          class="ml-2 w-24 focus:ring focus:outline-none inline-flex cursor-pointer whitespace-nowrap justify-center items-center duration-150 px-2.5 py-2 rounded-md border border-[#ff9123] bg-white text-[#ff9123] text-[13px] leading-[15px] font-medium"
+          class="focus:ring min-w-[90px] focus:outline-none inline-flex cursor-pointer whitespace-nowrap justify-center items-center duration-150 px-[12px] py-[10px] rounded-md border border-[#ff9123] bg-white text-[#ff9123] text-[13px] leading-[15px] font-medium font-roboto"
           @click="onCancel"
         >
           Нет

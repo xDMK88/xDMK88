@@ -1418,6 +1418,23 @@ const mutations = {
       }
     }
   },
+  [TASK.ADD_TASK_TO_ROOTS]: (state, taskUid) => {
+    if (!state.newConfig.roots.includes(taskUid)) {
+      state.newConfig.roots.push(taskUid)
+    }
+  },
+  [TASK.ADD_TASK_TO_LEAVES]: (state, taskUid) => {
+    if (!state.newConfig.leaves.includes(taskUid)) {
+      state.newConfig.leaves.push(taskUid)
+    }
+  },
+  [TASK.REMOVE_TASK_FROM_ROOTS]: (state, taskUid) => {
+    for (let i = 0; i < state.newConfig.roots.length; i++) {
+      if (taskUid === state.newConfig.roots[i]) {
+        state.newConfig.roots.splice(i, 1)
+      }
+    }
+  },
   [TASK.IN_WORK_TASKS_REQUEST]: (state, resp) => {
     state.inWork = resp.data
     state.inWork.title = 'В работе'
@@ -1435,7 +1452,6 @@ const mutations = {
     state.status = 'success'
     state.tasks = resp.data
     state.hasLoadedOnce = true
-
     Object.assign(state.newtasks, {})
     Object.assign(state.newConfig, {
       roots: [],

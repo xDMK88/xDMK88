@@ -6,10 +6,12 @@ import { CREATE_MESSAGE_REQUEST } from '@/store/actions/cardfilesandmessages'
 import CardChat from '@/components/properties/CardChat.vue'
 import Icon from '@/components/Icon.vue'
 import close from '@/icons/close.js'
+import TaskPropsCommentEditor from '@/components/TaskProperties/TaskPropsCommentEditor.vue'
 
 const store = useStore()
 const selectedCard = computed(() => store.state.cards.selectedCard)
 const user = computed(() => store.state.user.user)
+const boards = computed(() => store.state.boards.boards)
 const employees = computed(() => store.state.employees.employees)
 const cardMessages = computed(() => store.state.cardfilesandmessages.messages)
 // const cardDateCreate = computed(() => {
@@ -27,6 +29,14 @@ function uuidv4 () {
 }
 
 const cardMessageInputValue = ref('')
+
+const canEditComment = computed(() => boards.value[selectedCard.value.uid_board].type_access === 1)
+const endChangeComment = (text) => {
+  selectedCard.value.comment = text
+}
+const onChangeComment = (text) => {
+  console.log(text)
+}
 
 const createCardMessage = () => {
   const uid = uuidv4()
@@ -69,7 +79,7 @@ const createCardMessage = () => {
     <p class="text-[18px] font-[700] my-[25px] text-[#424242]">
       {{ selectedCard.name }}
     </p>
-    <div class="flex justify-start mb-[15px] space-x-[4px]">
+    <div class="flex justify-start mb-[25px] space-x-[4px]">
       <!-- Performer -->
       <div class=" flex items-center bg-[#7B94EB] rounded-[6px] text-white text-[12px] px-[8px] py-[5px] cursor-pointer font-[500]">
         <svg
@@ -146,12 +156,22 @@ const createCardMessage = () => {
         </svg>
       </div>
     </div>
+
+    <TaskPropsCommentEditor
+      class="mt-3 h-32 scroll-style overflow-auto"
+      :comment="selectedCard.comment ?? ''"
+      :can-edit="canEditComment"
+      @endChangeComment="endChangeComment"
+      @changeComment="onChangeComment"
+    />
+    <!--
     <textarea
       v-model="selectedCard.comment"
       placeholder="Описание..."
       class="border-[1px] border-[rgba(0, 0, 0, 0.1) rounded-[8px] p-[12px] focus:border-[rgba(0, 0, 0, 0.5) w-full h-[110px] font-[400] text-[14px] text-[#4C4C4D]"
       style="background-color: #F4F5F7; resize: none"
     />
+    -->
 
     <!-- Card chat -->
     <card-chat

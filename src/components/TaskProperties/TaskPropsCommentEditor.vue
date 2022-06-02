@@ -5,14 +5,14 @@
   >
     <div
       v-linkify:options="{ className: 'text-blue-600' }"
-      class="dark:text-gray-100 text-base"
+      class="font-[400] text-[14px] leading-[21px] text-[#4C4C4D]"
       :contenteditable="isEditable"
       :data-placeholder="placeholderComment()"
       @blur="changeComment($event)"
       @keyup="changeComment($event)"
       @focusout="removeEditComment($event)"
-      v-html="getFixedCommentText()"
       @paste="OnPaste_StripFormatting(this, $event);"
+      v-html="getFixedCommentText()"
     />
   </div>
 </template>
@@ -50,7 +50,7 @@ export default {
   },
   methods: {
     OnPaste_StripFormatting (elem, e) {
-      var text = ''
+      let text = ''
       if (e.originalEvent && e.originalEvent.clipboardData && e.originalEvent.clipboardData.getData) {
         e.preventDefault()
         text = e.originalEvent.clipboardData.getData('text/plain')

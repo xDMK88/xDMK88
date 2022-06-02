@@ -236,7 +236,12 @@ export default {
                 new Date(messageCurr.date_create).toDateString()
     },
     isChangeCreator (index) {
-      if (index === 0) return true
+      console.log(index)
+      if (this.showAllMessages === true) {
+        if (index === 0) return true
+      } else {
+        if (index === 1) return true
+      }
       const messagePrev = this.messages[index - 1]
       const messageCurr = this.messages[index]
       if (!messagePrev || !messageCurr) return false

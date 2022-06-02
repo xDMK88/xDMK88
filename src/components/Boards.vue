@@ -9,7 +9,9 @@ import gridView from '@/icons/grid-view.js'
 import listView from '@/icons/list-view.js'
 import * as BOARD from '@/store/actions/boards.js'
 import * as CARD from '@/store/actions/cards.js'
-
+import * as NAVIGATOR from '@/store/actions/navigator'
+import { SELECT_BOARD } from '@/store/actions/boards.js'
+import BoardModalBoxRename from '@/components/Board/BoardModalBoxRename.vue'
 const store = useStore()
 defineProps({
   boards: {
@@ -24,7 +26,7 @@ const UID_TO_ACTION = {
 }
 
 const isGridView = computed(() => store.state.isGridView)
-
+const showAddColumn = ref(false)
 const updateGridView = (value) => {
   store.commit('basic', { key: 'isGridView', value: value })
   localStorage.setItem('isGridView', value)
@@ -92,9 +94,45 @@ const gotoChildren = (value) => {
   store.commit('basic', { key: 'greedSource', value: value.children })
   store.commit('basic', { key: 'greedPath', value: 'boards_children' })
 }
+const onAddNewBoard = (name) => {
+  showAddColumn.value = ref(false)
+  store.commit('basic', { key: 'propertiesState', value: 'board' })
+  const data = {
+    uid: uuidv4(),
+    name: name !== '' ? name : 'Тест',
+    uid_parent: '00000000-0000-0000-0000-000000000000',
+    color: '',
+    comment: '',
+    plugin: '',
+    collapsed: 0,
+    isclosed: 0,
+    order: 0,
+    group: 0,
+    show: 0,
+    favorite: 0,
+    quiet: 0,
+    email_creator: user.value.current_user_email,
+    members: { [user.value.current_user_uid]: '1' },
+    children: [],
+    type_access: 1,
+    bold: 0
+  }
+  store.dispatch(BOARD.CREATE_BOARD_REQUEST, data).then(() => {
+  })
+  store.commit(NAVIGATOR.NAVIGATOR_PUSH_BOARD, [data])
+  store.commit(SELECT_BOARD, data)
+}
 </script>
 
 <template class="w-full">
+  <BoardModalBoxRename
+    v-model="showAddColumn"
+    v-show="showAddColumn"
+    :show="showAddColumn"
+    title="Добавить доску"
+    @cancel="showAddColumn = false"
+    @save="onAddNewBoard"
+  />
   <div
     v-for="(value, index) in boards"
     :key="index"
@@ -196,7 +234,7 @@ const gotoChildren = (value) => {
       <div
         v-if="index == 0"
         class="flex items-center justify-center bg-gray-50 dark:bg-gray-900 rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-500 cursor-pointer px-5 min-h-[80px]"
-        @click.prevent="openProperties(false)"
+        @click="showAddColumn = true"
       >
         <div class="flex items-center justify-center w-10 h-10 bg-gray-200 dark:bg-gray-800 rounded-xl text-gray-100">
           <svg

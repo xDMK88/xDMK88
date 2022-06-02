@@ -4,8 +4,11 @@ import { useStore } from 'vuex'
 import { CREATE_MESSAGE_REQUEST } from '@/store/actions/cardfilesandmessages'
 import { CHANGE_CARD_RESPONSIBLE_USER } from '@/store/actions/cards'
 
+import CardCover from '@/components/properties/CardCover.vue'
 import CardChat from '@/components/properties/CardChat.vue'
 import CardResponsibleUser from '@/components/properties/CardResponsibleUser.vue'
+import CardOptions from '@/components/properties/CardOptions.vue'
+import CardBudget from '@/components/properties/CardBudget.vue'
 import Icon from '@/components/Icon.vue'
 import close from '@/icons/close.js'
 import TaskPropsCommentEditor from '@/components/TaskProperties/TaskPropsCommentEditor.vue'
@@ -67,9 +70,8 @@ const createCardMessage = () => {
 
 <template>
   <div class="relative min-h-screen">
-    <div
-      class="flex justify-end"
-    >
+    <!-- Close icon -->
+    <div class="flex justify-end">
       <Icon
         :path="
           close.path"
@@ -80,13 +82,15 @@ const createCardMessage = () => {
         @click="closeProperties"
       />
     </div>
-    <div
-      class="border-[1px] border-[rgba(0, 0, 0, 0.1) rounded-[8px] min-h-[93px] max-h-[93px]"
-      :style="{ 'height': selectedCard.cover_size_y + 'px', 'background': selectedCard.cover_color !== '#A998B6' ? selectedCard.cover_color : '#F4F5F7' }"
+
+    <card-cover
+      :card-cover="selectedCard.cover_color"
     />
+
     <p class="text-[18px] font-[700] my-[25px] text-[#424242]">
       {{ selectedCard.name }}
     </p>
+
     <div class="flex justify-start mb-[25px] space-x-[4px]">
       <card-responsible-user
         :responsible="selectedCard.user"
@@ -94,63 +98,10 @@ const createCardMessage = () => {
         :can-edit="canEdit"
         @changeResponsible="changeResponsible"
       />
-      <div class="flex items-center bg-[#F4F5F7] rounded-[6px] text-[#575758] text-[12px] px-[8px] py-[5px] cursor-pointer font-[500]">
-        <svg
-          width="17"
-          height="12"
-          class="mr-[7px]"
-          viewBox="0 0 17 12"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            fill-rule="evenodd"
-            clip-rule="evenodd"
-            d="M2.57405 1.55572C2.37759 1.55572 2.18918 1.63376 2.05027 1.77268C1.91135 1.9116 1.83331 2.10001 1.83331 2.29646V9.70387C1.83331 9.90033 1.91135 10.0887 2.05027 10.2277C2.18918 10.3666 2.37759 10.4446 2.57405 10.4446H14.4259C14.6224 10.4446 14.8108 10.3666 14.9497 10.2277C15.0886 10.0887 15.1666 9.90033 15.1666 9.70387V2.29646C15.1666 2.10001 15.0886 1.9116 14.9497 1.77268C14.8108 1.63376 14.6224 1.55572 14.4259 1.55572H2.57405ZM1.0027 0.725114C1.41945 0.308366 1.98468 0.0742402 2.57405 0.0742402H14.4259C15.0153 0.0742402 15.5805 0.308367 15.9973 0.725114C16.414 1.14186 16.6481 1.70709 16.6481 2.29646V9.70387C16.6481 10.2932 16.414 10.8585 15.9973 11.2752C15.5805 11.692 15.0153 11.9261 14.4259 11.9261H2.57405C1.98468 11.9261 1.41945 11.692 1.0027 11.2752C0.585955 10.8585 0.351828 10.2932 0.351828 9.70387V2.29646C0.351828 1.70709 0.585954 1.14186 1.0027 0.725114Z"
-            fill="black"
-            fill-opacity="0.5"
-          />
-          <path
-            fill-rule="evenodd"
-            clip-rule="evenodd"
-            d="M8.49998 4.51869C7.68178 4.51869 7.0185 5.18197 7.0185 6.00017C7.0185 6.81837 7.68178 7.48165 8.49998 7.48165C9.31818 7.48165 9.98146 6.81837 9.98146 6.00017C9.98146 5.18197 9.31818 4.51869 8.49998 4.51869ZM5.53701 6.00017C5.53701 4.36377 6.86358 3.0372 8.49998 3.0372C10.1364 3.0372 11.4629 4.36377 11.4629 6.00017C11.4629 7.63657 10.1364 8.96313 8.49998 8.96313C6.86358 8.96313 5.53701 7.63657 5.53701 6.00017Z"
-            fill="black"
-            fill-opacity="0.5"
-          />
-          <path
-            fill-rule="evenodd"
-            clip-rule="evenodd"
-            d="M4.339 0.130626C4.6158 0.245279 4.79627 0.515379 4.79627 0.814981C4.79627 1.79726 4.40606 2.73932 3.71148 3.4339C3.0169 4.12847 2.07485 4.51868 1.09257 4.51868C0.792967 4.51868 0.522866 4.33821 0.408214 4.06141C0.293561 3.78462 0.356936 3.46601 0.568786 3.25416L3.53175 0.291198C3.7436 0.079348 4.06221 0.0159733 4.339 0.130626ZM15.9074 8.96313C15.318 8.96313 14.7528 9.19726 14.336 9.614C13.9193 10.0308 13.6852 10.596 13.6852 11.1854C13.6852 11.5945 13.3535 11.9261 12.9444 11.9261C12.5353 11.9261 12.2037 11.5945 12.2037 11.1854C12.2037 10.2031 12.5939 9.26102 13.2885 8.56644C13.9831 7.87186 14.9251 7.48165 15.9074 7.48165C16.3165 7.48165 16.6481 7.81329 16.6481 8.22239C16.6481 8.63149 16.3165 8.96313 15.9074 8.96313Z"
-            fill="black"
-            fill-opacity="0.5"
-          />
-        </svg>
-
-        Бюджет
-      </div>
-      <!-- Options -->
-      <div class="flex items-center bg-[#F4F5F7] rounded-[6px] text-[#575758] text-[12px] px-[13px] py-[5px] cursor-pointer font-[500]">
-        <svg
-          width="4"
-          height="16"
-          viewBox="0 0 4 16"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M2 12C3.10457 12 4 12.8954 4 14C4 15.1046 3.10457 16 2 16C0.89543 16 0 15.1046 0 14C0 12.8954 0.89543 12 2 12Z"
-            fill="#7F7F80"
-          />
-          <path
-            d="M2 6C3.10457 6 4 6.89543 4 8C4 9.10457 3.10457 10 2 10C0.89543 10 0 9.10457 0 8C0 6.89543 0.89543 6 2 6Z"
-            fill="#7F7F80"
-          />
-          <path
-            d="M2 0C3.10457 0 4 0.895431 4 2C4 3.10457 3.10457 4 2 4C0.89543 4 0 3.10457 0 2C0 0.895431 0.89543 0 2 0Z"
-            fill="#7F7F80"
-          />
-        </svg>
-      </div>
+      <card-budget
+        :budget="selectedCard.cost"
+      />
+      <card-options />
     </div>
 
     <TaskPropsCommentEditor
@@ -160,14 +111,6 @@ const createCardMessage = () => {
       @endChangeComment="endChangeComment"
       @changeComment="onChangeComment"
     />
-    <!--
-    <textarea
-      v-model="selectedCard.comment"
-      placeholder="Описание..."
-      class="border-[1px] border-[rgba(0, 0, 0, 0.1) rounded-[8px] p-[12px] focus:border-[rgba(0, 0, 0, 0.5) w-full h-[110px] font-[400] text-[14px] text-[#4C4C4D]"
-      style="background-color: #F4F5F7; resize: none"
-    />
-    -->
 
     <!-- Card chat -->
     <card-chat

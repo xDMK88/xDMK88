@@ -2,8 +2,9 @@
 import { computed, ref } from 'vue'
 import { useStore } from 'vuex'
 import { CREATE_MESSAGE_REQUEST } from '@/store/actions/cardfilesandmessages'
-import { CHANGE_CARD_RESPONSIBLE_USER } from '@/store/actions/cards'
+import { CHANGE_CARD_RESPONSIBLE_USER, CHANGE_CARD_NAME, CHANGE_CARD_COMMENT } from '@/store/actions/cards'
 
+import CardName from '@/components/properties/CardName.vue'
 import CardCover from '@/components/properties/CardCover.vue'
 import CardChat from '@/components/properties/CardChat.vue'
 import CardResponsibleUser from '@/components/properties/CardResponsibleUser.vue'
@@ -20,14 +21,21 @@ const boards = computed(() => store.state.boards.boards)
 const employees = computed(() => store.state.employees.employees)
 const employeesByEmail = computed(() => store.state.employees.employeesByEmail)
 const cardMessages = computed(() => store.state.cardfilesandmessages.messages)
+
 const changeResponsible = (userEmail) => {
   store.dispatch(CHANGE_CARD_RESPONSIBLE_USER, { cardUid: selectedCard.value.uid, email: userEmail }).then(() => {
     selectedCard.value.user = userEmail
   })
 }
+
 // const cardDateCreate = computed(() => {
 //   return new Date(selectedCard.value.date_create).toLocaleString()
 // })
+
+const changeName = (arg) => {
+  const data = { cardUid: selectedCard.value.uid, name: arg.target.innerText }
+  store.dispatch(CHANGE_CARD_NAME, data)
+}
 
 const closeProperties = () => {
   store.dispatch('asidePropertiesToggle', false)
@@ -43,10 +51,8 @@ const cardMessageInputValue = ref('')
 
 const canEdit = computed(() => boards.value[selectedCard.value.uid_board].type_access !== 0)
 const endChangeComment = (text) => {
-  selectedCard.value.comment = text
-}
-const onChangeComment = (text) => {
-  console.log(text)
+  const data = { cardUid: selectedCard.value.uid, comment: text }
+  store.dispatch(CHANGE_CARD_COMMENT, data)
 }
 
 const createCardMessage = () => {
@@ -87,9 +93,11 @@ const createCardMessage = () => {
       :card-cover="selectedCard.cover_color"
     />
 
-    <p class="text-[18px] font-[700] my-[25px] text-[#424242]">
-      {{ selectedCard.name }}
-    </p>
+    <card-name
+      :card-name="selectedCard.name"
+      :can-edit="canEdit"
+      @changeName="changeName"
+    />
 
     <div class="flex justify-start mb-[25px] space-x-[4px]">
       <card-responsible-user
@@ -109,7 +117,6 @@ const createCardMessage = () => {
       :comment="selectedCard.comment ?? ''"
       :can-edit="canEdit"
       @endChangeComment="endChangeComment"
-      @changeComment="onChangeComment"
     />
 
     <!-- Card chat -->

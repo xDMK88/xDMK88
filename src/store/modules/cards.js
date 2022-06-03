@@ -124,7 +124,51 @@ const actions = {
             {
               group: 'api',
               title: 'REST API Error, please make screenshot',
-              action: CARD.ADD_CARD,
+              action: CARD.CHANGE_CARD_RESPONSIBLE_USER,
+              text: err.response?.data ?? err
+            },
+            15000
+          )
+          reject(err)
+        })
+    })
+  },
+  [CARD.CHANGE_CARD_NAME]: ({ commit }, data) => {
+    return new Promise((resolve, reject) => {
+      const url = process.env.VUE_APP_LEADERTASK_API + '/api/v1/card/name?uid=' + data.cardUid
+      axios({ url: url, method: 'PATCH', data: { name: data.name } })
+        .then((resp) => {
+          commit('ChangeCard', resp.data)
+          resolve(resp)
+        })
+        .catch((err) => {
+          notify(
+            {
+              group: 'api',
+              title: 'REST API Error, please make screenshot',
+              action: CARD.CHANGE_CARD_NAME,
+              text: err.response?.data ?? err
+            },
+            15000
+          )
+          reject(err)
+        })
+    })
+  },
+  [CARD.CHANGE_CARD_COMMENT]: ({ commit }, data) => {
+    return new Promise((resolve, reject) => {
+      const url = process.env.VUE_APP_LEADERTASK_API + 'api/v1/card/comment?uid=' + data.cardUid
+      axios({ url: url, method: 'PATCH', data: { comment: data.comment } })
+        .then((resp) => {
+          commit('ChangeCard', resp.data)
+          resolve(resp)
+        })
+        .catch((err) => {
+          notify(
+            {
+              group: 'api',
+              title: 'REST API Error, please make screenshot',
+              action: CARD.CHANGE_CARD_NAME,
               text: err.response?.data ?? err
             },
             15000

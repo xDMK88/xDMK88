@@ -1006,9 +1006,12 @@ window.getSelection().removeAllRanges()
 
 <style>
 .tree-level {
-  flex: 1
+  flex: 1;
+  margin-left: 0 !important;
 }
-
+.tree {
+  margin-left: 0;
+}
 .taskName, .tag-label, .tag-overdue, .performer, .customer, .checklist-tag, .term-tag{
   cursor: default;
 }

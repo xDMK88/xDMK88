@@ -29,10 +29,6 @@ const changeResponsible = (userEmail) => {
   })
 }
 
-// const cardDateCreate = computed(() => {
-//   return new Date(selectedCard.value.date_create).toLocaleString()
-// })
-
 const changeName = (arg) => {
   const data = { cardUid: selectedCard.value.uid, name: arg.target.innerText }
   store.dispatch(CHANGE_CARD_NAME, data)
@@ -111,7 +107,9 @@ const createCardMessage = () => {
       <card-budget
         :budget="selectedCard.cost"
       />
-      <card-options />
+      <card-options
+        :date-create="selectedCard.date_create"
+      />
     </div>
 
     <TaskPropsCommentEditor

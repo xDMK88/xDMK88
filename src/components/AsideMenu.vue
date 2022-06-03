@@ -281,13 +281,13 @@ const tarifS = () => {
         </div>
       </div>
     </div>
-    <nav-bar-item class="rounded-b-3xl pt-0 mt-0">
+    <div class="mt-[10px]">
       <DatePicker
         id="Maincalendar"
         ref="calendarclass"
         v-model="navigatorMenu.currentDate"
         dot="true"
-        class="border-none text-xs px-3 calendar-custom calendar-nav-custom font-SfProDisplayNormal text-sm"
+        class="border-none text-xs px-[16px] calendar-custom calendar-nav-custom font-SfProDisplayNormal text-sm"
         style="border: none!important;"
         :style="{ backgroundColor: datePickerBG }"
         show-weeknumbers="left"
@@ -308,8 +308,8 @@ const tarifS = () => {
         in-prev-month="true"
         select-attribute="dates"
       />
-    </nav-bar-item>
-    <div class="my-5">
+    </div>
+    <div class="my-[10px]">
       <template v-for="(menuGroup, index) in menu">
         <div
           v-if="typeof menuGroup === 'string'"

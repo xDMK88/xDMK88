@@ -3,7 +3,6 @@ import assignment from '@/icons/assignment.js'
 import calendar from '@/icons/calendar.js'
 import doitnow from '@/icons/doitnow.js'
 import employee from '@/icons/employee.js'
-import other from '@/icons/other.js'
 import axios from 'axios'
 import { notify } from 'notiwind'
 import { computed } from 'vue'
@@ -318,10 +317,14 @@ const mutations = {
         label: 'Прочее',
         uid: '757be87d-c269-40e0-b224-6b2bb0e4f97d',
         bold: false,
-        icon: other.path,
-        iconBox: other.viewBox,
-        width: other.width,
-        height: other.height,
+        icon: [
+          'M7.5 16.875C8.53553 16.875 9.375 16.0355 9.375 15C9.375 13.9645 8.53553 13.125 7.5 13.125C6.46447 13.125 5.625 13.9645 5.625 15C5.625 16.0355 6.46447 16.875 7.5 16.875Z',
+          'M15 16.875C16.0355 16.875 16.875 16.0355 16.875 15C16.875 13.9645 16.0355 13.125 15 13.125C13.9645 13.125 13.125 13.9645 13.125 15C13.125 16.0355 13.9645 16.875 15 16.875Z',
+          'M22.5 16.875C23.5355 16.875 24.375 16.0355 24.375 15C24.375 13.9645 23.5355 13.125 22.5 13.125C21.4645 13.125 20.625 13.9645 20.625 15C20.625 16.0355 21.4645 16.875 22.5 16.875Z'
+        ],
+        iconBox: '0 0 30 30',
+        width: 30,
+        height: 30,
         type: 'greed',
         path: 'other'
       }

@@ -240,9 +240,9 @@ const tarifS = () => {
     v-show="!isFullScreen"
     id="aside"
     class="w-[292px] fixed top-0 z-[2] h-screen transition-position lg:left-0 bg-slate-100 font-SfProDisplayNormal text-sm"
-    :class="[ isAsideMobileExpanded ? 'left-0' : '-left-80', isAsideLgActive ? 'block' : 'lg:hidden xl:block' ]"
+    :class="[ isAsideMobileExpanded ? 'left-0' : '-left-[292px]', isAsideLgActive ? 'block' : 'lg:hidden xl:block' ]"
   >
-    <div class="flex flex-row w-full text-dark flex-1 h-12 items-center">
+    <div class="flex flex-row w-full text-dark px-[16px] mt-[22px] h-[32px] items-center">
       <nav-bar-item
         type="hidden lg:flex xl:hidden"
         active-color="text-dark"
@@ -256,15 +256,15 @@ const tarifS = () => {
         />
       </nav-bar-item>
       <div
-        class="w-full px-6 cursor-pointer"
+        class="w-full cursor-pointer"
         @click="modalOneActive = true"
       >
         <div class="flex">
           <img
             :src="user.foto_link"
-            width="40"
-            height="40"
-            class="rounded-lg border-2 border-white dark:border-gray-200 mr-1"
+            width="32"
+            height="32"
+            class="rounded-[8px] border-2 border-white"
           >
           <icon
             :path="ArrowDown.path"

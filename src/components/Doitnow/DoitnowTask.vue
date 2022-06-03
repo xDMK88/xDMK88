@@ -154,10 +154,10 @@
               <span class="p-1.5 bg-white rounded-xl border-2">Выполнить до:</span><span class="bg-cyan-400 text-white p-1.5 ml-1 rounded-xl"> {{ dateClear(task.date_end) }}</span>
             </div>
             <div
-              v-if="task.is_overdue"
+              v-show="typeof plural === 'string'"
               class="mb-1 flex items-center"
             >
-              <span class="p-1.5 bg-white rounded-xl border-2">Просрочено на:</span><span class="bg-red-500 ml-1 text-white p-1.5 rounded-xl">{{ plural(task) }}!</span>
+              <span class="p-1.5 bg-white rounded-xl border-2">Просрочено на:</span><span class="bg-red-500 ml-1 text-white p-1.5 rounded-xl">{{ plural }}!</span>
             </div>
           </div>
           <!-- checklist -->
@@ -496,6 +496,15 @@ export default {
     },
     uppercase () {
       return this.colors[this.task.uid_marker]?.uppercase ?? false
+    },
+    plural () {
+      const date = Math.floor((new Date(this.task.perform_time) - new Date(this.task.date_end)) / (60 * 60 * 24 * 1000))
+      const dayName = date % 10 === 1 && date % 100 !== 11 ? 'день' : (((date >= 2) && (date % 10 <= 4)) && (date % 100 < 10 || date % 100 >= 20) ? 'дня' : 'дней')
+      if (date < 0) {
+        return date
+      } else {
+        return date + ' ' + dayName
+      }
     }
   },
   methods: {
@@ -511,11 +520,6 @@ export default {
         value: text
       }
       this.$store.dispatch(TASK.CHANGE_TASK_COMMENT, data)
-    },
-    plural (task) {
-      const date = Math.floor((new Date() - new Date(task.perform_time)) / (60 * 60 * 24 * 1000))
-      const dayName = date % 10 === 1 && date % 100 !== 11 ? 'день' : (((date >= 2) && (date % 10 <= 4)) && (date % 100 < 10 || date % 100 >= 20) ? 'дня' : 'дней')
-      return date + ' ' + dayName
     },
     _linkify (text) {
       return text.replace(/(lt?:\/\/[^\s]+)/g, '<a href="$1">$1</a>')

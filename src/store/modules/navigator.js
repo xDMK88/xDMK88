@@ -3,8 +3,6 @@ import assignment from '@/icons/assignment.js'
 import calendar from '@/icons/calendar.js'
 import doitnow from '@/icons/doitnow.js'
 import employee from '@/icons/employee.js'
-import other from '@/icons/other.js'
-import project from '@/icons/project.js'
 import axios from 'axios'
 import { notify } from 'notiwind'
 import { computed } from 'vue'
@@ -276,10 +274,10 @@ const mutations = {
         label: 'Проекты',
         uid: resp.data.private_projects.uid,
         bold: false,
-        icon: project.path,
-        iconBox: project.viewBox,
-        width: project.width,
-        height: project.height,
+        icon: 'M23.8818 9.48613V8.39669C23.8818 7.38613 23.0651 6.56289 22.0625 6.56289H14.565L14.3401 6.18824C14.2031 5.97134 13.9635 5.83331 13.7092 5.83331H8.15332C7.15073 5.83331 6.33398 6.65655 6.33398 7.66712V21.4995C6.33398 22.5101 7.15073 23.3333 8.15332 23.3333H23.6813C24.6839 23.3333 25.5006 22.5101 25.5006 21.4995V11.3101C25.5055 10.3636 24.7915 9.58472 23.8818 9.48613ZM7.81097 7.66712C7.81097 7.47486 7.96748 7.31712 8.15821 7.31712H13.2983L15.2937 10.6002C15.4258 10.8171 15.6654 10.9551 15.9246 10.9551H23.6911C23.8818 10.9551 24.0383 11.1129 24.0383 11.3051V21.4995C24.0383 21.6918 23.8818 21.8495 23.6911 21.8495H8.15332C7.96259 21.8495 7.80608 21.6918 7.80608 21.4995V7.66712H7.81097ZM22.4048 9.47134H16.3306L15.4649 8.04669H22.0576C22.2483 8.04669 22.4048 8.20444 22.4048 8.39669V9.47134Z',
+        iconBox: '0 0 30 30',
+        width: 30,
+        height: 30,
         type: 'greed',
         path: 'new_private_projects',
         iconBackgroundClass: 'bg-amber-500'
@@ -319,10 +317,14 @@ const mutations = {
         label: 'Прочее',
         uid: '757be87d-c269-40e0-b224-6b2bb0e4f97d',
         bold: false,
-        icon: other.path,
-        iconBox: other.viewBox,
-        width: other.width,
-        height: other.height,
+        icon: [
+          'M7.5 16.875C8.53553 16.875 9.375 16.0355 9.375 15C9.375 13.9645 8.53553 13.125 7.5 13.125C6.46447 13.125 5.625 13.9645 5.625 15C5.625 16.0355 6.46447 16.875 7.5 16.875Z',
+          'M15 16.875C16.0355 16.875 16.875 16.0355 16.875 15C16.875 13.9645 16.0355 13.125 15 13.125C13.9645 13.125 13.125 13.9645 13.125 15C13.125 16.0355 13.9645 16.875 15 16.875Z',
+          'M22.5 16.875C23.5355 16.875 24.375 16.0355 24.375 15C24.375 13.9645 23.5355 13.125 22.5 13.125C21.4645 13.125 20.625 13.9645 20.625 15C20.625 16.0355 21.4645 16.875 22.5 16.875Z'
+        ],
+        iconBox: '0 0 30 30',
+        width: 30,
+        height: 30,
         type: 'greed',
         path: 'other'
       }
@@ -367,16 +369,6 @@ const mutations = {
       dep: localization.value.SharedProjects,
       items: resp.data.common_projects.items,
       type: 'projects'
-    })
-    itemsInProjectView.push({
-      dep: 'Мои доски',
-      items: resp.data.private_boards.items,
-      type: 'boards'
-    })
-    itemsInProjectView.push({
-      dep: 'Общие доски',
-      items: resp.data.common_boards.items,
-      type: 'boards'
     })
     resp.data.new_private_projects = itemsInProjectView
 

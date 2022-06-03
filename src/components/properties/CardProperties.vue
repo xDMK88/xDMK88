@@ -2,7 +2,7 @@
 import { computed, ref } from 'vue'
 import { useStore } from 'vuex'
 import { CREATE_MESSAGE_REQUEST } from '@/store/actions/cardfilesandmessages'
-import { CHANGE_CARD_RESPONSIBLE_USER, CHANGE_CARD_NAME } from '@/store/actions/cards'
+import { CHANGE_CARD_RESPONSIBLE_USER, CHANGE_CARD_NAME, CHANGE_CARD_COMMENT } from '@/store/actions/cards'
 
 import CardName from '@/components/properties/CardName.vue'
 import CardCover from '@/components/properties/CardCover.vue'
@@ -51,10 +51,8 @@ const cardMessageInputValue = ref('')
 
 const canEdit = computed(() => boards.value[selectedCard.value.uid_board].type_access !== 0)
 const endChangeComment = (text) => {
-  selectedCard.value.comment = text
-}
-const onChangeComment = (text) => {
-  console.log(text)
+  const data = { cardUid: selectedCard.value.uid, comment: text }
+  store.dispatch(CHANGE_CARD_COMMENT, data)
 }
 
 const createCardMessage = () => {
@@ -119,7 +117,6 @@ const createCardMessage = () => {
       :comment="selectedCard.comment ?? ''"
       :can-edit="canEdit"
       @endChangeComment="endChangeComment"
-      @changeComment="onChangeComment"
     />
 
     <!-- Card chat -->

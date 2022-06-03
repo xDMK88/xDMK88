@@ -112,13 +112,13 @@ const blur = e => {
 
 const inputElClass = computed(() => {
   const base = [
-    'px-3 py-2 max-w-full text-sm border-gray-300 disabled:border-stone-500 disabled:bg-amber-50 disabled:ring-0 focus:ring-0 rounded-lg w-full',
+    'px-3 py-2 max-w-full text-sm border-gray-300 border-0 border-l-0 disabled:border-stone-500 disabled:bg-amber-50 disabled:ring-0 focus:ring-0 rounded-lg w-full',
     // 'focus:border-stone-500 focus:bg-amber-50',
     'focus:border-gray-300',
-    'dark:placeholder-gray-400',
-    computedType.value === 'textarea' ? 'h-24' : 'h-10 white-cursor',
+    'dark:placeholder-gray-500',
+    computedType.value === 'textarea' ? 'h-24' : 'h-10 placeholder-gray-500',
     props.borderless ? 'border-0' : 'border-2',
-    props.transparent ? 'bg-transparent' : 'bg-white dark:bg-gray-800',
+    props.transparent ? 'bg-transparent' : 'bg-gray-100 dark:bg-gray-800',
     props.valid ? 'border-stone-500 bg-amber-50' : ''
   ]
 

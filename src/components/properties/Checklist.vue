@@ -136,6 +136,7 @@ onMounted(() => {
             v-model="check.checked"
             type="checkbox"
             class="m-1"
+            :disabled="(store.state.tasks.newtasks[props.taskUid].info.uid_performer === user.current_user_uid) || (isCustomer) ? false : true"
             @change="saveChecklist(index)"
           >
         </div>

@@ -36,11 +36,9 @@ const menuClick = (event) => {
   }
 }
 
-const styleActive = 'font-bold text-dark'
-const styleInactive = 'text-dark-500 font-light'
+const styleActive = 'font-roboto font-bold text-[#424242]'
+const styleInactive = 'font-roboto font-medium text-[#606061]'
 
-const bgcActive = 'bg-white rounded-xl'
-const bgcInactive = ''
 </script>
 
 <template>
@@ -51,29 +49,29 @@ const bgcInactive = ''
       :to="itemTo"
       :href="itemHref"
       :target="itemTarget"
-      class="flex items-center cursor-pointer hover:bg-white hover:rounded-xl dark:hover:bg-gray-700"
-      :class="[
-        isSubmenuList ? 'p-3 text-sm' : 'py-1',
-        isActive ? bgcActive : bgcInactive
-      ]"
+      class="h-[40px] flex items-center cursor-pointer hover:bg-white hover:rounded-[10px]"
+      :class="{
+        'p-3 text-sm': isSubmenuList,
+        'bg-white rounded-[10px]': isActive
+      }"
       @click="menuClick"
     >
-      <div class="rounded-md flex items-center justify-center w-10 h-10">
+      <div class="flex items-center justify-center mr-[8px]">
         <icon
           :path="item.icon"
-          class="flex-none text-[#606061]"
+          class="flex-none"
           :box="item.iconBox"
           :width="item.width"
           :height="item.height"
-          :class="[vSlot && vSlot.isExactActive ? styleActive : styleInactive]"
+          :class="[isActive ? styleActive : styleInactive]"
         />
       </div>
       <span
-        :class="[
-          vSlot && vSlot.isExactActive ? styleActive : styleInactive,
-          item.bold ? font - bold : font - normal
-        ]"
-      >{{ item.label }}</span>
+        class=""
+        :class="[isActive ? styleActive : styleInactive]"
+      >
+        {{ item.label }}
+      </span>
       <icon
         v-if="hasDropdown"
         :path="dropdownIcon"

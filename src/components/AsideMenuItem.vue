@@ -42,7 +42,7 @@ const styleInactive = 'font-medium text-[#606061]'
 </script>
 
 <template>
-  <li class="px-5">
+  <li class="px-[16px]">
     <component
       :is="componentIs"
       v-slot="vSlot"

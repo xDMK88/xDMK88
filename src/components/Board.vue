@@ -1,13 +1,25 @@
 <template>
-  <div
-    id="Board"
-  >
+  <div id="Board">
+    <BoardModalBoxDelete
+      v-show="showDeleteCard"
+      title="Удалить карточку"
+      text="Вы действительно хотите удалить карточку?"
+      @cancel="showDeleteCard = false"
+      @yes="onDeleteCard"
+    />
     <BoardModalBoxDelete
       v-show="showDeleteColumn"
       title="Удалить колонку"
       text="Вы действительно хотите удалить колонку?"
       @cancel="showDeleteColumn = false"
       @yes="onDeleteColumn"
+    />
+    <BoardModalBoxRename
+      v-show="showAddCard"
+      :show="showAddCard"
+      title="Добавить карточку"
+      @cancel="showAddCard = false"
+      @save="onAddNewCard"
     />
     <BoardModalBoxRename
       v-show="showAddColumn"
@@ -62,16 +74,15 @@
               :ref="`stage-icon-${column.UID}`"
               class="flex-none h-[18px] w-[18px] cursor-pointer invisible stage-column-hover:visible"
             >
-              <Popper
-                arrow
-                class="light"
-                placement="bottom"
-                @open:popper="lockVisibility(column.UID)"
-                @close:popper="unlockVisibility(column.UID)"
+              <PopMenu
+                @openMenu="lockVisibility(column.UID)"
+                @closeMenu="unlockVisibility(column.UID)"
               >
                 <div
                   class="hover:-m-px hover:border hover:rounded-sm"
-                  :style="{ 'border-color': getContrastYIQ(column.Color) ?? '#7e7e80'}"
+                  :style="{
+                    'border-color': getContrastYIQ(column.Color) ?? '#7e7e80'
+                  }"
                 >
                   <svg
                     width="18"
@@ -88,39 +99,33 @@
                     />
                   </svg>
                 </div>
-                <template #content="{ close }">
-                  <div
-                    class="flex flex-col"
-                    @click="close"
+                <template #menu>
+                  <PopMenuItem
+                    icon="edit"
+                    @click="clickRenameColumn(column, $event)"
                   >
-                    <div
-                      class="flex items-center py-0.5 px-2 cursor-pointer hover:text-[#ebaa40] rounded text-sm font-['Tahoma']"
-                      @click="clickRenameColumn(column, $event)"
-                    >
-                      Переименовать
-                    </div>
-                    <div
-                      class="mt-2 flex items-center py-0.5 px-2 cursor-pointer hover:text-[#ebaa40] rounded text-sm font-['Tahoma']"
-                      @click="clickColorColumn(column, $event)"
-                    >
-                      Выбрать цвет
-                    </div>
-                    <div
-                      class="mt-2 flex items-center py-0.5 px-2 cursor-pointer hover:text-[#ebaa40] rounded text-sm font-['Tahoma']"
-                      @click="clickMoveColumn(column, $event)"
-                    >
-                      Переместить
-                    </div>
-                    <div class="mt-2 flex h-px bg-[#dddddd]" />
-                    <div
-                      class="mt-2 flex items-center py-0.5 px-2 cursor-pointer hover:text-[#ebaa40] rounded text-sm font-['Tahoma']"
-                      @click="clickDeleteColumn(column, $event)"
-                    >
-                      Удалить
-                    </div>
-                  </div>
+                    Переименовать
+                  </PopMenuItem>
+                  <PopMenuItem
+                    icon="color"
+                    @click="clickColorColumn(column, $event)"
+                  >
+                    Выбрать цвет
+                  </PopMenuItem>
+                  <PopMenuItem
+                    icon="move"
+                    @click="clickMoveColumn(column, $event)"
+                  >
+                    Переместить
+                  </PopMenuItem>
+                  <PopMenuItem
+                    icon="delete"
+                    @click="clickDeleteColumn(column, $event)"
+                  >
+                    Удалить
+                  </PopMenuItem>
                 </template>
-              </Popper>
+              </PopMenu>
             </div>
           </div>
           <!--под заголовок стат-колонки -->
@@ -174,27 +179,36 @@
               v-else
               class="h-[16px]"
             >
-                <!--делаем неразрывный пробел - чтобы не скрыло и остался правильный отступ -->
-                &nbsp;
+              <!--делаем неразрывный пробел - чтобы не скрыло и остался правильный отступ -->
+              &nbsp;
             </div>
           </div>
           <!--карточки -->
           <draggable
+            :data-column-id="column.UID"
             :list="column.cards"
             ghost-class="ghost-card"
             item-key="uid"
             group="cards"
             :animation="100"
-            @start="drag = true"
-            @end="drag = false"
+            :disabled="!board || board.type_access === 0"
+            :move="checkMoveDragCard"
+            @start="startDragCard"
+            @end="endDragCard"
+            @change="changeDragCard"
           >
             <template #item="{ element }">
               <BoardCard
+                :data-card-id="element.uid"
                 :card="element"
                 :show-date="board?.show_date !== 0 ?? false"
                 :read-only="!board || board.type_access === 0"
                 :selected="selectedCard?.uid === element.uid"
                 class="mt-2"
+                @select="selectCard(element)"
+                @delete="deleteCard(element)"
+                @moveSuccess="moveSuccessCard(element)"
+                @moveReject="moveRejectCard(element)"
               />
             </template>
           </draggable>
@@ -208,9 +222,7 @@
               :style="{ color: getContrastYIQ(column.Color) }"
               @click="addCard(column)"
             >
-              <p
-                class="text-sm"
-              >
+              <p class="text-sm">
                 Добавить карточку
               </p>
               <svg
@@ -239,9 +251,7 @@
           class="flex justify-center items-center h-full w-full cursor-pointer font-['Roboto'] text-[#7e7e80]"
           @click="clickAddColumn"
         >
-          <p
-            class="text-sm"
-          >
+          <p class="text-sm">
             Добавить колонку
           </p>
           <svg
@@ -267,7 +277,8 @@
 </template>
 
 <script>
-import Popper from 'vue3-popper'
+import PopMenu from '@/components/modals/PopMenu.vue'
+import PopMenuItem from '@/components/modals/PopMenuItem.vue'
 import draggable from 'vuedraggable'
 import BoardCard from '@/components/Board/BoardCard.vue'
 import BoardModalBoxRename from '@/components/Board/BoardModalBoxRename.vue'
@@ -276,10 +287,12 @@ import BoardModalBoxColor from '@/components/Board/BoardModalBoxColor.vue'
 import BoardModalBoxMove from '@/components/Board/BoardModalBoxMove.vue'
 import * as BOARD from '@/store/actions/boards'
 import * as CARD from '@/store/actions/cards'
+import { FETCH_FILES_AND_MESSAGES } from '@/store/actions/cardfilesandmessages'
 
 export default {
   components: {
-    Popper,
+    PopMenu,
+    PopMenuItem,
     BoardModalBoxRename,
     BoardModalBoxDelete,
     BoardModalBoxColor,
@@ -300,12 +313,16 @@ export default {
   data () {
     return {
       isShowArchive: false,
+      showAddCard: false,
       showAddColumn: false,
       showRenameColumn: false,
       selectedColumn: null,
       showDeleteColumn: false,
       showColorColumn: false,
-      showMoveColumn: false
+      showMoveColumn: false,
+      showDeleteCard: false,
+      currentCard: null,
+      dragCardParam: null
     }
   },
   computed: {
@@ -319,7 +336,7 @@ export default {
       return this.selectedColumn?.Order ?? 0
     },
     usersColumnsCount () {
-      return this.storeCards.filter(stage => stage.UserStage === true).length
+      return this.storeCards.filter((stage) => stage.UserStage === true).length
     },
     selectedCard () {
       return this.$store.state.cards.selectedCard
@@ -335,8 +352,8 @@ export default {
       const r = parseInt(hexcolor.substr(0, 2), 16)
       const g = parseInt(hexcolor.substr(2, 2), 16)
       const b = parseInt(hexcolor.substr(4, 2), 16)
-      const yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000
-      return (yiq >= 128) ? 'black' : 'white'
+      const yiq = (r * 299 + g * 587 + b * 114) / 1000
+      return yiq >= 128 ? 'black' : 'white'
     },
     isColumnVisible (column) {
       if (this.isShowArchive) {
@@ -370,8 +387,8 @@ export default {
       return ''
     },
     addCard (column) {
-      // TODO: Здесь сделать добавление карточек
-      console.log('addCard', column)
+      this.showAddCard = true
+      this.selectedColumn = column
     },
     clickAddColumn (e) {
       this.showAddColumn = true
@@ -380,10 +397,11 @@ export default {
       this.showAddColumn = false
       const title = name.trim()
       if (title) {
-        this.$store.dispatch(BOARD.ADD_STAGE_BOARD_REQUEST, {
-          boardUid: this.board.uid,
-          newStageTitle: title
-        })
+        this.$store
+          .dispatch(BOARD.ADD_STAGE_BOARD_REQUEST, {
+            boardUid: this.board.uid,
+            newStageTitle: title
+          })
           .then((resp) => {
             this.$store.dispatch(CARD.BOARD_CARDS_ADDSTAGE, resp)
           })
@@ -397,11 +415,12 @@ export default {
       this.showRenameColumn = false
       const title = name.trim()
       if (title) {
-        this.$store.dispatch(BOARD.RENAME_STAGE_BOARD_REQUEST, {
-          boardUid: this.board.uid,
-          stageUid: this.selectedColumn.UID,
-          newStageTitle: title
-        })
+        this.$store
+          .dispatch(BOARD.RENAME_STAGE_BOARD_REQUEST, {
+            boardUid: this.board.uid,
+            stageUid: this.selectedColumn.UID,
+            newStageTitle: title
+          })
           .then((resp) => {
             this.$store.dispatch(CARD.BOARD_CARDS_RENAME_STAGE, resp)
           })
@@ -418,7 +437,8 @@ export default {
           boardUid: this.board.uid,
           stageUid: this.selectedColumn.UID
         }
-        this.$store.dispatch(BOARD.DELETE_STAGE_BOARD_REQUEST, data)
+        this.$store
+          .dispatch(BOARD.DELETE_STAGE_BOARD_REQUEST, data)
           .then((resp) => {
             this.$store.dispatch(CARD.BOARD_CARDS_DELETE_STAGE, data)
           })
@@ -431,11 +451,12 @@ export default {
     onChangeColumnColor (color) {
       this.showColorColumn = false
       if (this.selectedColumn) {
-        this.$store.dispatch(BOARD.CHANGE_COLOR_STAGE_BOARD_REQUEST, {
-          boardUid: this.board.uid,
-          stageUid: this.selectedColumn.UID,
-          newColor: color
-        })
+        this.$store
+          .dispatch(BOARD.CHANGE_COLOR_STAGE_BOARD_REQUEST, {
+            boardUid: this.board.uid,
+            stageUid: this.selectedColumn.UID,
+            newColor: color
+          })
           .then((resp) => {
             this.$store.dispatch(CARD.BOARD_CARDS_CHANGE_COLOR_STAGE, resp)
           })
@@ -448,11 +469,12 @@ export default {
     onChangeColumnPosition (order) {
       this.showMoveColumn = false
       if (this.selectedColumn) {
-        this.$store.dispatch(BOARD.CHANGE_ORDER_STAGE_BOARD_REQUEST, {
-          boardUid: this.board.uid,
-          stageUid: this.selectedColumn.UID,
-          newOrder: order
-        })
+        this.$store
+          .dispatch(BOARD.CHANGE_ORDER_STAGE_BOARD_REQUEST, {
+            boardUid: this.board.uid,
+            stageUid: this.selectedColumn.UID,
+            newOrder: order
+          })
           .then((resp) => {
             this.$store.dispatch(CARD.BOARD_CARDS_CHANGE_ORDER_STAGE, resp.data)
           })
@@ -465,6 +487,120 @@ export default {
     unlockVisibility (stageUid) {
       const icon = this.$refs[`stage-icon-${stageUid}`][0]
       icon.style.visibility = null
+    },
+    onAddNewCard (name) {
+      this.showAddCard = false
+      const title = name.trim()
+      if (title) {
+        this.$store
+          .dispatch(CARD.ADD_CARD, {
+            name: title,
+            comment: '',
+            uid_board: this.board.uid,
+            uid_stage: this.selectedColumn.UID
+          })
+          .then((resp) => {
+            console.log('onAddNewCard ok', resp)
+          })
+      }
+    },
+    selectCard (card) {
+      this.$store.commit(CARD.SELECT_CARD, card)
+      this.$store.dispatch(FETCH_FILES_AND_MESSAGES, card.uid)
+      this.$store.commit('basic', { key: 'propertiesState', value: 'card' })
+      this.$store.dispatch('asidePropertiesToggle', true)
+    },
+    deleteCard (card) {
+      this.showDeleteCard = true
+      this.currentCard = card
+    },
+    moveCard (cardUid, stageUid, newOrder) {
+      this.$store
+        .dispatch(CARD.MOVE_CARD, { uid: cardUid, stageUid, newOrder })
+        .then((resp) => {
+          console.log('Card is moved')
+        })
+    },
+    moveSuccessCard (card) {
+      this.moveCard(card.uid, 'f98d6979-70ad-4dd5-b3f8-8cd95cb46c67')
+    },
+    moveRejectCard (card) {
+      this.moveCard(card.uid, 'e70af5e2-6108-4c02-9a7d-f4efee78d28c')
+    },
+    onDeleteCard () {
+      this.showDeleteCard = false
+      if (this.currentCard) {
+        this.$store
+          .dispatch(CARD.DELETE_CARD, { uid: this.currentCard.uid })
+          .then((resp) => {
+            console.log('Card is deleted')
+          })
+      }
+    },
+    startDragCard (start) {
+      this.dragCardParam = {
+        change: [],
+        move: {
+          card: null,
+          column: null,
+          targetCard: null,
+          targetColumn: null,
+          willInsertAfter: true
+        }
+      }
+      //
+      const fromColumnId = start.from.dataset.columnId
+      const fromColumn = this.storeCards.find(
+        (column) => column.UID === fromColumnId
+      )
+      // const cardId = start.item.dataset.cardId
+      const card = fromColumn?.cards[start.oldIndex] || null
+      //
+      this.dragCardParam.move.column = fromColumn
+      this.dragCardParam.move.card = card
+    },
+    endDragCard (end) {
+      if (this.dragCardParam?.change?.length) {
+        const targetColumn = this.dragCardParam.move.targetColumn
+        // рассчитываем новый порядок у карточки
+        let newOrder = 1
+        if (this.dragCardParam.move.targetCard) {
+          const targetOrder = this.dragCardParam.move.targetCard.order
+          if (this.dragCardParam.move.willInsertAfter) {
+            const nextCard = targetColumn.cards[end.newIndex + 1] || null
+            newOrder = nextCard ? (nextCard.order + targetOrder) / 2 : targetOrder + 1
+          } else {
+            const prevCard = targetColumn.cards[end.newIndex - 1] || null
+            newOrder = prevCard ? (prevCard.order + targetOrder) / 2 : targetOrder - 1
+          }
+        }
+        // сохраняем изменение
+        this.moveCard(
+          this.dragCardParam.move.card.uid,
+          targetColumn.UID,
+          newOrder
+        )
+      }
+      this.dragCardParam = null
+    },
+    changeDragCard (change) {
+      // записываем что у нас произошли какие-то изменения
+      // это вызывается до endDrag
+      this.dragCardParam.change.push(change)
+    },
+    checkMoveDragCard ({ relatedContext, to, willInsertAfter }) {
+      const targetCard = relatedContext.element || null
+      const toColumnId = to.dataset.columnId
+      const toColumn = this.storeCards.find(
+        (column) => column.UID === toColumnId
+      )
+      if (!toColumn) return false
+      // если мы не отменили перемещение
+      // то записываем куда мы кидаем
+      this.dragCardParam.move.targetColumn = toColumn
+      this.dragCardParam.move.targetCard = targetCard
+      this.dragCardParam.move.willInsertAfter = willInsertAfter
+      return true
     }
   }
 }

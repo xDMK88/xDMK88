@@ -28,6 +28,8 @@ const docs = ['doc', 'xls', 'xlsx', 'txt', 'pdf']
 const audio = ['mp3', 'wav', 'm4a']
 const isImageLoaded = ref(false)
 
+const b64toBlob = (base64) => fetch(base64).then(res => res.blob())
+
 const getImgUrl = (uid, extension, filename) => {
   // computed value triggered after template change
   if (isImageLoaded.value) return
@@ -35,13 +37,15 @@ const getImgUrl = (uid, extension, filename) => {
   if (cachedImageBase64) {
     // we nee to wait until hidden messages will be drawn
     nextTick(() => {
-      const myImage = new Image()
-      myImage.src = cachedImageBase64
-      document.getElementById('img_' + uid).appendChild(myImage)
-      document.getElementById('img_' + uid).setAttribute('href', cachedImageBase64)
-      document.getElementById('img_' + uid).style.maxHeight = '100px'
-      isImageLoaded.value = true
-      return myImage
+      b64toBlob(cachedImageBase64).then(blobImage => {
+        const fileURL = window.URL.createObjectURL(blobImage)
+        const myImage = new Image()
+        myImage.src = cachedImageBase64
+        document.getElementById('img_' + uid).appendChild(myImage)
+        document.getElementById('img_' + uid).setAttribute('href', fileURL)
+        document.getElementById('img_' + uid).style.maxHeight = '100px'
+        isImageLoaded.value = true
+      })
     })
   } else {
     store.dispatch(GETFILES, uid).then(resp => {

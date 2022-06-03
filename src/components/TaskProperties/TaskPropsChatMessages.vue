@@ -1,7 +1,6 @@
 <template>
   <div
     class="messages"
-    :print="print('taskMessages', messages)"
   >
     <div
       v-for="(message, index) in messages"
@@ -58,7 +57,7 @@
               <div
                 v-linkify:options="{ className: 'text-blue-600' }"
                 v-html="
-                  getInspectorMessage(message.type, selectedTask).replaceAll(
+                  getInspectorMessage(message.type, (task.length ? task : selectedTask)).replaceAll(
                     '\n',
                     '<br/>'
                   )
@@ -101,11 +100,11 @@
                       1,
                       'Вопросов нет - приступаю - будет готово ' +
                         dateToLabelFormat(
-                          new Date(selectedTask.customer_date_end)
+                          new Date((task.length ? task.customer_date_end : selectedTask.customer_date_end))
                         ) +
                         ' до ' +
                         dateToTimeFormat(
-                          new Date(selectedTask.customer_date_end)
+                          new Date((task.length ? task.customer_date_end : selectedTask.customer_date_end))
                         )
                     )
                   "
@@ -114,12 +113,12 @@
                     Вопросов нет - приступаю - будет готово
                     {{
                       dateToLabelFormat(
-                        new Date(selectedTask.customer_date_end)
+                        new Date((task.length ? task.customer_date_end : selectedTask.customer_date_end))
                       )
                     }}
                     до
                     {{
-                      dateToTimeFormat(new Date(selectedTask.customer_date_end))
+                      dateToTimeFormat(new Date((task.length ? task.customer_date_end : selectedTask.customer_date_end)))
                     }}
                   </span>
                 </div>
@@ -169,6 +168,10 @@ export default {
     TaskPropsChatMessageFile
   },
   props: {
+    task: {
+      type: Object,
+      default: () => ({})
+    },
     currentUserUid: {
       type: String,
       default: ''
@@ -233,17 +236,25 @@ export default {
                 new Date(messageCurr.date_create).toDateString()
     },
     isChangeCreator (index) {
-      if (index === 0) return true
+      console.log(this.messages.length)
+      console.log(index)
+      if (this.showAllMessages === true) {
+        if (index === 0) return true
+      } else {
+        if (index === this.messages.length - 2) {
+          return true
+        } else if (index === 0) {
+          return true
+        }
+      }
       const messagePrev = this.messages[index - 1]
       const messageCurr = this.messages[index]
+      console.log(this.messages.length)
       if (!messagePrev || !messageCurr) return false
       return messagePrev.uid_creator !== messageCurr.uid_creator
     },
     sendTaskMsg (msg) {
       this.$emit('sendTaskMsg', msg)
-    },
-    print (type, obj) {
-      console.log(type, obj)
     },
     answerInspectorMessage (message, answerType, answer) {
       if (message.performer_answer === null) {

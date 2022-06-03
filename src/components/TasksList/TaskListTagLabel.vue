@@ -1,11 +1,11 @@
 <template>
   <div
-    class="tag-label cursor-default p-1 px-2 text-xs whitespace-nowrap rounded-lg mr-1 flex items-center"
+    class="tag-label cursor-default p-1 px-2 text-xs whitespace-nowrap rounded-[4px] mr-1 flex items-center"
     :class="[colorTextClass, colorBgClass]"
     :style="colorBgStyle"
   >
     <Icon
-      v-if="iconPath"
+      v-if="iconPath && !image"
       :path="iconPath"
       class="mr-1"
       :class="[colorTextClass]"
@@ -13,6 +13,7 @@
       :width="iconWidth"
       :height="iconHeight"
     />
+    <img :src="image" v-if="image" class="rounded-[3px] text-base cursor-pointer w-[16px] h-[16px] mr-1"/>
     {{ text }}
   </div>
 </template>
@@ -56,6 +57,9 @@ export default {
     iconHeight: {
       type: String,
       default: '12'
+    },
+    image: {
+      type: String
     }
   }
 }

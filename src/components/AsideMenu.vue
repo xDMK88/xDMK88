@@ -142,7 +142,8 @@ const menuClick = (event, item) => {
     const navElem = {
       name: item.label,
       key: 'greedSource',
-      value: { uid: item.uid, param: null }
+      value: { uid: item.uid, param: null },
+      greedPath: 'other'
     }
     store.commit('updateStackWithInitValue', navElem)
     store.commit('basic', { key: 'mainSectionState', value: 'greed' })
@@ -238,10 +239,10 @@ const tarifS = () => {
   <aside
     v-show="!isFullScreen"
     id="aside"
-    class="w-80 fixed top-0 z-40 h-screen transition-position lg:left-0 bg-slate-100 font-SfProDisplayNormal text-sm"
-    :class="[ isAsideMobileExpanded ? 'left-0' : '-left-80', isAsideLgActive ? 'block' : 'lg:hidden xl:block' ]"
+    class="w-[292px] fixed top-0 z-[2] h-screen transition-position lg:left-0 bg-slate-100 font-SfProDisplayNormal text-sm"
+    :class="[ isAsideMobileExpanded ? 'left-0' : '-left-[292px]', isAsideLgActive ? 'block' : 'lg:hidden xl:block' ]"
   >
-    <div class="flex flex-row w-full text-dark flex-1 h-12 items-center">
+    <div class="flex flex-row w-full text-dark px-[16px] mt-[22px] h-[32px] items-center">
       <nav-bar-item
         type="hidden lg:flex xl:hidden"
         active-color="text-dark"
@@ -255,15 +256,15 @@ const tarifS = () => {
         />
       </nav-bar-item>
       <div
-        class="w-full px-6 cursor-pointer"
+        class="w-full cursor-pointer"
         @click="modalOneActive = true"
       >
         <div class="flex">
           <img
             :src="user.foto_link"
-            width="40"
-            height="40"
-            class="rounded-lg border-2 border-white dark:border-gray-200 mr-1"
+            width="32"
+            height="32"
+            class="rounded-[8px] border-2 border-white"
           >
           <icon
             :path="ArrowDown.path"
@@ -280,13 +281,13 @@ const tarifS = () => {
         </div>
       </div>
     </div>
-    <nav-bar-item class="rounded-b-3xl pt-0 mt-0">
+    <div class="mt-[10px]">
       <DatePicker
         id="Maincalendar"
         ref="calendarclass"
         v-model="navigatorMenu.currentDate"
         dot="true"
-        class="border-none text-xs px-3 calendar-custom calendar-nav-custom font-SfProDisplayNormal text-sm"
+        class="border-none text-xs px-[16px] calendar-custom calendar-nav-custom font-SfProDisplayNormal text-sm"
         style="border: none!important;"
         :style="{ backgroundColor: datePickerBG }"
         show-weeknumbers="left"
@@ -307,8 +308,8 @@ const tarifS = () => {
         in-prev-month="true"
         select-attribute="dates"
       />
-    </nav-bar-item>
-    <div class="my-5">
+    </div>
+    <div class="my-[10px]">
       <template v-for="(menuGroup, index) in menu">
         <div
           v-if="typeof menuGroup === 'string'"

@@ -55,9 +55,11 @@ const removeMember = (member) => {
 const createOrUpdateDepartment = (department, index) => {
   if (!department.uid) {
     department.uid = uuidv4()
-    department.order = 1.0
+    department.order = 0
     console.log('Обработчик на добавление', department)
     localStorage.setItem('department', department)
+    store.commit(NAVIGATOR_PUSH_DEPARTAMENT, [department])
+    store.commit(PUSH_DEPARTMENT, department)
     store.dispatch(CREATE_DEPARTMENT_REQUEST, department)
       .then(() => {
         hasChanged.value = false

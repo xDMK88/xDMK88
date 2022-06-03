@@ -1,7 +1,5 @@
 <script setup>
-import { computed } from 'vue'
-
-const props = defineProps({
+defineProps({
   path: {
     type: [String, Array],
     required: true
@@ -15,7 +13,8 @@ const props = defineProps({
     default: ''
   },
   box: {
-    type: String
+    type: String,
+    default: ''
   },
   width: {
     type: [String, Number],
@@ -26,12 +25,13 @@ const props = defineProps({
     default: 24
   }
 })
-
-const spanClass = computed(() => `inline-flex justify-center items-center ${props.w} ${props.h}`)
 </script>
 
 <template>
-  <span :class="spanClass">
+  <span
+    class="inline-flex justify-center items-center"
+    :class="[w, h]"
+  >
     <svg
       v-if="typeof path === 'string'"
       :viewBox="box"

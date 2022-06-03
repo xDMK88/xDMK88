@@ -1,6 +1,6 @@
 <template>
   <div
-    class="bg-gray-200 rounded px-1.5 mr-1 whitespace-nowrap flex items-center"
+    class="bg-gray-100 rounded-[4px] px-2 mr-1 whitespace-nowrap flex items-center"
   >
     <Icon
       v-if="iconPath"
@@ -13,7 +13,7 @@
     />
     <span
       v-if="text"
-      class="cursor-default pl-1 text-xs text-gray-600"
+      class="cursor-default pl-1 text-xs text-black-600"
     >
       {{ text }}
     </span>

@@ -65,7 +65,7 @@ const cancel = () => confirmCancel('cancel')
         <jb-button
           v-if="hasCancel"
           class="w-full mr-5"
-          label="Cancel"
+          label="Отменить"
           :color="button"
           outline
           @click="cancel"

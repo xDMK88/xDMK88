@@ -348,6 +348,7 @@ export default {
       }
       store.dispatch(TASK.CHANGE_TASK_DATE, data).then(
         resp => {
+          console.log(resp.data.term)
           selectedTask.value.term_customer = resp.data.term
           this.timeStart = timestart !== '' ? '' : timestart
           this.timeEnd = timeend !== '' ? '' : timeend
@@ -940,6 +941,14 @@ export default {
     print: function (value) {
       console.log(value)
     },
+    editable: function () {
+      if (this.cusers.current_user_uid === this.selectedTask.uid_customer) {
+        this.isEditableTaskName = true
+        this.$nextTick(() => {
+          this.$refs.TaskName.focus()
+        })
+      }
+    },
     uuidv4: function () {
       return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
         (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
@@ -972,7 +981,6 @@ export default {
         text: msgtask,
         msg: msgtask
       }
-
       this.$store.dispatch(CREATE_MESSAGE_REQUEST, data).then(
         resp => {
           // Answer last inspector message
@@ -983,11 +991,16 @@ export default {
               lastInspectorMessage.performer_answer = 1
             })
           }
-
           this.selectedTask.has_msgs = true
           if (this.selectedTask.type === 2 || this.selectedTask.type === 3) {
             if ([1, 5, 7, 8].includes(this.selectedTask.status)) {
-              this.selectedTask.status = 9
+              if (((this.selectedTask.uid_customer === this.cusers.current_user_uid) && ((this.selectedTask.status === 1) || (this.selectedTask.status === 5)))) {
+                this.selectedTask.status = 9
+                this.$store.dispatch(TASK.CHANGE_TASK_STATUS, { uid: this.selectedTask.uid, value: 9 })
+              } else if (((this.selectedTask.uid_customer !== this.cusers.current_user_uid) && (this.selectedTask.status === 1))) {
+                this.selectedTask.status = 1
+                this.$store.dispatch(TASK.CHANGE_TASK_STATUS, { uid: this.selectedTask.uid, value: 1 })
+              }
             }
           }
           this.selectedTask.msg = decodeURIComponent(this.taskMsg)
@@ -1043,7 +1056,13 @@ export default {
               // ставим статус "на доработку" когда прикладываем файл
               if (this.selectedTask.type === 2 || this.selectedTask.type === 3) {
                 if ([1, 5, 7, 8].includes(this.selectedTask.status)) {
-                  this.selectedTask.status = 9
+                  if (((this.selectedTask.uid_customer === this.cusers.current_user_uid) && ((this.selectedTask.status === 1) || (this.selectedTask.status === 5)))) {
+                    this.selectedTask.status = 9
+                    this.$store.dispatch(TASK.CHANGE_TASK_STATUS, { uid: this.selectedTask.uid, value: 9 })
+                  } else if (((this.selectedTask.uid_customer !== this.cusers.current_user_uid) && (this.selectedTask.status === 1))) {
+                    this.selectedTask.status = 1
+                    this.$store.dispatch(TASK.CHANGE_TASK_STATUS, { uid: this.selectedTask.uid, value: 1 })
+                  }
                 }
               }
               // загрузка завершена - подписываемся опять
@@ -1076,7 +1095,6 @@ export default {
     },
     onChangePerformer: function (userEmail) {
       console.log('onChangePerformer', userEmail)
-      const user = this.$store.state.user.user
       const taskUid = this.selectedTask.uid
       const data = {
         uid: this.selectedTask.uid,
@@ -1091,9 +1109,13 @@ export default {
           this.selectedTask.type = resp.data.type
         }
       )
-      if (user.current_user_email !== userEmail) {
-        this.$store.commit(TASK.REMOVE_TASK, taskUid)
-        this.$store.dispatch('asidePropertiesToggle', false)
+      const navStack = computed(() => this.$store.state.navbar.navStack)
+      if (navStack.value.length && navStack.value.length > 0) {
+        const navStackUid = navStack.value[0]?.value?.uid
+        if (navStackUid === '901841d9-0016-491d-ad66-8ee42d2b496b') {
+          this.$store.commit(TASK.REMOVE_TASK, taskUid)
+          this.$store.dispatch('asidePropertiesToggle', false)
+        }
       }
     },
     onChangeDates: function (begin, end) {
@@ -1105,6 +1127,7 @@ export default {
       }
       this.$store.dispatch(TASK.CHANGE_TASK_DATE, data).then(
         resp => {
+          console.log(resp.term)
           this.selectedTask.term_user = resp.term
           this.selectedTask.date_begin = resp.str_date_begin
           this.selectedTask.date_end = resp.str_date_end
@@ -1191,7 +1214,7 @@ export default {
     button="warning"
     has-button
     has-cancel
-    button-label="Delete"
+    button-label="Удалить"
     @confirm="delTask"
   >
     <p
@@ -1250,6 +1273,7 @@ export default {
             :contenteditable="isEditableTaskName"
             @blur="changeName($event)"
             @keyup="changeName($event)"
+            @click="editable"
             @focus="$refs.TaskName.focus()"
             @focusout="removeEditTaskName($event)"
             @keydown.enter.prevent
@@ -1262,7 +1286,7 @@ export default {
       >
         <!-- Кнопка Поручить / Взять на исполнение / Перепоручить -->
         <TaskPropsButtonPerform
-          v-if="selectedTask.status !== 3 && selectedTask.type !== 4"
+          v-if="selectedTask.status !== 3 && selectedTask.type !== 4 && !((selectedTask.uid_customer !== user.current_user_uid) && (selectedTask.status === 1))"
           :task-type="selectedTask.type"
           :current-user-uid="cusers.current_user_uid"
           :performer-email="selectedTask.email_performer"
@@ -1271,7 +1295,7 @@ export default {
         />
         <!-- Кнопка Доступ -->
         <TaskPropsButtonAccess
-          v-if="isAccessVisible"
+          v-if="isAccessVisible && !((selectedTask.uid_customer !== user.current_user_uid) && (selectedTask.status === 1))"
           :current-user-uid="cusers.current_user_uid"
           :access-emails="selectedTask.emails ? selectedTask.emails.split('..') : []"
           :can-edit="selectedTask.type === 1 || selectedTask.type === 2"
@@ -1279,6 +1303,7 @@ export default {
         />
         <!-- Кнопка Выбрать дату -->
         <TaskPropsButtonSetDate
+          v-if="!((selectedTask.uid_customer !== user.current_user_uid) && (selectedTask.status === 1))"
           :date-begin="selectedTask.date_begin"
           :date-end="selectedTask.date_end"
           :date-text="selectedTask.term_user"
@@ -1286,7 +1311,7 @@ export default {
         />
         <!-- Повтор -->
         <Popper
-          v-if="selectedTask.term_customer"
+          v-if="selectedTask.term_user && !((selectedTask.uid_customer !== user.current_user_uid) && (selectedTask.status === 1))"
           class="popper-repeat"
           arrow
           trigger="hover"
@@ -1852,25 +1877,27 @@ export default {
          </Popper>-->
         <!-- Кнопка Проект -->
         <TaskPropsButtonProject
+          v-if="!((selectedTask.uid_customer !== user.current_user_uid) && (selectedTask.status === 1))"
           :selected-project="selectedTask.uid_project"
           :can-edit="selectedTask.type === 1 || selectedTask.type === 2"
           @changeProject="onChangeProject"
         />
         <!-- Кнопка Цвет -->
         <TaskPropsButtonColor
+          v-if="!((selectedTask.uid_customer !== user.current_user_uid) && (selectedTask.status === 1))"
           :selected-color="selectedTask.uid_marker"
           :can-edit="selectedTask.type === 1 || selectedTask.type === 2"
           @changeColor="onChangeColor"
         />
         <!-- Кнопка Метки -->
         <TaskPropsButtonTags
-          v-if="selectedTask.type === 1 || selectedTask.type === 2"
+          v-if="selectedTask.type === 1 || selectedTask.type === 2 && !((selectedTask.uid_customer !== user.current_user_uid) && (selectedTask.status === 1))"
           :selected-tags="selectedTask.tags"
           @changeTags="onChangeTags"
         />
         <!-- Чек лист -->
         <div
-          v-if="!selectedTask.checklist && selectedTask.type!==4 && selectedTask.type!==3"
+          v-if="!selectedTask.checklist && selectedTask.type!==4 && selectedTask.type!==3 && !((selectedTask.uid_customer !== user.current_user_uid) && (selectedTask.status === 1))"
           class="mt-3 tags-custom dark:bg-gray-800 dark:text-gray-100"
           @click="createChecklist"
         >
@@ -1911,6 +1938,7 @@ export default {
         </div>
         <!-- Фокус -->
         <TaskPropsButtonFocus
+          v-if="!((selectedTask.uid_customer !== user.current_user_uid) && (selectedTask.status === 1))"
           :focus="isInFocus"
           @toggle-focus="changeFocus(selectedTask.uid, isInFocus ? 0 : 1)"
         />
@@ -1934,7 +1962,7 @@ export default {
       />
       <!-- Comment -->
       <TaskPropsCommentEditor
-        class="mt-3"
+        class="mt-3 h-32 scroll-style overflow-auto"
         :comment="selectedTask.comment ?? ''"
         :can-edit="canEditComment"
         @endChangeComment="endChangeComment"
@@ -1953,7 +1981,7 @@ export default {
       <TaskPropsChatMessages
         v-if="taskMessages?.length"
         id="content"
-        class="mt-3"
+        class="mt-3 h-3/6 scroll-style overflow-auto"
         :task-messages="taskMessages"
         :current-user-uid="cusers.current_user_uid"
         :show-all-messages="showAllMessages"
@@ -2006,7 +2034,7 @@ export default {
         </div>
       </div>
     </div>
-    <div class="input-group bg-gray-100 rounded-3xl mt-2">
+    <div class="input-group bg-gray-100 rounded-[10px] mt-2">
       <span class="input-group-addon input-group-attach dark:bg-gray-800 dark:text-gray-100">
         <div class="example-1">
           <label class="label">
@@ -2050,7 +2078,7 @@ export default {
           class="btn-send-custom"
           @click="createTaskMsg"
         >
-          <svg
+       <!--   <svg
             width="24"
             height="26"
             viewBox="0 0 25 24"
@@ -2061,7 +2089,11 @@ export default {
               d="M23.8021 10.5763C23.541 10.054 23.1166 9.59697 22.5617 9.33583L3.82473 0.261142C3.43302 0.0979283 3.07395 0 2.64959 0C1.63767 0 0.723669 0.58757 0.26667 1.50157C-0.0597576 2.18707 -0.0924003 2.93785 0.201385 3.65599L3.43302 11.7514L0.201385 19.8142C-0.353542 21.1852 0.331955 22.7194 1.70295 23.2743C1.99674 23.4049 2.32316 23.4701 2.68223 23.4701C3.07395 23.4701 3.46566 23.3722 3.82473 23.209L22.5943 14.1343C23.2472 13.8405 23.7042 13.2856 23.9327 12.6327C24.1612 11.9473 24.1285 11.1965 23.8021 10.5763ZM2.02938 20.5649L5.16308 12.7307H20.8969L2.94338 21.4137C2.84545 21.4463 2.74752 21.4789 2.64959 21.4789C2.38845 21.4789 2.15995 21.3157 2.06202 21.0872C1.96409 20.924 1.96409 20.7282 2.02938 20.5649ZM5.16308 10.7395L2.02938 2.90521C1.93145 2.64406 1.99674 2.35028 2.19259 2.15442C2.32316 2.02385 2.48638 1.95857 2.64959 1.95857C2.74752 1.95857 2.84545 1.99121 2.94338 2.02385L20.8969 10.7068H5.16308V10.7395Z"
               fill="#666666"
             />
-          </svg>
+          </svg> -->
+<svg width="32" class="mr-2" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect width="32" height="32" rx="8" fill="#E0E1E3"/>
+<path d="M16 8L9 15L9.987 15.987L15.3 10.681V24.8H16.7V10.681L22.013 15.987L23 15L16 8Z" fill="#4C4C4D"/>
+</svg>
 
         </button>
       </span>

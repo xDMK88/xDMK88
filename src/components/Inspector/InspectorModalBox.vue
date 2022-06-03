@@ -47,13 +47,13 @@ const cancel = () => confirmCancel('cancel')
 
 const delegatedTask = {}
 const input = ref()
-const currentState = ref('task_name')
+const currentState = ref('taskName')
 const inputMessage = ref('')
 const messages = ref([
   {
     message: 'Привет, что нужно сделать?',
     messageFromInspector: true,
-    type: 'task_name',
+    type: 'taskName',
     createDate: new Date().toISOString()
   }
 ])
@@ -102,10 +102,10 @@ watch(value, (newVal) => {
     messages.value.push({
       message: 'Привет, что нужно сделать?',
       messageFromInspector: true,
-      type: 'task_name',
+      type: 'taskName',
       createDate: new Date().toISOString()
     })
-    currentState.value = 'task_name'
+    currentState.value = 'taskName'
   } else {
     // ставим фокус в edit
     setTimeout(() => {
@@ -120,7 +120,6 @@ const createTask = () => {
   delegatedTask.uid_customer = user.value.current_user_uid
   delegatedTask.status = 0
   delegatedTask.type = 1
-  delegatedTask.comment = ''
   store.dispatch('CREATE_TASK', delegatedTask).then((resp) => {
     // manually setup uid_performer beacuse
     // we get empty uid_performer after CREATE_TASK request
@@ -210,7 +209,23 @@ function onMessageConfirm (message) {
 }
 
 const addCustomerMessage = () => {
-  if (!inputMessage.value) return
+  if (!inputMessage.value) {
+    if (currentState.value === 'taskComment') {
+      delegatedTask.comment = ''
+      messages.value.push({
+        message:
+        'Отлично, теперь выберите исполнителя. Если сотрудника нет в списке - начните вводить его имя, а я его найду.',
+        messageFromInspector: true,
+        type: 'employeeSelection',
+        createDate: new Date().toISOString()
+      })
+      currentState.value = 'employeeSelection'
+      inputMessage.value = ''
+      return
+    } else {
+      return
+    }
+  }
   if (currentState.value === 'employeeSelection') {
     onMessageSelectEmployee(inputMessage.value)
     return
@@ -243,14 +258,31 @@ const addCustomerMessage = () => {
     onMessageConfirm(inputMessage.value)
     return
   }
-  if (currentState.value !== 'task_name') return
+
+  if (currentState.value !== 'taskName' && currentState.value !== 'taskComment') return
   messages.value.push({
     message: inputMessage.value,
     messageFromInspector: false,
     createDate: new Date().toISOString()
   })
-  if (currentState.value === 'task_name') {
+
+  if (currentState.value === 'taskName') {
     delegatedTask.name = inputMessage.value
+    messages.value.push({
+      message:
+        'Теперь добавим заметку для задачи. Чтобы пропустить - нажмите Enter',
+      messageFromInspector: true,
+      type: 'taskComment',
+      createDate: new Date().toISOString()
+    })
+    currentState.value = 'taskComment'
+    inputMessage.value = ''
+    return
+  }
+
+  if (currentState.value === 'taskComment') {
+    delegatedTask.comment = inputMessage.value
+
     messages.value.push({
       message:
         'Отлично, теперь выберите исполнителя. Если сотрудника нет в списке - начните вводить его имя, а я его найду.',
@@ -259,6 +291,8 @@ const addCustomerMessage = () => {
       createDate: new Date().toISOString()
     })
     currentState.value = 'employeeSelection'
+    inputMessage.value = ''
+    return
   }
   inputMessage.value = ''
 }
@@ -271,7 +305,6 @@ const selectEmployee = (emp) => {
     createDate: new Date().toISOString()
   })
   if (currentState.value === 'employeeSelection') {
-    console.log('emp', emp)
     delegatedTask.email_performer = emp.email
     delegatedTask.uid_performer = emp.uid
     messages.value.push({
@@ -295,13 +328,12 @@ const selectProject = (project) => {
   if (currentState.value === 'projectSelection') {
     if (project.uid !== 'no_set') delegatedTask.uid_project = project.uid
     messages.value.push({
-      message: 'Супер, что на счет меток?',
+      message: 'Нет проблем, проставим дополнительные параметры?',
       messageFromInspector: true,
-      type: 'tagSelection',
+      type: 'confirmParams',
       createDate: new Date().toISOString()
     })
-    inputMessage.value = ''
-    currentState.value = 'tagSelection'
+    currentState.value = 'confirmParams'
   }
 }
 
@@ -377,12 +409,12 @@ const selectTime = (time) => {
   if (currentState.value === 'timeSelection') {
     delegatedTask.customer_date = time.date
     messages.value.push({
-      message: 'Нет проблем, проставим дополнительные параметры?',
+      message: 'В какой проект поместить задачу?',
       messageFromInspector: true,
-      type: 'confirmParams',
+      type: 'projectSelection',
       createDate: new Date().toISOString()
     })
-    currentState.value = 'confirmParams'
+    currentState.value = 'projectSelection'
   }
 }
 
@@ -395,12 +427,13 @@ const actionConfirmNewParams = (confirmed) => {
       createDate: new Date().toISOString()
     })
     messages.value.push({
-      message: 'В какой проект поместить задачу?',
+      message: 'Супер, что на счет меток?',
       messageFromInspector: true,
-      type: 'projectSelection',
+      type: 'tagSelection',
       createDate: new Date().toISOString()
     })
-    currentState.value = 'projectSelection'
+    inputMessage.value = ''
+    currentState.value = 'tagSelection'
   } else {
     messages.value.push({
       message: 'Нет',

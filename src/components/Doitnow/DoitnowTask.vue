@@ -17,14 +17,15 @@
           tag="div"
           class="taskName p-0.5 ring-0 outline-none max-w-7xl mt-0.5"
           :contenteditable="task._isEditable"
+          v-linkify:options="{ className: 'text-blue-600', tagName: 'a' }"
           placeholder="Введите название задачи"
-          :no-nl="true"
-          :no-html="true"
+          :no-nl="false"
+          :no-html="false"
           :class="{ 'uppercase': !task._isEditable && colors[task.uid_marker] && colors[task.uid_marker].uppercase, 'text-gray-500': task.status == 1 || task.status == 7, 'line-through': task.status == 1 || task.status == 7, 'font-extrabold': task.readed == 0 }"
           :style="{ color: getValidForeColor(colors[task.uid_marker]?.fore_color) }"
           @focusout="clearTaskFocus(task)"
           @dblclick.stop="editTaskName(task)"
-          @keyup.enter="updateTask($event, task); this.$emit('changeValue', {_isEditable: false})"
+          @keydown.enter="updateTask($event, task); this.$emit('changeValue', {_isEditable: false})"
         />
         <Popper
           class="items-center"
@@ -123,13 +124,15 @@
     <div class="flex">
       <div class="flex flex-col">
         <div class="flex flex-col">
-          <!-- editable task name -->
-          <div v-if="task.comment.length">
-            <article class="text-sm break-all whitespace-pre-line">
-              <span class="font-bold block">Описание задачи:</span>
-              {{ task.comment }}
-            </article>
-          </div>
+          <article class="text-sm break-all whitespace-pre-line">
+            <span class="font-bold block">Заметки к задаче:</span>
+            <TaskPropsCommentEditor
+              :comment="task.comment"
+              :can-edit="task.uid_customer === user.current_user_uid"
+              @endChangeComment="endChangeComment"
+              @changeComment="onChangeComment"
+            />
+          </article>
         </div>
       </div>
     </div>
@@ -151,10 +154,10 @@
               <span class="p-1.5 bg-white rounded-xl border-2">Выполнить до:</span><span class="bg-cyan-400 text-white p-1.5 ml-1 rounded-xl"> {{ dateClear(task.date_end) }}</span>
             </div>
             <div
-              v-if="task.is_overdue"
+              v-show="typeof plural === 'string' && task.date_end !== '0001-01-01T00:00:00'"
               class="mb-1 flex items-center"
             >
-              <span class="p-1.5 bg-white rounded-xl border-2">Просрочено на:</span><span class="bg-red-500 ml-1 text-white p-1.5 rounded-xl">{{ plural(task) }}!</span>
+              <span class="p-1.5 bg-white rounded-xl border-2">Просрочено на:</span><span class="bg-red-500 ml-1 text-white p-1.5 rounded-xl">{{ plural }}!</span>
             </div>
           </div>
           <!-- checklist -->
@@ -213,6 +216,7 @@
         v-if="taskMessages?.length"
         id="content"
         class="mt-3"
+        :task="task"
         :task-messages="taskMessages"
         :current-user-uid="user.current_user_uid"
         :showAllMessages="showAllMessages"
@@ -285,6 +289,8 @@ import { ref } from 'vue'
 // import TaskListTagLabel from '@/components/TasksList/TaskListTagLabel.vue'
 import { copyText } from 'vue3-clipboard'
 import contenteditable from 'vue-contenteditable'
+import linkify from 'vue-linkify'
+import TaskPropsCommentEditor from '@/components/TaskProperties/TaskPropsCommentEditor.vue'
 import TaskPropsButtonPerform from '@/components/TaskProperties/TaskPropsButtonPerform.vue'
 import Popper from 'vue3-popper'
 import TaskPropsButtonSetDate from '@/components/TaskProperties/TaskPropsButtonSetDate.vue'
@@ -329,11 +335,15 @@ export default {
     TaskPropsButtonPerform,
     TaskPropsButtonSetDate,
     TaskPropsChatMessages,
+    TaskPropsCommentEditor,
     Checklist,
     TaskPropsInputForm,
     contenteditable,
     Popper,
     TaskStatus
+  },
+  directives: {
+    linkify
   },
   emits: ['clickTask', 'nextTask', 'changeValue'],
   props: {
@@ -486,16 +496,33 @@ export default {
     },
     uppercase () {
       return this.colors[this.task.uid_marker]?.uppercase ?? false
+    },
+    plural () {
+      const date = Math.floor((new Date(this.task.perform_time) - new Date(this.task.date_end)) / (60 * 60 * 24 * 1000))
+      const dayName = date % 10 === 1 && date % 100 !== 11 ? 'день' : (((date >= 2) && (date % 10 <= 4)) && (date % 100 < 10 || date % 100 >= 20) ? 'дня' : 'дней')
+      if (date < 0) {
+        return date
+      } else {
+        return date + ' ' + dayName
+      }
     }
   },
   methods: {
     resetFocusChecklist () {
       this.checklistshow = false
     },
-    plural (task) {
-      const date = Math.floor((new Date() - new Date(task.perform_time)) / (60 * 60 * 24 * 1000))
-      const dayName = date % 10 === 1 && date % 100 !== 11 ? 'день' : (((date >= 2) && (date % 10 <= 4)) && (date % 100 < 10 || date % 100 >= 20) ? 'дня' : 'дней')
-      return date + ' ' + dayName
+    endChangeComment (text) {
+      this.$emit('changeValue', { comment: text })
+    },
+    onChangeComment (text) {
+      const data = {
+        uid: this.task.uid,
+        value: text
+      }
+      this.$store.dispatch(TASK.CHANGE_TASK_COMMENT, data)
+    },
+    _linkify (text) {
+      return text.replace(/(lt?:\/\/[^\s]+)/g, '<a href="$1">$1</a>')
     },
     copyUrl (task) {
       copyText(`${window.location.origin}/task/${task.uid}`, undefined, (error, event) => {

@@ -8,7 +8,6 @@ import {
 } from '@/store/actions/taskmessages'
 import axios from 'axios'
 import { notify } from 'notiwind'
-import { AUTH_LOGOUT } from '../actions/auth'
 import { PUSH_COLOR } from '../actions/colors'
 import * as TASK from '../actions/tasks'
 
@@ -38,6 +37,7 @@ const state = {
   selectedTask: undefined,
   copiedTasks: {},
   status: '',
+  daysWithTasks: [],
   selectedColor: null,
   project: '',
   checklist: '',
@@ -119,7 +119,26 @@ const actions = {
             15000
           )
           commit(TASK.TASKS_ERROR, err)
-          dispatch(AUTH_LOGOUT)
+          reject(err)
+        })
+    })
+  },
+  [TASK.DAYS_WITH_TASKS]: ({ commit, dispatch }) => {
+    return new Promise((resolve, reject) => {
+      const url = process.env.VUE_APP_LEADERTASK_API + 'api/v1/navigator/calendarinfo'
+      axios({ url: url, method: 'GET' })
+        .then((resp) => {
+          commit(TASK.DAYS_WITH_TASKS, resp)
+          resolve(resp)
+        })
+        .catch((err) => {
+          notify({
+            group: 'api',
+            title: 'REST API Error, please make screenshot',
+            action: TASK.DAYS_WITH_TASKS,
+            text: err.response.data
+          }, 15000)
+          commit(TASK.TASKS_ERROR, err)
           reject(err)
         })
     })
@@ -151,7 +170,6 @@ const actions = {
             15000
           )
           commit(TASK.TASKS_ERROR, err)
-          dispatch(AUTH_LOGOUT)
           reject(err)
         })
     })
@@ -186,7 +204,6 @@ const actions = {
               15000
             )
             commit(TASK.TASKS_ERROR, err)
-            // dispatch(AUTH_LOGOUT)
             reject(err)
           })
       })
@@ -221,7 +238,6 @@ const actions = {
             15000
           )
           commit(TASK.TASKS_ERROR, err)
-          dispatch(AUTH_LOGOUT)
           reject(err)
         })
     })
@@ -253,7 +269,6 @@ const actions = {
             15000
           )
           commit(TASK.TASKS_ERROR, err)
-          dispatch(AUTH_LOGOUT)
           reject(err)
         })
     })
@@ -282,7 +297,6 @@ const actions = {
             15000
           )
           commit(TASK.TASKS_ERROR, err)
-          dispatch(AUTH_LOGOUT)
           reject(err)
         })
     })
@@ -314,7 +328,6 @@ const actions = {
             15000
           )
           commit(TASK.TASKS_ERROR, err)
-          dispatch(AUTH_LOGOUT)
           reject(err)
         })
     })
@@ -380,7 +393,6 @@ const actions = {
             15000
           )
           commit(TASK.TASKS_ERROR, err)
-          dispatch(AUTH_LOGOUT)
           reject(err)
         })
     })
@@ -412,7 +424,6 @@ const actions = {
             15000
           )
           commit(TASK.TASKS_ERROR, err)
-          dispatch(AUTH_LOGOUT)
           reject(err)
         })
     })
@@ -444,7 +455,6 @@ const actions = {
             15000
           )
           commit(TASK.TASKS_ERROR, err)
-          dispatch(AUTH_LOGOUT)
           reject(err)
         })
     })
@@ -476,7 +486,6 @@ const actions = {
             15000
           )
           commit(TASK.TASKS_ERROR, err)
-          dispatch(AUTH_LOGOUT)
           reject(err)
         })
     })
@@ -505,7 +514,6 @@ const actions = {
             15000
           )
           commit(TASK.TASKS_ERROR, err)
-          dispatch(AUTH_LOGOUT)
           reject(err)
         })
     })
@@ -539,7 +547,6 @@ const actions = {
             15000
           )
           commit(TASK.TASKS_ERROR, err)
-          dispatch(AUTH_LOGOUT)
           reject(err)
         })
     })
@@ -573,7 +580,6 @@ const actions = {
             15000
           )
           commit(TASK.TASKS_ERROR, err)
-          dispatch(AUTH_LOGOUT)
           reject(err)
         })
     })
@@ -605,7 +611,6 @@ const actions = {
             15000
           )
           commit(TASK.TASKS_ERROR, err)
-          dispatch(AUTH_LOGOUT)
           reject(err)
         })
     })
@@ -637,7 +642,6 @@ const actions = {
             15000
           )
           commit(TASK.TASKS_ERROR, err)
-          dispatch(AUTH_LOGOUT)
           reject(err)
         })
     })
@@ -669,7 +673,6 @@ const actions = {
             15000
           )
           commit(TASK.TASKS_ERROR, err)
-          dispatch(AUTH_LOGOUT)
           reject(err)
         })
     })
@@ -701,7 +704,6 @@ const actions = {
             15000
           )
           commit(TASK.TASKS_ERROR, err)
-          dispatch(AUTH_LOGOUT)
           reject(err)
         })
     })
@@ -1386,10 +1388,30 @@ const mutations = {
       state.newtasks[task.uid].info = task
     }
   },
+  [TASK.DAYS_WITH_TASKS]: (state, resp) => {
+    state.daysWithTasks = resp.data.calendar.dates_with_tasks
+  },
   [TASK.REMOVE_TASK_FROM_LEAVES]: (state, taskUid) => {
     for (let i = 0; i < state.newConfig.leaves.length; i++) {
       if (taskUid === state.newConfig.leaves[i]) {
         state.newConfig.leaves.splice(i, 1)
+      }
+    }
+  },
+  [TASK.ADD_TASK_TO_ROOTS]: (state, taskUid) => {
+    if (!state.newConfig.roots.includes(taskUid)) {
+      state.newConfig.roots.push(taskUid)
+    }
+  },
+  [TASK.ADD_TASK_TO_LEAVES]: (state, taskUid) => {
+    if (!state.newConfig.leaves.includes(taskUid)) {
+      state.newConfig.leaves.push(taskUid)
+    }
+  },
+  [TASK.REMOVE_TASK_FROM_ROOTS]: (state, taskUid) => {
+    for (let i = 0; i < state.newConfig.roots.length; i++) {
+      if (taskUid === state.newConfig.roots[i]) {
+        state.newConfig.roots.splice(i, 1)
       }
     }
   },
@@ -1410,7 +1432,6 @@ const mutations = {
     state.status = 'success'
     state.tasks = resp.data
     state.hasLoadedOnce = true
-
     Object.assign(state.newtasks, {})
     Object.assign(state.newConfig, {
       roots: [],

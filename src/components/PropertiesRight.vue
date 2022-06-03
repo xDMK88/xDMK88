@@ -40,7 +40,7 @@ export default {
 <template>
   <aside
     id="aside-right"
-    class="bg-white dark:bg-gray-900 py-5 px-5 pb-0 w-96 fixed top-0 h-full transition-position dark:border-r dark:border-gray-800 custom-column"
+    class="bg-white dark:bg-gray-900 py-5 px-5 pb-0 w-96 fixed top-0 h-full transition-position dark:border-r dark:border-gray-800 custom-column z-[30]"
     :class="[ isPropertiesMobileExpanded ? 'right-0' : '-right-96', isPropertiesMobileExpanded ? 'block' : 'hidden']"
   >
     <TaskProperties

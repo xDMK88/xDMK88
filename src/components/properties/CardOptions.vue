@@ -3,7 +3,7 @@ import { computed } from 'vue'
 import PopMenu from '@/components/modals/PopMenu.vue'
 import PopMenuItem from '@/components/modals/PopMenuItem.vue'
 import PopMenuDivider from '@/components/modals/PopMenuDivider.vue'
-
+defineEmits(['clickRemoveButton'])
 const props = defineProps({
   dateCreate: String
 })
@@ -52,7 +52,7 @@ const cardDateCreate = computed(() => {
         <PopMenuItem>
           Копировать как ссылку
         </PopMenuItem>
-        <PopMenuItem>
+        <PopMenuItem @click="$emit('clickRemoveButton')">
           Удалить
         </PopMenuItem>
       </template>

@@ -1,4 +1,28 @@
 <script setup>
+import { computed } from 'vue'
+const props = defineProps({
+  budget: Number
+})
+
+const budget = computed(() => {
+  if (props.budget > 0) {
+    const fractional = props.budget % 100
+    const value = Math.floor(props.budget / 100)
+    let valString = ''
+    let valueString = value.toString()
+    while (valueString) {
+      valString = valueString.slice(-3) + ' ' + valString
+      valueString = valueString.slice(0, -3)
+    }
+    valString = valString.trim()
+    if (fractional > 0) {
+      const frString = (fractional < 10 ? '0' : '') + fractional
+      return `${valString}.${frString}`
+    }
+    return valString
+  }
+  return 'Бюджет'
+})
 </script>
 <template>
   <div class="flex items-center bg-[#F4F5F7] rounded-[6px] text-[#575758] text-[12px] px-[8px] py-[5px] cursor-pointer font-[500]">
@@ -33,6 +57,6 @@
       />
     </svg>
 
-    Бюджет
+    {{ budget ?? 'Бюджет' }}
   </div>
 </template>

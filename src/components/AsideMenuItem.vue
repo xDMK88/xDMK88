@@ -61,7 +61,7 @@ const bgcInactive = ''
       <div class="rounded-md flex items-center justify-center w-10 h-10">
         <icon
           :path="item.icon"
-          class="flex-none text-gray-600 dark:text-white"
+          class="flex-none text-[#606061]"
           :box="item.iconBox"
           :width="item.width"
           :height="item.height"
@@ -73,8 +73,7 @@ const bgcInactive = ''
           vSlot && vSlot.isExactActive ? styleActive : styleInactive,
           item.bold ? font - bold : font - normal
         ]"
-        >{{ item.label }}</span
-      >
+      >{{ item.label }}</span>
       <icon
         v-if="hasDropdown"
         :path="dropdownIcon"

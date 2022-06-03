@@ -154,7 +154,7 @@
               <span class="p-1.5 bg-white rounded-xl border-2">Выполнить до:</span><span class="bg-cyan-400 text-white p-1.5 ml-1 rounded-xl"> {{ dateClear(task.date_end) }}</span>
             </div>
             <div
-              v-show="typeof plural === 'string'"
+              v-show="typeof plural === 'string' && task.date_end !== '0001-01-01T00:00:00'"
               class="mb-1 flex items-center"
             >
               <span class="p-1.5 bg-white rounded-xl border-2">Просрочено на:</span><span class="bg-red-500 ml-1 text-white p-1.5 rounded-xl">{{ plural }}!</span>

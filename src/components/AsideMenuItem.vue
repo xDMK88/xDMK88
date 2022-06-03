@@ -36,8 +36,8 @@ const menuClick = (event) => {
   }
 }
 
-const styleActive = 'font-roboto font-bold text-[#424242]'
-const styleInactive = 'font-roboto font-medium text-[#606061]'
+const styleActive = 'font-bold text-[#424242]'
+const styleInactive = 'font-medium text-[#606061]'
 
 </script>
 
@@ -67,7 +67,7 @@ const styleInactive = 'font-roboto font-medium text-[#606061]'
         />
       </div>
       <span
-        class=""
+        class="font-roboto text-[13px] leading-[15px]"
         :class="[isActive ? styleActive : styleInactive]"
       >
         {{ item.label }}

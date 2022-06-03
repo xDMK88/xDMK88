@@ -31,10 +31,10 @@
   <!-- Add task input -->
   <div
     v-if="taskListSource && !DONT_SHOW_TASK_INPUT_UIDS[taskListSource.uid]"
-    class="fixed-create flex pl-3"
+    class="fixed-create flex mb-1 ml-1 bg-slate-100"
   >
     <button
-      class="bg-amber-500 px-2 rounded-[8px] text-black text-sm mr-1 ml-1 hover:bg-orange-500 bg-opacity-50"
+      class="bg-amber-500 px-2 rounded-[8px] text-black text-sm mr-1 hover:bg-orange-500"
       @click="showInspector = true"
     >
       Поручить
@@ -95,7 +95,7 @@
     v-if="status == 'success'"
     :nodes="storeTasks"
     :config="newConfig"
-    class="mt-0.5"
+    class="mt-0.5 ml-0.5"
     @nodeOpened="nodeExpanding"
     @nodeFocus="nodeSelected"
     @nodeDragend="nodeDragEnd"
@@ -103,9 +103,9 @@
     <template #before-input="props">
       <div
         :id="props.node.info.uid"
-        class="pl-8 group task-node flex-col items-center w-full bg-white p-2 rounded-[8px] dark:bg-gray-900 dark:border-gray-700 border border-gray-300 my-0.5 relative"
+        class="pl-8 group task-node mb-1 flex-col items-center w-full bg-white p-2 rounded-[8px] dark:bg-gray-900 dark:border-gray-700 relative border border-white-400"
         :style="{ backgroundColor: getValidBackColor(colors[props.node.info.uid_marker]?.back_color) }"
-        :class="{ 'bg-gray-200 dark:bg-gray-800': (props.node.info.status == 1 || props.node.info.status == 7) && props.node.info.uid_marker == '00000000-0000-0000-0000-000000000000', 'ring-2 ring-orange-400 border border-orange-400': props.node.id === lastSelectedTaskUid }"
+        :class="{ 'bg-gray-200 dark:bg-gray-800': (props.node.info.status == 1 || props.node.info.status == 7) && props.node.info.uid_marker == '00000000-0000-0000-0000-000000000000', 'ring-0 ring-orange-400 border border-orange-400': props.node.id === lastSelectedTaskUid }"
         @keydown.esc="escapEvent"
         @keyup.esc="escapEvent"
         @click.shift="clickAndShift(props.node)"
@@ -129,11 +129,10 @@
         </p>
         <pre class="text-[10px] leading-none font-bold text-yellow-500">children: {{ props.node.children }}</pre>
         <pre class="text-[10px] leading-none font-bold text-yellow-500">tags: {{ props.node.tags }}</pre>
-        -->
+       hidden -->
         <Transition>
           <div
-            class="absolute hidden group-hover:flex right-2 top-2 bg-gray-200 dark:bg-gray-800 rounded-lg items-cetner justify-center py-0.5 px-3"
-            :style="{ backgroundColor: getValidBackColor(colors[props.node.info.uid_marker]?.back_color) }"
+            class="absolute hidden group-hover:flex right-2 bg-gray-200 bg-center my-auto rounded-[8px] items-center justify-center py-0.5 px-3" style="top:25%;"
           >
             <Icon
               :path="subtask.path"
@@ -144,6 +143,14 @@
               :height="subtask.height"
               @click.stop="addSubtask(props.node.info);"
             />
+          <!--  <Icon
+              :path="panelfocus.path"
+              class="text-gray-600 dark:text-white justify-center mr-3 cursor-pointer"
+              :box="panelfocus.viewBox"
+              :style="{ color: getValidForeColor(colors[props.node.info.uid_marker]?.fore_color) }"
+              :width="panelfocus.width"
+              :height="panelfocus.height"
+            /> -->
             <!-- Task action popper -->
             <PopMenu
               placement="auto"
@@ -153,7 +160,7 @@
             >
               <Icon
                 :path="taskoptions.path"
-                class="text-gray-600 dark:text-white cursor-pointer h-full"
+                class="text-gray-600 dark:text-white cursor-pointer h-full relative top-1"
                 :box="taskoptions.viewBox"
                 :width="taskoptions.width"
                 :style="{ color: getValidForeColor(colors[props.node.info.uid_marker]?.fore_color) }"
@@ -210,7 +217,7 @@
           class="flex"
         >
           <div
-            class="flex items-center"
+            class="flex items-center ml-1"
           >
             <TaskStatus
               :task="props.node.info"
@@ -220,7 +227,7 @@
             <contenteditable
               v-model="props.node.info.name"
               tag="div"
-              class="taskName p-0.5 ring-0 outline-none max-w-7xl"
+              class="taskName p-0.5 ring-0 outline-none max-w-7xl ml-1"
               :contenteditable="props.node.info._isEditable"
               placeholder="Введите название задачи"
               :no-nl="true"
@@ -245,7 +252,7 @@
             :icon-path="taskfocus.path"
             :icon-box="taskfocus.viewBox"
             icon-class="text-red-600"
-            icon-height="14"
+            icon-height="15"
             class="h-[22px]"
           />
           <!-- Data -->
@@ -265,14 +272,15 @@
             :text="props.node.info.term_customer"
             icon-class="text-red-600"
             class="h-[22px]"
-            icon-height="14"
+            icon-height="15"
           />
           <!-- Customer -->
           <TaskListTagLabel
             v-if="props.node.info.uid_customer != '00000000-0000-0000-0000-000000000000' && employees[props.node.info.uid_customer] && props.node.info.uid_customer != user.current_user_uid"
             :text="employees[props.node.info.uid_customer].name"
             :color-bg-class="{ 'border-red-500': user.current_user_email == props.node.info.email_performer, 'bg-gray-400': user.current_user_email != props.node.info.email_performer, 'bg-opacity-50': props.node.info.status == 1 || props.node.info.status == 7 }"
-            icon-height="14"
+            icon-height="15"
+            :image="employees[props.node.info.uid_customer].fotolink"
             class="h-[22px]"
           />
           <!-- Performer -->
@@ -283,7 +291,8 @@
             :icon-height="props.node.info.performerreaded ? performerRead.height : performerNotRead.height"
             :icon-box="props.node.info.performerreaded ? performerRead.viewBox : performerNotRead.viewBox"
             :icon-path="props.node.info.performerreaded ? performerRead.path : performerNotRead.path"
-            :color-bg-class="{ 'bg-gray-400': user.current_user_email != props.node.info.email_performer, 'bg-green-500': user.current_user_uid == props.node.info.uid_customer, 'bg-opacity-50': props.node.info.status == 1 || props.node.info.status == 7 }"
+            :image="employees[props.node.info.uid_performer].fotolink"
+            :color-bg-class="{ 'bb-gray-400': user.current_user_email != props.node.info.email_performer, 'bg-green-500': user.current_user_uid == props.node.info.uid_customer, 'bg-opacity-50': props.node.info.status == 1 || props.node.info.status == 7 }"
             class="h-[22px]"
           />
           <!-- Overdue -->
@@ -292,7 +301,7 @@
             text="Просрочено"
             color-text-class="text-red-600"
             color-bg-class="bg-red-300 opacity-70"
-            icon-height="14"
+            icon-height="15"
             class="h-[22px]"
           />
           <!-- Tags -->
@@ -323,8 +332,8 @@
             v-if="props.node.info.has_files"
             :icon-path="file.path"
             :icon-box="file.viewBox"
-            icon-width="10"
-            icon-height="14"
+            icon-width="11"
+            icon-height="15"
             class="h-[22px]"
           />
           <!-- Checklist -->
@@ -333,7 +342,8 @@
             :icon-path="checklist.path"
             :icon-box="checklist.viewBox"
             :text="`${countChecklist(props.node.info.checklist).done} / ${countChecklist(props.node.info.checklist).undone}`"
-            icon-height="14"
+            icon-height="15"
+            icon-width="14"
             class="h-[22px]"
           />
           <!-- Access -->
@@ -341,8 +351,8 @@
             v-if="props.node.info.emails"
             :icon-path="inaccess.path"
             :icon-box="inaccess.viewBox"
-            icon-width="14"
-            icon-height="14"
+            icon-width="15"
+            icon-height="15"
             class="h-[22px]"
           />
           <!-- Messages -->
@@ -350,7 +360,7 @@
             v-if="props.node.info.has_msgs"
             :icon-path="msgs.path"
             :icon-box="msgs.viewBox"
-            icon-height="14"
+            icon-height="15"
             class="h-[22px]"
           />
           <!-- Comment -->
@@ -397,6 +407,7 @@ import tagIcon from '@/icons/tag.js'
 import performerRead from '@/icons/performer-read.js'
 import performerNotRead from '@/icons/performer-not-read.js'
 import taskfocus from '@/icons/taskfocus.js'
+import panelfocus from '@/icons/panelfocus.js'
 import clock from '@/icons/clock.js'
 import subtask from '@/icons/subtask.js'
 import taskoptions from '@/icons/taskoptions.js'
@@ -954,6 +965,7 @@ export default {
       performerNotRead,
       performerRead,
       taskfocus,
+      panelfocus,
       clock,
       subtask,
       taskoptions,
@@ -1010,10 +1022,10 @@ window.getSelection().removeAllRanges()
   justify-content: center;
   width: 35px;
   position: absolute;
-  left: 1px;
+  left: 0px;
   cursor: pointer;
   z-index: 9;
-  top: 20px;
+  top: 16px;
 }
 
 .input-wrapper {
@@ -1031,14 +1043,14 @@ window.getSelection().removeAllRanges()
   align-items: center;
   flex: 1;
   position: relative;
-  margin-left: 1rem;
+  margin-left: 0rem;
   word-wrap: break-word;
   font-size: 14px;
   outline: none
 }
 
 .node-wrapper:focus-within .task-node {
-  @apply ring-2 ring-orange-400 border border-orange-400
+  @apply ring-0 ring-orange-400 border border-orange-400
 }
 
 .node-wrapper.disabled .checkbox-wrapper.checked {

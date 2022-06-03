@@ -5,7 +5,7 @@
     :style="colorBgStyle"
   >
     <Icon
-      v-if="iconPath"
+      v-if="iconPath && !image"
       :path="iconPath"
       class="mr-1"
       :class="[colorTextClass]"
@@ -13,6 +13,7 @@
       :width="iconWidth"
       :height="iconHeight"
     />
+    <img :src="image" v-if="image" class="rounded-[3px] text-base cursor-pointer w-[16px] h-[16px] mr-1"/>
     {{ text }}
   </div>
 </template>
@@ -56,6 +57,9 @@ export default {
     iconHeight: {
       type: String,
       default: '12'
+    },
+    image: {
+      type: String
     }
   }
 }

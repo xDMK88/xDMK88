@@ -91,7 +91,7 @@ const logout = () => {
           <span class="circle-image">
           <img
             :src="user.foto_link"
-            class="rounded-lg content-center" style="border-radius: 27px;">
+            class="rounded-[27px] content-center object-fit">
             </span>
         </div>
         <div>

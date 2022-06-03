@@ -56,10 +56,10 @@ export default {
   },
   methods: {
     onCancel () {
-      this.$emit('cancel')
+      if (this.show) this.$emit('cancel')
     },
     onSave () {
-      this.$emit('save', this.currentValue)
+      if (this.show) this.$emit('save', this.currentValue)
     }
   }
 }

@@ -8,7 +8,6 @@ import {
 } from '@/store/actions/taskmessages'
 import axios from 'axios'
 import { notify } from 'notiwind'
-import { AUTH_LOGOUT } from '../actions/auth'
 import { PUSH_COLOR } from '../actions/colors'
 import * as TASK from '../actions/tasks'
 
@@ -120,7 +119,6 @@ const actions = {
             15000
           )
           commit(TASK.TASKS_ERROR, err)
-          dispatch(AUTH_LOGOUT)
           reject(err)
         })
     })
@@ -141,7 +139,6 @@ const actions = {
             text: err.response.data
           }, 15000)
           commit(TASK.TASKS_ERROR, err)
-          dispatch(AUTH_LOGOUT)
           reject(err)
         })
     })
@@ -173,7 +170,6 @@ const actions = {
             15000
           )
           commit(TASK.TASKS_ERROR, err)
-          dispatch(AUTH_LOGOUT)
           reject(err)
         })
     })
@@ -208,7 +204,6 @@ const actions = {
               15000
             )
             commit(TASK.TASKS_ERROR, err)
-            // dispatch(AUTH_LOGOUT)
             reject(err)
           })
       })
@@ -243,7 +238,6 @@ const actions = {
             15000
           )
           commit(TASK.TASKS_ERROR, err)
-          dispatch(AUTH_LOGOUT)
           reject(err)
         })
     })
@@ -275,7 +269,6 @@ const actions = {
             15000
           )
           commit(TASK.TASKS_ERROR, err)
-          dispatch(AUTH_LOGOUT)
           reject(err)
         })
     })
@@ -304,7 +297,6 @@ const actions = {
             15000
           )
           commit(TASK.TASKS_ERROR, err)
-          dispatch(AUTH_LOGOUT)
           reject(err)
         })
     })
@@ -336,7 +328,6 @@ const actions = {
             15000
           )
           commit(TASK.TASKS_ERROR, err)
-          dispatch(AUTH_LOGOUT)
           reject(err)
         })
     })
@@ -402,7 +393,6 @@ const actions = {
             15000
           )
           commit(TASK.TASKS_ERROR, err)
-          dispatch(AUTH_LOGOUT)
           reject(err)
         })
     })
@@ -434,7 +424,6 @@ const actions = {
             15000
           )
           commit(TASK.TASKS_ERROR, err)
-          dispatch(AUTH_LOGOUT)
           reject(err)
         })
     })
@@ -466,7 +455,6 @@ const actions = {
             15000
           )
           commit(TASK.TASKS_ERROR, err)
-          dispatch(AUTH_LOGOUT)
           reject(err)
         })
     })
@@ -498,7 +486,6 @@ const actions = {
             15000
           )
           commit(TASK.TASKS_ERROR, err)
-          dispatch(AUTH_LOGOUT)
           reject(err)
         })
     })
@@ -527,7 +514,6 @@ const actions = {
             15000
           )
           commit(TASK.TASKS_ERROR, err)
-          dispatch(AUTH_LOGOUT)
           reject(err)
         })
     })
@@ -561,7 +547,6 @@ const actions = {
             15000
           )
           commit(TASK.TASKS_ERROR, err)
-          dispatch(AUTH_LOGOUT)
           reject(err)
         })
     })
@@ -595,7 +580,6 @@ const actions = {
             15000
           )
           commit(TASK.TASKS_ERROR, err)
-          dispatch(AUTH_LOGOUT)
           reject(err)
         })
     })
@@ -627,7 +611,6 @@ const actions = {
             15000
           )
           commit(TASK.TASKS_ERROR, err)
-          dispatch(AUTH_LOGOUT)
           reject(err)
         })
     })
@@ -659,7 +642,6 @@ const actions = {
             15000
           )
           commit(TASK.TASKS_ERROR, err)
-          dispatch(AUTH_LOGOUT)
           reject(err)
         })
     })
@@ -691,7 +673,6 @@ const actions = {
             15000
           )
           commit(TASK.TASKS_ERROR, err)
-          dispatch(AUTH_LOGOUT)
           reject(err)
         })
     })
@@ -723,7 +704,6 @@ const actions = {
             15000
           )
           commit(TASK.TASKS_ERROR, err)
-          dispatch(AUTH_LOGOUT)
           reject(err)
         })
     })

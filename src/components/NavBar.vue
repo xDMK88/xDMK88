@@ -252,6 +252,18 @@ const clickOnGridCard = (item, index) => {
         }
       })
     }
+    if (item.greedPath === 'other') {
+      const navElem = {
+        name: item.label,
+        key: 'greedSource',
+        value: { uid: item.uid, param: null },
+        greedPath: 'other'
+      }
+      store.commit('updateStackWithInitValue', navElem)
+      store.commit('basic', { key: 'mainSectionState', value: 'greed' })
+      store.commit('basic', { key: 'greedPath', value: 'other' })
+      return
+    }
     if (item.greedPath === 'boards_children') {
       // Request boards's cards
       store.dispatch(UID_TO_ACTION[item.global_property_uid], item.uid)
@@ -268,7 +280,9 @@ const clickOnGridCard = (item, index) => {
       })
     }
   } else {
-    store.commit('basic', { key: item.key, value: storeNavigator.value[item.greedPath].items })
+    if (item.greedPath !== 'other') {
+      store.commit('basic', { key: item.key, value: storeNavigator.value[item.greedPath].items })
+    }
   }
 }
 
@@ -316,7 +330,7 @@ const openProjectProperties = (project, parentProjectUid = '') => {
   </pre>
   <nav
     v-show="isNavBarVisible"
-    class="top-0 left-0 right-0 fixed flex h-14 z-30 bg-slate-100
+    class="top-0 left-0 right-0 fixed flex h-14 z-[1] bg-slate-100
     transition-position xl:ml-80 w-auto lg:items-center dark:bg-gray-800 dark:border-gray-800"
     :class="{ 'ml-80':isAsideMobileExpanded, 'mr-96':isPropertiesMobileExpanded }"
   >

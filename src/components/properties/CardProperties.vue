@@ -2,7 +2,7 @@
 import { computed, ref } from 'vue'
 import { useStore } from 'vuex'
 import { CREATE_MESSAGE_REQUEST } from '@/store/actions/cardfilesandmessages'
-import { CHANGE_CARD_RESPONSIBLE_USER, CHANGE_CARD_NAME, CHANGE_CARD_COMMENT } from '@/store/actions/cards'
+import { CHANGE_CARD_RESPONSIBLE_USER, CHANGE_CARD_NAME, CHANGE_CARD_COMMENT, DELETE_CARD } from '@/store/actions/cards'
 
 import CardName from '@/components/properties/CardName.vue'
 import CardCover from '@/components/properties/CardCover.vue'
@@ -14,6 +14,7 @@ import CardMessageInput from '@/components/properties/CardMessageInput.vue'
 import Icon from '@/components/Icon.vue'
 import close from '@/icons/close.js'
 import TaskPropsCommentEditor from '@/components/TaskProperties/TaskPropsCommentEditor.vue'
+import BoardModalBoxDelete from '@/components/Board/BoardModalBoxDelete.vue'
 
 const store = useStore()
 const selectedCard = computed(() => store.state.cards.selectedCard)
@@ -70,9 +71,21 @@ const createCardMessage = () => {
     cardMessageInputValue.value = ''
   })
 }
+
+const showDeleteCard = ref(false)
+const removeCard = () => {
+  store.dispatch(DELETE_CARD, { uid: selectedCard.value.uid }).then(() => closeProperties())
+}
 </script>
 
 <template>
+  <BoardModalBoxDelete
+    v-show="showDeleteCard"
+    title="Удалить карточку"
+    text="Вы действительно хотите удалить карточку?"
+    @cancel="showDeleteCard = false"
+    @yes="removeCard"
+  />
   <div class="relative min-h-screen">
     <!-- Close icon -->
     <div class="flex justify-end">
@@ -109,6 +122,7 @@ const createCardMessage = () => {
       />
       <card-options
         :date-create="selectedCard.date_create"
+        @clickRemoveButton="showDeleteCard = true"
       />
     </div>
 
@@ -125,6 +139,8 @@ const createCardMessage = () => {
       :current-user-uid="user.current_user_uid"
       :employees="employees"
     />
+
+    <!-- Card chat input -->
     <div class="flex fixed bottom-[30px] w-[340px]">
       <card-message-input
         v-model="cardMessageInputValue"

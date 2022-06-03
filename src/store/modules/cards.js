@@ -177,6 +177,28 @@ const actions = {
         })
     })
   },
+  [CARD.CHANGE_CARD_BUDGET]: ({ commit }, data) => {
+    return new Promise((resolve, reject) => {
+      const url = process.env.VUE_APP_LEADERTASK_API + 'api/v1/card/cost?uid=' + data.cardUid
+      axios({ url: url, method: 'PATCH', data: { cost: data.comment } })
+        .then((resp) => {
+          commit('ChangeCard', resp.data)
+          resolve(resp)
+        })
+        .catch((err) => {
+          notify(
+            {
+              group: 'api',
+              title: 'REST API Error, please make screenshot',
+              action: CARD.CHANGE_CARD_BUDGET,
+              text: err.response?.data ?? err
+            },
+            15000
+          )
+          reject(err)
+        })
+    })
+  },
   [CARD.BOARD_CARDS_ADDSTAGE]: ({ commit, rootState }, newStage) => {
     const board = rootState.boards.boards[state.boardUid]
     const canChangeBoard = board.type_access === 1

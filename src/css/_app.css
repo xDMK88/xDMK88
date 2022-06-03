@@ -20,7 +20,7 @@
 }
 
 body {
-  @apply pt-14 xl:pl-80;
+  @apply pt-14 xl:pl-[292px];
 }
 html
 {

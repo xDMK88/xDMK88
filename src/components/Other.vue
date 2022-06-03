@@ -204,6 +204,22 @@ export default {
       localStorage.setItem('isGridView', value)
     },
     gotoChildren (value) {
+      if (value.path) {
+        this.$store.commit('basic', { key: 'mainSectionState', value: 'greed' })
+        this.$store.commit('basic', { key: 'greedPath', value: value.path })
+        const navElem = {
+          name: value.name,
+          key: 'greedSource',
+          greedPath: value.path,
+          value: this.$store.state.navigator.navigator[value.path].items
+        }
+        this.$store.commit('pushIntoNavStack', navElem)
+        this.$store.commit('basic', {
+          key: 'greedSource',
+          value: this.$store.state.navigator.navigator[value.path].items
+        })
+        return
+      }
       const UID_TO_ACTION = {
         '46418722-a720-4c9e-b255-16db4e590c34': TASK.OVERDUE_TASKS_REQUEST,
         '017a3e8c-79ac-452c-abb7-6652deecbd1c': TASK.OPENED_TASKS_REQUEST,

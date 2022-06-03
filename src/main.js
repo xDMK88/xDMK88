@@ -4,6 +4,7 @@ import App from './App.vue'
 import router from './router'
 import store from './store'
 import Notifications from 'notiwind'
+import linkify from 'vue-linkify'
 
 import './css/main.css'
 
@@ -70,4 +71,4 @@ window.onerror = function (msg, url, lineNo, columnNo, error) {
   })
 }
 
-createApp(App).use(store).use(router).use(Notifications).mount('#app')
+createApp(App).use(store).use(router).use(Notifications).directive('linkified', linkify).mount('#app')

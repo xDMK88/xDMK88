@@ -19,6 +19,7 @@ const computedValue = computed({
     <svg
       width="18"
       height="17"
+      class="cursor-pointer"
       viewBox="0 0 18 17"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
@@ -43,7 +44,7 @@ const computedValue = computed({
     class="rounded-r-[10px] flex items-center justify-center bg-[#F4F5F7] pr-[12px]"
   >
     <div
-      class="rounded-[8px] flex items-center justify-center min-w-[32px] min-h-[32px] bg-[#E0E1E3] hover:bg-white"
+      class="rounded-[8px] flex items-center justify-center min-w-[32px] min-h-[32px] bg-[#E0E1E3] hover:bg-white cursor-pointer"
       @click="$emit('createCardMessage', computedValue.value)"
     >
       <svg

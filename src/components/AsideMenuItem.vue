@@ -56,7 +56,7 @@ const styleInactive = 'font-medium text-[#606061]'
       }"
       @click="menuClick"
     >
-      <div class="flex items-center justify-center mr-[8px]">
+      <div class="flex items-center justify-center ml-[5px] mr-[8px]">
         <icon
           :path="item.icon"
           class="flex-none"

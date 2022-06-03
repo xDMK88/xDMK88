@@ -2,7 +2,9 @@
 import { computed } from 'vue'
 
 import CardChatInterlocutorMessage from '@/components/properties/CardChatInterlocutorMessage.vue'
+import CardChatInterlocutorFileMessage from '@/components/properties/CardChatInterlocutorFileMessage.vue'
 import CardChatSelfMessage from '@/components/properties/CardChatSelfMessage.vue'
+import CardChatSelfFileMessage from '@/components/properties/CardChatSelfFileMessage.vue'
 
 const props = defineProps({
   messages: Array,
@@ -84,9 +86,19 @@ const getMessageWeekDateString = (dateCreate) => {
         :message="message"
         :employee="props.employees[message.uid_creator]"
       />
+      <card-chat-interlocutor-file-message
+        v-if="!message.isMyMessage && message.isFile"
+        :message="message"
+        :employee="props.employees[message.uid_creator]"
+      />
 
       <card-chat-self-message
         v-if="message.isMyMessage && message.isMessage"
+        :message="message"
+        :employee="props.employees[message.uid_creator]"
+      />
+      <card-chat-self-file-message
+        v-if="message.isMyMessage && message.isFile"
         :message="message"
         :employee="props.employees[message.uid_creator]"
       />

@@ -8,7 +8,6 @@
         task.uid_marker == '00000000-0000-0000-0000-000000000000'
     }"
   >
-    <pre>{{ task }}</pre>
     <div class="flex justify-between">
       <!-- task info/status -->
       <div class="flex items-center">

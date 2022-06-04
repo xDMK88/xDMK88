@@ -215,6 +215,10 @@ export default {
         isInspectorMessage: message.uid_creator === 'inspector',
         isMyMessage: message.uid_creator === this.currentUserUid
       }))
+      // for (let i = 0; i < messages.length; i++) {
+      //   if (messages[i].isFile) {
+      //     messages[i].date_create += 'Z'
+      //   }
       return messages
     }
   },
@@ -283,11 +287,6 @@ export default {
       return day + ' ' + month
     },
     getMessageTimeString (dateCreate) {
-      if (!dateCreate) return ''
-      // добавляем Z в конец, чтобы он посчитал что это UTC время
-      if (dateCreate[dateCreate.length - 1] !== 'Z') {
-        dateCreate += 'Z'
-      }
       const date = new Date(dateCreate)
       return date.toLocaleString('default', {
         hour: 'numeric',
@@ -295,11 +294,6 @@ export default {
       })
     },
     getMessageWeekDateString (dateCreate) {
-      if (!dateCreate) return ''
-      // добавляем Z в конец, чтобы он посчитал что это UTC время
-      if (dateCreate[dateCreate.length - 1] !== 'Z') {
-        dateCreate += 'Z'
-      }
       const today = new Date()
       const date = new Date(dateCreate)
       let weekDay = date.toLocaleString('default', { weekday: 'long' })

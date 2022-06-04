@@ -320,6 +320,12 @@ const mutations = {
     state.messages = state.messages.concat(state.files)
     state.messages = state.messages.concat(state.inspectorMessages)
     state.messages.sort((a, b) => {
+      if (!a.file_name && !a.date_create.includes('Z')) {
+        a.date_create += 'Z'
+      }
+      if (!b.file_name && !b.date_create.includes('Z')) {
+        b.date_create += 'Z'
+      }
       return new Date(a.date_create) - new Date(b.date_create)
     })
   },

@@ -137,10 +137,6 @@ export default {
     firstTask (newtask, oldtask) {
       if (newtask) {
         this.$store.dispatch(TASK.CHANGE_TASK_READ, this.firstTask.uid)
-          .then(() => {
-            this.$store.commit(TASK.MARK_TASK_AS_READ, this.firstTask.uid)
-          })
-        this.$store.commit(TASK.MARK_TASK_AS_READ, this.firstTask.uid)
         this.$store.dispatch(MSG.MESSAGES_REQUEST, this.firstTask.uid)
           .then(() => {
             this.$store.dispatch(FILES.FILES_REQUEST, this.firstTask.uid)

@@ -21,7 +21,7 @@
           placeholder="Введите название задачи"
           :no-nl="false"
           :no-html="false"
-          :class="{ 'uppercase': !task._isEditable && colors[task.uid_marker] && colors[task.uid_marker].uppercase, 'text-gray-500': task.status == 1 || task.status == 7, 'line-through': task.status == 1 || task.status == 7, 'font-extrabold': task.readed == 0 }"
+          :class="{ 'uppercase': !task._isEditable && colors[task.uid_marker] && colors[task.uid_marker].uppercase, 'text-gray-500': task.status == 1 || task.status == 7, 'line-through': task.status == 1 || task.status == 7 }"
           :style="{ color: getValidForeColor(colors[task.uid_marker]?.fore_color) }"
           @focusout="clearTaskFocus(task)"
           @dblclick.stop="editTaskName(task)"

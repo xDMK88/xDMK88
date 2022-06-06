@@ -278,7 +278,7 @@
           <TaskListTagLabel
             v-if="props.node.info.uid_customer != '00000000-0000-0000-0000-000000000000' && employees[props.node.info.uid_customer] && props.node.info.uid_customer != user.current_user_uid"
             :text="employees[props.node.info.uid_customer].name"
-            :color-bg-class="{ 'border-red-500': user.current_user_email == props.node.info.email_performer, 'bg-gray-400': user.current_user_email != props.node.info.email_performer, 'bg-opacity-50': props.node.info.status == 1 || props.node.info.status == 7 }"
+            :color-bg-class="{ 'border-red-500': user.current_user_email == props.node.info.email_performer, 'bg-gray-400': user.current_user_email != props.node.info.email_performer, 'bg-opacity-50': props.node.info.status == 1 || props.node.info.status == 7, 'bg-red-500': user.current_user_email == props.node.info.email_performer }"
             icon-height="15"
             :image="employees[props.node.info.uid_customer].fotolink"
             class="h-[22px]"
@@ -292,7 +292,7 @@
             :icon-box="props.node.info.performerreaded ? performerRead.viewBox : performerNotRead.viewBox"
             :icon-path="props.node.info.performerreaded ? performerRead.path : performerNotRead.path"
             :image="employees[props.node.info.uid_performer].fotolink"
-            :color-bg-class="{ 'bb-gray-400': user.current_user_email != props.node.info.email_performer, 'bg-green-500': user.current_user_uid == props.node.info.uid_customer, 'bg-opacity-50': props.node.info.status == 1 || props.node.info.status == 7 }"
+            :color-bg-class="{ 'bg-gray-400': user.current_user_email != props.node.info.email_performer, 'bg-green-500': user.current_user_uid == props.node.info.uid_customer, 'bg-opacity-50': props.node.info.status == 1 || props.node.info.status == 7 }"
             class="h-[22px]"
           />
           <!-- Overdue -->

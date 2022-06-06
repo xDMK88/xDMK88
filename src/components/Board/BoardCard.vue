@@ -68,6 +68,13 @@
           </div>
           <template #menu>
             <PopMenuItem
+              icon="move"
+              @click="clickMove"
+            >
+              Переместить
+            </PopMenuItem>
+            <PopMenuDivider />
+            <PopMenuItem
               v-if="!isArchive"
               @click="clickSuccess"
             >
@@ -259,7 +266,7 @@ export default {
       default: false
     }
   },
-  emits: ['select', 'moveSuccess', 'moveReject', 'delete'],
+  emits: ['select', 'moveSuccess', 'moveReject', 'moveColumn', 'delete'],
   computed: {
     isArchive () {
       return (
@@ -406,6 +413,9 @@ export default {
     },
     clickDelete () {
       this.$emit('delete')
+    },
+    clickMove () {
+      this.$emit('moveColumn')
     }
   }
 }

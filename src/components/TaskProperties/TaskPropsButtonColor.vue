@@ -221,22 +221,21 @@ export default {
   color: #9e9e9e;
 }
 .btn-close-popover {
-  color: gray;
   margin-right: 5px;
   margin-left: 5px;
   font-size: 11px;
   display: none;
   position: absolute;
-  right: 0;
-  width: 15px;
-  height: 15px;
-  top: 7px;
-  border-radius: 25px;
-  -webkit-transition: all 0.7s ease;
-  -moz-transition: all 0.7s ease;
-  -o-transition: all 0.7s ease;
-  transition: all 0.7s ease;
-  background: #f4f5f7;
+  left: -2px;
+  width: 16px;
+  height: 20px;
+  top: 5px;
+  color: #3F3F4O;
+  -webkit-transition: all 0.2s ease-in;
+  -moz-transition: all 0.2s ease-in;
+  -o-transition: all 0.2s ease-in;
+  transition: all 0.2s ease-in;
+  background: #F4F5F7;
   animation-delay: -2s;
   opacity: 0;
   z-index: 9999;
@@ -247,9 +246,6 @@ export default {
   height: 15px;
   left: 0;
   top: 0;
-  padding: 2px;
-  border-radius: 25px;
-  border: 1px solid gray;
 }
 .list-color-access {
   display: table-cell;

@@ -13,8 +13,8 @@
     </div>
     <div class="w-full inline-block min-h-[40px]">
       <div
-        class="group min-w-[50%] max-w-[80%] rounded-b-[14px] flex flex-col"
-        :class="{ 'bg-[#edf7ed] rounded-tr-[14px] float-left': !isMyMessage, 'bg-[#fceaea] rounded-tl-[14px] float-right': isMyMessage }"
+        class="group min-w-[50%] max-w-[80%] flex flex-col"
+        :class="{ 'bg-[#edf7ed] rounded-tl-[14px] rounded-tl-[14px] rounded-bl-[14px] rounded-tr-[14px] float-left': !isMyMessage, 'bg-[#fceaea] rounded-tl-[14px] rounded-tr-[14px] rounded-br-[14px] rounded-bt-[0px] float-right': isMyMessage }"
       >
         <div
           v-if="quote"

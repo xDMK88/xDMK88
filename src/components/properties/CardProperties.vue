@@ -53,6 +53,10 @@ const endChangeComment = (text) => {
   store.dispatch(CHANGE_CARD_COMMENT, data)
 }
 
+const createCardFile = (event) => {
+  console.log(event)
+}
+
 const createCardMessage = () => {
   const uid = uuidv4()
   const data = {
@@ -145,6 +149,7 @@ const removeCard = () => {
       <card-message-input
         v-model="cardMessageInputValue"
         @createCardMessage="createCardMessage"
+        @createCardFile="createCardFile"
       />
     </div>
   </div>

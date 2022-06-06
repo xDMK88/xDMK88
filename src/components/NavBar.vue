@@ -330,7 +330,7 @@ const openProjectProperties = (project, parentProjectUid = '') => {
   </pre>
   <nav
     v-show="isNavBarVisible"
-    class="top-0 left-0 right-0 fixed flex h-14 z-[1] bg-slate-100
+    class="top-0 left-0 right-0 fixed flex h-14 z-[1] bg-[#F9FAFC]
     transition-position xl:ml-80 w-auto lg:items-center dark:bg-gray-800 dark:border-gray-800"
     :class="{ 'ml-80':isAsideMobileExpanded, 'mr-96':isPropertiesMobileExpanded }"
   >
@@ -365,7 +365,7 @@ const openProjectProperties = (project, parentProjectUid = '') => {
           class="text-black dark:bg-gray-700 dark:text-gray-100 rounded-lg breadcrumbs"
           @click.stop="clickOnGridCard(navItem, index), closeProperties()"
         >
-          {{ navItem.name.length > 15 ? navItem.name.slice(0, 15) + '...' : (navItem.name.includes(new Date().getDate()) && navItem.value.uid === '901841d9-0016-491d-ad66-8ee42d2b496b' ?  'Сегодня' : navItem.name) }}
+          {{ navItem.name.length > 15 ? navItem.name.slice(0, 15) + '...' : (navItem.name.includes(new Date().getDate()) && navItem.value.uid === '901841d9-0016-491d-ad66-8ee42d2b496b' ? 'Сегодня' : navItem.name) }}
           <Popper
             class="items-center"
             :class="isDark ? 'dark' : 'light'"

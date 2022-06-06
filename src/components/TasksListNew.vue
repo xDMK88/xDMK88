@@ -132,7 +132,7 @@
        hidden -->
         <Transition>
           <div
-            class="absolute group-hover:flex right-2 bg-gray-200 bg-center my-auto rounded-[8px] h-[36px] items-center justify-center py-0.5 px-3"
+            class="absolute hidden group-hover:flex right-2 bg-gray-200 bg-center my-auto rounded-[8px] h-[36px] items-center justify-center py-0.5 px-3"
             style="top:25%;"
           >
             <Icon

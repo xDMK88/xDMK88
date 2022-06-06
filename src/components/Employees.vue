@@ -1,346 +1,404 @@
-<script setup>
-import Icon from '@/components/Icon.vue'
-import { computed, ref } from 'vue'
-import properties from '@/icons/properties.js'
-import { useStore } from 'vuex'
-import * as TASK from '@/store/actions/tasks'
-import { SELECT_EMPLOYEE } from '@/store/actions/employees'
-import { SELECT_DEPARTMENT, UPDATE_DEPARTMENT_REQUEST } from '@/store/actions/departments'
-import { NAVIGATOR_PUSH_DEPARTAMENT } from '@/store/actions/navigator'
-//  import gridView from '@/icons/grid-view.js'
-//  import listView from '@/icons/list-view.js'
-import draggable from 'vuedraggable'
-const props = defineProps({
-  employees: {
-    type: Array,
-    default: () => []
-  },
-  components: {
-    draggable
-  },
-  methods: {
-    startDrag (evt, item) {
-      evt.dataTransfer.dropEffect = 'move'
-      evt.dataTransfer.effectAllowed = 'move'
-      evt.dataTransfer.setData('itemID', item.id)
-    },
-    change: function (evt) {
-      console.log(evt)
-    },
-    start: function (evt) {
-      console.log(evt)
-    },
-    end: function (evt) {
-      console.log(evt)
-    },
-    move: function (evt, originalEvent) {
-      console.log(evt)
-      console.log(originalEvent)
-    },
-    onDrop (evt, list) {
-      const itemID = evt.dataTransfer.getData('itemID')
-      const item = this.items.find(item => item.id === itemID)
-      item.list = list
-    }
-  },
-  data: () => ({
-    somelist: ['first', 'second']
-  })
-})
-const store = useStore()
-
-// Serves as linkage between requests from storage and tree view navigator
-const UID_TO_ACTION = {
-  'd28e3872-9a23-4158-aea0-246e2874da73': TASK.EMPLOYEE_TASKS_REQUEST
-}
-
-const isGridView = computed(() => store.state.isGridView)
-localStorage.setItem('isGridView', true)
-/*  const updateGridView = (value) => {
-  store.commit('basic', { key: 'isGridView', value: true })
-  localStorage.setItem('isGridView', value)
-} */
-
-const isPropertiesMobileExpanded = computed(() => store.state.isPropertiesMobileExpanded)
-const storeEmployees = computed(() => store.state.employees.employees)
-const user = computed(() => store.state.user.user)
-const focusedEmployee = ref('')
-const moviesLocalRef = computed(() => props.employees)
-const openDepartmentProperties = (department) => {
-  if (!isPropertiesMobileExpanded.value) {
-    store.dispatch('asidePropertiesToggle', true)
-  }
-  if (!department) {
-    department = {
-      uid: '',
-      uid_parent: '',
-      name: '',
-      //  password: '',
-      order: 0,
-      collapsed: 0,
-      emails: []
-    }
-  }
-  store.commit('basic', { key: 'propertiesState', value: 'department' })
-  store.commit(SELECT_DEPARTMENT, department)
-}
-const UpdateDepOrder = (depOrder, order) => {
-  const dep = {
-    uid: depOrder.uid,
-    uid_parent: '',
-    name: depOrder.name,
-    order: order,
-    collapsed: depOrder.collapsed,
-    emails: depOrder.emails
-  }
-  console.log(dep)
-  store.commit(NAVIGATOR_PUSH_DEPARTAMENT, [dep])
-  store.dispatch(UPDATE_DEPARTMENT_REQUEST, dep)
-    .then(resp => {
-      console.log('drag n, drop success: ', resp.data + ', приоритет: ' + resp.data.order)
-    })
-}
-const draggables = document.querySelectorAll('.draggable')
-draggables.forEach(node => {
-  node.addEventListener('drag', e => {
-    stop.value = true
-    console.log(e.originalEvent.clientY)
-    if (e.originalEvent.clientY < 300) {
-      stop.value = false
-      scroll(-1)
-    }
-    if (e.originalEvent.clientY > (window.innerHeight - 150)) {
-      stop.value = false
-      scroll(1)
-    }
-  })
-  node.addEventListener('dragend', e => {
-    stop.value = true
-  })
-})
-const openEmployeeProperties = (employee) => {
-  if (!isPropertiesMobileExpanded.value) {
-    store.dispatch('asidePropertiesToggle', true)
-  }
-  focusedEmployee.value = employee.email
-  if (!employee) {
-    employee = {
-      email: '',
-      name: '',
-      password: ''
-    }
-  }
-  store.commit('basic', { key: 'propertiesState', value: 'employee' })
-  store.commit(SELECT_EMPLOYEE, employee)
-}
-
-const clickOnGridCard = (value) => {
-  if (UID_TO_ACTION[value.parentID]) {
-    store.dispatch(UID_TO_ACTION[value.parentID], value.uid)
-    const navElem = {
-      name: value.name,
-      key: 'taskListSource',
-      value: { uid: value.parentID, param: value.uid }
-    }
-    store.commit('pushIntoNavStack', navElem)
-    store.commit('basic', { key: 'taskListSource', value: { uid: value.parentID, param: value.uid } })
-  }
-  store.commit('basic', { key: 'mainSectionState', value: 'tasks' })
-  store.commit(TASK.CLEAN_UP_LOADED_TASKS)
-}
-</script>
-
-<template class="w-full">
-  <!-- Add employee and department -->
+<template>
   <div
-    class="flex items-center w-full justify-between mt-3"
+    class="w-full"
+    :print="print('Emps', employees)"
+    :print2="print('Emps fux', items)"
   >
-    <p class="text-2xl text-gray-800 font-bold second dark:text-gray-100">
-      Сотрудники
-    </p>
+    <BoardModalBoxRename
+      v-show="showAddDep"
+      :show="showAddDep"
+      title="Добавить отдел"
+      @cancel="showAddDep = false"
+      @save="onAddNewDep"
+    />
+    <EmployeesModalBoxAdd
+      v-show="showAddEmployee"
+      :show="showAddEmployee"
+      @cancel="showAddEmployee = false"
+      @save="onAddNewEmp"
+    />
+    <BoardModalBoxDelete
+      v-show="showDeleteDep"
+      title="Удалить отдел"
+      text="Вы действительно хотите удалить отдел?"
+      @cancel="showDeleteDep = false"
+      @yes="onDeleteDep"
+    />
+    <BoardModalBoxRename
+      v-show="showRenameDep"
+      :show="showRenameDep"
+      title="Название отдела"
+      :value="currentDepName"
+      @cancel="showRenameDep = false"
+      @save="onRenameDep"
+    />
     <div
-      class="flex"
+      v-for="(value, index) in items"
+      :key="index"
     >
-    <!--  <icon
-        :path="listView.path"
-        :width="listView.width"
-        :height="listView.height"
-        :box="listView.viewBox"
-        class="cursor-pointer hover:text-gray-800 mr-2 mt-0.5"
-        :class="{ 'text-gray-800': !isGridView, 'text-gray-400': isGridView }"
-        @click="updateGridView(false)"
-      />
-      <icon
-        :path="gridView.path"
-        :width="gridView.width"
-        :height="gridView.height"
-        :box="gridView.viewBox"
-        class="cursor-pointer hover:text-gray-800 mr-2 mt-0.5"
-        :class="{ 'text-gray-800': isGridView, 'text-gray-400': !isGridView }"
-        @click="updateGridView(true)"
-      />-->
-    </div>
-  </div>
-  <div
-    v-if="storeEmployees[user.current_user_uid] && (storeEmployees[user.current_user_uid].type == 1 || storeEmployees[user.current_user_uid].type == 2)"
-    class="grid gap-4 mb-4 mt-3"
-    :class="{ 'md:grid-cols-2 lg:grid-cols-4': isGridView, 'grid-cols-1': !isGridView, 'grid-cols-1': isPropertiesMobileExpanded && !isGridView, 'lg:grid-cols-2': isPropertiesMobileExpanded && isGridView }"
-  >
-    <div
-      class="flex items-center bg-gray-50 dark:bg-gray-700 rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-500 cursor-pointer px-3 py-3"
-      @click="openEmployeeProperties(false)"
-    >
-      <div class="flex items-center justify-center w-10 h-10 bg-gray-200 dark:bg-gray-600 rounded-xl mr-2">
-        <svg
-          width="16"
-          height="16"
-          viewBox="0 0 16 16"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          class="dark:text-gray-100"
-        >
-          <path
-            d="M8.00011 2.3457V8.4034M8.00011 8.4034V14.4611M8.00011 8.4034H14.4617M8.00011 8.4034H1.53857"
-            stroke="#3E3D3B"
-            stroke-width="3"
-            stroke-linecap="round"
-          />
-        </svg>
-      </div>
-      <p class="text-gray-500">
-        Добавить сотрудника
-      </p>
-    </div>
-
-    <div
-      class="flex items-center bg-gray-50 dark:bg-gray-700 rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-500 cursor-pointer px-3 py-3"
-      @click="openDepartmentProperties(false)"
-    >
-      <div class="flex items-center justify-center w-10 h-10 bg-gray-200 mr-2 dark:bg-gray-600 rounded-xl">
-        <svg
-          width="16"
-          height="16"
-          viewBox="0 0 16 16"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          class="dark:text-gray-100"
-        >
-          <path
-            d="M8.00011 2.3457V8.4034M8.00011 8.4034V14.4611M8.00011 8.4034H14.4617M8.00011 8.4034H1.53857"
-            stroke="#3E3D3B"
-            stroke-width="3"
-            stroke-linecap="round"
-          />
-        </svg>
-      </div>
-      <p class="text-gray-500">
-        Добавить отдел
-      </p>
-    </div>
-  </div>
-  <draggable tag="div" item-key="order" :list="moviesLocalRef" :options="{group:'div',animation:150,ghostClass:'sortable-ghost',chosenClass:'chosenClass',scroll:true,scrollSensitivity:200}"
-             @change="change"
-             @start="start"
-             @end="end"
-             :move="move"
-             class="list-group cursor-pointer"
-             ghost-class="ghost">
-    <template #item="{ element, index }">
-  <div @dragleave="UpdateDepOrder(element.dep, index)" @dragend="UpdateDepOrder(element.dep, index)">
-    <div :id="element.dep.order"
-      class="flex items-center"
-      :class="index !=0 ? 'mt-5' : ''"
-    >
-      <p class="text-2xl text-gray-800 font-bold dark:text-gray-100 mr-2">
-        {{ element.dep.name }}
-      </p>
-      <icon
-        v-if="element.dep.uid"
-        :path="properties.path"
-        :width="properties.width"
-        :height="properties.height"
-        :box="properties.viewBox"
-        class="text-gray-400 cursor-pointer hover:text-gray-800 mt-1"
-        @click="openDepartmentProperties(element.dep)"
-      />
-    </div>
-
-    <div
-      class="grid gap-4 mt-5"
-      :class="{ 'md:grid-cols-2 lg:grid-cols-4': isGridView, 'grid-cols-1': !isGridView, 'grid-cols-1': isPropertiesMobileExpanded && !isGridView, 'lg:grid-cols-2': isPropertiesMobileExpanded && isGridView }"
-    >
-      <template
-        v-for="(employee, pindex) in element.items"
-        :key="pindex"
+      <div
+        class="group flex items-center w-full"
+        :class="{ 'justify-between': index === 0, 'mt-[28px]': index !== 0 }"
       >
+        <p class="font-roboto text-[#424242] text-[19px] leading-[22px] font-bold">
+          {{ value.dep }}
+        </p>
         <div
-          class="flex items-center bg-white dark:bg-gray-700 rounded-xl shadow hover:shadow-md cursor-pointer h-30 px-3 py-5"
-          :class="{ 'ring-4 ring-orange-300': focusedEmployee == employee.email }"
+          v-if="index === 0"
+          class="flex"
         >
-          <span
-            v-if="employee.type == 1"
+          <icon
+            :path="listView.path"
+            :width="listView.width"
+            :height="listView.height"
+            :box="listView.viewBox"
+            class="cursor-pointer hover:text-gray-800 mr-2"
+            :class="{
+              'text-gray-800': !isGridView,
+              'text-gray-400': isGridView
+            }"
+            @click="updateGridView(false)"
+          />
+          <icon
+            :path="gridView.path"
+            :width="gridView.width"
+            :height="gridView.height"
+            :box="gridView.viewBox"
+            class="cursor-pointer hover:text-gray-800 mr-2"
+            :class="{
+              'text-gray-800': isGridView,
+              'text-gray-400': !isGridView
+            }"
+            @click="updateGridView(true)"
+          />
+        </div>
+        <div
+          v-if="index !== 0 && isCanChangeDepartments"
+          :ref="`dep-icon-${value.uid}`"
+          class="flex-none ml-[5px] h-[18px] w-[18px] cursor-pointer invisible group-hover:visible"
+        >
+          <PopMenu
+            @openMenu="lockVisibility(value.uid)"
+            @closeMenu="unlockVisibility(value.uid)"
           >
             <svg
-              width="24"
-              height="24"
-              viewBox="0 0 28 32"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M2 0.5C0.895431 0.5 0 1.39543 0 2.5V4.42076C0 8.08112 2.17694 11.368 5.59249 12.7873C5.78016 14.9536 6.79357 16.9332 8.44504   18.3899C9.30831 19.1369 9.87132 20.1454 10.0965 21.2286H7.43164V24.9263H5.59249V29.5204H3.71582V31.5H24.2467V29.5204H22.4075V24.9263H20.5684V21.2286H17.9035C18.1287 20.1454 18.7292 19.1369 19.555 18.3899C21.2064 16.9706 22.2198 14.9536 22.4075 12.7873C25.7855 11.368 28 8.08112 28 4.42076V2.5C28 1.39543 27.1046 0.5 26 0.5H2ZM25.9357 2.47959V4.42076C25.9357 6.9606 24.5845 9.27634 22.37 10.5463V2.47959H25.9357ZM9.42091 24.9263V23.2455H18.5416V24.9263H9.42091ZM18.2038 16.8959C16.9276 18.0164 16.0643 19.5478 15.8391 21.2286H12.1609C11.9357 19.5478 11.0724 18.0164 9.79625 16.8959C8.40751 15.7007 7.6193 13.9452 7.6193 12.115V2.47959H20.4182V12.0776C20.3807 13.9452 19.555 15.7007 18.2038 16.8959ZM7.54424 29.5204V26.9059H20.3432V29.5204H7.54424ZM5.55496 10.5836C3.37802 9.31369 1.98928 6.9606 1.98928 4.42076V2.47959H5.55496V10.5836Z"
-                fill="#FF9123"
-              />
-            </svg>
-          </span>
-          <span
-            v-if="employee.type == 2"
-          >
-            <svg
-              width="24"
-              height="24"
-              viewBox="0 0 30 30"
+              width="18"
+              height="18"
+              viewBox="0 0 18 18"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
             >
               <path
-                d="M29.0304 10.5639L20.037 9.19515L16.0167 0.660254C15.9069 0.426573 15.7262 0.237403 15.5031 0.122418C14.9434 -0.166901 14.2633 0.074198 13.9835 0.660254L9.96319 9.19515L0.969774 10.5639C0.721827 10.6009 0.495132 10.7234 0.321568 10.9088C0.11174 11.1347 -0.00388537 11.4385 9.96959e-05 11.7536C0.00408476 12.0686 0.127354 12.3691 0.342821 12.5891L6.84968 19.2323L5.3124 28.6129C5.27635 28.8311 5.29941 29.0555 5.37896 29.2607C5.45852 29.4659 5.59138 29.6436 5.76249 29.7738C5.9336 29.9039 6.13611 29.9812 6.34705 29.997C6.55799 30.0127 6.76893 29.9663 6.95594 29.8629L15.0001 25.4341L23.0442 29.8629C23.2638 29.9853 23.5188 30.0261 23.7633 29.9816C24.3796 29.8703 24.794 29.2583 24.6877 28.6129L23.1505 19.2323L29.6573 12.5891C29.8344 12.4073 29.9513 12.1699 29.9867 11.9103C30.0824 11.2612 29.6502 10.6603 29.0304 10.5639ZM20.4124 18.2976L21.6911 26.098L15.0001 22.4185L8.30903 26.1018L9.58773 18.3013L4.17538 12.7745L11.6563 11.6358L15.0001 4.54009L18.3438 11.6358L25.8248 12.7745L20.4124 18.2976Z"
-                fill="#FF9123"
+                fill-rule="evenodd"
+                clip-rule="evenodd"
+                d="M9.35524 16.6055C8.37421 16.6055 7.57892 15.8102 7.57892 14.8291C7.57892 13.8481 8.37421 13.0528 9.35524 13.0528C10.3363 13.0528 11.1316 13.8481 11.1316 14.8291C11.1316 15.8102 10.3363 16.6055 9.35524 16.6055ZM9.35524 11.2765C8.37421 11.2765 7.57892 10.4812 7.57892 9.50016C7.57892 8.51912 8.37421 7.72383 9.35524 7.72383C10.3363 7.72383 11.1316 8.51912 11.1316 9.50016C11.1316 10.4812 10.3363 11.2765 9.35524 11.2765ZM7.57892 4.17118C7.57892 5.15222 8.37421 5.9475 9.35524 5.9475C10.3363 5.9475 11.1316 5.15222 11.1316 4.17118C11.1316 3.19015 10.3363 2.39486 9.35524 2.39486C8.37421 2.39486 7.57892 3.19015 7.57892 4.17118Z"
+                fill="#424242"
               />
             </svg>
-          </span>
-          <img
-            v-if="employee.fotolink"
-            :src="employee.fotolink"
-            class="rounded-lg mx-2 my-auto"
-            width="38"
-            height="38"
-          >
-          <div class="w-full">
-            <div class="flex items-start justify-between">
-              <p
-                class="font-normal cursor-pointer"
-                @click="clickOnGridCard(employee)"
+            <template #menu>
+              <PopMenuItem
+                icon="edit"
+                @click="clickRenameDep(value.uid)"
               >
-                {{ employee.name }}
-              </p>
-              <icon
-                :path="properties.path"
-                :width="properties.width"
-                :height="properties.height"
-                :box="properties.viewBox"
-                class="text-gray-400 cursor-pointer hover:text-gray-800"
-                @click="openEmployeeProperties(employee)"
-              />
-            </div>
-            <p class="font-light text-xs break-all">
-              {{ employee.email }}
-            </p>
-          </div>
+                Переименовать
+              </PopMenuItem>
+              <PopMenuItem
+                icon="move"
+                @click="clickMoveDep(value.uid)"
+              >
+                Переместить
+              </PopMenuItem>
+              <PopMenuItem
+                icon="delete"
+                @click="clickDeleteDep(value.uid)"
+              >
+                Удалить
+              </PopMenuItem>
+            </template>
+          </PopMenu>
         </div>
-      </template>
+      </div>
+      <div
+        class="grid gap-2 mt-3"
+        :class="{
+          'md:grid-cols-2 lg:grid-cols-4': isGridView,
+          'grid-cols-1': !isGridView,
+          'grid-cols-1': isPropertiesMobileExpanded && !isGridView,
+          'lg:grid-cols-2': isPropertiesMobileExpanded && isGridView
+        }"
+      >
+        <template
+          v-for="user in value.items"
+          :key="user.uid"
+        >
+          <ListBlocItem
+            :title="user.name"
+            :sub-title="user.email"
+            :right-icon="empIcon(user)"
+            :selected="selectedEmployee === user.email"
+            @click.stop="showUserProperties(user)"
+          >
+            <img
+              v-if="user.fotolink"
+              :src="user.fotolink"
+              class="rounded-[6px]"
+              width="20"
+              height="20"
+            >
+          </ListBlocItem>
+        </template>
+        <ListBlocAdd
+          v-if="index === 0 && isCanChangeEmployees"
+          @click.stop="clickAddEmployee"
+        />
+      </div>
     </div>
-
+    <div
+      v-if="isCanChangeDepartments"
+      class="flex items-center w-full my-[28px] text-[#7e7e80] hover:text-[#424242] cursor-pointer"
+      @click.stop="showAddDep = true"
+    >
+      <p class="font-roboto text-[17px] leading-[22px]">
+        Добавить отдел
+      </p>
+      <svg
+        class="ml-[5px]"
+        width="20"
+        height="20"
+        viewBox="0 0 20 20"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M9.935 5.00389L10 5C10.1361 5.00002 10.2674 5.04998 10.3691 5.1404C10.4708 5.23082 10.5357 5.35542 10.5517 5.49056L10.5556 5.55556V9.44444H14.4444C14.5805 9.44446 14.7119 9.49442 14.8135 9.58484C14.9152 9.67526 14.9802 9.79986 14.9961 9.935L15 10C15 10.1361 14.95 10.2674 14.8596 10.3691C14.7692 10.4708 14.6446 10.5357 14.5094 10.5517L14.4444 10.5556H10.5556V14.4444C10.5555 14.5805 10.5056 14.7119 10.4152 14.8135C10.3247 14.9152 10.2001 14.9802 10.065 14.9961L10 15C9.86393 15 9.73259 14.95 9.6309 14.8596C9.52922 14.7692 9.46425 14.6446 9.44833 14.5094L9.44444 14.4444V10.5556H5.55556C5.41948 10.5555 5.28815 10.5056 5.18646 10.4152C5.08477 10.3247 5.01981 10.2001 5.00389 10.065L5 10C5.00002 9.86393 5.04998 9.73259 5.1404 9.6309C5.23082 9.52922 5.35542 9.46425 5.49056 9.44833L5.55556 9.44444H9.44444V5.55556C9.44446 5.41948 9.49442 5.28815 9.58484 5.18646C9.67526 5.08477 9.79986 5.01981 9.935 5.00389L10 5L9.935 5.00389Z"
+          fill="currentColor"
+        />
+      </svg>
+    </div>
   </div>
-    </template>
-  </draggable>
 </template>
+
+<script>
+import Icon from '@/components/Icon.vue'
+import ListBlocItem from '@/components/Common/ListBlocItem.vue'
+import ListBlocAdd from '@/components/Common/ListBlocAdd.vue'
+import BoardModalBoxRename from '@/components/Board/BoardModalBoxRename.vue'
+import BoardModalBoxDelete from '@/components/Board/BoardModalBoxDelete.vue'
+import EmployeesModalBoxAdd from '@/components/Employees/EmployeesModalBoxAdd.vue'
+import PopMenu from '@/components/modals/PopMenu.vue'
+import PopMenuItem from '@/components/modals/PopMenuItem.vue'
+
+import * as EMPLOYEE from '@/store/actions/employees'
+import * as DEPARTMENT from '@/store/actions/departments'
+
+import gridView from '@/icons/grid-view.js'
+import listView from '@/icons/list-view.js'
+
+export default {
+  components: {
+    Icon,
+    ListBlocItem,
+    ListBlocAdd,
+    BoardModalBoxRename,
+    BoardModalBoxDelete,
+    EmployeesModalBoxAdd,
+    PopMenu,
+    PopMenuItem
+  },
+  props: {
+    employees: {
+      type: Array,
+      default: () => []
+    }
+  },
+  data () {
+    return {
+      gridView,
+      listView,
+      showAddEmployee: false,
+      selectedEmployee: '',
+      showAddDep: false,
+      showDeleteDep: false,
+      currentDepUid: '',
+      showRenameDep: false
+    }
+  },
+  computed: {
+    items () {
+      const items = this.employees.map(item => ({
+        dep: item.dep.uid === '' ? 'Сотрудники' : item.dep.name,
+        items: item.items,
+        order: item.dep?.order ?? -1,
+        uid: item.dep.uid
+      }))
+      items.sort((item1, item2) => {
+        // сначала по порядку
+        if (item1.order > item2.order) return 1
+        if (item1.order < item2.order) return -1
+        // если одинаковый, то по имени
+        if (item1.dep > item2.dep) return 1
+        if (item1.dep < item2.dep) return -1
+        return 0
+      })
+      return items
+    },
+    isGridView () {
+      return this.$store.state.isGridView
+    },
+    isPropertiesMobileExpanded () {
+      return this.$store.state.isPropertiesMobileExpanded
+    },
+    isCanChangeEmployees () {
+      const employees = this.$store.state.employees.employees
+      const user = this.$store.state.user.user
+      const userType = employees[user.current_user_uid].type
+      return userType === 1 || userType === 2
+    },
+    isCanChangeDepartments () {
+      const employees = this.$store.state.employees.employees
+      const user = this.$store.state.user.user
+      const userType = employees[user.current_user_uid].type
+      return userType === 1
+    },
+    currentDep () {
+      const item = this.employees.find(item => item.dep.uid === this.currentDepUid)
+      return item?.dep ?? null
+    },
+    currentDepName () {
+      const dep = this.currentDep
+      return dep?.name ?? ''
+    }
+  },
+  watch: {
+    isPropertiesMobileExpanded: {
+      immediate: true,
+      handler: function (val) {
+        if (!val) {
+          this.selectedEmployee = ''
+        }
+      }
+    }
+  },
+  methods: {
+    print (msg, val) {
+      console.log(msg, val)
+    },
+    updateGridView (value) {
+      this.$store.commit('basic', { key: 'isGridView', value: value })
+      localStorage.setItem('isGridView', value)
+    },
+    empIcon (user) {
+      if (user.type === 1) return 'cup'
+      if (user.type === 2) return 'star'
+      return ''
+    },
+    showUserProperties (user) {
+      if (!this.isPropertiesMobileExpanded) {
+        this.$store.dispatch('asidePropertiesToggle', true)
+      }
+
+      this.selectedEmployee = user.email
+
+      this.$store.commit('basic', { key: 'propertiesState', value: 'employee' })
+      this.$store.commit(EMPLOYEE.SELECT_EMPLOYEE, user)
+    },
+    uuidv4 () {
+      return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, (c) =>
+        (
+          c ^
+          (crypto.getRandomValues(new Uint8Array(1))[0] & (15 >> (c / 4)))
+        ).toString(16)
+      )
+    },
+    onAddNewDep (name) {
+      this.showAddDep = false
+      const title = name.trim()
+      if (title) {
+        const maxOrder =
+          this.items.reduce(
+            (maxOrder, child) =>
+              child.order > maxOrder ? child.order : maxOrder,
+            0
+          ) || 0
+        const data = {
+          uid: this.uuidv4(),
+          uid_parent: '00000000-0000-0000-0000-000000000000',
+          name: title,
+          collapsed: 0,
+          emails: [],
+          order: maxOrder + 1
+        }
+        this.$store.dispatch(DEPARTMENT.CREATE_DEPARTMENT_REQUEST, data)
+          .then((resp) => {
+            console.log('onAddNewDep', resp)
+          })
+      }
+    },
+    clickAddEmployee () {
+      const user = this.$store.state.user.user
+      if (user.days_left === 0) {
+        alert('У вас нет рабочих мест')
+        return
+      }
+      this.showAddEmployee = true
+    },
+    onAddNewEmp (name, email) {
+      this.showAddEmployee = false
+      const empName = name.trim()
+      const empEmail = email.trim()
+      if (empName && empEmail) {
+        this.$store.dispatch(EMPLOYEE.CREATE_EMPLOYEE_REQUEST, {
+          name: empName,
+          email: empEmail
+        })
+          .then((resp) => {
+            console.log('onAddNewEmp', resp)
+          })
+      }
+    },
+    lockVisibility (uid) {
+      const icon = this.$refs[`dep-icon-${uid}`][0]
+      icon.style.visibility = 'visible'
+    },
+    unlockVisibility (uid) {
+      const icon = this.$refs[`dep-icon-${uid}`][0]
+      icon.style.visibility = null
+    },
+    clickDeleteDep (uid) {
+      this.currentDepUid = uid
+      this.showDeleteDep = true
+    },
+    onDeleteDep () {
+      this.showDeleteDep = false
+      if (this.currentDepUid) {
+        this.$store.dispatch(DEPARTMENT.REMOVE_DEPARTMENT_REQUEST, this.currentDepUid)
+          .then((resp) => {
+            console.log('onDeleteDep', resp)
+          })
+      }
+    },
+    clickRenameDep (uid) {
+      this.currentDepUid = uid
+      this.showRenameDep = true
+    },
+    onRenameDep (name) {
+      this.showRenameDep = false
+      const title = name.trim()
+      if (title && this.currentDep) {
+        this.currentDep.name = title
+        this.$store.dispatch(DEPARTMENT.UPDATE_DEPARTMENT_REQUEST, this.currentDep)
+          .then((resp) => {
+            console.log('onRenameDep', resp)
+          })
+      }
+    },
+    clickMoveDep (uid) {
+      alert('clickMoveDep ' + uid)
+    }
+  }
+}
+</script>
+
+<style scoped>
+
+</style>

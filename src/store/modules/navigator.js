@@ -407,13 +407,26 @@ const mutations = {
       })
     }
   },
-  [NAVIGATOR_REMOVE_DEPARTAMENT]: (state, departament) => {
-    for (let i = 0; i < state.navigator.deps.items.length; i++) {
-      if (state.navigator.deps.items[i].uid !== departament.uid) {
-        state.navigator.deps.items.splice(i, 1)
-        //  state.navigator.deps.items.splice(state.navigator.deps.items.indexOf(department.uid), 1)
+  [NAVIGATOR_REMOVE_DEPARTAMENT]: (state, uidDepartment) => {
+    // удаляем  из new_emps
+    const indexEmps = state.navigator.new_emps.findIndex(
+      (emps) => emps.dep.uid === uidDepartment
+    )
+    if (indexEmps !== -1) {
+      const emps = state.navigator.new_emps[indexEmps]
+      const rootEmps = state.navigator.new_emps.find(
+        (emps) => emps.dep.uid === ''
+      )
+      if (rootEmps && emps) {
+        rootEmps.items.push(...emps.items)
       }
+      state.navigator.new_emps.splice(indexEmps, 1)
     }
+    // удаляем из deps
+    const indexDeps = state.navigator.deps.items.findIndex(
+      (dep) => dep.uid === uidDepartment
+    )
+    if (indexDeps !== -1) state.navigator.deps.items.splice(indexDeps, 1)
   },
   [NAVIGATOR_PUSH_PROJECT]: (state, projects) => {
     for (const project of projects) {
@@ -479,9 +492,9 @@ const mutations = {
   },
   [NAVIGATOR_PUSH_EMPLOYEE]: (state, employees) => {
     for (const employee of employees) {
-      state.navigator.new_emps[state.navigator.new_emps.length - 1].items.push(
-        employee
-      )
+      state.navigator.emps.items.push(employee)
+      const emps = state.navigator.new_emps.find((emps) => emps.uid === '')
+      emps?.items?.push(employee)
     }
   },
   [NAVIGATOR_REMOVE_PROJECT]: (state, project) => {

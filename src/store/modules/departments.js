@@ -1,4 +1,7 @@
-import { NAVIGATOR_PUSH_DEPARTAMENT } from '@/store/actions/navigator'
+import {
+  NAVIGATOR_PUSH_DEPARTAMENT,
+  NAVIGATOR_REMOVE_DEPARTAMENT
+} from '@/store/actions/navigator'
 import axios from 'axios'
 import { notify } from 'notiwind'
 import * as DEPARTMENTS from '../actions/departments'
@@ -42,6 +45,7 @@ const actions = {
       const url = process.env.VUE_APP_LEADERTASK_API + 'api/v1/dep'
       axios({ url: url, method: 'PATCH', data: data })
         .then((resp) => {
+          commit(DEPARTMENTS.PUSH_DEPARTMENT, data)
           resolve(resp)
         })
         .catch((err) => {
@@ -50,7 +54,7 @@ const actions = {
               group: 'api',
               title: 'REST API Error, please make screenshot',
               action: DEPARTMENTS.UPDATE_DEPARTMENT_REQUEST,
-              text: err.response.data
+              text: err.response?.data ?? err
             },
             15000
           )
@@ -63,6 +67,8 @@ const actions = {
       const url = process.env.VUE_APP_LEADERTASK_API + 'api/v1/dep?uid=' + uid
       axios({ url: url, method: 'DELETE' })
         .then((resp) => {
+          commit('RemoveDepartment', uid)
+          commit(NAVIGATOR_REMOVE_DEPARTAMENT, uid)
           resolve(resp)
         })
         .catch((err) => {
@@ -71,7 +77,7 @@ const actions = {
               group: 'api',
               title: 'REST API Error, please make screenshot',
               action: DEPARTMENTS.REMOVE_DEPARTMENT_REQUEST,
-              text: err.response.data
+              text: err.response?.data ?? err
             },
             15000
           )
@@ -87,6 +93,9 @@ const mutations = {
   },
   [DEPARTMENTS.SELECT_DEPARTMENT]: (state, department) => {
     state.selectedDepartment = department
+  },
+  RemoveDepartment: (state, uid) => {
+    delete state.deps[uid]
   }
 }
 

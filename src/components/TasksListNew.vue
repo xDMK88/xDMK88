@@ -31,7 +31,7 @@
   <!-- Add task input -->
   <div
     v-if="taskListSource && !DONT_SHOW_TASK_INPUT_UIDS[taskListSource.uid]"
-    class="fixed-create flex mb-1 ml-1 bg-slate-100"
+    class="fixed-create flex mb-1 ml-1"
   >
     <button
       class="bg-amber-500 px-2 rounded-[8px] text-black text-sm mr-1 hover:bg-orange-500"
@@ -73,8 +73,8 @@
       </div>
       <TaskListEdit
         ref="root"
-        bg-transperant
         v-model="createTaskText"
+        bg-transperant
         class="w-full text-black"
         placeholder="Добавить задачу"
         @keyup.enter="createTask"
@@ -132,7 +132,8 @@
        hidden -->
         <Transition>
           <div
-            class="absolute hidden group-hover:flex right-2 bg-gray-200 bg-center my-auto rounded-[8px] items-center justify-center py-0.5 px-3" style="top:25%;"
+            class="absolute group-hover:flex right-2 bg-gray-200 bg-center my-auto rounded-[8px] h-[36px] items-center justify-center py-0.5 px-3"
+            style="top:25%;"
           >
             <Icon
               :path="subtask.path"
@@ -143,14 +144,15 @@
               :height="subtask.height"
               @click.stop="addSubtask(props.node.info);"
             />
-          <!--  <Icon
+
+            <Icon
               :path="panelfocus.path"
-              class="text-gray-600 dark:text-white justify-center mr-3 cursor-pointer"
+              class="text-gray-600 dark:text-white justify-center mr-2 cursor-pointer"
               :box="panelfocus.viewBox"
-              :style="{ color: getValidForeColor(colors[props.node.info.uid_marker]?.fore_color) }"
               :width="panelfocus.width"
               :height="panelfocus.height"
-            /> -->
+              @click="changeFocus(props.node.info.uid, props.node.info.focus === 1 ? 0 : 1)"
+            />
             <!-- Task action popper -->
             <PopMenu
               placement="auto"
@@ -447,6 +449,7 @@ export default {
     const user = computed(() => store.state.user.user)
     const newConfig = computed(() => store.state.tasks.newConfig)
     const storeTasks = computed(() => store.state.tasks.newtasks)
+    const selectedTask = computed(() => store.state.tasks.selectedTask)
     const overdue = computed(() => store.state.tasks.overdue)
     const isDark = computed(() => store.state.darkMode)
     const navStack = computed(() => store.state.navbar.navStack)
@@ -894,9 +897,15 @@ export default {
         }
       )
     }
-
+    const changeFocus = (uid, value) => {
+      store.dispatch(TASK.CHANGE_TASK_FOCUS, { uid: uid, value: value }).then(
+        resp => {
+          selectedTask.value.focus = value
+        })
+    }
     return {
       escapEvent,
+      changeFocus,
       clearTaskFocus,
       editTaskName,
       navStack,
@@ -974,6 +983,11 @@ export default {
       copy,
       cut,
       bin
+    }
+  },
+  computed: {
+    isInFocus () {
+      return this.props.node.info.focus === 1
     }
   },
   created () {

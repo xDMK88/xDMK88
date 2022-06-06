@@ -1,6 +1,6 @@
 <script setup>
 import { computed } from 'vue'
-const emit = defineEmits(['update:modelValue', 'createCardMessage'])
+const emit = defineEmits(['update:modelValue', 'createCardMessage', 'createCardFile'])
 
 const props = defineProps({
   modelValue: String

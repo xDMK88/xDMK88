@@ -2078,7 +2078,7 @@ export default {
           class="btn-send-custom"
           @click="createTaskMsg"
         >
-       <!--   <svg
+          <!--   <svg
             width="24"
             height="26"
             viewBox="0 0 25 24"
@@ -2090,10 +2090,25 @@ export default {
               fill="#666666"
             />
           </svg> -->
-<svg width="32" class="mr-2" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-<rect width="32" height="32" rx="8" fill="#E0E1E3"/>
-<path d="M16 8L9 15L9.987 15.987L15.3 10.681V24.8H16.7V10.681L22.013 15.987L23 15L16 8Z" fill="#4C4C4D"/>
-</svg>
+          <svg
+            width="32"
+            class="mr-2"
+            height="32"
+            viewBox="0 0 32 32"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <rect
+              width="32"
+              height="32"
+              rx="8"
+              fill="#E0E1E3"
+            />
+            <path
+              d="M16 8L9 15L9.987 15.987L15.3 10.681V24.8H16.7V10.681L22.013 15.987L23 15L16 8Z"
+              fill="#4C4C4D"
+            />
+          </svg>
 
         </button>
       </span>

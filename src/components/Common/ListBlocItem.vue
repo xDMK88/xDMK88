@@ -1,6 +1,7 @@
 <template>
   <div
     class="flex items-center bg-white rounded-[8px] shadow hover:shadow-md px-[15px] relative h-[48px] cursor-pointer"
+    :class="{ 'border border-[#ff9123] -mx-px': selected }"
   >
     <div
       v-if="haveColor"
@@ -93,6 +94,10 @@ export default {
     rightIcon: {
       type: String,
       default: ''
+    },
+    selected: {
+      type: Boolean,
+      default: false
     }
   },
   computed: {

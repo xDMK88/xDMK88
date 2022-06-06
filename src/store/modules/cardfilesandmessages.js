@@ -50,6 +50,17 @@ const actions = {
         })
     })
   },
+  [CARD_FILES_AND_MESSAGES.FILE_REQUEST]: ({ commit, dispatch }, fileUid) => {
+    return new Promise((resolve, reject) => {
+      const url = process.env.VUE_APP_LEADERTASK_API + 'api/v1/cardsfiles/file?uid=' + fileUid
+      axios({ url: url, method: 'GET' })
+        .then(resp => {
+          resolve(resp)
+        }).catch(err => {
+          reject(err)
+        })
+    })
+  },
   [CARD_FILES_AND_MESSAGES.FETCH_FILES_AND_MESSAGES]: ({ commit, dispatch }, cardUid) => {
     commit(CARD_FILES_AND_MESSAGES.MESSAGES_REQUEST)
 

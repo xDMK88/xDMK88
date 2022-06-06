@@ -41,9 +41,9 @@ const getDefaultState = () => {
   }
 }
 
-function getAllMembersByDepartmentUID (resp, departmentUID) {
+function getAllMembersByDepartmentUID (emps, departmentUID) {
   const employeesStuck = []
-  for (const employee of resp.data.emps.items) {
+  for (const employee of emps.items) {
     if (employee.uid_dep === departmentUID) {
       employeesStuck.push(employee)
     }
@@ -338,20 +338,20 @@ const mutations = {
 
     // Merge emps to deps like new private projects
     const newEmps = []
-    for (const department of resp.data.deps.items) {
-      const dep = {
-        dep: department,
-        items: getAllMembersByDepartmentUID(resp, department.uid)
-      }
-      newEmps.push(dep)
-    }
     newEmps.push({
       dep: { uid: '', name: 'Вне отдела' },
       items: getAllMembersByDepartmentUID(
-        resp,
+        resp.data.emps,
         '00000000-0000-0000-0000-000000000000'
       )
     })
+    for (const department of resp.data.deps.items) {
+      const dep = {
+        dep: department,
+        items: getAllMembersByDepartmentUID(resp.data.emps, department.uid)
+      }
+      newEmps.push(dep)
+    }
     resp.data.new_emps = newEmps
     // Merge common projects and private projects into my own data structure
     // Array of objects where object is { dep: 'Dependency name', items: items }
@@ -383,7 +383,6 @@ const mutations = {
   },
   [NAVIGATOR_PUSH_DEPARTAMENT]: (state, departaments) => {
     for (const departament of departaments) {
-      state.navigator.deps.items.push(departament)
       if (
         departament.uid_parent ||
         departament.uid_parent === '00000000-0000-0000-0000-000000000000'
@@ -398,6 +397,14 @@ const mutations = {
           }
         })
       }
+      // добавить в new_emps
+      state.navigator.new_emps.push({
+        dep: departament,
+        items: getAllMembersByDepartmentUID(
+          state.navigator.emps,
+          departament.uid
+        )
+      })
     }
   },
   [NAVIGATOR_REMOVE_DEPARTAMENT]: (state, departament) => {

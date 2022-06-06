@@ -7,7 +7,7 @@
     <!-- Поручить -->
     <div
       v-if="taskType === 1"
-      class="w-[250px] h-[40px] bg-gray-200 hover:cursor-pointer flex items-center justify-center text-sm font-medium rounded-lg"
+      class="w-[250px] h-[40px] bg-gray-200 hover:cursor-pointer flex items-center justify-center text-sm font-medium rounded-lg mb-2"
     >
       <span> Поручить </span>
       <Icon
@@ -21,7 +21,7 @@
     <!-- Исполнитель -->
     <div
       v-else-if="taskType === 2"
-      class="w-[250px] h-[40px] bg-gray-200 hover:cursor-pointer flex items-center justify-center text-sm font-medium rounded-lg"
+      class="w-[250px] h-[40px] bg-gray-200 hover:cursor-pointer flex items-center justify-center text-sm font-medium rounded-lg mb-2"
     >
       <span> Изменить исполнителя </span>
       <Icon
@@ -53,7 +53,7 @@
     <!-- Перепоручить -->
     <div
       v-else-if="taskType === 3"
-      class="w-[250px] h-[40px] bg-gray-200 hover:cursor-pointer flex items-center justify-center text-sm font-medium rounded-lg"
+      class="w-[250px] h-[40px] bg-gray-200 hover:cursor-pointer flex items-center justify-center text-sm font-medium rounded-lg mb-2"
     >
       <span> Изменить исполнителя </span>
       <Icon
@@ -67,7 +67,7 @@
     <!-- Взять на исполнение -->
     <div
       v-else-if="taskType === 5"
-      class="w-[250px] h-[40px] bg-gray-200 hover:cursor-pointer flex items-center justify-center text-sm font-medium rounded-lg"
+      class="w-[250px] h-[40px] bg-gray-200 hover:cursor-pointer flex items-center justify-center text-sm font-medium rounded-lg mb-2"
       @click.stop="setPerformerCurrentUser"
     >
       <span> Взять на исполнение </span>

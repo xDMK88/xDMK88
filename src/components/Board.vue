@@ -46,6 +46,7 @@
       v-show="showMoveColumn"
       :show="showMoveColumn"
       :position="selectedColumnOrder"
+      :names="columnsNames"
       :count-all="usersColumnsCount"
       @cancel="showMoveColumn = false"
       @changePosition="onChangeColumnPosition"
@@ -340,6 +341,9 @@ export default {
     },
     selectedCard () {
       return this.$store.state.cards.selectedCard
+    },
+    columnsNames () {
+      return this.storeCards.filter((stage) => stage.UserStage === true).map(column => column.Name)
     }
   },
   methods: {

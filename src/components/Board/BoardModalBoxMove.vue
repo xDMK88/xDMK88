@@ -60,7 +60,7 @@
           class="cursor-pointer text-[#4c4c4d] hover:text-[#ebaa40] text-[14px] leading-[16px]"
           @click="selectPosition(pos.position)"
         >
-          Позиция: {{ pos.position + 1 }} {{ pos.current ? '(текущая)' : '' }}
+          {{ pos.position + 1 }} - {{ columnName(pos.position) }} {{ pos.current ? '(текущая)' : '' }}
         </div>
       </div>
     </div>
@@ -86,6 +86,10 @@ export default {
     show: {
       type: Boolean,
       default: false
+    },
+    names: {
+      type: Array,
+      default: () => []
     }
   },
   emits: ['changePosition', 'cancel'],
@@ -129,6 +133,9 @@ export default {
     },
     selectPosition (position) {
       this.selectedPosition = position
+    },
+    columnName (position) {
+      return this.names[position] || ''
     }
   }
 }

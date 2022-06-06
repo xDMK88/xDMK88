@@ -4,6 +4,7 @@ import { computed } from 'vue'
 const props = defineProps({
   message: Object
 })
+
 const getMessageTimeString = (dateCreate) => {
   if (!dateCreate) return ''
   // добавляем Z в конец, чтобы он посчитал что это UTC время
@@ -37,6 +38,7 @@ const FileIsImage = computed(() => ['jpg', 'png', 'jpeg', 'git', 'bmp', 'gif'].i
       :file-extension="fileExtension"
       :file-name="props.message.file_name"
       :file-date-create="getMessageTimeString(props.message.date_create)"
+      preloader-color="#FCEBEB"
     />
   </div>
 </template>

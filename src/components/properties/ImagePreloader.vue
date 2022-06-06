@@ -8,7 +8,8 @@ const props = defineProps({
   fileUid: String,
   fileName: String,
   fileExtension: String,
-  fileDateCreate: String
+  fileDateCreate: String,
+  preloaderColor: String
 })
 
 const store = useStore()
@@ -54,7 +55,8 @@ onMounted(() => {
 <template>
   <div
     v-if="!imageLoaded"
-    class="bg-[#FCEBEB] rounded-[6px] w-[170px] h-[129px] animate-pulse"
+    class="rounded-[6px] w-[170px] h-[129px] animate-pulse"
+    :style="{ 'background': props.preloaderColor }"
   />
   <img
     v-if="imageLoaded"

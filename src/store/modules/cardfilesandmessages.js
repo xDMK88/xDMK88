@@ -50,6 +50,17 @@ const actions = {
         })
     })
   },
+  [CARD_FILES_AND_MESSAGES.CREATE_FILES_REQUEST]: ({ commit, dispatch }, data) => {
+    return new Promise((resolve, reject) => {
+      const url = process.env.VUE_APP_LEADERTASK_API + '/api/v1/cardsfiles/several?uid_card=' + data.uid_card
+      axios({ url: url, method: 'POST', data: data.name })
+        .then(resp => {
+          resolve(resp)
+        }).catch(err => {
+          reject(err)
+        })
+    })
+  },
   [CARD_FILES_AND_MESSAGES.FILE_REQUEST]: ({ commit, dispatch }, fileUid) => {
     return new Promise((resolve, reject) => {
       const url = process.env.VUE_APP_LEADERTASK_API + 'api/v1/cardsfiles/file?uid=' + fileUid

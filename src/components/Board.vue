@@ -46,9 +46,19 @@
       v-show="showMoveColumn"
       :show="showMoveColumn"
       :position="selectedColumnOrder"
+      :names="columnsNames"
       :count-all="usersColumnsCount"
       @cancel="showMoveColumn = false"
       @changePosition="onChangeColumnPosition"
+    />
+    <BoardModalBoxCardMove
+      v-show="showMoveCard"
+      :show="showMoveCard"
+      :position="currentCardColumnOrder"
+      :names="columnsNames"
+      :count-all="usersColumnsCount"
+      @cancel="showMoveCard = false"
+      @changePosition="onChangeCardPosition"
     />
     <div class="flex items-start">
       <template
@@ -209,6 +219,7 @@
                 @delete="deleteCard(element)"
                 @moveSuccess="moveSuccessCard(element)"
                 @moveReject="moveRejectCard(element)"
+                @moveColumn="moveColumnCard(element)"
               />
             </template>
           </draggable>
@@ -285,6 +296,7 @@ import BoardModalBoxRename from '@/components/Board/BoardModalBoxRename.vue'
 import BoardModalBoxDelete from '@/components/Board/BoardModalBoxDelete.vue'
 import BoardModalBoxColor from '@/components/Board/BoardModalBoxColor.vue'
 import BoardModalBoxMove from '@/components/Board/BoardModalBoxMove.vue'
+import BoardModalBoxCardMove from '@/components/Board/BoardModalBoxCardMove.vue'
 import * as BOARD from '@/store/actions/boards'
 import * as CARD from '@/store/actions/cards'
 import { FETCH_FILES_AND_MESSAGES } from '@/store/actions/cardfilesandmessages'
@@ -297,6 +309,7 @@ export default {
     BoardModalBoxDelete,
     BoardModalBoxColor,
     BoardModalBoxMove,
+    BoardModalBoxCardMove,
     BoardCard,
     draggable
   },
@@ -322,10 +335,14 @@ export default {
       showMoveColumn: false,
       showDeleteCard: false,
       currentCard: null,
-      dragCardParam: null
+      dragCardParam: null,
+      showMoveCard: false
     }
   },
   computed: {
+    usersColumns () {
+      return this.storeCards.filter((stage) => stage.UserStage === true)
+    },
     selectedColumnName () {
       return this.selectedColumn?.Name ?? ''
     },
@@ -336,10 +353,17 @@ export default {
       return this.selectedColumn?.Order ?? 0
     },
     usersColumnsCount () {
-      return this.storeCards.filter((stage) => stage.UserStage === true).length
+      return this.usersColumns.length
     },
     selectedCard () {
       return this.$store.state.cards.selectedCard
+    },
+    columnsNames () {
+      return this.usersColumns.map(column => column.Name)
+    },
+    currentCardColumnOrder () {
+      if (!this.currentCard) return -1
+      return this.usersColumns.findIndex(column => column.UID === this.currentCard.uid_stage)
     }
   },
   methods: {
@@ -526,6 +550,17 @@ export default {
     },
     moveRejectCard (card) {
       this.moveCard(card.uid, 'e70af5e2-6108-4c02-9a7d-f4efee78d28c')
+    },
+    moveColumnCard (card) {
+      this.showMoveCard = true
+      this.currentCard = card
+    },
+    onChangeCardPosition (order) {
+      this.showMoveCard = false
+      const column = this.usersColumns[order]
+      if (this.currentCard && column) {
+        this.moveCard(this.currentCard.uid, column.UID)
+      }
     },
     onDeleteCard () {
       this.showDeleteCard = false

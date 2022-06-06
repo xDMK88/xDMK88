@@ -1,6 +1,6 @@
 <template>
   <ModalBox
-    title="Перемещение колонки"
+    title="Переместить карточку в колонку"
     ok="Переместить"
     @ok="onSave"
     @cancel="onCancel"
@@ -13,7 +13,7 @@
         class="flex items-center w-full rounded-[6px] bg-[#f4f5f7] border border-black/12 px-[14px] py-[11px]"
       >
         <div class="flex-1 text-[#4c4c4d] text-[14px] leading-[16px] font-medium font-roboto">
-          Позиция: {{ selectedPosition + 1 }}
+          {{ columnName(selectedPosition) || '' }}
         </div>
         <div
           class="flex-none"

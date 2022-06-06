@@ -1,14 +1,15 @@
 <template>
-  <div
-    class="group task-node flex-col items-center w-full bg-white p-2 rounded-lg dark:bg-gray-900 dark:border-gray-700 border border-gray-200 my-0.5 relative font-SfProTextNormal"
-    :style="{ backgroundColor: backgroundColor }"
-    :class="{
-      'bg-gray-200 dark:bg-gray-800':
-        isTaskComplete &&
-        task.uid_marker == '00000000-0000-0000-0000-000000000000'
-    }"
-  >
-    <div class="flex justify-between">
+<div
+  class="bg-white py-6 px-5 rounded-lg flex justify-between"
+  :style="{ backgroundColor: backgroundColor }"
+  :class="{
+    'bg-gray-200 dark:bg-gray-800':
+      isTaskComplete &&
+      task.uid_marker == '00000000-0000-0000-0000-000000000000'
+  }"
+>
+  <div class="w-1/2">
+    <div class="flex justify-between items-center">
       <!-- task info/status -->
       <div class="flex items-center">
         <TaskStatus :task="task"/>
@@ -27,178 +28,106 @@
           @dblclick.stop="editTaskName(task)"
           @keydown.enter="updateTask($event, task); this.$emit('changeValue', {_isEditable: false})"
         />
-        <Popper
-          class="items-center"
-          :class="isDark ? 'dark' : 'light'"
-          placement="bottom"
-          @click.stop="toggleTaskHoverPopper(true)"
-          @open:popper="toggleTaskHoverPopper(true)"
-          @close:popper="toggleTaskHoverPopper(false)"
-        >
-          <Icon
-            :path="taskoptions.path"
-            class="text-gray-600 dark:text-white cursor-pointer h-full ml-1"
-            :box="taskoptions.viewBox"
-            :width="taskoptions.width"
-            :style="{ color: 'gray' }"
-            :height="taskoptions.height"
-          />
-          <template #content>
-            <div class="flex flex-col">
-              <!-- performer -->
-              <span
-                v-if="task.uid_customer === user.current_user_uid"
-              >
-                <TaskPropsButtonPerform
-                  v-if="task.status !== 3 && task.type !== 4 && task.uid_customer === user.current_user_uid"
-                  :task-type="task.type"
-                  :current-user-uid="user.current_user_uid"
-                  :performer-email="task.email_performer"
-                  @changePerformer="onChangePerformer"
-                  @reAssign="onReAssignToUser"
-                />
-              </span>
-              <!-- date -->
-              <span>
-                <TaskPropsButtonSetDate
-                  :name="'Назначить срок'"
-                  :date-begin="task.date_begin"
-                  :date-end="task.date_end"
-                  :date-text="task.term_user"
-                  @changeDates="onChangeDates"
-                />
-              </span>
-              <!-- link -->
-              <span
-                @click="copyUrl(task)"
-                class="hover:cursor-pointer hover:bg-gray-100 bg-gray-50 p-2 rounded-xl text-sm"
-              >
-                Ссылка
-              </span>
-            </div>
-          </template>
-        </Popper>
-        <!-- <img
-          class="h-[32px] w-[32px] rounded-full"
-          :src="employees[task.uid_performer] ? employees[task.uid_performer].fotolink : ''"
-        />
-        <span
-          class="py-1 px-3 rounded-lg ml-1 text-white"
-          :class="task.uid_performer === user.current_user_uid ? 'bg-green-400' : 'bg-yellow-400'"
-        >
-          {{ employees[task.uid_performer] ? employees[task.uid_performer].name : '' }}
-        </span> -->
-        <!-- overdue -->
-        <!-- <span
-          v-if="task.is_overdue"
-          class="text-white py-1 px-3 rounded-full ml-1 bg-red-400"
-        >
-          Просрочено
-        </span> -->
-        <!-- <div class="flex bg-gray-200 ml-1 px-2 rounded-full"> -->
-          <!-- readed -->
-          <!-- <Icon
-            v-if="task.readed"
-            :height="doublecheck.height"
-            :width="doublecheck.width"
-            :view="doublecheck.viewbox"
-            :path="doublecheck.path"
-          />
-          <Icon
-            v-if="!task.readed"
-            :height="checkmark.height"
-            :width="checkmark.width"
-            :view="checkmark.viewbox"
-            :path="checkmark.path"
-          /> -->
-        <!-- </div> -->
       </div>
-      <!-- next -->
-      <button
-        class="bg-orange-500 py-1 px-3 rounded-full text-white mr-1 hover:bg-orange-600 bg-opacity-70 w-[200px]"
-        @click="nextTask"
+      <Popper
+        class="items-center"
+        :class="isDark ? 'dark' : 'light'"
+        placement="bottom"
+        @click.stop="toggleTaskHoverPopper(true)"
+        @open:popper="toggleTaskHoverPopper(true)"
+        @close:popper="toggleTaskHoverPopper(false)"
       >
-        Следующая задача
-      </button>
-    </div>
-    <div class="flex">
-      <div class="flex flex-col">
-        <div class="flex flex-col">
-          <article class="text-sm break-all whitespace-pre-line">
-            <span class="font-bold block">Заметки к задаче:</span>
-            <TaskPropsCommentEditor
-              :comment="task.comment"
-              :can-edit="task.uid_customer === user.current_user_uid"
-              @endChangeComment="endChangeComment"
-              @changeComment="onChangeComment"
-            />
-          </article>
-        </div>
-      </div>
-    </div>
-    <div class="flex">
-      <div class="flex justify-between w-full mt-3">
-        <div class="flex flex-col text-sm">
-          <!-- info -->
+        <Icon
+          :path="dots.path"
+          class="text-gray-600 dark:text-white cursor-pointer ml-1"
+          :box="dots.viewBox"
+          :width="dots.width"
+          :style="{ color: 'gray' }"
+          :height="dots.height"
+        />
+        <template #content>
           <div class="flex flex-col">
-            <div class="mb-1 flex items-center">
-              <span class="p-1.5 bg-white rounded-xl border-2">Заказчик:</span><span class="bg-gray-300 p-1.5 ml-1 rounded-xl text-white">{{ employees[task.uid_customer].name }}</span>
-            </div>
-            <div class="mb-1 flex items-center">
-              <span class="p-1.5 bg-white rounded-xl border-2">Исполнитель:</span><span class="p-1.5 ml-1 bg-green-400 text-white rounded-xl">{{ employees[task.uid_performer].name }}</span>
-            </div>
-            <div
-              v-if="dateClear(task.date_end) !== '1.1.1'"
-              class="mb-1 flex items-center"
+            <!-- performer -->
+            <span
+              v-if="task.uid_customer === user.current_user_uid"
             >
-              <span class="p-1.5 bg-white rounded-xl border-2">Выполнить до:</span><span class="bg-cyan-400 text-white p-1.5 ml-1 rounded-xl"> {{ dateClear(task.date_end) }}</span>
-            </div>
-            <div
-              v-show="typeof plural === 'string' && task.date_end !== '0001-01-01T00:00:00'"
-              class="mb-1 flex items-center"
+              <TaskPropsButtonPerform
+                v-if="task.status !== 3 && task.type !== 4 && task.uid_customer === user.current_user_uid"
+                :task-type="task.type"
+                :current-user-uid="user.current_user_uid"
+                :performer-email="task.email_performer"
+                @changePerformer="onChangePerformer"
+                @reAssign="onReAssignToUser"
+              />
+            </span>
+            <!-- date -->
+            <span>
+              <TaskPropsButtonSetDate
+                :name="'Назначить срок'"
+                :date-begin="task.date_begin"
+                :date-end="task.date_end"
+                :date-text="task.term_user"
+                @changeDates="onChangeDates"
+              />
+            </span>
+            <!-- link -->
+            <span
+              @click="copyUrl(task)"
+              class="hover:cursor-pointer hover:bg-gray-100 bg-gray-50 p-2 rounded-xl text-sm"
             >
-              <span class="p-1.5 bg-white rounded-xl border-2">Просрочено на:</span><span class="bg-red-500 ml-1 text-white p-1.5 rounded-xl">{{ plural }}!</span>
-            </div>
+              Ссылка
+            </span>
           </div>
-          <!-- checklist -->
-          <Checklist
-            v-if="task.checklist"
-            class="mt-3 checklist-custom"
-            :task-uid="task.uid"
-            :checklist="task.checklist"
-            :isCustomer="task.uid_customer === user.current_user_uid"
-            :task="task"
+        </template>
+      </Popper>
+    </div>
+    <div class="flex text-sm">
+      <div class="flex flex-col text-gray-500 justify-between">
+        <!-- customer -->
+        <div class="flex mb-2">
+          <span>Заказчик:</span>
+          <img
+            :src="employees[task.uid_customer] ? employees[task.uid_customer].fotolink : ''"
+            class="rounded-lg ml-1 h-[20px] w-[20px]"
           />
+          <span class="ml-1 text-black font-medium">{{ employees[task.uid_customer].name }}</span>
         </div>
-        <!-- accept/redo/decline/popper -->
+        <!-- performer -->
+        <div class="flex mb-2">
+          Исполнитель:
+          <img
+            :src="employees[task.uid_performer] ? employees[task.uid_performer].fotolink : ''"
+            class="rounded-lg ml-1 h-[20px] w-[20px]"
+          />
+          <span class="ml-1 text-black font-medium">{{ employees[task.uid_performer].name }}</span>
+        </div>
+        <!-- days -->
+        <div class="flex mb-2" v-show="dateClear(task.date_end) !== '1.1.1'">
+          Выполнить до: <span class="ml-1 text-black font-medium">{{ dateClear(task.date_end) }}</span>
+        </div>
         <div
-          class="flex flex-col min-w-[200px]"
-          v-if="task.uid_customer === user.current_user_uid || task.uid_performer === user.current_user_uid"
+          class="mb-2"
+          v-show="typeof plural === 'string' && task.date_end !== '0001-01-01T00:00:00'"
         >
-          <!-- accept -->
-          <button
-            class="bg-green-500 py-1 px-3 rounded-xl text-white mr-1 mb-1 hover:bg-green-600"
-            @click="accept"
-          >
-            {{ task.uid_customer === user.current_user_uid ? (task.uid_performer === user.current_user_uid ? 'Завершить' : 'Принять и завершить задачу') : 'Готово к сдаче'}}
-          </button>
-          <!-- redo -->
-          <button
-            class="bg-red-500 py-1 px-3 rounded-xl text-white mr-1 mb-1 hover:bg-red-600"
-            @click="reDo"
-          >
-            {{ task.uid_customer === user.current_user_uid ? (task.uid_performer === user.current_user_uid ? 'Отменить' : 'Отправить на доработку') : 'Отклонить'}}
-          </button>
-          <!-- decline -->
-          <button
-            class="bg-indigo-400 py-1 px-3 rounded-xl text-white mr-1 mb-1 hover:bg-indigo-500"
-            @click="decline"
-          >
-            Отложить
-          </button>
+          Просрочено: <span class="text-red-500 font-medium">{{ plural }}</span>
         </div>
       </div>
     </div>
+    <TaskPropsCommentEditor
+      class="border-2 border-gray-300 p-2 rounded-lg"
+      :comment="task.comment"
+      :can-edit="task.uid_customer === user.current_user_uid"
+      @endChangeComment="endChangeComment"
+      @changeComment="onChangeComment"
+    />
+    <Checklist
+      v-if="task.checklist"
+      class="mt-3 checklist-custom text-sm font-medium"
+      :task-uid="task.uid"
+      :checklist="task.checklist"
+      :isCustomer="task.uid_customer === user.current_user_uid"
+      :task="task"
+    />
     <div
       class="flex flex-col max-w-1/2 "
       :class="task.uid_marker !== '00000000-0000-0000-0000-000000000000' ? 'bg-white p-1 mt-1 rounded-lg' : ''"
@@ -227,6 +156,57 @@
       />
     </div>
   </div>
+  <!-- accept/redo/decline -->
+  <div>
+    <div
+      class="flex flex-col min-w-[200px]"
+      v-if="task.uid_customer === user.current_user_uid || task.uid_performer === user.current_user_uid"
+    >
+      <!-- accept -->
+      <button
+        class="flex items-center justify-center text-sm bg-white hover:bg-green-100 hover:bg-opacity-90 font-medium border-green-400 h-[40px] w-[250px] rounded-lg border-2 text-green-500 hover:text-black mb-2"
+        @click="accept"
+      >
+        {{ task.uid_customer === user.current_user_uid ? (task.uid_performer === user.current_user_uid ? 'Завершить' : 'Принять и завершить задачу') : 'Готово к сдаче'}}
+        <Icon
+          :path="check.path"
+          :width="check.width"
+          :height="check.height"
+          :box="check.viewBox"
+          class="ml-2"
+        />
+      </button>
+      <!-- redo -->
+      <button
+        class="flex items-center justify-center text-sm bg-gray-200 hover:bg-red-200 hover:border-2 hover:border-gray-500 hover:bg-opacity-90 font-medium h-[40px] w-[250px] rounded-lg hover:text-red-500 mb-2"
+        @click="reDo"
+      >
+        {{ task.uid_customer === user.current_user_uid ? (task.uid_performer === user.current_user_uid ? 'Отменить' : 'Отправить на доработку') : 'Отклонить'}}
+        <Icon
+          :path="close.path"
+          :width="close.width"
+          :height="close.height"
+          :box="close.viewBox"
+          class="ml-2"
+        />
+      </button>
+      <!-- decline -->
+      <button
+        class="flex items-center justify-center text-sm bg-gray-200 hover:bg-gray-300 hover:border-2 hover:border-gray-500 hover:bg-opacity-90 font-medium h-[40px] w-[250px] rounded-lg mb-2"
+        @click="decline"
+      >
+        Отложить
+        <Icon
+          :path="pauseD.path"
+          :width="pauseD.width"
+          :height="pauseD.height"
+          :box="pauseD.viewBox"
+          class="ml-2"
+        />
+      </button>
+    </div>
+  </div>
+</div>
   <!-- subtasks -->
   <!-- <div
     v-if="subTasks.length"
@@ -306,8 +286,10 @@ import * as TASK from '@/store/actions/tasks'
 import taskoptions from '@/icons/taskoptions.js'
 import file from '@/icons/file.js'
 import inaccess from '@/icons/inaccess.js'
-import checkmark from '@/icons/checkmark.js'
 import doublecheck from '@/icons/doublecheck.js'
+import close from '@/icons/doitnow/close.js'
+import dots from '@/icons/doitnow/dots.js'
+import pauseD from '@/icons/doitnow/pause.js'
 import msgs from '@/icons/msgs.js'
 import taskcomment from '@/icons/taskcomment.js'
 import checklist from '@/icons/checklist.js'
@@ -316,6 +298,7 @@ import tagIcon from '@/icons/tag.js'
 import performerRead from '@/icons/performer-read.js'
 import performerNotRead from '@/icons/performer-not-read.js'
 import taskfocus from '@/icons/taskfocus.js'
+import check from '@/icons/doitnow/check.js'
 import clock from '@/icons/clock.js'
 // Statuses icons
 import readyStatus from '@/icons/ready-status.js'
@@ -414,12 +397,16 @@ export default {
       checklistshow,
       showAllMessages,
       taskoptions,
+      close,
       statuses,
       file,
+      dots,
+      pause,
       inaccess,
       msgs,
       name,
-      checkmark,
+      pauseD,
+      check,
       doublecheck,
       taskcomment,
       checklist,
@@ -432,7 +419,6 @@ export default {
       readyStatus,
       note,
       inwork,
-      pause,
       canceled,
       improve,
       repeat
@@ -498,10 +484,12 @@ export default {
       return this.colors[this.task.uid_marker]?.uppercase ?? false
     },
     plural () {
-      const date = Math.floor((new Date(this.task.perform_time) - new Date(this.task.date_end)) / (60 * 60 * 24 * 1000))
+      const date = Math.floor((new Date() - new Date(this.task.date_end)) / (60 * 60 * 24 * 1000))
       const dayName = date % 10 === 1 && date % 100 !== 11 ? 'день' : (((date >= 2) && (date % 10 <= 4)) && (date % 100 < 10 || date % 100 >= 20) ? 'дня' : 'дней')
       if (date < 0) {
         return date
+      } else if (date === 0) {
+        return '1 день'
       } else {
         return date + ' ' + dayName
       }

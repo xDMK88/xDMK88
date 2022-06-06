@@ -3,34 +3,35 @@
     v-if="isLoading"
   />
   <div
+    class="flex items-center mb-5 justify-between"
     v-if="tasksCount"
-    class="font-normal text-lg bg-white p-2 w-2/12 rounded-xl border-2"
   >
-    В очереди задач: {{ tasksCount }}
-  </div>
-  <div
-    v-if="unreadTasks.length"
-    class="font-normal mt-10 text-lg bg-white p-2 w-6/12 rounded-xl border-2"
-  >
-    Команда ждет ваших действий по задачам. Пожалуйста, ответьте им
-  </div>
-  <div
-    v-else-if="readyTasks.length"
-    class="font-normal mt-10 text-lg bg-white p-2 w-6/12 rounded-xl border-2"
-  >
-    У вас есть готовые задачи. Примите решение, что с ними делать
-  </div>
-  <div
-    v-else-if="overdueTasks.length"
-    class="font-normal mt-10 text-lg bg-white p-2 w-6/12 rounded-xl border-2"
-  >
-    У вас есть просроченные задачи. Примите решение, что с ними делать
-  </div>
-  <div
-    v-else-if="todayTasks.length"
-    class="font-normal mt-10 text-lg bg-white p-2 w-6/12 rounded-xl border-2"
-  >
-    У вас запланированы дела на сегодня. Пора приступить к делу
+    <!-- header -->
+    <div class="flex items-center">
+      <div
+        class="font-Roboto font-medium text-sm bg-gray-200 px-2.5 py-2 w-[200px] rounded-lg flex"
+      >
+        В очереди задач: {{ tasksCount }}
+      </div>
+      <div
+        v-if="header"
+        class="font-Roboto flex ml-2 text-base"
+      >
+        {{ header }}
+      </div>
+    </div>
+    <button
+      class="border-2 border-gray-400 py-3 px-4 rounded-lg mr-5 hover:bg-gray-300 bg-opacity-70 w-[250px] font-medium justify-between flex items-center"
+      @click="nextTask"
+    >
+      Следующая задача
+      <Icon
+        :height="arrowForw.height"
+        :width="arrowForw.width"
+        :view="arrowForw.viewbox"
+        :path="arrowForw.path"
+      />
+    </button>
   </div>
   <DoitnowTask
     v-if="tasksCount"
@@ -56,6 +57,8 @@
 import * as FILES from '@/store/actions/taskfiles.js'
 import * as MSG from '@/store/actions/taskmessages.js'
 import * as TASK from '@/store/actions/tasks.js'
+import Icon from '@/components/Icon.vue'
+import arrowForw from '@/icons/arrow-forw-sm.js'
 import DoitnowEmpty from '@/components/Doitnow/DoitnowEmpty.vue'
 import DoitnowTask from '@/components/Doitnow/DoitnowTask.vue'
 import TasksSkeleton from '@/components/TasksList/TasksSkeleton.vue'
@@ -65,6 +68,7 @@ export default {
   components: {
     DoitnowEmpty,
     DoitnowTask,
+    Icon,
     TasksSkeleton
   },
   data: () => ({
@@ -81,6 +85,11 @@ export default {
     unsortedTasks: [],
     overdueReaded: []
   }),
+  setup () {
+    return {
+      arrowForw
+    }
+  },
   computed: {
     tasksCount () {
       return (
@@ -131,6 +140,21 @@ export default {
     },
     subTasks () {
       return this.$store.state.tasks.subtasks.tasks
+    },
+    header () {
+      if (this.unreadTasks.length) {
+        return 'Команда ждет ваших действий по задачам. Пожалуйста, ответьте им'
+      }
+      if (this.readyTasks.length) {
+        return 'У вас есть готовые задачи. Примите решение, что с ними делать'
+      }
+      if (this.overdueTasks.length) {
+        return 'У вас есть просроченные задачи. Примите решение, что с ними делать'
+      }
+      if (this.todayTasks.length) {
+        return 'У вас запланированы дела на сегодня. Пора приступить к делу'
+      }
+      return null
     }
   },
   watch: {

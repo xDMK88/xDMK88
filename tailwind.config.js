@@ -10,7 +10,7 @@ module.exports = {
         '-1': '-1'
       },
       fontFamily: {
-        'roboto': ['Roboto']
+        Roboto: ['Roboto']
       },
       flexGrow: {
         5: '5'

@@ -54,13 +54,6 @@
             </span>
             <!-- date -->
             <span>
-              <TaskPropsButtonSetDate
-                :name="'Назначить срок'"
-                :date-begin="task.date_begin"
-                :date-end="task.date_end"
-                :date-text="task.term_user"
-                @changeDates="onChangeDates"
-              />
             </span>
             <!-- link -->
             <span
@@ -204,6 +197,13 @@
         @changePerformer="onChangePerformer"
         @reAssign="onReAssignToUser"
       />
+      <SetDate
+        :name="'Назначить срок'"
+        :date-begin="task.date_begin"
+        :date-end="task.date_end"
+        :date-text="task.term_user"
+        @changeDates="onChangeDates"
+      />
     </div>
   </div>
 </div>
@@ -273,7 +273,7 @@ import linkify from 'vue-linkify'
 import TaskPropsCommentEditor from '@/components/TaskProperties/TaskPropsCommentEditor.vue'
 import PerformButton from '@/components/Doitnow/PerformButton.vue'
 import Popper from 'vue3-popper'
-import TaskPropsButtonSetDate from '@/components/TaskProperties/TaskPropsButtonSetDate.vue'
+import SetDate from '@/components/Doitnow/SetDate.vue'
 import Checklist from '@/components/properties/Checklist.vue'
 import TaskPropsChatMessages from '@/components/TaskProperties/TaskPropsChatMessages.vue'
 import TaskPropsInputForm from '@/components/TaskProperties/TaskPropsInputForm'
@@ -315,7 +315,7 @@ export default {
     // TaskListIconLabel,
     // TaskListTagLabel,
     Icon,
-    TaskPropsButtonSetDate,
+    SetDate,
     TaskPropsChatMessages,
     TaskPropsCommentEditor,
     PerformButton,

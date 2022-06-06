@@ -130,8 +130,6 @@
         <pre class="text-[10px] leading-none font-bold text-yellow-500">children: {{ props.node.children }}</pre>
         <pre class="text-[10px] leading-none font-bold text-yellow-500">tags: {{ props.node.tags }}</pre>
        hidden -->
-        {{props.node.info.uid}}
-        {{props.node.info.focus}}
         <Transition>
           <div
             class="absolute group-hover:flex right-2 bg-gray-200 bg-center my-auto rounded-[8px] h-[36px] items-center justify-center py-0.5 px-3" style="top:25%;"

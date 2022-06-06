@@ -51,14 +51,6 @@
             <span
               v-if="task.uid_customer === user.current_user_uid"
             >
-              <TaskPropsButtonPerform
-                v-if="task.status !== 3 && task.type !== 4 && task.uid_customer === user.current_user_uid"
-                :task-type="task.type"
-                :current-user-uid="user.current_user_uid"
-                :performer-email="task.email_performer"
-                @changePerformer="onChangePerformer"
-                @reAssign="onReAssignToUser"
-              />
             </span>
             <!-- date -->
             <span>
@@ -204,6 +196,14 @@
           class="ml-2"
         />
       </button>
+      <PerformButton
+        v-if="task.status !== 3 && task.type !== 4 && task.uid_customer === user.current_user_uid"
+        :task-type="task.type"
+        :current-user-uid="user.current_user_uid"
+        :performer-email="task.email_performer"
+        @changePerformer="onChangePerformer"
+        @reAssign="onReAssignToUser"
+      />
     </div>
   </div>
 </div>
@@ -271,7 +271,7 @@ import { copyText } from 'vue3-clipboard'
 import contenteditable from 'vue-contenteditable'
 import linkify from 'vue-linkify'
 import TaskPropsCommentEditor from '@/components/TaskProperties/TaskPropsCommentEditor.vue'
-import TaskPropsButtonPerform from '@/components/TaskProperties/TaskPropsButtonPerform.vue'
+import PerformButton from '@/components/Doitnow/PerformButton.vue'
 import Popper from 'vue3-popper'
 import TaskPropsButtonSetDate from '@/components/TaskProperties/TaskPropsButtonSetDate.vue'
 import Checklist from '@/components/properties/Checklist.vue'
@@ -315,10 +315,10 @@ export default {
     // TaskListIconLabel,
     // TaskListTagLabel,
     Icon,
-    TaskPropsButtonPerform,
     TaskPropsButtonSetDate,
     TaskPropsChatMessages,
     TaskPropsCommentEditor,
+    PerformButton,
     Checklist,
     TaskPropsInputForm,
     contenteditable,

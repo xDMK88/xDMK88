@@ -11,7 +11,7 @@ const getters = {}
 
 const actions = {
   [CARD_FILES_AND_MESSAGES.MESSAGES_REQUEST]: ({ commit, dispatch }, cardUid) => {
-    commit(CARD_FILES_AND_MESSAGES.REFRESH_MESSAGES)
+    // commit(CARD_FILES_AND_MESSAGES.REFRESH_MESSAGES)
     return new Promise((resolve, reject) => {
       commit(CARD_FILES_AND_MESSAGES.MESSAGES_REQUEST)
       const url = process.env.VUE_APP_LEADERTASK_API + 'api/v1/cardsmsgs/bycard?uid=' + cardUid
@@ -37,13 +37,35 @@ const actions = {
     })
   },
   [CARD_FILES_AND_MESSAGES.FILES_REQUEST]: ({ commit, dispatch }, cardUid) => {
-    commit(CARD_FILES_AND_MESSAGES.REFRESH_FILES)
+    // commit(CARD_FILES_AND_MESSAGES.REFRESH_FILES)
     return new Promise((resolve, reject) => {
       commit(CARD_FILES_AND_MESSAGES.FILES_REQUEST)
       const url = process.env.VUE_APP_LEADERTASK_API + 'api/v1/cardsfiles/bycard?uid=' + cardUid
       axios({ url: url, method: 'GET' })
         .then(resp => {
           commit(CARD_FILES_AND_MESSAGES.FILES_SUCCESS, resp)
+          resolve(resp)
+        }).catch(err => {
+          reject(err)
+        })
+    })
+  },
+  [CARD_FILES_AND_MESSAGES.CREATE_FILES_REQUEST]: ({ commit, dispatch }, data) => {
+    return new Promise((resolve, reject) => {
+      const url = process.env.VUE_APP_LEADERTASK_API + '/api/v1/cardsfiles/several?uid_card=' + data.uid_card
+      axios({ url: url, method: 'POST', data: data.name })
+        .then(resp => {
+          resolve(resp)
+        }).catch(err => {
+          reject(err)
+        })
+    })
+  },
+  [CARD_FILES_AND_MESSAGES.FILE_REQUEST]: ({ commit, dispatch }, fileUid) => {
+    return new Promise((resolve, reject) => {
+      const url = process.env.VUE_APP_LEADERTASK_API + 'api/v1/cardsfiles/file?uid=' + fileUid
+      axios({ url: url, method: 'GET' })
+        .then(resp => {
           resolve(resp)
         }).catch(err => {
           reject(err)

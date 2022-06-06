@@ -31,7 +31,7 @@
   <!-- Add task input -->
   <div
     v-if="taskListSource && !DONT_SHOW_TASK_INPUT_UIDS[taskListSource.uid]"
-    class="fixed-create flex mb-1 ml-1 bg-slate-100"
+    class="fixed-create flex mb-1 ml-1"
   >
     <button
       class="bg-amber-500 px-2 rounded-[8px] text-black text-sm mr-1 hover:bg-orange-500"
@@ -73,8 +73,8 @@
       </div>
       <TaskListEdit
         ref="root"
-        bg-transperant
         v-model="createTaskText"
+        bg-transperant
         class="w-full text-black"
         placeholder="Добавить задачу"
         @keyup.enter="createTask"
@@ -132,7 +132,8 @@
        hidden -->
         <Transition>
           <div
-            class="absolute group-hover:flex right-2 bg-gray-200 bg-center my-auto rounded-[8px] h-[36px] items-center justify-center py-0.5 px-3" style="top:25%;"
+            class="absolute group-hover:flex right-2 bg-gray-200 bg-center my-auto rounded-[8px] h-[36px] items-center justify-center py-0.5 px-3"
+            style="top:25%;"
           >
             <Icon
               :path="subtask.path"
@@ -955,11 +956,6 @@ export default {
       localization
     }
   },
-  computed: {
-    isInFocus () {
-      return this.props.node.info.focus === 1
-    }
-  },
   data () {
     const DONT_SHOW_TASK_INPUT_UIDS = {
       '46418722-a720-4c9e-b255-16db4e590c34': TASK.OVERDUE_TASKS_REQUEST,
@@ -987,6 +983,11 @@ export default {
       copy,
       cut,
       bin
+    }
+  },
+  computed: {
+    isInFocus () {
+      return this.props.node.info.focus === 1
     }
   },
   created () {

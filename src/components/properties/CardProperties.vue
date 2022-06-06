@@ -1,7 +1,7 @@
 <script setup>
 import { computed, ref } from 'vue'
 import { useStore } from 'vuex'
-import { CREATE_MESSAGE_REQUEST } from '@/store/actions/cardfilesandmessages'
+import { CREATE_MESSAGE_REQUEST, CREATE_FILES_REQUEST } from '@/store/actions/cardfilesandmessages'
 import { CHANGE_CARD_RESPONSIBLE_USER, CHANGE_CARD_NAME, CHANGE_CARD_COMMENT, DELETE_CARD } from '@/store/actions/cards'
 
 import CardName from '@/components/properties/CardName.vue'
@@ -51,6 +51,23 @@ const canEdit = computed(() => boards.value[selectedCard.value.uid_board].type_a
 const endChangeComment = (text) => {
   const data = { cardUid: selectedCard.value.uid, comment: text }
   store.dispatch(CHANGE_CARD_COMMENT, data)
+}
+
+const createCardFile = (event) => {
+  const files = event.target.files
+  const formData = new FormData()
+  for (let i = 0; i < files.length; i++) {
+    const file = files[i]
+    formData.append('files[' + i + ']', file)
+  }
+  const data = {
+    uid_card: selectedCard.value.uid,
+    name: formData
+  }
+  console.log(data)
+  store.dispatch(CREATE_FILES_REQUEST, data).then((resp) => {
+    console.log('files uploaded: ', resp)
+  })
 }
 
 const createCardMessage = () => {
@@ -145,6 +162,7 @@ const removeCard = () => {
       <card-message-input
         v-model="cardMessageInputValue"
         @createCardMessage="createCardMessage"
+        @createCardFile="createCardFile"
       />
     </div>
   </div>

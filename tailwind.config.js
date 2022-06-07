@@ -1,8 +1,5 @@
 module.exports = {
-  content: [
-    './public/index.html',
-    './src/**/*.{vue,js,ts,jsx,tsx}'
-  ],
+  content: ['./public/index.html', './src/**/*.{vue,js,ts,jsx,tsx}'],
   darkMode: 'class', // or 'media' or 'class'
   theme: {
     extend: {
@@ -10,7 +7,7 @@ module.exports = {
         '-1': '-1'
       },
       fontFamily: {
-        Roboto: ['Roboto']
+        roboto: ['Roboto']
       },
       flexGrow: {
         5: '5'
@@ -44,8 +41,5 @@ module.exports = {
       animation: ['hover', 'group-hover']
     }
   },
-  plugins: [
-    'postcss-nesting',
-    require('@tailwindcss/forms')
-  ]
+  plugins: ['postcss-nesting', require('@tailwindcss/forms')]
 }

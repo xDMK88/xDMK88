@@ -1,6 +1,7 @@
 <script setup>
 import { computed } from 'vue'
 import { useStore } from 'vuex'
+import { useRouter } from 'vue-router'
 import NavBar from '@/components/NavBar.vue'
 import AsideMenu from '@/components/AsideMenu.vue'
 import PropertiesRight from '@/components/PropertiesRight.vue'
@@ -12,6 +13,8 @@ import Overlay from '@/components/modals/Overlay.vue'
 import { LOCALIZATION_REQUEST } from '@/store/actions/localization'
 
 const store = useStore()
+const router = useRouter()
+const isFileRedirect = computed(() => (router.currentRoute.value.name === 'taskfile' || router.currentRoute.value.name === 'cardfile') && router.currentRoute.value.params.id)
 
 console.log('localization request', LOCALIZATION_REQUEST)
 store.dispatch(LOCALIZATION_REQUEST)
@@ -26,16 +29,20 @@ const overlayClick = () => {
 </script>
 
 <template>
-  <nav-bar />
-  <aside-menu :menu="menu" />
+  <nav-bar v-if="!isFileRedirect" />
+  <aside-menu
+    v-if="!isFileRedirect"
+    :menu="menu"
+  />
   <router-view />
   <overlay
+    v-if="!isFileRedirect"
     v-show="isAsideLgActive"
     z-index="z-30"
     @overlay-click="overlayClick"
   />
-  <properties-right />
-  <ErrorNotification />
-  <Notification />
-  <InspectorNotification />
+  <properties-right v-if="!isFileRedirect" />
+  <ErrorNotification v-if="!isFileRedirect" />
+  <Notification v-if="!isFileRedirect" />
+  <InspectorNotification v-if="!isFileRedirect" />
 </template>

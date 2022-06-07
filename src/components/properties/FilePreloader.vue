@@ -1,9 +1,11 @@
 <script setup>
 const props = defineProps({
+  fileUid: String,
   fileName: String,
   fileSize: String,
   fileDateCreate: String
 })
+const currentLocation = window.location.href
 </script>
 <template>
   <div class="flex space-x-[11px]">
@@ -24,9 +26,13 @@ const props = defineProps({
       />
     </svg>
     <div class="flex flex-col space-y-[2px]">
-      <p class="text-[#4C4C4D] text-[13px] leading-[15px] font-[700]">
+      <a
+        :href="currentLocation + 'cardfile/' + props.fileUid"
+        target="_blank"
+        class="text-[#4C4C4D] text-[13px] leading-[15px] font-[700]"
+      >
         {{ props.fileName }}
-      </p>
+      </a>
       <div class="flex justify-between items-center">
         <p class="text-[#7E7E80] text-[12px] leading-[14px] font-[400]">
           {{ props.fileSize }}

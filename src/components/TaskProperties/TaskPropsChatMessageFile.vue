@@ -6,23 +6,23 @@
       :class="{ 'flex-row-reverse': isMyFile }"
     >
       <p
-        class="text-[13px] text-[#a6a6a6] dark:text-gray-100"
+        class="text-[13px] text-[#7E7E80] font-medium dark:text-gray-100"
       >
         {{ creatorName }}
       </p>
     </div>
     <div class="w-full inline-block">
       <div
-        class="mt-1 text-sm bg-[#edf7ed] dark:bg-gray-800 dark:text-gray-100"
-        :class="{ 'bg-[#edf7ed] msg-custom-chat-left': !isMyFile, 'bg-[#fceaea] msg-custom-chat-right': isMyFile }"
+        class="mt-1 text-sm dark:bg-gray-800 dark:text-gray-100"
+        :class="{ 'bg-[#FCEBEB] msg-custom-chat-left': !isMyFile, 'bg-[#F4F5F7] msg-custom-chat-right': isMyFile }"
       >
         <FileMessage :file="file" />
-        <div class="mt-2">
+        <div class="mt-2 text-right text-[#7E7E80] font-medium mb-2">
           {{ fileName }}
         </div>
         <div
           v-if="time && size"
-          class="flex justify-between text-[12px] text-[#a8afca] dark:text-gray-300"
+          class="flex justify-between text-[11px] text-[#7E7E80] font-bold dark:text-gray-300"
         >
           <p>{{ size }}</p>
           <p>{{ time }}</p>

@@ -153,9 +153,9 @@ input:focus {outline: 0;}
   display: table-cell;
   max-width: 85%;
   min-width: 150px;
-  border-top-right-radius:10px ;
+  border-top-right-radius:12px ;
+  border-top-left-radius:12px ;
   border-bottom-right-radius:10px ;
-  border-bottom-left-radius:10px ;
 }
 .msg-custom-chat-right
 {
@@ -165,9 +165,9 @@ input:focus {outline: 0;}
   display: table-cell;
   max-width: 85%;
   min-width: 150px;
-  border-top-left-radius:10px ;
-  border-bottom-right-radius:10px ;
-  border-bottom-left-radius:10px ;
+  border-top-left-radius:12px ;
+  border-top-right-radius:12px ;
+  border-bottom-left-radius:12px ;
 }
 .chat-main
 {
@@ -1180,8 +1180,11 @@ label
 }
 .parent-name
 {
-  color:gray;
+  color:#2E9CE5;
   font-size: 13px;
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 500;
 
 }
 .item {

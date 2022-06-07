@@ -65,6 +65,7 @@ const FileIsAudio = computed(() => ['mp3', 'wav', 'm4a'].includes(fileExtension.
       v-else-if="FileIsDoc"
       :file-uid="props.message.uid"
       :file-name="props.message.file_name"
+      :file-extension="fileExtension"
       :file-size="formatBytes(props.message.file_size)"
       :file-date-create="getMessageTimeString(props.message.date_create)"
     />
@@ -72,6 +73,7 @@ const FileIsAudio = computed(() => ['mp3', 'wav', 'm4a'].includes(fileExtension.
       v-else-if="FileIsMovie"
       :file-uid="props.message.uid"
       :file-name="props.message.file_name"
+      :file-extension="fileExtension"
       :file-size="formatBytes(props.message.file_size)"
       :file-date-create="getMessageTimeString(props.message.date_create)"
     />
@@ -79,6 +81,7 @@ const FileIsAudio = computed(() => ['mp3', 'wav', 'm4a'].includes(fileExtension.
       v-else
       :file-uid="props.message.uid"
       :file-name="props.message.file_name"
+      :file-extension="fileExtension"
       :file-size="formatBytes(props.message.file_size)"
       :file-date-create="getMessageTimeString(props.message.date_create)"
     />

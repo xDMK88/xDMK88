@@ -3,6 +3,7 @@ const props = defineProps({
   fileUid: String,
   fileName: String,
   fileSize: String,
+  fileExtension: String,
   fileDateCreate: String
 })
 const currentLocation = window.location.href
@@ -28,7 +29,7 @@ const currentLocation = window.location.href
     <div class="flex flex-col space-y-[2px]">
       <a
         class="text-[#4C4C4D] text-[13px] leading-[15px] font-[700]"
-        :href="currentLocation + 'cardfile/' + props.fileUid"
+        :href="currentLocation + 'cardfile/' + props.fileUid + '?type=video&format=' + props.fileExtension"
         target="_blank"
       >
         {{ props.fileName }}

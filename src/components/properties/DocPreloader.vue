@@ -2,6 +2,7 @@
 const props = defineProps({
   fileUid: String,
   fileName: String,
+  fileExtension: String,
   fileSize: String,
   fileDateCreate: String
 })
@@ -27,7 +28,7 @@ const currentLocation = window.location.href
     </svg>
     <div class="flex flex-col space-y-[2px]">
       <a
-        :href="currentLocation + 'cardfile/' + props.fileUid"
+        :href="currentLocation + 'cardfile/' + props.fileUid + '?type=text&format=' + props.fileExtension"
         target="_blank"
         class="text-[#4C4C4D] text-[13px] leading-[15px] font-[700]"
       >

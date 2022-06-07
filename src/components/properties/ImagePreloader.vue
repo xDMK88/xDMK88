@@ -60,11 +60,12 @@ onMounted(() => {
     :style="{ 'background': props.preloaderColor }"
   />
   <a
-    :href="currentLocation + 'cardfile/' + props.fileUid"
+    :href="currentLocation + 'cardfile/' + props.fileUid + '?type=image&format=' + props.fileExtension"
     target="_blank"
   >
     <img
       v-if="imageLoaded"
+      class="rounded-[8px]"
       :src="imageSrc"
       alt="chat image "
     >

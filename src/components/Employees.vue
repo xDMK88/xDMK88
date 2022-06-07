@@ -1,8 +1,6 @@
 <template>
   <div
     class="w-full"
-    :print="print('Emps', employees)"
-    :print2="print('Emps fux', items)"
   >
     <BoardModalBoxRename
       v-show="showAddDep"
@@ -10,6 +8,15 @@
       title="Добавить отдел"
       @cancel="showAddDep = false"
       @save="onAddNewDep"
+    />
+    <EmployeesModalBoxMove
+      v-show="showMoveDep"
+      :show="showMoveDep"
+      :position="currentDepPosition"
+      :names="depNames"
+      :count-all="depNames.length"
+      @cancel="showMoveDep = false"
+      @changePosition="onChangeDepPosition"
     />
     <EmployeesModalBoxAdd
       v-show="showAddEmployee"
@@ -185,6 +192,7 @@ import ListBlocAdd from '@/components/Common/ListBlocAdd.vue'
 import BoardModalBoxRename from '@/components/Board/BoardModalBoxRename.vue'
 import BoardModalBoxDelete from '@/components/Board/BoardModalBoxDelete.vue'
 import EmployeesModalBoxAdd from '@/components/Employees/EmployeesModalBoxAdd.vue'
+import EmployeesModalBoxMove from '@/components/Employees/EmployeesModalBoxMove.vue'
 import PopMenu from '@/components/modals/PopMenu.vue'
 import PopMenuItem from '@/components/modals/PopMenuItem.vue'
 
@@ -202,6 +210,7 @@ export default {
     BoardModalBoxRename,
     BoardModalBoxDelete,
     EmployeesModalBoxAdd,
+    EmployeesModalBoxMove,
     PopMenu,
     PopMenuItem
   },
@@ -220,7 +229,8 @@ export default {
       showAddDep: false,
       showDeleteDep: false,
       currentDepUid: '',
-      showRenameDep: false
+      showRenameDep: false,
+      showMoveDep: false
     }
   },
   computed: {
@@ -228,8 +238,9 @@ export default {
       const items = this.employees.map(item => ({
         dep: item.dep.uid === '' ? 'Сотрудники' : item.dep.name,
         items: item.items,
-        order: item.dep?.order ?? -1,
-        uid: item.dep.uid
+        order: item.dep?.order ?? Number.MIN_SAFE_INTEGER,
+        uid: item.dep.uid,
+        item: item.dep.uid === '' ? null : item.dep
       }))
       items.sort((item1, item2) => {
         // сначала по порядку
@@ -260,13 +271,22 @@ export default {
       const userType = employees[user.current_user_uid].type
       return userType === 1
     },
+    allDepartments () {
+      return this.items.filter(item => item.uid !== '').map(item => item.item)
+    },
     currentDep () {
-      const item = this.employees.find(item => item.dep.uid === this.currentDepUid)
-      return item?.dep ?? null
+      const item = this.allDepartments.find(dep => dep.uid === this.currentDepUid)
+      return item || null
     },
     currentDepName () {
       const dep = this.currentDep
       return dep?.name ?? ''
+    },
+    currentDepPosition () {
+      return this.allDepartments.findIndex(dep => dep.uid === this.currentDepUid)
+    },
+    depNames () {
+      return this.allDepartments.map(dep => dep.name)
     }
   },
   watch: {
@@ -393,7 +413,31 @@ export default {
       }
     },
     clickMoveDep (uid) {
-      alert('clickMoveDep ' + uid)
+      this.currentDepUid = uid
+      this.showMoveDep = true
+    },
+    onChangeDepPosition (order) {
+      this.showMoveDep = false
+      if (this.currentDep) {
+        // вычисляем новый order
+        const index = this.currentDepPosition
+        const allDep = [...this.allDepartments]
+        const deps = allDep.splice(index, 1)
+        allDep.splice(order, 0, ...deps)
+        const prevDep = allDep[order - 1]
+        const nextDep = allDep[order + 1]
+        let newOrder = 0
+        if (!prevDep && !nextDep) newOrder = 1
+        else if (!prevDep) newOrder = nextDep.order - 1
+        else if (!nextDep) newOrder = prevDep.order + 1
+        else if (prevDep && nextDep) newOrder = (nextDep.order + prevDep.order) / 2
+        //
+        this.currentDep.order = newOrder
+        this.$store.dispatch(DEPARTMENT.UPDATE_DEPARTMENT_REQUEST, this.currentDep)
+          .then((resp) => {
+            console.log('onChangeDepPosition', resp)
+          })
+      }
     }
   }
 }

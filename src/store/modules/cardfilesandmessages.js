@@ -55,6 +55,7 @@ const actions = {
       const url = process.env.VUE_APP_LEADERTASK_API + '/api/v1/cardsfiles/several?uid_card=' + data.uid_card
       axios({ url: url, method: 'POST', data: data.name })
         .then(resp => {
+          commit(CARD_FILES_AND_MESSAGES.CREATE_FILES_REQUEST, resp)
           resolve(resp)
         }).catch(err => {
           reject(err)
@@ -94,6 +95,9 @@ const mutations = {
   },
   [CARD_FILES_AND_MESSAGES.FILES_REQUEST]: state => {
     state.status = 'loading'
+  },
+  [CARD_FILES_AND_MESSAGES.CREATE_FILES_REQUEST]: (state, resp) => {
+    state.messages = state.messages.concat(resp.data.success)
   },
   [CARD_FILES_AND_MESSAGES.MESSAGES_SUCCESS]: (state, resp) => {
     state.messages = resp.data.msgs

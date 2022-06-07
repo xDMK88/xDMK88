@@ -330,7 +330,7 @@ const openProjectProperties = (project, parentProjectUid = '') => {
   </pre>
   <nav
     v-show="isNavBarVisible"
-    class="top-0 left-0 right-0 fixed flex h-14 z-[1] bg-[#F9FAFC]
+    class="top-0 left-0 right-0 fixed flex h-14 z-[1] bg-[#f4f5f7]
     transition-position xl:ml-80 w-auto lg:items-center dark:bg-gray-800 dark:border-gray-800"
     :class="{ 'ml-80':isAsideMobileExpanded, 'mr-96':isPropertiesMobileExpanded }"
   >

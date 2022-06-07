@@ -135,6 +135,7 @@
         </div>
 
         <!-- Файл -->
+        {{ message.uid }}
         <TaskPropsChatMessageFile
           v-if="message.isFile"
           :is-my-file="message.isMyMessage"

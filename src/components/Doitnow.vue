@@ -9,27 +9,28 @@
     <!-- header -->
     <div class="flex items-center">
       <div
-        class="font-Roboto font-medium text-sm bg-gray-200 px-2.5 py-2 w-[200px] rounded-lg flex"
+        class="font-Roboto font-medium text-sm bg-gray-200 px-2.5 py-2 rounded-lg flex"
       >
         В очереди задач: {{ tasksCount }}
       </div>
-      <div
+      <!-- <div
         v-if="header"
         class="font-Roboto flex ml-2 text-base"
       >
         {{ header }}
-      </div>
+      </div> -->
     </div>
     <button
-      class="border-2 border-gray-400 py-3 px-4 rounded-lg mr-5 hover:bg-gray-300 bg-opacity-70 w-[250px] font-medium justify-between flex items-center"
+      class="border border-slate-600 py-3 px-4 rounded-lg mr-5 hover:bg-gray-300 text-sm bg-opacity-70 font-medium flex items-center justify-between"
       @click="nextTask"
     >
       Следующая задача
       <Icon
         :height="arrowForw.height"
         :width="arrowForw.width"
-        :view="arrowForw.viewbox"
+        :view="arrowForw.viewBox"
         :path="arrowForw.path"
+        class="ml-2.5"
       />
     </button>
   </div>
@@ -140,22 +141,22 @@ export default {
     },
     subTasks () {
       return this.$store.state.tasks.subtasks.tasks
-    },
-    header () {
-      if (this.unreadTasks.length) {
-        return 'Команда ждет ваших действий по задачам. Пожалуйста, ответьте им'
-      }
-      if (this.readyTasks.length) {
-        return 'У вас есть готовые задачи. Примите решение, что с ними делать'
-      }
-      if (this.overdueTasks.length) {
-        return 'У вас есть просроченные задачи. Примите решение, что с ними делать'
-      }
-      if (this.todayTasks.length) {
-        return 'У вас запланированы дела на сегодня. Пора приступить к делу'
-      }
-      return null
     }
+    // header () {
+    //   if (this.unreadTasks.length) {
+    //     return 'Команда ждет ваших действий по задачам. Пожалуйста, ответьте им'
+    //   }
+    //   if (this.readyTasks.length) {
+    //     return 'У вас есть готовые задачи. Примите решение, что с ними делать'
+    //   }
+    //   if (this.overdueTasks.length) {
+    //     return 'У вас есть просроченные задачи. Примите решение, что с ними делать'
+    //   }
+    //   if (this.todayTasks.length) {
+    //     return 'У вас запланированы дела на сегодня. Пора приступить к делу'
+    //   }
+    //   return null
+    // }
   },
   watch: {
     firstTask (newtask, oldtask) {

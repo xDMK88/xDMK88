@@ -183,7 +183,7 @@
       </div>
     </template>
     <a
-      class="w-[250px] h-[40px] bg-gray-200 hover:cursor-pointer flex items-center justify-center text-sm font-medium rounded-lg"
+      class="flex items-center justify-center text-sm bg-gray-100 hover:bg-gray-50 hover:border hover:border-gray-500 hover:bg-opacity-90 font-medium h-[40px] w-[250px] rounded-lg mb-2 hover:animate-fadeIn"
     >
       <span
         class="flex"

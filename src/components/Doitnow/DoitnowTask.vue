@@ -145,6 +145,7 @@
     </div>
     <TaskPropsCommentEditor
       v-show="task.comment.length || task.uid_customer === user.current_user_uid"
+      class="mt-3 h-[200px] scroll-style overflow-auto"
       :class="task.uid_customer === user.current_user_uid ? 'border border-gray-500 p-2 rounded-lg' : 'p-2'"
       :comment="task.comment"
       :can-edit="task.uid_customer === user.current_user_uid"
@@ -175,7 +176,7 @@
       <TaskPropsChatMessages
         v-if="taskMessages?.length"
         id="content"
-        class="mt-3"
+        class="mt-3 h-[300px] scroll-style overflow-auto"
         :task="task"
         :task-messages="taskMessages"
         :current-user-uid="user.current_user_uid"

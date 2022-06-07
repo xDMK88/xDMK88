@@ -2,7 +2,7 @@
 import { onMounted, ref } from 'vue'
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
-import { FILE_REQUEST } from '@/store/actions/taskfiles'
+import { FILES_REQUEST } from '@/store/actions/taskfiles'
 
 let intervalId = 0
 const store = useStore()
@@ -17,8 +17,8 @@ onMounted(() => {
     dots.value.length < 3 ? dots.value += '.' : dots.value = '.'
   }, 600)
 
-  store.dispatch(FILE_REQUEST, router.currentRoute.value.params.id).then((resp) => {
-    const fileBlob = new Blob([resp.data])
+  store.dispatch(FILES_REQUEST, router.currentRoute.value.params.id).then((resp) => {
+    const fileBlob = new Blob([resp.data], { type: 'image/png' })
     const urlCreator = window.URL || window.webkitURL
     const fileURL = urlCreator.createObjectURL(fileBlob)
     window.location.href = fileURL

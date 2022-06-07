@@ -73,8 +73,6 @@ const actions = {
             action: GETFILES,
             text: err.response.data
           }, 15000)
-          // Don't log out
-          // dispatch(AUTH_LOGOUT)
           reject(err)
         })
     })
@@ -290,7 +288,6 @@ const mutations = {
       file.msg = file.file_name
       state.messages.push(file)
     }
-    console.log('create fileS request', resp)
   },
   [MYFILES]: (state, myfiles) => {
     state.status = 'success'

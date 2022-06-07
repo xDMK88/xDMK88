@@ -286,7 +286,7 @@ const tarifS = () => {
         ref="calendarclass"
         v-model="navigatorMenu.currentDate"
         dot="true"
-        class="border-none px-[16px] calendar-nav-custom font-roboto"
+        class="border-none px-[16px] calendar-nav-custom"
         :style="{ backgroundColor: datePickerBG }"
         show-weeknumbers="left"
         days="-1"
@@ -332,6 +332,11 @@ const tarifS = () => {
 </template>
 
 <style>
+.vc-container.calendar-nav-custom
+{
+  @apply font-roboto;
+}
+
 .calendar-nav-custom .vc-weeknumber-content {
   @apply bg-white rounded-[6px] text-[#8b64bd] not-italic text-[11px] mt-0 mr-[2px] h-[24px] w-[24px];
 }

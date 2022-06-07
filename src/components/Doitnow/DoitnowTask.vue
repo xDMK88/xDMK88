@@ -191,12 +191,12 @@
   <!-- accept/redo/decline -->
   <div>
     <div
-      class="flex flex-col min-w-[200px]"
+      class="flex flex-col min-w-[200px] justify-items-end"
       v-if="task.uid_customer === user.current_user_uid || task.uid_performer === user.current_user_uid"
     >
       <!-- accept -->
       <button
-        class="flex items-center justify-center text-sm hover:bg-white bg-green-100 hover:bg-opacity-90 font-medium border-green-400 h-[40px] w-[250px] rounded-lg border hover:text-green-500 mb-2 hover:animate-fadeIn"
+        class="flex items-center justify-center text-sm hover:bg-white bg-green-100 hover:bg-opacity-90 font-medium border-green-400 h-[40px] rounded-lg border hover:text-green-500 mb-2 hover:animate-fadeIn"
         @click="accept"
       >
         {{ task.uid_customer === user.current_user_uid ? (task.uid_performer === user.current_user_uid ? 'Завершить' : 'Принять и завершить задачу') : 'Готово к сдаче'}}
@@ -210,10 +210,10 @@
       </button>
       <!-- redo -->
       <button
-        class="flex items-center justify-center text-sm bg-gray-100 hover:bg-red-200 hover:border hover:border-red-300 hover:bg-opacity-90 font-medium h-[40px] w-[250px] rounded-lg hover:text-red-500 mb-2 hover:animate-fadeIn"
+        class="flex items-center justify-center text-sm bg-gray-100 hover:bg-red-200 hover:border hover:border-red-300 hover:bg-opacity-90 font-medium h-[40px] rounded-lg hover:text-red-500 mb-2 hover:animate-fadeIn"
         @click="reDo"
       >
-        {{ task.uid_customer === user.current_user_uid ? (task.uid_performer === user.current_user_uid ? 'Отменить' : 'Отправить на доработку') : 'Отклонить'}}
+        <span>{{ task.uid_customer === user.current_user_uid ? (task.uid_performer === user.current_user_uid ? 'Отменить' : 'Отправить на доработку') : 'Отклонить'}}</span>
         <Icon
           :path="close.path"
           :width="close.width"
@@ -224,7 +224,7 @@
       </button>
       <!-- decline -->
       <button
-        class="flex items-center justify-center text-sm bg-gray-100 hover:bg-gray-50 hover:border hover:border-gray-500 hover:bg-opacity-90 font-medium h-[40px] w-[250px] rounded-lg mb-2 hover:animate-fadeIn"
+        class="flex items-center justify-center text-sm bg-gray-100 hover:bg-gray-50 hover:border hover:border-gray-500 hover:bg-opacity-90 font-medium h-[40px] rounded-lg mb-2 hover:animate-fadeIn"
         @click="decline"
       >
         Отложить

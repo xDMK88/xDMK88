@@ -7,7 +7,6 @@ const props = defineProps({
 
 const getMessageTimeString = (dateCreate) => {
   if (!dateCreate) return ''
-  // добавляем Z в конец, чтобы он посчитал что это UTC время
   if (dateCreate[dateCreate.length - 1] !== 'Z') {
     dateCreate += 'Z'
   }

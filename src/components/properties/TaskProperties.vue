@@ -2069,7 +2069,7 @@ export default {
         ref="taskMsgEdit"
         v-model="taskMsg"
         class="form-control mt-[7px] text-group-design task-msg overflow-auto scroll-style dark:bg-gray-800 dark:text-gray-100"
-        placeholder="Введите сообщение"
+        placeholder="Напишите сообщение..."
         rows="58"
         @input="onInputTaskMsg"
         @keydown.enter.exact.prevent="sendTaskMsg()"

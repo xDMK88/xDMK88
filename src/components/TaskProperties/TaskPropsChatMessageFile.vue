@@ -80,7 +80,7 @@ export default {
   min-height: 40px;
   display: table-cell;
   max-width: 80%;
-  min-width: 50%;
+  min-width: 70%;
   border-top-right-radius: 10px;
   border-bottom-right-radius: 10px;
   border-bottom-left-radius: 10px;
@@ -91,7 +91,7 @@ export default {
   min-height: 40px;
   display: table-cell;
   max-width: 80%;
-  min-width: 50%;
+  min-width: 70%;
   border-top-left-radius: 10px;
   border-bottom-right-radius: 10px;
   border-bottom-left-radius: 10px;

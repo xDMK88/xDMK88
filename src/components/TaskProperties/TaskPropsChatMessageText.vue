@@ -42,7 +42,7 @@
           <ChatLoader v-if="showLoader" />
           <div
             v-linkify:options="{ className: 'text-blue-600' }"
-            class="whitespace-pre-line"
+            class="whitespace-pre-line text-[#4C4C4D]"
           >
             {{ messageText }}
           </div>

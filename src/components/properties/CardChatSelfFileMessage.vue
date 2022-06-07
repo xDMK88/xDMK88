@@ -1,10 +1,23 @@
 <script setup>
 import ImagePreloader from '@/components/properties/ImagePreloader.vue'
+import AudioPreloader from '@/components/properties/AudioPreloader.vue'
+import DocPreloader from '@/components/properties/DocPreloader.vue'
+import MoviePreloader from '@/components/properties/MoviePreloader.vue'
+import FilePreloader from '@/components/properties/FilePreloader.vue'
 // import CardChatLoader from '@/components/properties/CardChatLoader.vue'
 import { computed } from 'vue'
 const props = defineProps({
   message: Object
 })
+
+const formatBytes = (bytes, decimals = 2) => {
+  if (bytes === 0) return '0 Bytes'
+  const k = 1024
+  const dm = decimals < 0 ? 0 : decimals
+  const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']
+  const i = Math.floor(Math.log(bytes) / Math.log(k))
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i]
+}
 
 const getMessageTimeString = (dateCreate) => {
   if (!dateCreate) return ''
@@ -24,10 +37,13 @@ const fileExtension = computed(() => {
   return splittedValue[splittedValue.length - 1].toLowerCase()
 })
 const FileIsImage = computed(() => ['jpg', 'png', 'jpeg', 'git', 'bmp', 'gif'].includes(fileExtension.value))
+const FileIsMovie = computed(() => ['mov', 'mp4'].includes(fileExtension.value))
+const FileIsDoc = computed(() => ['doc', 'docx', 'xls', 'xlsx', 'txt', 'pdf'].includes(fileExtension.value))
+const FileIsAudio = computed(() => ['mp3', 'wav', 'm4a'].includes(fileExtension.value))
 </script>
 <template>
   <div
-    class="bg-[#F4F5F7] py-[10px] px-[12px] rounded-t-[12px] rounded-bl-[12px] mb-[5px] float-right relative"
+    class="bg-[#F4F5F7] py-[10px] px-[12px] rounded-t-[12px] rounded-bl-[12px] mb-[5px] float-right relative max-w-[300px]"
   >
     <!--
     <card-chat-loader
@@ -42,6 +58,31 @@ const FileIsImage = computed(() => ['jpg', 'png', 'jpeg', 'git', 'bmp', 'gif'].i
       :file-name="props.message.file_name"
       :file-date-create="getMessageTimeString(props.message.date_create)"
       preloader-color="#F4F5F7"
+    />
+    <audio-preloader
+      v-else-if="FileIsAudio"
+      :file-uid="props.message.uid"
+      :file-extension="fileExtension"
+      :file-name="props.message.file_name"
+      :file-date-create="getMessageTimeString(props.message.date_create)"
+    />
+    <doc-preloader
+      v-else-if="FileIsDoc"
+      :file-name="props.message.file_name"
+      :file-size="formatBytes(props.message.file_size)"
+      :file-date-create="getMessageTimeString(props.message.date_create)"
+    />
+    <movie-preloader
+      v-else-if="FileIsMovie"
+      :file-name="props.message.file_name"
+      :file-size="formatBytes(props.message.file_size)"
+      :file-date-create="getMessageTimeString(props.message.date_create)"
+    />
+    <file-preloader
+      v-else
+      :file-name="props.message.file_name"
+      :file-size="formatBytes(props.message.file_size)"
+      :file-date-create="getMessageTimeString(props.message.date_create)"
     />
   </div>
 </template>

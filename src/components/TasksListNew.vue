@@ -31,7 +31,7 @@
   <!-- Add task input -->
   <div
     v-if="taskListSource && !DONT_SHOW_TASK_INPUT_UIDS[taskListSource.uid]"
-    class="fixed-create flex mb-1 ml-1"
+    class="fixed-create flex mb-1 ml-1 bg-[#f4f5f7]"
   >
     <button
       class="bg-amber-500 px-2 rounded-[8px] text-black text-sm mr-1 hover:bg-orange-500"
@@ -40,7 +40,7 @@
       Поручить
     </button>
     <div
-      class="flex items-center bg-gray-100 border dark:bg-gray-700 rounded-[8px] w-full"
+      class="flex items-center bg-[#FAFAFB] border dark:bg-gray-700 rounded-[8px] w-full"
     >
       <div
         class="flex items-center pl-3"
@@ -1261,6 +1261,7 @@ window.getSelection().removeAllRanges()
   position: sticky;
   top: 55px;
   z-index: 1;
+  background-color:#f4f5f7 ;
   margin-bottom: 1px;
   padding-right: 10px;
 }

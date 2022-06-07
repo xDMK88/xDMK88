@@ -118,7 +118,7 @@ const inputElClass = computed(() => {
     'dark:placeholder-gray-500',
     computedType.value === 'textarea' ? 'h-24' : 'h-10 placeholder-gray-500',
     props.borderless ? 'border-0' : 'border-2',
-    props.transparent ? 'bg-transparent' : 'bg-gray-100 dark:bg-gray-800',
+    props.transparent ? '' : 'bg-[#FAFAFB] dark:bg-gray-800',
     props.valid ? 'border-stone-500 bg-amber-50' : ''
   ]
 

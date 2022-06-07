@@ -52,7 +52,7 @@ const FileIsAudio = computed(() => ['mp3', 'wav', 'm4a'].includes(fileExtension.
       :file-extension="fileExtension"
       :file-name="props.message.file_name"
       :file-date-create="getMessageTimeString(props.message.date_create)"
-      preloader-color="#F4F5F7"
+      preloader-color="#FCEBEB"
     />
     <audio-preloader
       v-else-if="FileIsAudio"

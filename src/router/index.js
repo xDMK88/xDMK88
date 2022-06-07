@@ -1,6 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import store from '@/store'
 import Home from '@/views/Home'
+import TaskFile from '@/views/TaskFile'
+import CardFile from '@/views/CardFile'
 
 const ifNotAuthenticated = (to, from, next) => {
   if (!store.getters.isAuthenticated) {
@@ -25,8 +27,6 @@ const ifRouteNotExists = (to, from, next) => {
 
 const routes = [
   {
-    // Document title tag
-    // We combine it with defaultDocumentTitle set in `src/main.js` on router.afterEach hook
     meta: {
       title: 'Application'
     },
@@ -36,8 +36,6 @@ const routes = [
     beforeEnter: ifAuthenticated
   },
   {
-    // Document title tag
-    // We combine it with defaultDocumentTitle set in `src/main.js` on router.afterEach hook
     meta: {
       title: 'Application'
     },
@@ -47,8 +45,6 @@ const routes = [
     beforeEnter: ifAuthenticated
   },
   {
-    // Document title tag
-    // We combine it with defaultDocumentTitle set in `src/main.js` on router.afterEach hook
     meta: {
       title: 'Application'
     },
@@ -58,14 +54,30 @@ const routes = [
     beforeEnter: ifAuthenticated
   },
   {
-    // Document title tag
-    // We combine it with defaultDocumentTitle set in `src/main.js` on router.afterEach hook
     meta: {
       title: 'Application'
     },
     path: '/board/:id',
     name: 'board',
     component: Home,
+    beforeEnter: ifAuthenticated
+  },
+  {
+    meta: {
+      title: 'Task file'
+    },
+    path: '/taskfile/:id',
+    name: 'taskfile',
+    component: TaskFile,
+    beforeEnter: ifAuthenticated
+  },
+  {
+    meta: {
+      title: 'Task file'
+    },
+    path: '/cardfile/:id',
+    name: 'cardfile',
+    component: CardFile,
     beforeEnter: ifAuthenticated
   },
   {

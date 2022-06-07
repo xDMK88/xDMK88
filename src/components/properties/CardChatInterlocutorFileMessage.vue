@@ -63,18 +63,21 @@ const FileIsAudio = computed(() => ['mp3', 'wav', 'm4a'].includes(fileExtension.
     />
     <doc-preloader
       v-else-if="FileIsDoc"
+      :file-uid="props.message.uid"
       :file-name="props.message.file_name"
       :file-size="formatBytes(props.message.file_size)"
       :file-date-create="getMessageTimeString(props.message.date_create)"
     />
     <movie-preloader
       v-else-if="FileIsMovie"
+      :file-uid="props.message.uid"
       :file-name="props.message.file_name"
       :file-size="formatBytes(props.message.file_size)"
       :file-date-create="getMessageTimeString(props.message.date_create)"
     />
     <file-preloader
       v-else
+      :file-uid="props.message.uid"
       :file-name="props.message.file_name"
       :file-size="formatBytes(props.message.file_size)"
       :file-date-create="getMessageTimeString(props.message.date_create)"

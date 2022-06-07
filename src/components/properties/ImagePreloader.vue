@@ -15,6 +15,7 @@ const props = defineProps({
 const store = useStore()
 const imageLoaded = ref(false)
 const imageSrc = ref('')
+const currentLocation = window.location.href
 
 const isFileInCache = () => {
   return !!localStorage.getItem(props.fileUid)
@@ -58,14 +59,23 @@ onMounted(() => {
     class="rounded-[6px] w-[170px] h-[129px] animate-pulse"
     :style="{ 'background': props.preloaderColor }"
   />
-  <img
-    v-if="imageLoaded"
-    :src="imageSrc"
-    alt="chat image "
+  <a
+    :href="currentLocation + 'cardfile/' + props.fileUid"
+    target="_blank"
   >
-  <p class="text-[#7E7E80] font-[500] leading-[15px] text-[13px] text-right mt-[8px]">
+    <img
+      v-if="imageLoaded"
+      :src="imageSrc"
+      alt="chat image "
+    >
+  </a>
+  <a
+    :href="currentLocation + 'cardfile/' + props.fileUid"
+    target="_blank"
+    class="text-[#7E7E80] font-[500] leading-[15px] text-[13px] text-right mt-[8px]"
+  >
     {{ props.fileName }}
-  </p>
+  </a>
   <p
     class="leading-[13px] text-[11px] font-[700] text-right mt-[8px]"
     style="color: rgba(0, 0, 0, 0.4);"

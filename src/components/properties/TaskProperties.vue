@@ -1253,7 +1253,7 @@ export default {
           />
         </svg>
         <a
-          class="parent-name cursor-pointer dark:text-gray-100"
+          class="parent-name cursor-pointer dark:text-gray-100 mb-2"
           @click="gotoParentNode(selectedTask.uid_parent)"
         >
           {{ tasks[selectedTask.uid_parent].info.name }}
@@ -2002,7 +2002,7 @@ export default {
     >
     <div
       v-if="currentAnswerMessageUid"
-      class="quote-request border-l-2 border-[#e1e1e1] mt-2 h-9"
+      class="quote-request border-l-2 border-[#7E7E80] mt-2 h-9"
     >
       <div class="flex flex-row items-center">
         <div class="grow width100without20">
@@ -2018,7 +2018,7 @@ export default {
           </div>
         </div>
         <div
-          class="flex-none p-0.5"
+          class="flex-none p-0.5 relative bottom-2"
           @click="onAnswerMessage('')"
         >
           <svg
@@ -2069,7 +2069,7 @@ export default {
         ref="taskMsgEdit"
         v-model="taskMsg"
         class="form-control mt-[7px] text-group-design task-msg overflow-auto scroll-style dark:bg-gray-800 dark:text-gray-100"
-        placeholder="Введите сообщение"
+        placeholder="Напишите сообщение..."
         rows="58"
         @input="onInputTaskMsg"
         @keydown.enter.exact.prevent="sendTaskMsg()"

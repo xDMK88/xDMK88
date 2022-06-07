@@ -44,7 +44,7 @@
     >
       <div
         class="flex items-center pl-3"
-        :class="{ 'bg-gray-500 p-3 rounded-l-lg cursor-pointer': Object.keys(copiedTasks).length }"
+        :class="{ 'bg-white p-3 rounded-l-lg cursor-pointer': Object.keys(copiedTasks).length }"
         @click="pasteCopiedTasks('00000000-0000-0000-0000-000000000000')"
       >
         <svg
@@ -1039,10 +1039,10 @@ window.getSelection().removeAllRanges()
   justify-content: center;
   width: 35px;
   position: absolute;
-  left: 0px;
+  left: 0;
   cursor: pointer;
   z-index: 9;
-  top: 16px;
+  top: 18px;
 }
 
 .input-wrapper {

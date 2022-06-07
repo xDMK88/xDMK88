@@ -14,7 +14,7 @@
     <div class="w-full inline-block min-h-[40px]">
       <div
         class="group min-w-[50%] max-w-[80%] flex flex-col"
-        :class="{ 'bg-[#edf7ed] rounded-tl-[14px] rounded-tl-[14px] rounded-bl-[14px] rounded-tr-[14px] float-left': !isMyMessage, 'bg-[#fceaea] rounded-tl-[14px] rounded-tr-[14px] rounded-br-[14px] rounded-bt-[0px] float-right': isMyMessage }"
+        :class="{ 'bg-[#FCEBEB] rounded-tr-[12px] rounded-tl-[12px] rounded-br-[12px] float-left': !isMyMessage, 'bg-[#F4F5F7] rounded-tl-[12px] rounded-tr-[12px] rounded-bl-[12px] rounded-br-[0px] float-right': isMyMessage }"
       >
         <div
           v-if="quote"
@@ -74,7 +74,7 @@
               </svg>
             </div>
             <p
-              class="group-hover:hidden block"
+              class="group-hover:hidden block font-semibold"
             >
               {{ time }}
             </p>

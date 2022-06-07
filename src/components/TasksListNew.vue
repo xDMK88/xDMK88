@@ -103,7 +103,7 @@
     <template #before-input="props">
       <div
         :id="props.node.info.uid"
-        class="pl-8 group task-node mb-1 flex-col items-center w-full bg-white p-2 rounded-[8px] dark:bg-gray-900 dark:border-gray-700 relative border border-white-400"
+        class="pl-8 group task-node mb-1 flex-col items-center w-full bg-white p-2 rounded-[8px] dark:bg-gray-900 dark:border-gray-700 relative border border-white"
         :style="{ backgroundColor: getValidBackColor(colors[props.node.info.uid_marker]?.back_color) }"
         :class="{ 'bg-gray-200 dark:bg-gray-800': (props.node.info.status == 1 || props.node.info.status == 7) && props.node.info.uid_marker == '00000000-0000-0000-0000-000000000000', 'ring-0 ring-orange-400 border border-orange-400': props.node.id === lastSelectedTaskUid }"
         @keydown.esc="escapEvent"

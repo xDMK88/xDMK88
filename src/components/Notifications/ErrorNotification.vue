@@ -6,7 +6,7 @@
     position="bottom"
   >
     <div
-      class="fixed inset-x-0 bottom-0 flex items-start justify-end p-6 px-4 py-6 z-50"
+      class="fixed inset-x-0 bottom-0 flex items-start justify-end p-6 px-4 py-6 z-50 pointer-events-none"
     >
       <div class="w-full max-w-sm">
         <Notification
@@ -23,7 +23,7 @@
           <div
             v-for="notification in notifications"
             :key="notification.id"
-            class="flex w-full max-w-sm mx-auto mt-4 overflow-hidden bg-white rounded-lg shadow-md"
+            class="flex w-full max-w-sm mx-auto mt-4 overflow-hidden bg-white rounded-lg shadow-md pointer-events-auto"
           >
             <div class="flex items-center justify-center w-12 bg-red-500">
               <svg

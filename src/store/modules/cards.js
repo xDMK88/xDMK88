@@ -180,7 +180,7 @@ const actions = {
   [CARD.CHANGE_CARD_BUDGET]: ({ commit }, data) => {
     return new Promise((resolve, reject) => {
       const url = process.env.VUE_APP_LEADERTASK_API + 'api/v1/card/cost?uid=' + data.cardUid
-      axios({ url: url, method: 'PATCH', data: { cost: data.comment } })
+      axios({ url: url, method: 'PATCH', data: { cost: data.budget } })
         .then((resp) => {
           commit('ChangeCard', resp.data)
           resolve(resp)

@@ -37,7 +37,7 @@ const getMessageTimeString = (dateCreate) => {
       :src="user.foto_link"
       width="50"
       height="50"
-      class="rounded-full mr-1"
+      class="rounded-full ml-1"
     >
   </div>
   </Transition>

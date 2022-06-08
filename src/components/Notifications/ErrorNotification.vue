@@ -6,7 +6,7 @@
     position="bottom"
   >
     <div
-      class="fixed inset-x-0 bottom-0 flex items-start justify-end p-6 px-4 py-6 pointer-events-none z-50"
+      class="fixed inset-x-0 bottom-0 flex items-start justify-end p-6 px-4 py-6 z-50"
     >
       <div class="w-full max-w-sm">
         <Notification
@@ -53,7 +53,7 @@
             </div>
             <div class="flex ml-5 shrink-0">
               <button
-                class="inline-flex text-gray-400 bg-white rounded-md hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-400 m-2"
+                class="inline-flex h-5 text-gray-400 bg-white rounded-md hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-400 m-2"
                 @click="close(notification.id)"
               >
                 <span class="sr-only">Close</span>

@@ -13,7 +13,11 @@
     <div class="flex justify-between items-center mb-6">
       <!-- task info/status -->
       <div class="flex items-center">
-        <TaskStatus :task="task"/>
+        <TaskStatus
+          :inDoitnow="true"
+          @nextTask="nextTask"
+          :task="task"
+        />
         <contenteditable
           v-model="name"
           tag="div"
@@ -48,18 +52,16 @@
         />
         <template #content>
           <div class="flex flex-col">
-            <!-- performer -->
-            <span
-              v-if="task.uid_customer === user.current_user_uid"
-            >
-            </span>
-            <!-- date -->
-            <span>
-            </span>
+            <!-- date create -->
+            <div class="flex flex-col gap-[4px] px-[10px] text-[#7e7e80] text-[13px] leading-[15px] font-roboto">
+              <div class="text-[#4c4c4d] text-[14px] leading-[16px] font-medium">Дата создания:</div>
+                {{ dateClear(task.date_create) }}
+              <div class="my-[4px] flex h-px bg-[#dddddd]"/>
+            </div>
             <!-- link -->
             <span
               @click="copyUrl(task)"
-              class="hover:cursor-pointer hover:bg-gray-100 bg-gray-50 p-2 rounded-xl text-xs"
+              class="h-[30px] flex items-center gap-[10px] px-[10px] py-[6px] cursor-pointer hover:bg-[#f4f5f7] rounded-[6px] text-[#4c4c4d] text-[13px] leading-[15px] font-roboto"
             >
               Копировать как ссылку
             </span>
@@ -100,7 +102,7 @@
           Проект:
         </span>
       </div>
-      <div class="flex flex-col font-medium">
+      <div class="flex flex-col font-medium min-w-full">
         <!-- customer -->
         <div
           v-show="user.current_user_uid !== task.uid_customer && task.uid_customer !== task.uid_performer"
@@ -128,7 +130,7 @@
           class="flex mb-2"
           v-show="dateClear(task.date_end) !== '1.1.1'"
         >
-          <span class="ml-1 text-black">{{ dateClear(task.date_end) }}</span>
+          <span class="ml-1 text-black">{{ dateClearWords(task.date_end) }}</span>
         </div>
         <!-- overdue -->
         <div
@@ -142,12 +144,6 @@
           class="flex mb-2"
           v-if="projects[task.uid_project]"
         >
-          <Icon
-            :height="project.height"
-            :width="project.width"
-            :path="project.path"
-            :box="project.viewBox"
-          />
           <span class="text-black">{{ projects[task.uid_project].name }}</span>
         </div>
       </div>
@@ -161,11 +157,11 @@
       @changeComment="onChangeComment"
     />
     <Checklist
-      v-if="task.checklist"
       class="mt-3 checklist-custom font-medium"
       :task-uid="task.uid"
       :checklist="task.checklist"
       :isCustomer="task.uid_customer === user.current_user_uid"
+      :isPerformer="task.uid_performer === user.current_user_uid"
       :task="task"
     />
     <div
@@ -332,7 +328,7 @@ import TaskPropsCommentEditor from '@/components/TaskProperties/TaskPropsComment
 import PerformButton from '@/components/Doitnow/PerformButton.vue'
 import Popper from 'vue3-popper'
 import SetDate from '@/components/Doitnow/SetDate.vue'
-import Checklist from '@/components/properties/Checklist.vue'
+import Checklist from '@/components/Doitnow/Checklist.vue'
 import TaskPropsChatMessages from '@/components/TaskProperties/TaskPropsChatMessages.vue'
 import TaskPropsInputForm from '@/components/TaskProperties/TaskPropsInputForm'
 import TaskStatus from '@/components/TasksList/TaskStatus.vue'
@@ -587,6 +583,12 @@ export default {
     },
     dateClear (time) {
       return new Date(time).getDate() + '.' + (new Date(time).getMonth() + 1) + '.' + new Date(time).getFullYear()
+    },
+    dateClearWords (time) {
+      const month = new Date(time).getMonth() + 1
+      const months = [' Января ', ' Февраля ', ' Марта ', ' Апреля ', ' Мая ', ' Июня ', ' Июля ', ' Августа ', ' Сентября ', ' Октября ', ' Ноября ', ' Декабря ']
+      const date = new Date(time).getDate() + months[month - 1] + (new Date().getFullYear() === new Date(time).getUTCFullYear() ? '' : new Date(time).getUTCFullYear())
+      return date
     },
     removeTask (uid) {
       if (this.isPropertiesMobileExpanded) {

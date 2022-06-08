@@ -1041,7 +1041,7 @@ window.getSelection().removeAllRanges()
   position: absolute;
   left: 0;
   cursor: pointer;
-  z-index: 9;
+  z-index: 1;
   top: 18px;
 }
 

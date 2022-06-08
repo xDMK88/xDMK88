@@ -6,7 +6,8 @@ import CardModalBoxColor from '@/components/properties/CardModalBoxColor.vue'
 const emit = defineEmits(['onChangeCardColor', 'onChangeCardCover'])
 const props = defineProps({
   coverColor: String,
-  coverLink: String
+  coverLink: String,
+  canEdit: Boolean
 })
 const showColorCard = ref(false)
 const selectedCardColor = ref(props.coverColor)
@@ -30,7 +31,10 @@ const onChangeCardColor = (color) => {
       :src="coverLink"
       class="max-h-[91px]"
     >
-    <div class="absolute bottom-[10px] right-[10px] ">
+    <div
+      v-if="props.canEdit"
+      class="absolute bottom-[10px] right-[10px]"
+    >
       <PopMenu>
         <div
           style="border: 1px solid rgba(0, 0, 0, 0.1); background: rgba(255, 255, 255, 0.9);"
@@ -43,15 +47,15 @@ const onChangeCardColor = (color) => {
             Цвет
           </PopMenuItem>
           <PopMenuItem>
-            <label for="file-input">
+            <label for="cover-input">
               Файл
             </label>
             <input
-              id="file-input"
+              id="cover-input"
               type="file"
               accept="image/png, image/gif, image/jpeg"
               style="display: none;"
-              name="file-input"
+              name="cover-input"
               @change="$emit('onChangeCardCover', $event)"
             >
           </PopMenuItem>

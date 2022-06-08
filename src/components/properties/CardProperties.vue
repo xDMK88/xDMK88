@@ -1,8 +1,8 @@
 <script setup>
-import { computed, ref } from 'vue'
+import { computed, ref, nextTick } from 'vue'
 import { useStore } from 'vuex'
-import { CREATE_MESSAGE_REQUEST, CREATE_FILES_REQUEST } from '@/store/actions/cardfilesandmessages'
-import { CHANGE_CARD_RESPONSIBLE_USER, CHANGE_CARD_NAME, CHANGE_CARD_COMMENT, CHANGE_CARD_COLOR, CHANGE_CARD_COVER, DELETE_CARD } from '@/store/actions/cards'
+import { CREATE_MESSAGE_REQUEST, CREATE_FILES_REQUEST, ADD_MESSAGE_LOCALLY, REMOVE_MESSAGE_LOCALLY } from '@/store/actions/cardfilesandmessages'
+import { CHANGE_CARD_RESPONSIBLE_USER, CHANGE_CARD_BUDGET, CHANGE_CARD_NAME, CHANGE_CARD_COMMENT, CHANGE_CARD_COLOR, CHANGE_CARD_COVER, DELETE_CARD } from '@/store/actions/cards'
 
 import CardName from '@/components/properties/CardName.vue'
 import CardCover from '@/components/properties/CardCover.vue'
@@ -15,6 +15,7 @@ import Icon from '@/components/Icon.vue'
 import close from '@/icons/close.js'
 import TaskPropsCommentEditor from '@/components/TaskProperties/TaskPropsCommentEditor.vue'
 import BoardModalBoxDelete from '@/components/Board/BoardModalBoxDelete.vue'
+import CardModalBoxBudget from '@/components/properties/CardModalBoxBudget.vue'
 
 const store = useStore()
 const selectedCard = computed(() => store.state.cards.selectedCard)
@@ -23,6 +24,13 @@ const boards = computed(() => store.state.boards.boards)
 const employees = computed(() => store.state.employees.employees)
 const employeesByEmail = computed(() => store.state.employees.employeesByEmail)
 const cardMessages = computed(() => store.state.cardfilesandmessages.messages)
+
+const showChangeCardBudget = ref(false)
+
+const scrollDown = () => {
+  const asideRight = document.getElementById('aside-right')
+  asideRight.scroll({ top: asideRight.scrollHeight + 100000, behavior: 'smooth' })
+}
 
 const changeResponsible = (userEmail) => {
   store.dispatch(CHANGE_CARD_RESPONSIBLE_USER, { cardUid: selectedCard.value.uid, email: userEmail }).then(() => {
@@ -33,6 +41,15 @@ const changeResponsible = (userEmail) => {
 const changeName = (arg) => {
   const data = { cardUid: selectedCard.value.uid, name: arg.target.innerText }
   store.dispatch(CHANGE_CARD_NAME, data)
+}
+
+const changeCardBudget = (budget) => {
+  console.log('changing card budget: ', budget)
+  const data = { cardUid: selectedCard.value.uid, budget: budget * 100 }
+  store.dispatch(CHANGE_CARD_BUDGET, data).then((resp) => {
+    selectedCard.value.cost = resp.data.cost
+    showChangeCardBudget.value = false
+  })
 }
 
 const closeProperties = () => {
@@ -65,7 +82,9 @@ const createCardFile = (event) => {
     name: formData
   }
   console.log(data)
-  store.dispatch(CREATE_FILES_REQUEST, data)
+  store.dispatch(CREATE_FILES_REQUEST, data).then(() => {
+    scrollDown()
+  })
 }
 
 const createCardMessage = () => {
@@ -84,12 +103,20 @@ const createCardMessage = () => {
   store.dispatch(CREATE_MESSAGE_REQUEST, data).then(() => {
     selectedCard.value.has_msgs = true
     cardMessageInputValue.value = ''
+    scrollDown()
   })
 }
 
 const changeCardColor = (color) => {
-  store.dispatch(CHANGE_CARD_COLOR, { cardUid: selectedCard.value.uid, color: color }).then(() => {
+  store.dispatch(CHANGE_CARD_COLOR, { cardUid: selectedCard.value.uid, color: color }).then((resp) => {
     selectedCard.value.cover_color = color
+    selectedCard.value.cover_link = ''
+    // Replacing old cover file with new cover file
+    for (const message of resp.data.deletefiles) store.commit(REMOVE_MESSAGE_LOCALLY, message)
+    // Here I use nextTick because if we instantly start adding new files, then onMounted hook won't be triggered, MAGIC but works
+    nextTick(() => {
+      for (const message of resp.data.newfiles) store.commit(ADD_MESSAGE_LOCALLY, message)
+    })
   })
 }
 
@@ -106,7 +133,14 @@ const changeCardCover = (event) => {
   }
   console.log(data)
   store.dispatch(CHANGE_CARD_COVER, data).then((resp) => {
+    selectedCard.value.cover_color = resp.data.card.cover_color
     selectedCard.value.cover_link = resp.data.card.cover_link
+    // Replacing old cover file with new cover file
+    for (const message of resp.data.deletefiles) store.commit(REMOVE_MESSAGE_LOCALLY, message)
+    // Here I use nextTick because if we instantly start adding new files, then onMounted hook won't be triggered, MAGIC but works
+    nextTick(() => {
+      for (const message of resp.data.newfiles) store.commit(ADD_MESSAGE_LOCALLY, message)
+    })
   })
 }
 
@@ -123,6 +157,14 @@ const removeCard = () => {
     text="Вы действительно хотите удалить карточку?"
     @cancel="showDeleteCard = false"
     @yes="removeCard"
+  />
+  <CardModalBoxBudget
+    v-show="showChangeCardBudget"
+    :value="selectedCard.cost / 100"
+    :show="showChangeCardBudget"
+    title="Бюджет карточки"
+    @cancel="showChangeCardBudget = false"
+    @save="changeCardBudget"
   />
   <div class="relative min-h-screen">
     <!-- Close icon -->
@@ -141,6 +183,7 @@ const removeCard = () => {
     <card-cover
       :cover-color="selectedCard.cover_color"
       :cover-link="selectedCard.cover_link"
+      :can-edit="canEdit"
       @onChangeCardColor="changeCardColor"
       @onChangeCardCover="changeCardCover"
     />
@@ -160,9 +203,11 @@ const removeCard = () => {
       />
       <card-budget
         :budget="selectedCard.cost"
+        @click="showChangeCardBudget = true"
       />
       <card-options
         :date-create="selectedCard.date_create"
+        :can-edit="canEdit"
         @clickRemoveButton="showDeleteCard = true"
       />
     </div>

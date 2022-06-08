@@ -1,5 +1,5 @@
 <script setup>
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { visitChildren } from '@/store/helpers/functions'
 import { useStore } from 'vuex'
 import {
@@ -199,6 +199,12 @@ const openProjectProperties = (project, parentProjectUid = '') => {
   }
   store.commit(SELECT_PROJECT, project)
 }
+
+watch(navStack, (oldVal, newVal) => {
+  if (document.getElementById('control-input')) {
+    document.getElementById('control-input').value = ''
+  }
+})
 </script>
 
 <template>
@@ -211,7 +217,7 @@ const openProjectProperties = (project, parentProjectUid = '') => {
   <nav
     v-show="isNavBarVisible"
     class="top-0 left-0 right-0 fixed flex h-14 z-[10] bg-[#f4f5f7] font-['Roboto']
-    transition-position xl:ml-72 w-auto lg:items-center dark:bg-gray-800 dark:border-gray-800 z-auto"
+    transition-position xl:ml-72 w-auto lg:items-center dark:bg-gray-800 dark:border-gray-800"
     :class="{ 'ml-80':isAsideMobileExpanded, 'mr-96':isPropertiesMobileExpanded }"
   >
     <div class="flex-1 items-stretch flex h-14 py-2 pl-3">
@@ -246,7 +252,7 @@ const openProjectProperties = (project, parentProjectUid = '') => {
           :class="index === 0 ? 'text-[#7E7E80] font-medium' : index+1 === navStack.length ? 'text-[#4C4C4D] font-medium' : 'text-[#7E7E80] font-medium'"
           @click.stop="clickOnGridCard(navItem, index), closeProperties()"
         >
-          {{ navItem.name.length > 15 ? navItem.name.slice(0, 15) + '...' : (navItem.name.includes(new Date().getDate()) && navItem.value.uid === '901841d9-0016-491d-ad66-8ee42d2b496b' ? 'Сегодня' : navItem.name) }}
+          {{ navItem.name.length > 15 ? navItem.name.slice(0, 15) + '...' : (((new Date(navItem.value.param).getDate() + new Date(navItem.value.param).getMonth() + new Date(navItem.value.param).getMonth()) === (new Date().getDate() + new Date().getMonth() + new Date().getMonth()) && navItem.value.uid === '901841d9-0016-491d-ad66-8ee42d2b496b') ? 'Сегодня' : navItem.name) }}
           <Popper
             class="items-center"
             :class="isDark ? 'dark' : 'light'"

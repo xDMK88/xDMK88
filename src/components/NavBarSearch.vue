@@ -43,10 +43,9 @@ const props = defineProps({
     v-model="form.text"
     :placeholder="props.placeholder"
     borderless
-    class="pl-2"
     maxlength="100"
+    transparent
     @keyup.enter="sendSearchRequest"
   />
-  </div>
 
 </template>

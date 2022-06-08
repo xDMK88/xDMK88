@@ -154,7 +154,7 @@
     </div>
     <TaskPropsCommentEditor
       v-show="task.comment.length || task.uid_customer === user.current_user_uid"
-      class="mt-3 h-[200px] scroll-style overflow-auto"
+      class="mt-3 max-h-[200px] min-h-[50px] scroll-style overflow-auto"
       :comment="task.comment"
       :can-edit="task.uid_customer === user.current_user_uid"
       @endChangeComment="endChangeComment"

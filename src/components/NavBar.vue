@@ -330,7 +330,7 @@ const openProjectProperties = (project, parentProjectUid = '') => {
   </pre>
   <nav
     v-show="isNavBarVisible"
-    class="top-2 left-0 right-0 fixed flex h-14 z-[1] bg-[#f4f5f7]
+    class="top-0 pt-2 left-0 right-0 fixed flex h-14 z-[1] bg-[#f4f5f7] font-['Roboto']
     transition-position xl:ml-72 w-auto lg:items-center dark:bg-gray-800 dark:border-gray-800"
     :class="{ 'ml-80':isAsideMobileExpanded, 'mr-96':isPropertiesMobileExpanded }"
   >
@@ -362,7 +362,7 @@ const openProjectProperties = (project, parentProjectUid = '') => {
       >
         <span
           v-if="navItem && navItem.name"
-          class="text-[#7E7E80] dark:bg-gray-700 dark:text-gray-100 rounded-lg text-[13px] breadcrumbs"
+          class="font-['Roboto'] text-[#7E7E80] dark:bg-gray-700 dark:text-gray-100 rounded-lg text-[13px] breadcrumbs"
           :class="index === 0 ? 'text-[#7E7E80] font-medium' : index+1 === navStack.length ? 'text-[#4C4C4D] font-medium' : 'text-[#7E7E80] font-medium'"
           @click.stop="clickOnGridCard(navItem, index), closeProperties()"
         >
@@ -421,7 +421,7 @@ const openProjectProperties = (project, parentProjectUid = '') => {
         <div>
           <icon
             v-if="index !== navStack.length - 1"
-            class="ml-2 text-gray-500"
+            class="ml-2.5 mr-0.5 text-gray-500"
             :path="arrowForward.path"
             :width="6"
             :height="12"

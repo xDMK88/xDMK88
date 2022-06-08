@@ -96,7 +96,7 @@ const gotoChildren = (value) => {
 
 <template class="w-full">
   <div
-    class="grid gap-4 mt-3 ml-3"
+    class="grid gap-4 mt-3 ml-1"
     :class="{ 'md:grid-cols-2 lg:grid-cols-4': isGridView, 'grid-cols-1': !isGridView, 'grid-cols-1': isPropertiesMobileExpanded && !isGridView, 'lg:grid-cols-2': isPropertiesMobileExpanded && isGridView }"
   >
     <template
@@ -126,7 +126,7 @@ const gotoChildren = (value) => {
           <div class="flex items-center relative">
             <div
               v-if="project.children && project.children.length"
-              class="min-w-[15px] min-h-[15px] absolute rounded-full bg-gray-500 -top-2 -left-2 flex items-center justify-center"
+              class="min-w-[15px] min-h-[15px] absolute rounded-full bg-gray-500 -top-2 flex items-center justify-center"
             >
               <span
                 class="text-white text-xs"
@@ -151,7 +151,7 @@ const gotoChildren = (value) => {
               class="text-gray-500 mr-2"
             />
             <p
-              class="font-normal"
+              class="font-['Roboto'] font-['Roboto'] text-[13px] leading-[15px] font-medium"
             >
               {{ project.name }}
             </p>

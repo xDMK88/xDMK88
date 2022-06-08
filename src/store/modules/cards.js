@@ -199,6 +199,50 @@ const actions = {
         })
     })
   },
+  [CARD.CHANGE_CARD_COLOR]: ({ commit }, data) => {
+    return new Promise((resolve, reject) => {
+      const url = process.env.VUE_APP_LEADERTASK_API + 'api/v1/card/color?uid=' + data.cardUid
+      axios({ url: url, method: 'PATCH', data: { color: data.color } })
+        .then((resp) => {
+          commit('ChangeCard', resp.data.card)
+          resolve(resp)
+        })
+        .catch((err) => {
+          notify(
+            {
+              group: 'api',
+              title: 'REST API Error, please make screenshot',
+              action: CARD.CHANGE_CARD_COLOR,
+              text: err.response?.data ?? err
+            },
+            15000
+          )
+          reject(err)
+        })
+    })
+  },
+  [CARD.CHANGE_CARD_COVER]: ({ commit }, data) => {
+    return new Promise((resolve, reject) => {
+      const url = process.env.VUE_APP_LEADERTASK_API + 'api/v1/cardsfiles/cover?uid_card=' + data.cardUid
+      axios({ url: url, method: 'PATCH', data: data.file })
+        .then((resp) => {
+          commit('ChangeCard', resp.data.card)
+          resolve(resp)
+        })
+        .catch((err) => {
+          notify(
+            {
+              group: 'api',
+              title: 'REST API Error, please make screenshot',
+              action: CARD.CHANGE_CARD_COVER,
+              text: err.response?.data ?? err
+            },
+            15000
+          )
+          reject(err)
+        })
+    })
+  },
   [CARD.BOARD_CARDS_ADDSTAGE]: ({ commit, rootState }, newStage) => {
     const board = rootState.boards.boards[state.boardUid]
     const canChangeBoard = board.type_access === 1

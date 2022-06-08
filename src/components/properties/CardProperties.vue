@@ -2,7 +2,7 @@
 import { computed, ref } from 'vue'
 import { useStore } from 'vuex'
 import { CREATE_MESSAGE_REQUEST, CREATE_FILES_REQUEST } from '@/store/actions/cardfilesandmessages'
-import { CHANGE_CARD_RESPONSIBLE_USER, CHANGE_CARD_NAME, CHANGE_CARD_COMMENT, DELETE_CARD } from '@/store/actions/cards'
+import { CHANGE_CARD_RESPONSIBLE_USER, CHANGE_CARD_NAME, CHANGE_CARD_COMMENT, CHANGE_CARD_COLOR, CHANGE_CARD_COVER, DELETE_CARD } from '@/store/actions/cards'
 
 import CardName from '@/components/properties/CardName.vue'
 import CardCover from '@/components/properties/CardCover.vue'
@@ -65,9 +65,7 @@ const createCardFile = (event) => {
     name: formData
   }
   console.log(data)
-  store.dispatch(CREATE_FILES_REQUEST, data).then((resp) => {
-    console.log('files uploaded: ', resp)
-  })
+  store.dispatch(CREATE_FILES_REQUEST, data)
 }
 
 const createCardMessage = () => {
@@ -86,6 +84,29 @@ const createCardMessage = () => {
   store.dispatch(CREATE_MESSAGE_REQUEST, data).then(() => {
     selectedCard.value.has_msgs = true
     cardMessageInputValue.value = ''
+  })
+}
+
+const changeCardColor = (color) => {
+  store.dispatch(CHANGE_CARD_COLOR, { cardUid: selectedCard.value.uid, color: color }).then(() => {
+    selectedCard.value.cover_color = color
+  })
+}
+
+const changeCardCover = (event) => {
+  const files = event.target.files
+  const formData = new FormData()
+  for (let i = 0; i < files.length; i++) {
+    const file = files[i]
+    formData.append('files[' + i + ']', file)
+  }
+  const data = {
+    cardUid: selectedCard.value.uid,
+    file: formData
+  }
+  console.log(data)
+  store.dispatch(CHANGE_CARD_COVER, data).then((resp) => {
+    selectedCard.value.cover_link = resp.data.card.cover_link
   })
 }
 
@@ -120,6 +141,8 @@ const removeCard = () => {
     <card-cover
       :cover-color="selectedCard.cover_color"
       :cover-link="selectedCard.cover_link"
+      @onChangeCardColor="changeCardColor"
+      @onChangeCardCover="changeCardCover"
     />
 
     <card-name

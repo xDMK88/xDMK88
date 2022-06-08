@@ -1,6 +1,6 @@
 <template>
   <div
-    class="messages"
+    class="messages" id="content"
   >
     <div
       v-for="(message, index) in messages"
@@ -259,6 +259,8 @@ export default {
     },
     sendTaskMsg (msg) {
       this.$emit('sendTaskMsg', msg)
+      const wrapperElement = document.getElementById('content').lastElementChild
+      wrapperElement.scrollIntoView({ behavior: 'smooth' })
     },
     answerInspectorMessage (message, answerType, answer) {
       if (message.performer_answer === null) {

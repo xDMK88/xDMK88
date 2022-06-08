@@ -27,6 +27,11 @@ const cardMessages = computed(() => store.state.cardfilesandmessages.messages)
 
 const showChangeCardBudget = ref(false)
 
+const scrollDown = () => {
+  const asideRight = document.getElementById('aside-right')
+  asideRight.scroll({ top: asideRight.scrollHeight + 100000, behavior: 'smooth' })
+}
+
 const changeResponsible = (userEmail) => {
   store.dispatch(CHANGE_CARD_RESPONSIBLE_USER, { cardUid: selectedCard.value.uid, email: userEmail }).then(() => {
     selectedCard.value.user = userEmail
@@ -77,7 +82,9 @@ const createCardFile = (event) => {
     name: formData
   }
   console.log(data)
-  store.dispatch(CREATE_FILES_REQUEST, data)
+  store.dispatch(CREATE_FILES_REQUEST, data).then(() => {
+    scrollDown()
+  })
 }
 
 const createCardMessage = () => {
@@ -96,6 +103,7 @@ const createCardMessage = () => {
   store.dispatch(CREATE_MESSAGE_REQUEST, data).then(() => {
     selectedCard.value.has_msgs = true
     cardMessageInputValue.value = ''
+    scrollDown()
   })
 }
 

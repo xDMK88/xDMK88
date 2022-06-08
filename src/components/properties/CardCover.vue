@@ -47,15 +47,15 @@ const onChangeCardColor = (color) => {
             Цвет
           </PopMenuItem>
           <PopMenuItem>
-            <label for="file-input">
+            <label for="cover-input">
               Файл
             </label>
             <input
-              id="file-input"
+              id="cover-input"
               type="file"
               accept="image/png, image/gif, image/jpeg"
               style="display: none;"
-              name="file-input"
+              name="cover-input"
               @change="$emit('onChangeCardCover', $event)"
             >
           </PopMenuItem>

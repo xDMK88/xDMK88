@@ -14,7 +14,7 @@
     <div class="w-full inline-block">
       <div
         class="mt-1 text-sm dark:bg-gray-800 dark:text-gray-100"
-        :class="{ 'bg-[#FCEBEB] msg-custom-chat-left': !isMyFile, 'bg-[#F4F5F7] msg-custom-chat-right': isMyFile }"
+        :class="{ 'bg-[#FCEBEB] msg-custom-chat-left': !isMyFile, 'bg-[#F4F5F7] msg-custom-chat-right mr-2': isMyFile }"
       >
         <FileMessage :file="file" />
         <div class="mt-2 text-right text-[#7E7E80] font-medium mb-2">

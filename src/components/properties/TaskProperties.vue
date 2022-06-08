@@ -236,7 +236,6 @@ export default {
       const minutes = pad2(date.getUTCMinutes())
       const seconds = pad2(date.getUTCSeconds())
       const dateCreate = year + '-' + month + '-' + day + 'T' + hours + ':' + minutes + ':' + seconds
-
       const data = {
         uid_task: selectedTask.value.uid,
         uid_creator: user.value.current_user_uid,

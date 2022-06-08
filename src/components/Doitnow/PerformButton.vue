@@ -7,29 +7,29 @@
     <!-- Поручить -->
     <div
       v-if="taskType === 1"
-      class="w-[250px] h-[40px] bg-gray-100 hover:cursor-pointer flex items-center justify-center text-sm font-medium rounded-lg mb-2 hover:border hover:border-gray-500"
+      class="text-center w-[181px] min-h-[40px] bg-gray-100 hover:cursor-pointer flex items-center justify-center text-sm font-medium rounded-lg mb-2 hover:border hover:border-gray-500"
     >
-      <span> Поручить </span>
+      <span class="ml-8 w-[70px]"> Поручить </span>
       <Icon
         :height="change.height"
         :width="change.width"
         :box="change.viewBox"
         :path="change.path"
-        class="ml-1"
+        class="ml-8"
       />
     </div>
     <!-- Исполнитель -->
     <div
       v-else-if="taskType === 2"
-      class="w-[250px] h-[40px] bg-gray-100 hover:cursor-pointer flex items-center justify-center text-sm font-medium rounded-lg mb-2 hover:border hover:border-gray-500"
+      class="w-[181px] min-h-[40px] bg-gray-100 hover:cursor-pointer flex items-center justify-center text-sm font-medium rounded-lg mb-2 hover:border hover:border-gray-500"
     >
-      <span> Изменить исполнителя </span>
+      <span class="text-center ml-8 w-[70px]"> Изменить исполнителя </span>
       <Icon
         :height="change.height"
         :width="change.width"
         :box="change.viewBox"
         :path="change.path"
-        class="ml-1"
+        class="ml-8"
       />
       <button
         class="btn-close-popover"
@@ -53,30 +53,30 @@
     <!-- Перепоручить -->
     <div
       v-else-if="taskType === 3"
-      class="w-[250px] h-[40px] bg-gray-100 hover:cursor-pointer flex items-center justify-center text-sm font-medium rounded-lg mb-2 hover:border hover:border-gray-500"
+      class="w-[181px] min-h-[40px] bg-gray-100 hover:cursor-pointer flex items-center justify-center text-sm font-medium rounded-lg mb-2 hover:border hover:border-gray-500"
     >
-      <span> Изменить исполнителя </span>
+      <span class="text-center w-[70px] ml-8"> Изменить исполнителя </span>
       <Icon
         :height="change.height"
         :width="change.width"
         :box="change.viewBox"
         :path="change.path"
-        class="ml-1"
+        class="ml-8"
       />
     </div>
     <!-- Взять на исполнение -->
     <div
       v-else-if="taskType === 5"
-      class="w-[250px] h-[40px] bg-gray-100 hover:cursor-pointer flex items-center justify-center text-sm font-medium rounded-lg mb-2 hover:border hover:border-gray-500"
+      class="w-[181px] min-h-[40px] bg-gray-100 hover:cursor-pointer flex items-center justify-center text-sm font-medium rounded-lg mb-2 hover:border hover:border-gray-500"
       @click.stop="setPerformerCurrentUser"
     >
-      <span> Взять на исполнение </span>
+      <span class="text-center w-[70px] ml-8"> Взять на исполнение </span>
       <Icon
         :height="change.height"
         :width="change.width"
         :box="change.viewBox"
         :path="change.path"
-        class="ml-1"
+        class="ml-8"
       />
     </div>
     <template

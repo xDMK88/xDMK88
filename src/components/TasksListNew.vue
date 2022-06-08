@@ -31,7 +31,7 @@
   <!-- Add task input -->
   <div
     v-if="taskListSource && !DONT_SHOW_TASK_INPUT_UIDS[taskListSource.uid]"
-    class="fixed-create flex mb-1 ml-1 bg-[#f4f5f7]"
+    class="fixed-create flex mb-1 ml-0.5 bg-[#f4f5f7] z-10"
   >
     <button
       class="bg-amber-500 px-2 rounded-[8px] text-black text-sm mr-1 hover:bg-orange-500"

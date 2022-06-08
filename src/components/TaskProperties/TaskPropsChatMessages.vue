@@ -26,6 +26,7 @@
 
         <!-- Облачко с текстом -->
         <TaskPropsChatMessageText
+          :class="message.isMyMessage ? 'mr-2' : 'ml-2'"
           v-if="message.isMessage && !showOnlyFiles"
           :is-my-message="message.isMyMessage"
           :show-creator="isChangeCreator(index)"

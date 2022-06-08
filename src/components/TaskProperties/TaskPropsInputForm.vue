@@ -9,7 +9,7 @@
       class="сopypastefiles"
     />
     <div class="quote-request" />
-    <div class="input-group bg-gray-100 rounded-3xl">
+    <div class="input-group bg-gray-100 rounded-lg">
       <span class="input-group-addon input-group-attach dark:bg-gray-800 dark:text-gray-100">
         <div class="example-1">
           <label class="label">
@@ -46,23 +46,24 @@
         @keydown.enter.shift.exact.prevent="addNewLineTaskMsg"
         @keydown.enter.exact.prevent="sendTaskMsg"
       />
-      <span class="input-group-addon input-group-btn-send dark:bg-gray-800 dark:text-gray-100">
+      <span class="table-cell text-center rounded-[8px] items-center align-middle justify-center max-w-[15px] max-h-[30px] hover:bg-white cursor-pointer">
         <button
           type="button"
           name="btn-send"
-          class="btn-send-custom"
+          class="btn-send-custom rounded-lg bg-[#E0E1E3] p-3"
           @click="createTaskMsg"
         >
           <svg
-            width="24"
-            height="26"
-            viewBox="0 0 25 24"
+            class="m-auto"
+            width="14"
+            height="17"
+            viewBox="0 0 14 17"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
           >
             <path
-              d="M23.8021 10.5763C23.541 10.054 23.1166 9.59697 22.5617 9.33583L3.82473 0.261142C3.43302 0.0979283 3.07395 0 2.64959 0C1.63767 0 0.723669 0.58757 0.26667 1.50157C-0.0597576 2.18707 -0.0924003 2.93785 0.201385 3.65599L3.43302 11.7514L0.201385 19.8142C-0.353542 21.1852 0.331955 22.7194 1.70295 23.2743C1.99674 23.4049 2.32316 23.4701 2.68223 23.4701C3.07395 23.4701 3.46566 23.3722 3.82473 23.209L22.5943 14.1343C23.2472 13.8405 23.7042 13.2856 23.9327 12.6327C24.1612 11.9473 24.1285 11.1965 23.8021 10.5763ZM2.02938 20.5649L5.16308 12.7307H20.8969L2.94338 21.4137C2.84545 21.4463 2.74752 21.4789 2.64959 21.4789C2.38845 21.4789 2.15995 21.3157 2.06202 21.0872C1.96409 20.924 1.96409 20.7282 2.02938 20.5649ZM5.16308 10.7395L2.02938 2.90521C1.93145 2.64406 1.99674 2.35028 2.19259 2.15442C2.32316 2.02385 2.48638 1.95857 2.64959 1.95857C2.74752 1.95857 2.84545 1.99121 2.94338 2.02385L20.8969 10.7068H5.16308V10.7395Z"
-              fill="#666666"
+              d="M7 0L0 7L0.987 7.987L6.3 2.681V16.8H7.7V2.681L13.013 7.987L14 7L7 0Z"
+              fill="#4C4C4D"
             />
           </svg>
         </button>

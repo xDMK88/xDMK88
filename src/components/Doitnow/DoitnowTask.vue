@@ -69,8 +69,8 @@
     </div>
     <div class="flex text-sm text-left justify-between w-[200px]">
       <div class="flex flex-col" style="color: #7E7E80">
-        <span class="mb-2 w-[100px]">Заказчик:</span>
-        <span class="mb-2 w-[100px]">Исполнитель:</span>
+        <span v-show="user.current_user_uid !== task.uid_customer && user.current_user_uid !== task.uid_performer" class="mb-2 w-[100px]">Заказчик:</span>
+        <span v-show="user.current_user_uid !== task.uid_customer && user.current_user_uid !== task.uid_performer" class="mb-2 w-[100px]">Исполнитель:</span>
         <span
           v-show="dateClear(task.date_end) !== '1.1.1'"
           class="mb-2 w-[100px]"
@@ -92,7 +92,7 @@
       </div>
       <div class="flex flex-col font-medium">
         <!-- customer -->
-        <div class="flex mb-2">
+        <div v-show="user.current_user_uid !== task.uid_customer && user.current_user_uid !== task.uid_performer" class="flex mb-2">
           <img
             :src="employees[task.uid_customer] ? employees[task.uid_customer].fotolink : ''"
             class="rounded-lg ml-1 h-[20px] w-[20px]"
@@ -100,7 +100,7 @@
           <span class="ml-1 text-black">{{ employees[task.uid_customer].name }}</span>
         </div>
         <!-- performer -->
-        <div class="flex mb-2">
+        <div v-show="user.current_user_uid !== task.uid_customer && user.current_user_uid !== task.uid_performer" class="flex mb-2">
           <img
             :src="employees[task.uid_performer] ? employees[task.uid_performer].fotolink : ''"
             class="rounded-lg ml-1 h-[20px] w-[20px]"
@@ -212,7 +212,7 @@
         class="flex py-0.5 items-center justify-center text-sm bg-gray-100 w-[181px] hover:bg-red-200 hover:border hover:border-red-300 min-h-[40px] hover:bg-opacity-90 font-medium rounded-lg hover:text-red-500 mb-2 hover:animate-fadeIn"
         @click="reDo"
       >
-        <span class="w-[70px] text-center ml-8">{{ task.uid_customer === user.current_user_uid ? (task.uid_performer === user.current_user_uid ? 'Отменить' : 'На доработку') : 'Отклонить'}}</span>
+        <span class="ml-8 w-[70px]">{{ task.uid_customer === user.current_user_uid ? (task.uid_performer === user.current_user_uid ? 'Отменить' : 'На доработку') : 'Отклонить'}}</span>
         <Icon
           :path="close.path"
           :width="close.width"
@@ -226,7 +226,7 @@
         class="flex py-0.5 w-[181px] justify-center items-center text-sm bg-gray-100 hover:bg-gray-50 hover:border hover:border-gray-500 hover:bg-opacity-90 font-medium min-h-[40px] rounded-lg mb-2 hover:animate-fadeIn"
         @click="decline"
       >
-        <span class="w-[70px] text-center ml-8">Отложить</span>
+        <span class="ml-8 w-[70px]">Отложить</span>
         <Icon
           :path="pauseD.path"
           :width="pauseD.width"

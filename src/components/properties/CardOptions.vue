@@ -2,7 +2,7 @@
 import { computed } from 'vue'
 import PopMenu from '@/components/modals/PopMenu.vue'
 import PopMenuItem from '@/components/modals/PopMenuItem.vue'
-import PopMenuDivider from '@/components/modals/PopMenuDivider.vue'
+import PopMenuHeader from '@/components/modals/PopMenuHeader.vue'
 defineEmits(['clickRemoveButton'])
 const props = defineProps({
   dateCreate: String,
@@ -40,13 +40,11 @@ const cardDateCreate = computed(() => {
         </svg>
       </div>
       <template #menu>
-        <p class="text-[#4C4C4D] font-[500] text-[14px] leading-[16px] px-[10px]">
-          Дата создания:
-        </p>
-        <p class="font-[400] text-[13px] leading-[15px] text-[#7E7E80] px-[10px] my-[4px]">
+        <PopMenuHeader
+          title="Дата создания:"
+        >
           {{ cardDateCreate }}
-        </p>
-        <PopMenuDivider />
+        </PopMenuHeader>
         <PopMenuItem>
           Показать только файлы
         </PopMenuItem>

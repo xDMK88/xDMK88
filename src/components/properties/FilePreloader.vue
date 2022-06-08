@@ -1,11 +1,31 @@
 <script setup>
+import { ref, nextTick } from 'vue'
+import { useStore } from 'vuex'
+import { FILE_REQUEST } from '@/store/actions/cardfilesandmessages'
 const props = defineProps({
   fileUid: String,
   fileName: String,
   fileSize: String,
   fileDateCreate: String
 })
-const currentLocation = window.location.href
+
+const store = useStore()
+const fileURL = ref('')
+const fileIsDownloaded = ref(false)
+const fileLink = ref(null)
+
+const loadFileFromInternet = () => {
+  store.dispatch(FILE_REQUEST, props.fileUid).then((resp) => {
+    const imageBlob = new Blob([resp.data], { type: 'text/plain' })
+    const urlCreator = window.URL || window.webkitURL
+    fileURL.value = urlCreator.createObjectURL(imageBlob)
+    fileIsDownloaded.value = true
+    nextTick(() => {
+      fileLink.value.click()
+    })
+  })
+}
+
 </script>
 <template>
   <div class="flex space-x-[11px]">
@@ -26,9 +46,19 @@ const currentLocation = window.location.href
       />
     </svg>
     <div class="flex flex-col space-y-[2px]">
+      <p
+        v-if="!fileIsDownloaded"
+        class="text-[#4C4C4D] text-[13px] leading-[15px] font-[700] cursor-pointer"
+        @click.stop="loadFileFromInternet"
+      >
+        {{ props.fileName }}
+      </p>
       <a
-        :href="currentLocation + 'cardfile/' + props.fileUid"
+        v-if="fileIsDownloaded"
+        ref="fileLink"
+        :href="fileURL"
         target="_blank"
+        :download="props.fileName"
         class="text-[#4C4C4D] text-[13px] leading-[15px] font-[700]"
       >
         {{ props.fileName }}

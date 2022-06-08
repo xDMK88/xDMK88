@@ -15,7 +15,6 @@ const props = defineProps({
 const store = useStore()
 const imageLoaded = ref(false)
 const imageSrc = ref('')
-const currentLocation = window.location.href
 
 const isFileInCache = () => {
   return !!localStorage.getItem(props.fileUid)
@@ -60,7 +59,7 @@ onMounted(() => {
     :style="{ 'background': props.preloaderColor }"
   />
   <a
-    :href="currentLocation + 'cardfile/' + props.fileUid + '?type=image&format=' + props.fileExtension"
+    :href="imageSrc"
     target="_blank"
   >
     <img
@@ -71,7 +70,7 @@ onMounted(() => {
     >
   </a>
   <a
-    :href="currentLocation + 'cardfile/' + props.fileUid"
+    :href="imageSrc"
     target="_blank"
     class="text-[#7E7E80] font-[500] leading-[15px] text-[13px] text-right mt-[8px]"
   >

@@ -321,7 +321,9 @@ const openProjectProperties = (project, parentProjectUid = '') => {
 }
 
 watch(navStack, (oldVal, newVal) => {
-  document.getElementById('control-input').value = ''
+  if (document.getElementById('control-input')) {
+    document.getElementById('control-input').value = ''
+  }
 })
 </script>
 

@@ -2,7 +2,7 @@
 import { computed, ref, nextTick } from 'vue'
 import { useStore } from 'vuex'
 import { CREATE_MESSAGE_REQUEST, CREATE_FILES_REQUEST, ADD_MESSAGE_LOCALLY, REMOVE_MESSAGE_LOCALLY } from '@/store/actions/cardfilesandmessages'
-import { CHANGE_CARD_RESPONSIBLE_USER, CHANGE_CARD_NAME, CHANGE_CARD_COMMENT, CHANGE_CARD_COLOR, CHANGE_CARD_COVER, DELETE_CARD } from '@/store/actions/cards'
+import { CHANGE_CARD_RESPONSIBLE_USER, CHANGE_CARD_BUDGET, CHANGE_CARD_NAME, CHANGE_CARD_COMMENT, CHANGE_CARD_COLOR, CHANGE_CARD_COVER, DELETE_CARD } from '@/store/actions/cards'
 
 import CardName from '@/components/properties/CardName.vue'
 import CardCover from '@/components/properties/CardCover.vue'
@@ -15,6 +15,7 @@ import Icon from '@/components/Icon.vue'
 import close from '@/icons/close.js'
 import TaskPropsCommentEditor from '@/components/TaskProperties/TaskPropsCommentEditor.vue'
 import BoardModalBoxDelete from '@/components/Board/BoardModalBoxDelete.vue'
+import CardModalBoxBudget from '@/components/properties/CardModalBoxBudget.vue'
 
 const store = useStore()
 const selectedCard = computed(() => store.state.cards.selectedCard)
@@ -23,6 +24,8 @@ const boards = computed(() => store.state.boards.boards)
 const employees = computed(() => store.state.employees.employees)
 const employeesByEmail = computed(() => store.state.employees.employeesByEmail)
 const cardMessages = computed(() => store.state.cardfilesandmessages.messages)
+
+const showChangeCardBudget = ref(false)
 
 const changeResponsible = (userEmail) => {
   store.dispatch(CHANGE_CARD_RESPONSIBLE_USER, { cardUid: selectedCard.value.uid, email: userEmail }).then(() => {
@@ -33,6 +36,15 @@ const changeResponsible = (userEmail) => {
 const changeName = (arg) => {
   const data = { cardUid: selectedCard.value.uid, name: arg.target.innerText }
   store.dispatch(CHANGE_CARD_NAME, data)
+}
+
+const changeCardBudget = (budget) => {
+  console.log('changing card budget: ', budget)
+  const data = { cardUid: selectedCard.value.uid, budget: budget * 100 }
+  store.dispatch(CHANGE_CARD_BUDGET, data).then((resp) => {
+    selectedCard.value.cost = resp.data.cost
+    showChangeCardBudget.value = false
+  })
 }
 
 const closeProperties = () => {
@@ -138,6 +150,14 @@ const removeCard = () => {
     @cancel="showDeleteCard = false"
     @yes="removeCard"
   />
+  <CardModalBoxBudget
+    v-show="showChangeCardBudget"
+    :value="selectedCard.cost / 100"
+    :show="showChangeCardBudget"
+    title="Бюджет карточки"
+    @cancel="showChangeCardBudget = false"
+    @save="changeCardBudget"
+  />
   <div class="relative min-h-screen">
     <!-- Close icon -->
     <div class="flex justify-end">
@@ -175,9 +195,11 @@ const removeCard = () => {
       />
       <card-budget
         :budget="selectedCard.cost"
+        @click="showChangeCardBudget = true"
       />
       <card-options
         :date-create="selectedCard.date_create"
+        :can-edit="canEdit"
         @clickRemoveButton="showDeleteCard = true"
       />
     </div>

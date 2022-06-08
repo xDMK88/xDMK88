@@ -5,7 +5,8 @@ import PopMenuItem from '@/components/modals/PopMenuItem.vue'
 import PopMenuDivider from '@/components/modals/PopMenuDivider.vue'
 defineEmits(['clickRemoveButton'])
 const props = defineProps({
-  dateCreate: String
+  dateCreate: String,
+  canEdit: Boolean
 })
 
 const cardDateCreate = computed(() => {
@@ -52,7 +53,10 @@ const cardDateCreate = computed(() => {
         <PopMenuItem>
           Копировать как ссылку
         </PopMenuItem>
-        <PopMenuItem @click="$emit('clickRemoveButton')">
+        <PopMenuItem
+          v-if="props.canEdit"
+          @click="$emit('clickRemoveButton')"
+        >
           Удалить
         </PopMenuItem>
       </template>

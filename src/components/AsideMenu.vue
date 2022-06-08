@@ -378,19 +378,19 @@ const tarifS = () => {
 
 .calendar-nav-custom .vc-day-content:focus
 {
-  @apply bg-transparent;
+  @apply bg-transparent !important;
 }
 
 .calendar-nav-custom .vc-highlight,
 .calendar-nav-custom .vc-highlight:focus
 {
-  @apply bg-[#ff9123];
+  @apply bg-[#ff9123]/40;
 }
 
 .calendar-nav-custom .vc-day-content,
 .calendar-nav-custom .vc-highlight
 {
-  @apply rounded-[8px] w-[30px] h-[30px] border-[#ff9123] text-[#424242] text-[12px] font-medium !important;
+  @apply rounded-[8px] w-[30px] h-[30px] border-[#ff9123]/40 text-[#424242] text-[12px] font-medium !important;
 }
 
 .calendar-nav-custom .is-not-in-month .vc-day-content,

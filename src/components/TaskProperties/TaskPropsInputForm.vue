@@ -46,7 +46,7 @@
         @keydown.enter.shift.exact.prevent="addNewLineTaskMsg"
         @keydown.enter.exact.prevent="sendTaskMsg"
       />
-      <span class="table-cell text-center rounded-[8px] items-center align-middle justify-center max-w-[15px] max-h-[30px] hover:bg-white cursor-pointer">
+      <span class="table-cell text-center rounded-[8px] items-center align-middle justify-center max-w-[15px] max-h-[30px] cursor-pointer">
         <button
           type="button"
           name="btn-send"

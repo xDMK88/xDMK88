@@ -69,8 +69,18 @@
     </div>
     <div class="flex text-sm text-left justify-between w-[200px]">
       <div class="flex flex-col" style="color: #7E7E80">
-        <span v-show="user.current_user_uid !== task.uid_customer && user.current_user_uid !== task.uid_performer" class="mb-2 w-[100px]">Заказчик:</span>
-        <span v-show="user.current_user_uid !== task.uid_customer && user.current_user_uid !== task.uid_performer" class="mb-2 w-[100px]">Исполнитель:</span>
+        <span
+          v-show="user.current_user_uid !== task.uid_customer && task.uid_customer !== task.uid_performer"
+          class="mb-2 w-[100px]"
+        >
+          Заказчик:
+        </span>
+        <span
+          v-show="user.current_user_uid !== task.uid_customer && task.uid_customer !== task.uid_performer"
+          class="mb-2 w-[100px]"
+        >
+          Исполнитель:
+        </span>
         <span
           v-show="dateClear(task.date_end) !== '1.1.1'"
           class="mb-2 w-[100px]"
@@ -92,7 +102,10 @@
       </div>
       <div class="flex flex-col font-medium">
         <!-- customer -->
-        <div v-show="user.current_user_uid !== task.uid_customer && user.current_user_uid !== task.uid_performer" class="flex mb-2">
+        <div
+          v-show="user.current_user_uid !== task.uid_customer && task.uid_customer !== task.uid_performer"
+          class="flex mb-2"
+        >
           <img
             :src="employees[task.uid_customer] ? employees[task.uid_customer].fotolink : ''"
             class="rounded-lg ml-1 h-[20px] w-[20px]"
@@ -100,7 +113,10 @@
           <span class="ml-1 text-black">{{ employees[task.uid_customer].name }}</span>
         </div>
         <!-- performer -->
-        <div v-show="user.current_user_uid !== task.uid_customer && user.current_user_uid !== task.uid_performer" class="flex mb-2">
+        <div
+          v-show="user.current_user_uid !== task.uid_customer && task.uid_customer !== task.uid_performer"
+          class="flex mb-2"
+        >
           <img
             :src="employees[task.uid_performer] ? employees[task.uid_performer].fotolink : ''"
             class="rounded-lg ml-1 h-[20px] w-[20px]"
@@ -136,13 +152,6 @@
         </div>
       </div>
     </div>
-    <div
-      class="text-sm font-medium flex flex-col"
-      v-if="task.uid_customer !== user.current_user_uid"
-    >
-      <span>Описание задачи:</span>
-      <span class="font-normal">{{ !task.comment.length ? 'Описание отсутствует' : ''}}</span>
-    </div>
     <TaskPropsCommentEditor
       v-show="task.comment.length || task.uid_customer === user.current_user_uid"
       class="mt-3 h-[200px] scroll-style overflow-auto"
@@ -160,7 +169,7 @@
       :task="task"
     />
     <div
-      class="flex flex-col max-w-1/2 "
+      class="flex flex-col max-w-1/2 border-t mt-2 pt-2"
       :class="task.uid_marker !== '00000000-0000-0000-0000-000000000000' ? 'bg-white p-1 mt-1 rounded-lg' : ''"
     >
       <p

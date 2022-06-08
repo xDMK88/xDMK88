@@ -42,13 +42,15 @@ const computedValue = computed({
     >
   </div>
 
-  <input
+  <textarea
     v-model="computedValue"
     class="bg-[#F4F5F7] py-[17px] pr-[15px] pl-[10px] text-[#656566] w-full text-[14px] border-none focus:ring-0"
+    style="resize: none;"
+    rows="1"
     type="text"
     placeholder="Напишите сообщение..."
     @keyup.enter="$emit('createCardMessage', computedValue.value)"
-  >
+  />
 
   <div
     class="rounded-r-[10px] flex items-center justify-center bg-[#F4F5F7] pr-[12px]"

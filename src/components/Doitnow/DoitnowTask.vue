@@ -10,7 +10,7 @@
   }"
 >
   <div class="w-1/2">
-    <div class="flex justify-between items-center">
+    <div class="flex justify-between items-center mb-6">
       <!-- task info/status -->
       <div class="flex items-center">
         <TaskStatus :task="task"/>
@@ -68,7 +68,7 @@
       </Popper>
     </div>
     <div class="flex text-sm text-left justify-between w-[200px]">
-      <div class="flex flex-col">
+      <div class="flex flex-col" style="color: #7E7E80">
         <span class="mb-2 w-[100px]">Заказчик:</span>
         <span class="mb-2 w-[100px]">Исполнитель:</span>
         <span
@@ -90,14 +90,14 @@
           Проект:
         </span>
       </div>
-      <div class="flex flex-col">
+      <div class="flex flex-col font-medium">
         <!-- customer -->
         <div class="flex mb-2">
           <img
             :src="employees[task.uid_customer] ? employees[task.uid_customer].fotolink : ''"
             class="rounded-lg ml-1 h-[20px] w-[20px]"
           />
-          <span class="ml-1 text-black font-medium">{{ employees[task.uid_customer].name }}</span>
+          <span class="ml-1 text-black">{{ employees[task.uid_customer].name }}</span>
         </div>
         <!-- performer -->
         <div class="flex mb-2">
@@ -105,21 +105,21 @@
             :src="employees[task.uid_performer] ? employees[task.uid_performer].fotolink : ''"
             class="rounded-lg ml-1 h-[20px] w-[20px]"
           />
-          <span class="ml-1 text-black font-medium">{{ employees[task.uid_performer].name }}</span>
+          <span class="ml-1 text-black">{{ employees[task.uid_performer].name }}</span>
         </div>
         <!-- days -->
         <div
           class="flex mb-2"
           v-show="dateClear(task.date_end) !== '1.1.1'"
         >
-          <span class="ml-1 text-black font-medium">{{ dateClear(task.date_end) }}</span>
+          <span class="ml-1 text-black">{{ dateClear(task.date_end) }}</span>
         </div>
         <!-- overdue -->
         <div
           class="flex mb-2"
           v-show="typeof plural === 'string' && task.date_end !== '0001-01-01T00:00:00'"
         >
-          <span class="ml-1 text-red-500 font-medium">{{ plural }}</span>
+          <span class="ml-1 text-red-500">{{ plural }}</span>
         </div>
         <!-- project -->
         <div
@@ -146,7 +146,6 @@
     <TaskPropsCommentEditor
       v-show="task.comment.length || task.uid_customer === user.current_user_uid"
       class="mt-3 h-[200px] scroll-style overflow-auto"
-      :class="task.uid_customer === user.current_user_uid ? 'border border-gray-500 p-2 rounded-lg' : 'p-2'"
       :comment="task.comment"
       :can-edit="task.uid_customer === user.current_user_uid"
       @endChangeComment="endChangeComment"
@@ -170,7 +169,7 @@
         style="border-bottom: 1px dashed; padding-bottom: 0; width: 125px; margin: 0 auto;"
         @click="scrollDown"
       >
-        Show all messages
+        ПОКАЗАТЬ ВСЕ
       </p>
       <!-- chat -->
       <TaskPropsChatMessages
@@ -191,49 +190,49 @@
   <!-- accept/redo/decline -->
   <div>
     <div
-      class="flex flex-col min-w-[200px] justify-items-end"
+      class="flex flex-col min-w-[200px] items-end"
       v-if="task.uid_customer === user.current_user_uid || task.uid_performer === user.current_user_uid"
     >
       <!-- accept -->
       <button
-        class="flex items-center justify-center text-sm hover:bg-white bg-green-100 hover:bg-opacity-90 font-medium border-green-400 h-[40px] rounded-lg border hover:text-green-500 mb-2 hover:animate-fadeIn"
+        class="flex py-0.5 items-center justify-center text-sm hover:bg-white bg-green-100 hover:bg-opacity-90 font-medium border-green-400 min-h-[40px] w-[181px] rounded-lg border hover:text-green-500 mb-2 hover:animate-fadeIn"
         @click="accept"
       >
-        {{ task.uid_customer === user.current_user_uid ? (task.uid_performer === user.current_user_uid ? 'Завершить' : 'Принять и завершить задачу') : 'Готово к сдаче'}}
+        <span class="ml-8 w-[70px]">{{ task.uid_customer === user.current_user_uid ? (task.uid_performer === user.current_user_uid ? 'Завершить' : 'Принять и завершить') : 'Готово к сдаче'}}</span>
         <Icon
           :path="check.path"
           :width="check.width"
           :height="check.height"
           :box="check.viewBox"
-          class="ml-2"
+          class="ml-8"
         />
       </button>
       <!-- redo -->
       <button
-        class="flex items-center justify-center text-sm bg-gray-100 hover:bg-red-200 hover:border hover:border-red-300 hover:bg-opacity-90 font-medium h-[40px] rounded-lg hover:text-red-500 mb-2 hover:animate-fadeIn"
+        class="flex py-0.5 items-center justify-center text-sm bg-gray-100 w-[181px] hover:bg-red-200 hover:border hover:border-red-300 min-h-[40px] hover:bg-opacity-90 font-medium rounded-lg hover:text-red-500 mb-2 hover:animate-fadeIn"
         @click="reDo"
       >
-        <span>{{ task.uid_customer === user.current_user_uid ? (task.uid_performer === user.current_user_uid ? 'Отменить' : 'Отправить на доработку') : 'Отклонить'}}</span>
+        <span class="w-[70px] text-center ml-8">{{ task.uid_customer === user.current_user_uid ? (task.uid_performer === user.current_user_uid ? 'Отменить' : 'На доработку') : 'Отклонить'}}</span>
         <Icon
           :path="close.path"
           :width="close.width"
           :height="close.height"
           :box="close.viewBox"
-          class="ml-2"
+          class="ml-8"
         />
       </button>
       <!-- decline -->
       <button
-        class="flex items-center justify-center text-sm bg-gray-100 hover:bg-gray-50 hover:border hover:border-gray-500 hover:bg-opacity-90 font-medium h-[40px] rounded-lg mb-2 hover:animate-fadeIn"
+        class="flex py-0.5 w-[181px] justify-center items-center text-sm bg-gray-100 hover:bg-gray-50 hover:border hover:border-gray-500 hover:bg-opacity-90 font-medium min-h-[40px] rounded-lg mb-2 hover:animate-fadeIn"
         @click="decline"
       >
-        Отложить
+        <span class="w-[70px] text-center ml-8">Отложить</span>
         <Icon
           :path="pauseD.path"
           :width="pauseD.width"
           :height="pauseD.height"
           :box="pauseD.viewBox"
-          class="ml-2"
+          class="ml-8"
         />
       </button>
       <PerformButton

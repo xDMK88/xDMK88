@@ -21,16 +21,15 @@
       </div> -->
     </div>
     <button
-      class="border border-slate-600 py-3 px-4 rounded-lg mr-5 hover:bg-gray-300 text-sm bg-opacity-70 font-medium flex items-center justify-between"
+      class="border border-slate-600 py-3 px-4 rounded-lg mr-5 hover:bg-gray-300 text-sm bg-opacity-70 font-medium flex w-[181px] items-center justify-center"
       @click="nextTask"
     >
-      Следующая задача
+      <span class="pr-2">Следующая задача</span>
       <Icon
         :height="arrowForw.height"
         :width="arrowForw.width"
         :view="arrowForw.viewBox"
         :path="arrowForw.path"
-        class="ml-2.5"
       />
     </button>
   </div>

@@ -76,8 +76,9 @@ export default {
       return ''
     },
     editComment () {
-      if (!this.canEdit) return
-      this.isEditable = true
+      if (this.canEdit) {
+        this.isEditable = true
+      }
     },
     /**
      * @param {Element} el

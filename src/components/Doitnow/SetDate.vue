@@ -183,7 +183,7 @@
       </div>
     </template>
     <a
-      class="flex items-center justify-center text-sm bg-gray-100 hover:bg-gray-50 hover:border hover:border-gray-500 hover:bg-opacity-90 font-medium h-[40px] w-[250px] rounded-lg mb-2 hover:animate-fadeIn"
+      class="flex items-center justify-center text-sm bg-gray-100 hover:bg-gray-50 hover:border hover:border-gray-500 hover:bg-opacity-90 font-medium min-h-[40px] w-[181px] rounded-lg mb-2 hover:animate-fadeIn"
     >
       <span
         v-if="dateText !== ''"
@@ -191,8 +191,8 @@
       >
         <button class="btn-calendar">
         </button>
-        <span>Изменить дату</span>
-        <svg class="ml-2" width="16" height="17" viewBox="0 0 16 17" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <span class="w-[70px] text-center ml-8">Изменить дату</span>
+        <svg class="ml-8" width="16" height="17" viewBox="0 0 16 17" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path fill-rule="evenodd" clip-rule="evenodd" d="M14.2222 2.55556H12.8889H11.3333H4.66667H3.11111H1.77778C1.47095 2.55556 1.22222 2.80429 1.22222 3.11111V14.6667C1.22222 14.9735 1.47095 15.2222 1.77778 15.2222H14.2222C14.529 15.2222 14.7778 14.9735 14.7778 14.6667V3.11111C14.7778 2.80429 14.529 2.55556 14.2222 2.55556ZM1.77778 1.33333C0.795938 1.33333 0 2.12927 0 3.11111V14.6667C0 15.6485 0.795938 16.4444 1.77778 16.4444H14.2222C15.2041 16.4444 16 15.6485 16 14.6667V3.11111C16 2.12927 15.2041 1.33333 14.2222 1.33333H12.8889H11.3333H4.66667H3.11111H1.77778Z" fill="#3FBF64" fill-opacity="0.5"/>
 <path d="M9.59596 5.33333C8.98231 5.33333 8.48485 5.83079 8.48485 6.44444C8.48485 7.05809 8.98231 7.55555 9.59596 7.55555C10.2096 7.55555 10.7071 7.05809 10.7071 6.44444C10.7071 5.83079 10.2096 5.33333 9.59596 5.33333Z" fill="#3FBF64" fill-opacity="0.5"/>
 <path d="M9.59596 8.44444C8.98231 8.44444 8.48485 8.9419 8.48485 9.55555C8.48485 10.1692 8.98231 10.6667 9.59596 10.6667C10.2096 10.6667 10.7071 10.1692 10.7071 9.55555C10.7071 8.9419 10.2096 8.44444 9.59596 8.44444Z" fill="#3FBF64" fill-opacity="0.5"/>
@@ -217,8 +217,8 @@
         class="flex items-center"
       >
         <button class="btn-calendar">
-        </button><span><span>Назначить дату</span></span>
-         <svg class="ml-2" width="16" height="17" viewBox="0 0 16 17" fill="none" xmlns="http://www.w3.org/2000/svg">
+        </button><span><span class="w-[70px] text-center ml-8">Назначить дату</span></span>
+         <svg class="ml-8" width="16" height="17" viewBox="0 0 16 17" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path fill-rule="evenodd" clip-rule="evenodd" d="M14.2222 2.55556H12.8889H11.3333H4.66667H3.11111H1.77778C1.47095 2.55556 1.22222 2.80429 1.22222 3.11111V14.6667C1.22222 14.9735 1.47095 15.2222 1.77778 15.2222H14.2222C14.529 15.2222 14.7778 14.9735 14.7778 14.6667V3.11111C14.7778 2.80429 14.529 2.55556 14.2222 2.55556ZM1.77778 1.33333C0.795938 1.33333 0 2.12927 0 3.11111V14.6667C0 15.6485 0.795938 16.4444 1.77778 16.4444H14.2222C15.2041 16.4444 16 15.6485 16 14.6667V3.11111C16 2.12927 15.2041 1.33333 14.2222 1.33333H12.8889H11.3333H4.66667H3.11111H1.77778Z" fill="black" fill-opacity="0.5"/>
 <path d="M9.59596 5.33333C8.98231 5.33333 8.48485 5.83079 8.48485 6.44444C8.48485 7.05809 8.98231 7.55555 9.59596 7.55555C10.2096 7.55555 10.7071 7.05809 10.7071 6.44444C10.7071 5.83079 10.2096 5.33333 9.59596 5.33333Z" fill="black" fill-opacity="0.5"/>
 <path d="M9.59596 8.44444C8.98231 8.44444 8.48485 8.9419 8.48485 9.55555C8.48485 10.1692 8.98231 10.6667 9.59596 10.6667C10.2096 10.6667 10.7071 10.1692 10.7071 9.55555C10.7071 8.9419 10.2096 8.44444 9.59596 8.44444Z" fill="black" fill-opacity="0.5"/>

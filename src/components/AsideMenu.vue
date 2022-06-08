@@ -346,7 +346,7 @@ const tarifS = () => {
 }
 
 .calendar-nav-custom .vc-arrow {
-  @apply text-[#424242];
+  @apply text-[#424242] w-[32px] h-[32px];
 }
 
 .calendar-nav-custom .vc-title {
@@ -354,7 +354,7 @@ const tarifS = () => {
 }
 
 .calendar-nav-custom .vc-weekday {
-  @apply text-[#424242] capitalize text-[12px] font-bold;
+  @apply text-[#424242] capitalize text-[12px] h-[34px] pt-0 pb-0 flex items-center justify-center font-bold;
 }
 .calendar-nav-custom .vc-weekday:nth-child(7), .vc-weekday:nth-child(8)
 {
@@ -363,7 +363,7 @@ const tarifS = () => {
 
 .calendar-nav-custom .vc-header
 {
-  @apply mb-[12px] h-[32px] p-0;
+  @apply mb-[2px] h-[32px] p-0;
 }
 
 .calendar-nav-custom .vc-arrows-container

@@ -204,27 +204,19 @@ export default {
           for (let i = 0; i < result[0].length; i++) {
             // Поручено мной
             if (result[0][i].uid_customer === this.user.current_user_uid) {
-              this.unreadDelegateByMe.push(result[0][i])
+              this.unreadDelegateByMe.unshift(result[0][i])
             } else {
               // Поручено мне
               if (result[0][i].uid_performer === this.user.current_user_uid) {
-                this.unreadDelegateToMe.push(result[0][i])
+                this.unreadDelegateToMe.unshift(result[0][i])
               } else {
                 // Готово к сдаче
                 if (result[0][i].status === 5) {
                   this.readyTasksUnreaded.push(result[0][i])
                 } else {
                   // Доступ
-                  if (result[0][i].emails.includes(this.user.current_user_email)) {
+                  if (result[0][i].emails.includes(this.user.current_user_email) || (result[0][i].uid_project !== '00000000-0000-0000-0000-000000000000')) {
                     this.openedTasks.push(result[0][i])
-                  } else {
-                    // Проекты
-                    if (result[0][i].uid_project !== '00000000-0000-0000-0000-000000000000') {
-                      this.projectTasks.push(result[0][i])
-                    } else {
-                      // Неразобранное
-                      this.unsortedTasks.push(result[0][i])
-                    }
                   }
                 }
               }
@@ -253,13 +245,13 @@ export default {
             })
           // Отправляем в главный массив (непрочитанное) отсортированные массивы по очереди
           this.unreadTasks = [...this.unreadDelegateByMe, ...this.unreadDelegateToMe,
-            ...this.readyTasksUnreaded, ...this.openedTasks, ...this.openedTasks,
-            ...this.projectTasks, ...this.unsortedTasks]
+            ...this.readyTasksUnreaded, ...this.projectTasks, ...this.unsortedTasks]
           // Отправляем в главный массив (просрочено) отсортированные данные
           this.overdueTasks = [...this.overdueReaded]
           // Отправляем в главный массив (готовые) отсортированные данные
           this.readyTasks = [...this.readyTasksReaded]
           this.todayTasks = [...result[2]]
+          this.openedTasks = [...this.openedTasks]
         })
     },
     dateToLabelFormat: function (calendarDate) {
@@ -287,6 +279,9 @@ export default {
       }
       if (this.todayTasks.length) {
         this.todayTasks.shift()
+      }
+      if (this.openedTasks.length) {
+        this.openedTasks.shift()
       }
     },
     changeValue: function (objWithValues) {

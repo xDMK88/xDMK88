@@ -1,5 +1,5 @@
 <script setup>
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { visitChildren } from '@/store/helpers/functions'
 import { useStore } from 'vuex'
 import {
@@ -319,6 +319,10 @@ const openProjectProperties = (project, parentProjectUid = '') => {
   }
   store.commit(SELECT_PROJECT, project)
 }
+
+watch(navStack, (oldVal, newVal) => {
+  document.getElementById('control-input').value = ''
+})
 </script>
 
 <template>

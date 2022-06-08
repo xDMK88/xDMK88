@@ -39,6 +39,7 @@ const props = defineProps({
     v-model="form.text"
     :placeholder="props.placeholder"
     borderless
+    id="control-input"
     maxlength="100"
     transparent
     @keyup.enter="sendSearchRequest"

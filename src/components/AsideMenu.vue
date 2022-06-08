@@ -409,10 +409,11 @@ const tarifS = () => {
 
 .calendar-nav-custom .dots-back
 {
-  background-color: black !important;
+  background-color: #444444!important;
   height: 3px !important;
   width: 3px !important;
   position: relative !important;
-  top: 10px !important;
+  top: 11px !important;
+  border-radius: 9999px !important;
 }
 </style>

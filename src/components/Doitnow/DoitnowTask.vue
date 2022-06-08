@@ -128,7 +128,7 @@
           class="flex mb-2"
           v-show="dateClear(task.date_end) !== '1.1.1'"
         >
-          <span class="ml-1 text-black">{{ dateClear(task.date_end) }}</span>
+          <span class="ml-1 text-black">{{ dateClearWords(task.date_end) }}</span>
         </div>
         <!-- overdue -->
         <div
@@ -161,11 +161,11 @@
       @changeComment="onChangeComment"
     />
     <Checklist
-      v-if="task.checklist"
       class="mt-3 checklist-custom font-medium"
       :task-uid="task.uid"
       :checklist="task.checklist"
       :isCustomer="task.uid_customer === user.current_user_uid"
+      :isPerformer="task.uid_performer === user.current_user_uid"
       :task="task"
     />
     <div
@@ -332,7 +332,7 @@ import TaskPropsCommentEditor from '@/components/TaskProperties/TaskPropsComment
 import PerformButton from '@/components/Doitnow/PerformButton.vue'
 import Popper from 'vue3-popper'
 import SetDate from '@/components/Doitnow/SetDate.vue'
-import Checklist from '@/components/properties/Checklist.vue'
+import Checklist from '@/components/Doitnow/Checklist.vue'
 import TaskPropsChatMessages from '@/components/TaskProperties/TaskPropsChatMessages.vue'
 import TaskPropsInputForm from '@/components/TaskProperties/TaskPropsInputForm'
 import TaskStatus from '@/components/TasksList/TaskStatus.vue'
@@ -587,6 +587,12 @@ export default {
     },
     dateClear (time) {
       return new Date(time).getDate() + '.' + (new Date(time).getMonth() + 1) + '.' + new Date(time).getFullYear()
+    },
+    dateClearWords (time) {
+      const month = new Date(time).getMonth() + 1
+      const months = [' Января ', ' Февраля ', ' Марта ', ' Апреля ', ' Мая ', ' Июня ', ' Июля ', ' Августа ', ' Сентября ', ' Октября ', ' Ноября ', ' Декабря ']
+      const date = new Date(time).getDate() + months[month - 1] + (new Date().getFullYear() === new Date(time).getUTCFullYear() ? '' : new Date(time).getUTCFullYear())
+      return date
     },
     removeTask (uid) {
       if (this.isPropertiesMobileExpanded) {

@@ -4,6 +4,7 @@
     @click="editComment"
   >
     <div
+      ref="commentEditor"
       v-linkify:options="{ className: 'text-blue-600' }"
       class="font-[400] text-[14px] leading-[21px] text-[#4C4C4D]"
       :contenteditable="isEditable"
@@ -76,9 +77,11 @@ export default {
       return ''
     },
     editComment () {
-      if (this.canEdit) {
-        this.isEditable = true
-      }
+      if (!this.canEdit) return
+      this.isEditable = true
+      this.$nextTick(function () {
+        this.$refs.commentEditor.focus({ preventScroll: false })
+      })
     },
     /**
      * @param {Element} el

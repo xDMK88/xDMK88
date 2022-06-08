@@ -18,8 +18,6 @@ import 'v-calendar/dist/style.css'
 import * as TASK from '@/store/actions/tasks'
 import { AUTH_LOGOUT } from '@/store/actions/auth'
 
-import ArrowDown from '@/icons/arrow-down.js'
-
 const router = useRouter()
 
 defineProps({
@@ -255,25 +253,32 @@ const tarifS = () => {
         />
       </nav-bar-item>
       <div
-        class="w-full cursor-pointer"
+        class="group w-full cursor-pointer"
         @click="modalOneActive = true"
       >
-        <div class="flex">
+        <div class="flex items-center">
           <img
             :src="user.foto_link"
             width="32"
             height="32"
-            class="rounded-[8px] border-2 border-white"
+            class="rounded-[8px] ml-[5px] mr-[2px] border-2 border-white"
           >
-          <icon
-            :path="ArrowDown.path"
-            class="cursor-pointer mr-2"
-            :box="ArrowDown.viewBox"
-            :width="ArrowDown.width"
-            :height="ArrowDown.height"
-          />
+          <svg
+            width="12"
+            height="12"
+            viewBox="0 0 12 12"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              fill-rule="evenodd"
+              clip-rule="evenodd"
+              d="M10.7602 3.56099C11.0027 3.80668 11.0001 4.2024 10.7544 4.44486L6.70104 8.44486C6.47133 8.67154 6.10681 8.68606 5.8598 8.47836L1.46869 4.78606C1.2045 4.56391 1.17041 4.16965 1.39256 3.90546C1.61471 3.64126 2.00897 3.60718 2.27316 3.82933L6.22839 7.15512L9.87636 3.55514C10.1221 3.31269 10.5178 3.31531 10.7602 3.56099Z"
+              fill="#7e7e80"
+            />
+          </svg>
           <span
-            class="text-sm my-auto"
+            class="ml-[6px] text-[15px] group-hover:text-[#4c4c4d]/75 text-[#4c4c4d] font-roboto"
           >
             {{ user.current_user_name }}
           </span>
@@ -346,7 +351,7 @@ const tarifS = () => {
 }
 
 .calendar-nav-custom .vc-arrow {
-  @apply text-[#424242];
+  @apply text-[#424242] w-[32px] h-[32px];
 }
 
 .calendar-nav-custom .vc-title {
@@ -354,7 +359,7 @@ const tarifS = () => {
 }
 
 .calendar-nav-custom .vc-weekday {
-  @apply text-[#424242] capitalize text-[12px] font-bold;
+  @apply text-[#424242] capitalize text-[12px] h-[34px] pt-0 pb-0 flex items-center justify-center font-bold;
 }
 .calendar-nav-custom .vc-weekday:nth-child(7), .vc-weekday:nth-child(8)
 {
@@ -363,7 +368,7 @@ const tarifS = () => {
 
 .calendar-nav-custom .vc-header
 {
-  @apply mb-[12px] h-[32px] p-0;
+  @apply mb-[2px] h-[32px] p-0;
 }
 
 .calendar-nav-custom .vc-arrows-container
@@ -376,16 +381,21 @@ const tarifS = () => {
   @apply min-h-[30px] h-[30px] w-[30px];
 }
 
-.calendar-nav-custom .vc-highlight,
 .calendar-nav-custom .vc-day-content:focus
 {
-  @apply bg-[#ff9123];
+  @apply bg-transparent !important;
+}
+
+.calendar-nav-custom .vc-highlight,
+.calendar-nav-custom .vc-highlight:focus
+{
+  @apply bg-[#ff9123]/40;
 }
 
 .calendar-nav-custom .vc-day-content,
 .calendar-nav-custom .vc-highlight
 {
-  @apply rounded-[8px] w-[30px] h-[30px] border-[#ff9123] text-[#424242] text-[12px] font-medium !important;
+  @apply rounded-[8px] w-[30px] h-[30px] border-[#ff9123]/40 text-[#424242] text-[12px] font-medium !important;
 }
 
 .calendar-nav-custom .is-not-in-month .vc-day-content,
@@ -404,10 +414,11 @@ const tarifS = () => {
 
 .calendar-nav-custom .dots-back
 {
-  background-color: black !important;
+  background-color: #444444!important;
   height: 3px !important;
   width: 3px !important;
   position: relative !important;
-  top: 10px !important;
+  top: 11px !important;
+  border-radius: 9999px !important;
 }
 </style>

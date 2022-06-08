@@ -3,7 +3,7 @@ import { ref } from 'vue'
 import PopMenu from '@/components/modals/PopMenu.vue'
 import PopMenuItem from '@/components/modals/PopMenuItem.vue'
 import CardModalBoxColor from '@/components/properties/CardModalBoxColor.vue'
-const emit = defineEmits(['onChangeCardColor'])
+const emit = defineEmits(['onChangeCardColor', 'onChangeCardCover'])
 const props = defineProps({
   coverColor: String,
   coverLink: String
@@ -43,7 +43,17 @@ const onChangeCardColor = (color) => {
             Цвет
           </PopMenuItem>
           <PopMenuItem>
-            Файл
+            <label for="file-input">
+              Файл
+            </label>
+            <input
+              id="file-input"
+              type="file"
+              accept="image/png, image/gif, image/jpeg"
+              style="display: none;"
+              name="file-input"
+              @change="$emit('onChangeCardCover', $event)"
+            >
           </PopMenuItem>
         </template>
       </PopMenu>

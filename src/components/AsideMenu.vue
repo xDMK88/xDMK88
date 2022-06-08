@@ -376,8 +376,13 @@ const tarifS = () => {
   @apply min-h-[30px] h-[30px] w-[30px];
 }
 
-.calendar-nav-custom .vc-highlight,
 .calendar-nav-custom .vc-day-content:focus
+{
+  @apply bg-transparent;
+}
+
+.calendar-nav-custom .vc-highlight,
+.calendar-nav-custom .vc-highlight:focus
 {
   @apply bg-[#ff9123];
 }

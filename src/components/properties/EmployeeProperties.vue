@@ -1,77 +1,11 @@
-<script setup>
-import { computed, ref, watch, onMounted } from 'vue'
-import { useStore } from 'vuex'
-
-import ModalBoxConfirm from '@/components/modals/ModalBoxConfirm.vue'
-
-import { CREATE_EMPLOYEE_REQUEST, UPDATE_EMPLOYEE_REQUEST, REMOVE_EMPLOYEE_REQUEST } from '@/store/actions/employees'
-import { NAVIGATOR_PUSH_EMPLOYEE, NAVIGATOR_REMOVE_EMPLOYEE } from '@/store/actions/navigator'
-
-const store = useStore()
-const selectedEmployee = computed(() => store.state.employees.selectedEmployee)
-const user = computed(() => store.state.user.user)
-const employees = computed(() => store.state.employees.employees)
-const hasChanged = ref(false)
-const showConfirm = ref(false)
-
-function uuidv4 () {
-  return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
-    (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
-  )
-}
-
-watch(selectedEmployee, () => {
-  hasChanged.value = false
-})
-
-onMounted(() => {
-  hasChanged.value = false
-})
-
-const createOrUpdateEmployee = (employee) => {
-  if (user.value.license_type !== 0 || user.value.days_left > 0) {
-    if (!employee.uid) {
-      employee.uid = uuidv4()
-      store.dispatch(CREATE_EMPLOYEE_REQUEST, employee)
-        .then(() => {
-          hasChanged.value = false
-          store.dispatch('asidePropertiesToggle', false)
-          store.commit(NAVIGATOR_PUSH_EMPLOYEE, [employee])
-        })
-    } else {
-      store.dispatch(UPDATE_EMPLOYEE_REQUEST, employee)
-        .then(() => {
-          hasChanged.value = false
-          store.dispatch('asidePropertiesToggle', false)
-        })
-    }
-  } else {
-    alert('У вас нет рабочих мест')
-  }
-}
-
-const removeEmployee = (employee) => {
-  store.dispatch(REMOVE_EMPLOYEE_REQUEST, employee)
-    .then(() => {
-      store.dispatch('asidePropertiesToggle', false)
-      store.commit(NAVIGATOR_REMOVE_EMPLOYEE, employee)
-    })
-}
-</script>
-
 <template>
-  <modal-box-confirm
-    v-model="showConfirm"
-    button="warning"
-    has-button
-    has-cancel
-    button-label="Delete"
-    @confirm="removeEmployee(selectedEmployee)"
-  >
-    <p class="text-center">
-      Do you really wanna delete "<strong>{{ selectedEmployee.name }}</strong>" employee?
-    </p>
-  </modal-box-confirm>
+  <ModalBoxDelete
+    v-show="showConfirm"
+    title="Удалить сотрудника"
+    :text="`Вы действительно хотите удалить сотрудника ${selectedEmployee.name}?`"
+    @cancel="showConfirm = false"
+    @yes="removeEmployee(selectedEmployee)"
+  />
   <div>
     <div>
       <p class="text-sm text-gray-500 dark:text-gray-200">
@@ -142,3 +76,60 @@ const removeEmployee = (employee) => {
     </div>
   </div>
 </template>
+
+<script>
+import { UPDATE_EMPLOYEE_REQUEST, REMOVE_EMPLOYEE_REQUEST } from '@/store/actions/employees'
+import { NAVIGATOR_REMOVE_EMPLOYEE } from '@/store/actions/navigator'
+import ModalBoxDelete from '@/components/Common/ModalBoxDelete.vue'
+
+export default {
+  components: {
+    ModalBoxDelete
+  },
+  data () {
+    return {
+      showConfirm: false,
+      hasChanged: false
+    }
+  },
+  computed: {
+    employees () {
+      return this.$store.state.employees.employees
+    },
+    selectedEmployee () {
+      return this.$store.state.employees.selectedEmployee
+    },
+    user () {
+      return this.$store.state.user.user
+    }
+  },
+  watch: {
+    selectedEmployee: {
+      immediate: true,
+      handler: function (val) {
+        this.hasChanged = false
+      }
+    }
+  },
+  methods: {
+    createOrUpdateEmployee (employee) {
+      this.$store.dispatch(UPDATE_EMPLOYEE_REQUEST, employee)
+        .then(() => {
+          this.hasChanged = false
+          this.$store.dispatch('asidePropertiesToggle', false)
+        })
+    },
+    removeEmployee (employee) {
+      this.$store.dispatch(REMOVE_EMPLOYEE_REQUEST, employee)
+        .then(() => {
+          this.$store.dispatch('asidePropertiesToggle', false)
+          this.$store.commit(NAVIGATOR_REMOVE_EMPLOYEE, employee)
+        })
+    }
+  }
+}
+</script>
+
+<style scoped>
+
+</style>

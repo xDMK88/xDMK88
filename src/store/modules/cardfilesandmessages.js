@@ -111,11 +111,9 @@ const mutations = {
     state.files = []
   },
   [CARD_FILES_AND_MESSAGES.REFRESH_MESSAGES]: (state, resp) => {
-    console.log('WE ARE REFRESHING MESSAGES')
     state.messages = []
   },
   [CARD_FILES_AND_MESSAGES.MERGE_FILES_AND_MESSAGES]: (state) => {
-    console.log('messages: ', state.messages, 'files: ', state.files)
     state.messages = state.messages.concat(state.files)
     state.messages.sort((a, b) => {
       if (!a.file_name && !a.date_create.includes('Z')) {

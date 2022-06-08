@@ -1,12 +1,27 @@
 <script setup>
+import { ref } from 'vue'
 import PopMenu from '@/components/modals/PopMenu.vue'
 import PopMenuItem from '@/components/modals/PopMenuItem.vue'
+import CardModalBoxColor from '@/components/properties/CardModalBoxColor.vue'
+const emit = defineEmits(['onChangeCardColor', 'onChangeCardCover'])
 const props = defineProps({
   coverColor: String,
   coverLink: String
 })
+const showColorCard = ref(false)
+const selectedCardColor = ref(props.coverColor)
+const onChangeCardColor = (color) => {
+  selectedCardColor.value = color
+  emit('onChangeCardColor', color)
+}
 </script>
 <template>
+  <CardModalBoxColor
+    v-show="showColorCard"
+    :color="selectedCardColor"
+    @cancel="showColorCard = false"
+    @changeColor="onChangeCardColor"
+  />
   <div
     class="border-[1px] border-[rgba(0, 0, 0, 0.1) rounded-[8px] min-h-[93px] max-h-[93px] flex items-center justify-center relative"
     :style="{ 'background-color': props.coverColor !== '#A998B6' ? props.coverColor : '#F4F5F7' }"
@@ -24,11 +39,21 @@ const props = defineProps({
           Обложка
         </div>
         <template #menu>
-          <PopMenuItem>
+          <PopMenuItem @click="showColorCard = true">
             Цвет
           </PopMenuItem>
           <PopMenuItem>
-            Файл
+            <label for="file-input">
+              Файл
+            </label>
+            <input
+              id="file-input"
+              type="file"
+              accept="image/png, image/gif, image/jpeg"
+              style="display: none;"
+              name="file-input"
+              @change="$emit('onChangeCardCover', $event)"
+            >
           </PopMenuItem>
         </template>
       </PopMenu>

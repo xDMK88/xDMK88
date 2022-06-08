@@ -203,6 +203,7 @@ const removeCard = () => {
       />
       <card-budget
         :budget="selectedCard.cost"
+        :can-edit="canEdit"
         @click="showChangeCardBudget = true"
       />
       <card-options

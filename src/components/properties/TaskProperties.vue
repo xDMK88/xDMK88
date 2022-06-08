@@ -1880,21 +1880,21 @@ export default {
          </Popper>-->
         <!-- Кнопка Проект -->
         <TaskPropsButtonProject
-          v-if="!((selectedTask.uid_customer !== user.current_user_uid) && (selectedTask.status === 1))"
+          v-if="(selectedTask.type === 1 || selectedTask.type === 2 || (selectedTask.uid_project !== '00000000-0000-0000-0000-000000000000')) && !((selectedTask.uid_customer !== user.current_user_uid) && (selectedTask.status === 1))"
           :selected-project="selectedTask.uid_project"
           :can-edit="selectedTask.type === 1 || selectedTask.type === 2"
           @changeProject="onChangeProject"
         />
         <!-- Кнопка Цвет -->
         <TaskPropsButtonColor
-          v-if="!((selectedTask.uid_customer !== user.current_user_uid) && (selectedTask.status === 1))"
+          v-if="(selectedTask.type === 1 || selectedTask.type === 2 || (selectedTask.uid_project !== '00000000-0000-0000-0000-000000000000')) && !((selectedTask.uid_customer !== user.current_user_uid) && (selectedTask.status === 1))"
           :selected-color="selectedTask.uid_marker"
           :can-edit="selectedTask.type === 1 || selectedTask.type === 2"
           @changeColor="onChangeColor"
         />
         <!-- Кнопка Метки -->
         <TaskPropsButtonTags
-          v-if="selectedTask.type === 1 || selectedTask.type === 2 && !((selectedTask.uid_customer !== user.current_user_uid) && (selectedTask.status === 1))"
+          v-if="(selectedTask.type === 1 || selectedTask.type === 2) && !((selectedTask.uid_customer !== user.current_user_uid) && (selectedTask.status === 1))"
           :selected-tags="selectedTask.tags"
           @changeTags="onChangeTags"
         />

@@ -47,19 +47,15 @@
           :height="dots.height"
         />
         <template #content>
-          <div class="flex flex-col">
-            <!-- performer -->
-            <span
-              v-if="task.uid_customer === user.current_user_uid"
-            >
-            </span>
-            <!-- date -->
-            <span>
-            </span>
+          <div class="flex flex-col text-center">
+            <!-- date create -->
+            <p class="text-[#4C4C4D] font-[500] text-[14px] leading-[16px] px-[10px]">
+              Дата создания: {{ dateClear(task.date_create) }}
+            </p>
             <!-- link -->
             <span
               @click="copyUrl(task)"
-              class="hover:cursor-pointer hover:bg-gray-100 bg-gray-50 p-2 rounded-xl text-xs"
+              class="hover:cursor-pointer hover:bg-gray-100 p-2 rounded-xl text-xs"
             >
               Копировать как ссылку
             </span>
@@ -142,12 +138,6 @@
           class="flex mb-2"
           v-if="projects[task.uid_project]"
         >
-          <Icon
-            :height="project.height"
-            :width="project.width"
-            :path="project.path"
-            :box="project.viewBox"
-          />
           <span class="text-black">{{ projects[task.uid_project].name }}</span>
         </div>
       </div>

@@ -2,7 +2,7 @@
 import { computed, ref } from 'vue'
 import { useStore } from 'vuex'
 import { CREATE_MESSAGE_REQUEST, CREATE_FILES_REQUEST } from '@/store/actions/cardfilesandmessages'
-import { CHANGE_CARD_RESPONSIBLE_USER, CHANGE_CARD_NAME, CHANGE_CARD_COMMENT, DELETE_CARD } from '@/store/actions/cards'
+import { CHANGE_CARD_RESPONSIBLE_USER, CHANGE_CARD_NAME, CHANGE_CARD_COMMENT, CHANGE_CARD_COLOR, DELETE_CARD } from '@/store/actions/cards'
 
 import CardName from '@/components/properties/CardName.vue'
 import CardCover from '@/components/properties/CardCover.vue'
@@ -89,6 +89,12 @@ const createCardMessage = () => {
   })
 }
 
+const changeCardColor = (color) => {
+  store.dispatch(CHANGE_CARD_COLOR, { cardUid: selectedCard.value.uid, color: color }).then(() => {
+    selectedCard.value.cover_color = color
+  })
+}
+
 const showDeleteCard = ref(false)
 const removeCard = () => {
   store.dispatch(DELETE_CARD, { uid: selectedCard.value.uid }).then(() => closeProperties())
@@ -120,6 +126,7 @@ const removeCard = () => {
     <card-cover
       :cover-color="selectedCard.cover_color"
       :cover-link="selectedCard.cover_link"
+      @onChangeCardColor="changeCardColor"
     />
 
     <card-name

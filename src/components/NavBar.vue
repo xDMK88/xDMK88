@@ -331,7 +331,7 @@ const openProjectProperties = (project, parentProjectUid = '') => {
   <nav
     v-show="isNavBarVisible"
     class="top-0 left-0 right-0 fixed flex h-14 z-[1] bg-[#f4f5f7]
-    transition-position xl:ml-80 w-auto lg:items-center dark:bg-gray-800 dark:border-gray-800"
+    transition-position xl:ml-72 w-auto lg:items-center dark:bg-gray-800 dark:border-gray-800"
     :class="{ 'ml-80':isAsideMobileExpanded, 'mr-96':isPropertiesMobileExpanded }"
   >
     <div class="flex-1 items-stretch flex h-14 py-2 pl-3">
@@ -362,7 +362,8 @@ const openProjectProperties = (project, parentProjectUid = '') => {
       >
         <span
           v-if="navItem && navItem.name"
-          class="text-black dark:bg-gray-700 dark:text-gray-100 rounded-lg breadcrumbs"
+          class="text-[#7E7E80] dark:bg-gray-700 dark:text-gray-100 rounded-lg text-[13px] breadcrumbs"
+          :class="index === 0 ? 'text-[#7E7E80] font-medium' : index+1 === navStack.length ? 'text-[#4C4C4D] font-medium' : 'text-[#7E7E80] font-medium'"
           @click.stop="clickOnGridCard(navItem, index), closeProperties()"
         >
           {{ navItem.name.length > 15 ? navItem.name.slice(0, 15) + '...' : (navItem.name.includes(new Date().getDate()) && navItem.value.uid === '901841d9-0016-491d-ad66-8ee42d2b496b' ? 'Сегодня' : navItem.name) }}
@@ -376,9 +377,9 @@ const openProjectProperties = (project, parentProjectUid = '') => {
           >
 
             <template #content>
-              <div class="flex flex-col text-sm w-60">
+              <div class="flex flex-col w-60">
                 <div
-                  class="flex cursor-pointer items-center hover:bg-gray-100 hover:dark:bg-stone-800 py-0.5 px-1 rounded-md"
+                  class="text-[13px] flex cursor-pointer items-center hover:bg-gray-100 hover:dark:bg-stone-800 py-0.5 px-1 rounded-md"
                   @click="openProjectProperties(navItem.uid)"
                 >
                   <icon
@@ -392,7 +393,7 @@ const openProjectProperties = (project, parentProjectUid = '') => {
                 </div>
                 <div
                   v-if="projects[navItem.uid] && projects[navItem.uid].email_creator === user.current_user_email"
-                  class="flex cursor-pointer items-center hover:bg-gray-100 hover:dark:bg-stone-800 py-0.5 px-1 rounded-md"
+                  class="font-medium flex cursor-pointer items-center hover:bg-gray-100 hover:dark:bg-stone-800 py-0.5 px-1 rounded-md"
                   @click="openProjectProperties(false, navItem.uid)"
                 >
 

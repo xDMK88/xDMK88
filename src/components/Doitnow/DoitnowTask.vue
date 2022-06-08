@@ -102,7 +102,7 @@
           Проект:
         </span>
       </div>
-      <div class="flex flex-col font-medium">
+      <div class="flex flex-col font-medium min-w-full">
         <!-- customer -->
         <div
           v-show="user.current_user_uid !== task.uid_customer && task.uid_customer !== task.uid_performer"

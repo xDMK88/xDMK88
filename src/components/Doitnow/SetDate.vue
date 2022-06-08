@@ -1,7 +1,6 @@
 <template>
   <Popper
     class="popper-calendar light"
-    arrow
     append-to-body="true"
     trigger="hover"
     placement="auto"

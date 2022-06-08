@@ -136,11 +136,10 @@ onMounted(() => {
 </script>
 
 <template>
-  <div>
+  <div v-show="renderedChecklist.checklist[0].text.length">
     <div
       v-for="check, index of renderedChecklist.checklist"
       :key="index"
-      v-show="renderedChecklist.checklist[0].text.length || isCustomer"
     >
       <div
         class="flex items-start group"

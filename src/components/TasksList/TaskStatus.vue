@@ -18,8 +18,14 @@ import repeat from '@/icons/repeat.js'
 const props = defineProps({
   task: {
     type: Object
+  },
+  inDoitnow: {
+    type: Boolean,
+    default: false
   }
 })
+
+const emit = defineEmits(['nextTask'])
 
 const statusesLabels = [
   'status_not_begin',
@@ -95,6 +101,9 @@ const changeTaskStatus = (uid, status) => {
         })
     }
   })
+  if (props.inDoitnow) {
+    emit('nextTask')
+  }
 }
 </script>
 

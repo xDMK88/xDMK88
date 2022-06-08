@@ -1,7 +1,6 @@
 <template>
   <Popper
     class="popper-employees light"
-    arrow
     placement="auto"
   >
     <!-- Поручить -->

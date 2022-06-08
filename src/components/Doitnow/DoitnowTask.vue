@@ -13,7 +13,11 @@
     <div class="flex justify-between items-center mb-6">
       <!-- task info/status -->
       <div class="flex items-center">
-        <TaskStatus :task="task"/>
+        <TaskStatus
+          :inDoitnow="true"
+          @nextTask="nextTask"
+          :task="task"
+        />
         <contenteditable
           v-model="name"
           tag="div"
@@ -47,15 +51,17 @@
           :height="dots.height"
         />
         <template #content>
-          <div class="flex flex-col text-center">
+          <div class="flex flex-col">
             <!-- date create -->
-            <p class="text-[#4C4C4D] font-[500] text-[14px] leading-[16px] px-[10px]">
-              Дата создания: {{ dateClear(task.date_create) }}
-            </p>
+            <div class="flex flex-col gap-[4px] px-[10px] text-[#7e7e80] text-[13px] leading-[15px] font-roboto">
+              <div class="text-[#4c4c4d] text-[14px] leading-[16px] font-medium">Дата создания:</div>
+                {{ dateClear(task.date_create) }}
+              <div class="my-[4px] flex h-px bg-[#dddddd]"/>
+            </div>
             <!-- link -->
             <span
               @click="copyUrl(task)"
-              class="hover:cursor-pointer hover:bg-gray-100 p-2 rounded-xl text-xs"
+              class="h-[30px] flex items-center gap-[10px] px-[10px] py-[6px] cursor-pointer hover:bg-[#f4f5f7] rounded-[6px] text-[#4c4c4d] text-[13px] leading-[15px] font-roboto"
             >
               Копировать как ссылку
             </span>

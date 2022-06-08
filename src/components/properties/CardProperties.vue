@@ -118,7 +118,8 @@ const removeCard = () => {
     </div>
 
     <card-cover
-      :card-cover="selectedCard.cover_color"
+      :cover-color="selectedCard.cover_color"
+      :cover-link="selectedCard.cover_link"
     />
 
     <card-name

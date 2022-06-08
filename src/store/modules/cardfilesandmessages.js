@@ -104,7 +104,7 @@ const mutations = {
     state.status = 'success'
   },
   [CARD_FILES_AND_MESSAGES.FILES_SUCCESS]: (state, resp) => {
-    state.messages = resp.data.files
+    state.files = resp.data.files
     state.status = 'success'
   },
   [CARD_FILES_AND_MESSAGES.REFRESH_FILES]: (state, resp) => {
@@ -115,12 +115,15 @@ const mutations = {
     state.messages = []
   },
   [CARD_FILES_AND_MESSAGES.MERGE_FILES_AND_MESSAGES]: (state) => {
-    state.files.forEach(item => {
-      item.msg = item.file_name
-    })
-
+    console.log('messages: ', state.messages, 'files: ', state.files)
     state.messages = state.messages.concat(state.files)
     state.messages.sort((a, b) => {
+      if (!a.file_name && !a.date_create.includes('Z')) {
+        a.date_create += 'Z'
+      }
+      if (!b.file_name && !b.date_create.includes('Z')) {
+        b.date_create += 'Z'
+      }
       return new Date(a.date_create) - new Date(b.date_create)
     })
   }

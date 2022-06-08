@@ -10,7 +10,7 @@ import {
 import NavBarItem from '@/components/NavBarItem.vue'
 import Icon from '@/components/Icon.vue'
 import Popper from 'vue3-popper'
-import NavBarSearch from '@/components/NavBarSearch.vue'
+import NavRightButtons from '@/components/Navbar/Navrightbuttons.vue'
 import properties from '@/icons/properties.js'
 import add from '@/icons/add.js'
 import arrowForward from '@/icons/arrow-forward.js'
@@ -18,7 +18,6 @@ import arrowDown from '@/icons/arrow-down.js'
 
 import * as TASK from '@/store/actions/tasks'
 import * as CARD from '@/store/actions/cards'
-import { PATCH_SETTINGS } from '@/store/actions/navigator.js'
 import { SELECT_PROJECT } from '@/store/actions/projects'
 
 const UID_TO_ACTION = {
@@ -71,11 +70,7 @@ const closeProperties = () => {
   store.dispatch('asidePropertiesToggle', false)
 }
 
-const localization = computed(() => store.state.localization.localization)
 const isTaskHoverPopperActive = ref(false)
-const settings = computed(() => {
-  return store.state.navigator.navigator.settings
-})
 // const isTaskStatusPopperActive = ref(false)
 const toggleTaskHoverPopper = (val) => {
   isTaskHoverPopperActive.value = val
@@ -100,123 +95,8 @@ const menuOpenLg = () => {
   store.dispatch('asideLgToggle', true)
 }
 
-const updateSettings = () => {
-  store.dispatch(
-    PATCH_SETTINGS,
-    {
-      show_completed_tasks: settings.value.show_completed_tasks ? 1 : 0,
-      add_task_to_begin: settings.value.add_task_to_begin ? 1 : 0,
-      cal_number_of_first_week: settings.value.cal_number_of_first_week ? 1 : 0,
-      cal_show_week_number: settings.value.cal_show_week_number ? 1 : 0,
-      nav_show_tags: settings.value.nav_show_tags ? 1 : 0,
-      nav_show_overdue: settings.value.nav_show_overdue ? 1 : 0,
-      nav_show_summary: settings.value.nav_show_summary ? 1 : 0,
-      nav_show_emps: settings.value.nav_show_emps ? 1 : 0,
-      nav_show_markers: settings.value.nav_show_markers ? 1 : 0,
-      language: settings.value.language,
-      stopwatch: settings.value.stopwatch ? 1 : 0,
-      cal_work_time: settings.value.cal_work_time,
-      reminders_in_n_minutes: settings.value.reminders_in_n_minutes,
-      cal_work_week: settings.value.cal_work_week,
-      compact_mode: settings.value.compact_mode ? 1 : 0
-    }
-  ).then(() => {
-    requestLastVisitedNav()
-  })
-}
-
 // Copypasted from Home.vue
 // TODO: DRY
-const requestLastVisitedNav = () => {
-  if (store.state.auth.token) {
-    // Process saved last visited nav
-    if (navStack.value.length && navStack.value.length > 0) {
-      if (navStack.value[navStack.value.length - 1].key === 'taskListSource') {
-        store.dispatch(UID_TO_ACTION[navStack.value[navStack.value.length - 1].value.uid], navStack.value[navStack.value.length - 1].value.param)
-        store.commit('basic', { key: 'mainSectionState', value: 'tasks' })
-        store.commit('basic', { key: navStack.value[navStack.value.length - 1].key, value: navStack.value[navStack.value.length - 1].value })
-      }
-    } else {
-      store.commit('basic', { key: 'taskListSource', value: { uid: '901841d9-0016-491d-ad66-8ee42d2b496b', param: null } })
-      // TODO: here we need localization
-      store.commit(
-        'updateStackWithInitValue',
-        { name: 'Today', key: 'taskListSource', value: { uid: '901841d9-0016-491d-ad66-8ee42d2b496b', param: null } }
-      )
-
-      store.dispatch(TASK.TASKS_REQUEST, new Date())
-        .then(() => {
-          store.commit(TASK.CLEAN_UP_LOADED_TASKS)
-        })
-        .catch((err) => console.log(err))
-    }
-  }
-  // After navigator is loaded we are trying to set up last visited navElement
-  // Checking if last navElement is a gridSource
-  if (navStack.value.length && navStack.value.length > 0) {
-    if (navStack.value[navStack.value.length - 1].key === 'greedSource') {
-      store.commit('basic', { key: 'greedPath', value: navStack.value[navStack.value.length - 1].greedPath })
-      store.commit('basic', { key: 'mainSectionState', value: 'greed' })
-
-      // If last navElement is related to processed navigator instance with 'new_' prefix
-      // then we pass entire object from storeNavigator
-      if (['new_private_projects', 'new_emps', 'new_delegate', 'new_private_boards'].includes(navStack.value[navStack.value.length - 1].greedPath)) {
-        store.commit('basic', { key: navStack.value[navStack.value.length - 1].key, value: storeNavigator.value[navStack.value[navStack.value.length - 1].greedPath] })
-
-      // if last visited navElem is in nested in children, then we trying to find these children with visitChildren function
-      // from storeNavigator
-      } else if (['tags_children', 'projects_children', 'boards_children'].includes(navStack.value[navStack.value.length - 1].greedPath)) {
-        if (navStack.value[navStack.value.length - 1].greedPath === 'tags_children') {
-          // nested lookup for tags
-          visitChildren(storeNavigator.value.tags.items, value => {
-            if (value.uid === navStack.value[navStack.value.length - 1].uid) {
-              store.commit('basic', { key: navStack.value[navStack.value.length - 1].key, value: value.children })
-            }
-          })
-        }
-
-        // nested lookup for shared and private projects
-        if (navStack.value[navStack.value.length - 1].greedPath === 'projects_children') {
-          // Requests project's tasks
-          store.dispatch(UID_TO_ACTION[navStack.value[navStack.value.length - 1].global_property_uid], navStack.value[navStack.value.length - 1].uid)
-          store.commit('basic', { key: 'taskListSource', value: { uid: navStack.value[navStack.value.length - 1].global_property_uid, param: navStack.value[navStack.value.length - 1].uid } })
-
-          visitChildren(storeNavigator.value.new_private_projects[0].items, value => {
-            if (value.uid === navStack.value[navStack.value.length - 1].uid) {
-              store.commit('basic', { key: navStack.value[navStack.value.length - 1].key, value: value.children })
-            }
-          })
-          visitChildren(storeNavigator.value.new_private_projects[1].items, value => {
-            if (value.uid === navStack.value[navStack.value.length - 1].uid) {
-              store.commit('basic', { key: navStack.value[navStack.value.length - 1].key, value: value.children })
-            }
-          })
-        }
-
-        // nested lookup for shared and private boards
-        if (navStack.value[navStack.value.length - 1].greedPath === 'boards_children') {
-          // Requests project's tasks
-          store.dispatch(UID_TO_ACTION[navStack.value[navStack.value.length - 1].global_property_uid], navStack.value[navStack.value.length - 1].uid)
-          store.commit('basic', { key: 'cardSource', value: { uid: navStack.value[navStack.value.length - 1].global_property_uid, param: navStack.value[navStack.value.length - 1].uid } })
-
-          visitChildren(storeNavigator.value.new_private_boards[0].items, value => {
-            if (value.uid === navStack.value[navStack.value.length - 1].uid) {
-              store.commit('basic', { key: navStack.value[navStack.value.length - 1].key, value: value.children })
-            }
-          })
-          visitChildren(storeNavigator.value.new_private_boards[1].items, value => {
-            if (value.uid === navStack.value[navStack.value.length - 1].uid) {
-              store.commit('basic', { key: navStack.value[navStack.value.length - 1].key, value: value.children })
-            }
-          })
-        }
-      // colors
-      } else {
-        store.commit('basic', { key: navStack.value[navStack.value.length - 1].key, value: storeNavigator.value[navStack.value[navStack.value.length - 1].greedPath].items })
-      }
-    }
-  }
-}
 
 const clickOnGridCard = (item, index) => {
   if (!item || !item.greedPath) {
@@ -331,7 +211,7 @@ const openProjectProperties = (project, parentProjectUid = '') => {
   <nav
     v-show="isNavBarVisible"
     class="top-0 left-0 right-0 fixed flex h-14 z-[10] bg-[#f4f5f7] font-['Roboto']
-    transition-position xl:ml-72 w-auto lg:items-center dark:bg-gray-800 dark:border-gray-800"
+    transition-position xl:ml-72 w-auto lg:items-center dark:bg-gray-800 dark:border-gray-800 z-auto"
     :class="{ 'ml-80':isAsideMobileExpanded, 'mr-96':isPropertiesMobileExpanded }"
   >
     <div class="flex-1 items-stretch flex h-14 py-2 pl-3">
@@ -430,64 +310,8 @@ const openProjectProperties = (project, parentProjectUid = '') => {
         </div>
       </nav-bar-item>
     </div>
-    <div
-      v-if="navStack[0] && navStack[0].greedPath !== 'new_private_projects' && navStack[0].greedPath !== 'new_delegate' && navStack[0].name !== 'Рабочий стол' && navStack[0].name !== 'Очередь'"
-      class="flex-none items-stretch flex h-14"
-    >
-      <nav-bar-item class="px-3">
-        <Popper
-          class="items-center"
-          arrow
-          :class="isDark ? 'dark' : 'light'"
-          placement="bottom"
-        >
-          <template #content>
-            <div
-              class="w-60 flex flex-col"
-            >
-              <div class="flex items-center justify-between">
-                <p class="text-sm font-semibold mr-1">
-                  {{ localization.show_completed_tasks }}
-                </p>
-                <input
-                  v-if="settings"
-                  v-model="settings.show_completed_tasks"
-                  class="w-6 h-6"
-                  type="checkbox"
-                  @change="updateSettings"
-                >
-              </div>
-            </div>
-          </template>
-          <icon
-            :path="properties.path"
-            :width="properties.width"
-            :height="properties.height"
-            :box="properties.viewBox"
-          />
-        </Popper>
-      </nav-bar-item>
-      <!-- Search -->
-      <nav-bar-item class="rounded-lg hover:text-gray-700 cursor-auto px-0">
-        <svg
-          width="21"
-          height="21"
-          viewBox="0 0 21 21"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M20 20L15.514 15.506L20 20ZM18 9.5C18 11.7543 17.1045 13.9163 15.5104 15.5104C13.9163 17.1045 11.7543 18 9.5 18C7.24566 18 5.08365 17.1045 3.48959 15.5104C1.89553 13.9163 1 11.7543 1 9.5C1 7.24566 1.89553 5.08365 3.48959 3.48959C5.08365 1.89553 7.24566 1 9.5 1C11.7543 1 13.9163 1.89553 15.5104 3.48959C17.1045 5.08365 18 7.24566 18 9.5V9.5Z"
-            stroke="black"
-            stroke-opacity="0.5"
-            stroke-width="2"
-            stroke-linecap="round"
-          />
-        </svg>
-      </nav-bar-item>
-      <nav-bar-item class="px-0">
-        <nav-bar-search :placeholder="localization.search" />
-      </nav-bar-item>
+    <div>
+      <NavRightButtons></NavRightButtons>
     </div>
   </nav>
 </template>

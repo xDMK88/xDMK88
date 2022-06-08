@@ -67,7 +67,7 @@ const blur = e => {
 
 const inputElClass = computed(() => {
   const base = [
-    'px-3 py-2 max-w-full text-sm border-gray-300 disabled:border-stone-500 disabled:bg-amber-50 disabled:ring-0 focus:ring-0 rounded-lg w-full',
+    'px-3 pl-10 py-2 max-w-full text-sm border-gray-300 disabled:border-stone-500 disabled:bg-amber-50 disabled:ring-0 focus:ring-0 rounded-lg w-full',
     // 'focus:border-stone-500 focus:bg-amber-50',
     'focus:border-gray-300',
     'dark:placeholder-gray-400',

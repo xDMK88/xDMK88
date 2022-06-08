@@ -1003,15 +1003,15 @@ export default {
             }
           }
           this.selectedTask.msg = decodeURIComponent(this.taskMsg)
+          const wrapperElement = document.getElementById('content').lastElementChild
+          console.log(wrapperElement)
+          wrapperElement.scrollIntoView({ behavior: 'smooth' })
         })
       this.currentAnswerMessageUid = ''
       this.taskMsg = ''
       this.$nextTick(function () {
         this.onInputTaskMsg()
       })
-      const wrapperElement = document.getElementById('content').lastElementChild
-      console.log(wrapperElement)
-      wrapperElement.scrollIntoView({ behavior: 'smooth' })
     },
     onInputTaskMsg: function () {
       // после этого рассчитает новый scrollHeight
@@ -1027,9 +1027,6 @@ export default {
       //
       this.$refs.taskMsgEdit.style.height = scrollHeight + 'px'
       document.documentElement.style.setProperty('--hex-parent-height', sendHeight + 'px')
-      const wrapperElement = document.getElementById('content').lastElementChild
-      console.log(wrapperElement)
-      wrapperElement.scrollIntoView({ behavior: 'smooth' })
     },
     addNewLineTaskMsg: function () {
       this.taskMsg += '\n'

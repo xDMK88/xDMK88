@@ -104,7 +104,7 @@ const gotoChildren = (value) => {
       :key="pindex"
     >
       <div
-        class="flex items-center bg-white dark:bg-gray-700 rounded-xl shadow hover:shadow-md px-5 relative min-h-[80px] cursor-pointer"
+        class="flex items-center bg-white dark:bg-gray-700 rounded-lg shadow hover:shadow-md px-5 relative min-h-[80px] cursor-pointer"
         :class="{ 'ring-4 ring-orange-300': focusedProject == project.uid && isPropertiesMobileExpanded }"
         @click.stop="gotoChildren(project)"
       >
@@ -119,7 +119,7 @@ const gotoChildren = (value) => {
         />
         <div
           v-if="project.color != '#A998B6'"
-          :style="{ backgroundColor: project.color }"
+          :style="'border-top: 6px solid ' + project.color"
           class="w-full h-4 absolute top-0 right-0 rounded-t-xl"
         />
         <div>

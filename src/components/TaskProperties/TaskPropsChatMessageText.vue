@@ -180,9 +180,6 @@ export default {
   methods: {
     onAnswerClick () {
       this.$emit('answer')
-      const wrapperElement = document.getElementById('content').lastElementChild
-      console.log(wrapperElement)
-      wrapperElement.scrollIntoView({ behavior: 'smooth' })
     }
   }
 }

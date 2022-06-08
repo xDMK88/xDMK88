@@ -4,7 +4,6 @@ import AudioPreloader from '@/components/properties/AudioPreloader.vue'
 import DocPreloader from '@/components/properties/DocPreloader.vue'
 import MoviePreloader from '@/components/properties/MoviePreloader.vue'
 import FilePreloader from '@/components/properties/FilePreloader.vue'
-// import CardChatLoader from '@/components/properties/CardChatLoader.vue'
 import { computed } from 'vue'
 const props = defineProps({
   message: Object
@@ -45,12 +44,6 @@ const FileIsAudio = computed(() => ['mp3', 'wav', 'm4a'].includes(fileExtension.
   <div
     class="bg-[#F4F5F7] py-[10px] px-[12px] rounded-t-[12px] rounded-bl-[12px] mb-[5px] float-right relative max-w-[300px]"
   >
-    <!--
-    <card-chat-loader
-      status="loading"
-      class="absolute bottom-[10px]"
-    />
-    -->
     <image-preloader
       v-if="FileIsImage"
       :file-uid="props.message.uid"

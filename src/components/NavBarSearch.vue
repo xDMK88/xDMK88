@@ -44,8 +44,7 @@ const props = defineProps({
     :placeholder="props.placeholder"
     borderless
     maxlength="100"
-    transparent
     @keyup.enter="sendSearchRequest"
   />
-
+  </div>
 </template>

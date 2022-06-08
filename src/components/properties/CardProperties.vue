@@ -1,7 +1,7 @@
 <script setup>
-import { computed, ref } from 'vue'
+import { computed, ref, nextTick } from 'vue'
 import { useStore } from 'vuex'
-import { CREATE_MESSAGE_REQUEST, CREATE_FILES_REQUEST } from '@/store/actions/cardfilesandmessages'
+import { CREATE_MESSAGE_REQUEST, CREATE_FILES_REQUEST, ADD_MESSAGE_LOCALLY, REMOVE_MESSAGE_LOCALLY } from '@/store/actions/cardfilesandmessages'
 import { CHANGE_CARD_RESPONSIBLE_USER, CHANGE_CARD_NAME, CHANGE_CARD_COMMENT, CHANGE_CARD_COLOR, CHANGE_CARD_COVER, DELETE_CARD } from '@/store/actions/cards'
 
 import CardName from '@/components/properties/CardName.vue'
@@ -88,8 +88,15 @@ const createCardMessage = () => {
 }
 
 const changeCardColor = (color) => {
-  store.dispatch(CHANGE_CARD_COLOR, { cardUid: selectedCard.value.uid, color: color }).then(() => {
+  store.dispatch(CHANGE_CARD_COLOR, { cardUid: selectedCard.value.uid, color: color }).then((resp) => {
     selectedCard.value.cover_color = color
+    selectedCard.value.cover_link = ''
+    // Replacing old cover file with new cover file
+    for (const message of resp.data.deletefiles) store.commit(REMOVE_MESSAGE_LOCALLY, message)
+    // Here I use nextTick because if we instantly start adding new files, then onMounted hook won't be triggered, MAGIC but works
+    nextTick(() => {
+      for (const message of resp.data.newfiles) store.commit(ADD_MESSAGE_LOCALLY, message)
+    })
   })
 }
 
@@ -106,7 +113,14 @@ const changeCardCover = (event) => {
   }
   console.log(data)
   store.dispatch(CHANGE_CARD_COVER, data).then((resp) => {
+    selectedCard.value.cover_color = resp.data.card.cover_color
     selectedCard.value.cover_link = resp.data.card.cover_link
+    // Replacing old cover file with new cover file
+    for (const message of resp.data.deletefiles) store.commit(REMOVE_MESSAGE_LOCALLY, message)
+    // Here I use nextTick because if we instantly start adding new files, then onMounted hook won't be triggered, MAGIC but works
+    nextTick(() => {
+      for (const message of resp.data.newfiles) store.commit(ADD_MESSAGE_LOCALLY, message)
+    })
   })
 }
 
@@ -141,6 +155,7 @@ const removeCard = () => {
     <card-cover
       :cover-color="selectedCard.cover_color"
       :cover-link="selectedCard.cover_link"
+      :can-edit="canEdit"
       @onChangeCardColor="changeCardColor"
       @onChangeCardCover="changeCardCover"
     />

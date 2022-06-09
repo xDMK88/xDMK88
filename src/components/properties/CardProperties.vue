@@ -26,6 +26,7 @@ const employeesByEmail = computed(() => store.state.employees.employeesByEmail)
 const cardMessages = computed(() => store.state.cardfilesandmessages.messages)
 
 const showChangeCardBudget = ref(false)
+const showFilesOnly = ref(false)
 
 const scrollDown = () => {
   const asideRight = document.getElementById('aside-right')
@@ -209,7 +210,9 @@ const removeCard = () => {
       <card-options
         :date-create="selectedCard.date_create"
         :can-edit="canEdit"
+        :show-files-only="showFilesOnly"
         @clickRemoveButton="showDeleteCard = true"
+        @toggleShowOnlyFiles="showFilesOnly = !showFilesOnly"
       />
     </div>
 
@@ -225,6 +228,7 @@ const removeCard = () => {
       :messages="cardMessages"
       :current-user-uid="user.current_user_uid"
       :employees="employees"
+      :show-files-only="showFilesOnly"
     />
 
     <!-- Card chat input -->

@@ -44,7 +44,6 @@ const changeName = (arg) => {
 }
 
 const changeCardBudget = (budget) => {
-  console.log('changing card budget: ', budget)
   const data = { cardUid: selectedCard.value.uid, budget: budget * 100 }
   store.dispatch(CHANGE_CARD_BUDGET, data).then((resp) => {
     selectedCard.value.cost = resp.data.cost
@@ -205,6 +204,7 @@ const removeCard = () => {
         :budget="selectedCard.cost"
         :can-edit="canEdit"
         @click="showChangeCardBudget = true"
+        @onWipeBudget="changeCardBudget"
       />
       <card-options
         :date-create="selectedCard.date_create"

@@ -1,5 +1,6 @@
 <script setup>
 import { computed } from 'vue'
+defineEmits(['onWipeBudget'])
 const props = defineProps({
   budget: Number,
   canEdit: Boolean
@@ -31,7 +32,7 @@ const budget = computed(() => {
       width="17"
       height="12"
       class="mr-[7px]"
-      :class="{'group-hover:hidden': props.canEdit }"
+      :class="{'group-hover:hidden': props.canEdit && props.budget }"
       viewBox="0 0 17 12"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
@@ -60,8 +61,8 @@ const budget = computed(() => {
     </svg>
     <div
       class="flex items-center justify-center p-[4.5px] mr-[4px] hidden"
-      :class="{'group-hover:block': props.canEdit }"
-      @click.stop="$emit('changeResponsible', '')"
+      :class="{ 'group-hover:block': props.canEdit && props.budget }"
+      @click.stop="$emit('OnWipeBudget', 0)"
     >
       <svg
         width="11"

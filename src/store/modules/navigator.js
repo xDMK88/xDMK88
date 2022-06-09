@@ -8,6 +8,7 @@ import { PUSH_COLOR, PUSH_MYCOLOR } from '../actions/colors'
 import { PUSH_DEPARTMENT } from '../actions/departments'
 import { PUSH_EMPLOYEE, PUSH_EMPLOYEE_BY_EMAIL } from '../actions/employees'
 import {
+  NAVIGATOR_CHANGE_EMPLOYEE_DEPARTMENT,
   NAVIGATOR_ERROR,
   NAVIGATOR_PUSH_BOARD,
   NAVIGATOR_PUSH_COLOR,
@@ -427,6 +428,32 @@ const mutations = {
       (dep) => dep.uid === uidDepartment
     )
     if (indexDeps !== -1) state.navigator.deps.items.splice(indexDeps, 1)
+  },
+  [NAVIGATOR_CHANGE_EMPLOYEE_DEPARTMENT]: (state, data) => {
+    const uidDepOld =
+      data.uidDepartmentOld === '00000000-0000-0000-0000-000000000000'
+        ? ''
+        : data.uidDepartmentOld
+    const uidDepNew =
+      data.uidDepartmentNew === '00000000-0000-0000-0000-000000000000'
+        ? ''
+        : data.uidDepartmentNew
+    const indexEmpsOld = state.navigator.new_emps.findIndex(
+      (emps) => emps.dep.uid === uidDepOld
+    )
+    const indexEmpsNew = state.navigator.new_emps.findIndex(
+      (emps) => emps.dep.uid === uidDepNew
+    )
+    const empsOld = state.navigator.new_emps[indexEmpsOld]
+    const empsNew = state.navigator.new_emps[indexEmpsNew]
+    console.log('NAVIGATOR_CHANGE_EMPLOYEE_DEPARTMENT', empsOld, empsNew)
+    if (empsOld && empsNew && empsOld.dep.uid !== empsNew.dep.uid) {
+      // отдел поменялся - перемещаем сотрудника
+      const indexEmp = empsOld.items.findIndex((emp) => emp.uid === data.uidEmp)
+      const [emp] = empsOld.items.splice(indexEmp, 1)
+      empsNew.items.push(emp)
+      emp.uid_dep = empsNew.dep.uid || '00000000-0000-0000-0000-000000000000'
+    }
   },
   [NAVIGATOR_PUSH_PROJECT]: (state, projects) => {
     for (const project of projects) {

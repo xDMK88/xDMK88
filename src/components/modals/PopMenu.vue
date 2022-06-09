@@ -2,6 +2,7 @@
   <Popper
     arrow
     class="pop-menu-light"
+    :disabled="disabled"
     :placement="placement"
     @open:popper="openMenu"
     @close:popper="closeMenu"
@@ -29,6 +30,10 @@ export default {
     placement: {
       type: String,
       default: 'bottom'
+    },
+    disabled: {
+      type: Boolean,
+      default: false
     }
   },
   emits: ['openMenu', 'closeMenu'],

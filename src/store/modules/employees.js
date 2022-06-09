@@ -1,4 +1,8 @@
-import { NAVIGATOR_PUSH_EMPLOYEE } from '@/store/actions/navigator'
+import * as DEPARTMENTS from '@/store/actions/departments'
+import {
+  NAVIGATOR_CHANGE_EMPLOYEE_DEPARTMENT,
+  NAVIGATOR_PUSH_EMPLOYEE
+} from '@/store/actions/navigator'
 import axios from 'axios'
 import { notify } from 'notiwind'
 import * as EMPLOYEE from '../actions/employees'
@@ -37,6 +41,23 @@ const actions = {
           reject(err)
         })
     })
+  },
+  [EMPLOYEE.CHANGE_EMPLOYEE_DEP]: async ({ commit, dispatch }, data) => {
+    if (data.depOld?.emails) {
+      data.depOld.emails = data.depOld.emails.filter(
+        (email) => email !== data.emailEmp
+      )
+      await dispatch(DEPARTMENTS.UPDATE_DEPARTMENT_REQUEST, data.depOld)
+    }
+    if (data.depNew?.emails) {
+      data.depNew.emails.push(data.emailEmp)
+      await dispatch(DEPARTMENTS.UPDATE_DEPARTMENT_REQUEST, data.depNew)
+    }
+    // обновляем навигатор
+    commit(NAVIGATOR_CHANGE_EMPLOYEE_DEPARTMENT, data)
+    // обновляем сотрудника
+    commit('ChangeEmployeeDep', data)
+    return 'ok'
   },
   [EMPLOYEE.CHANGE_EMPLOYEE_NAME]: ({ commit, dispatch }, data) => {
     return new Promise((resolve, reject) => {
@@ -105,6 +126,10 @@ const mutations = {
   ChangeEmployeeName: (state, data) => {
     const employee = state.employeesByEmail[data.email.toLowerCase()]
     employee.name = data.name
+  },
+  ChangeEmployeeDep: (state, data) => {
+    const employee = state.employees[data.uidEmp]
+    employee.dep = data.uidDepartmentNew
   }
 }
 

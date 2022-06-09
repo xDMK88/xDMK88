@@ -5,7 +5,7 @@
     <div
       v-if="project.color != '#A998B6'"
       :style="'border-top: 6px solid ' + project.color"
-      class="w-full h-[4px] absolute top-0 right-0 rounded-t-[8px]"
+      class="w-full absolute top-0 right-0 rounded-t-xl h-[48px]"
     />
     <div class="w-full">
       <div class="flex items-center relative">

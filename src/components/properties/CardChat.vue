@@ -60,7 +60,7 @@ const getMessageWeekDateString = (dateCreate) => {
 </script>
 
 <template>
-  <div class="flex flex-col pb-[100px]">
+  <div class="flex flex-col pb-[100px] max-h-[400px]">
     <div
       v-for="(message, index) in messages"
       :key="index"

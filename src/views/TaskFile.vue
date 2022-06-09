@@ -8,7 +8,7 @@ let intervalId = 0
 const store = useStore()
 const router = useRouter()
 const fileHasBeenLoaded = ref(false)
-const text = ref('We are downloading card file for you')
+const text = ref('Идет загрузка файла. Пожалуйста, подождите')
 const dots = ref('.')
 
 onMounted(() => {

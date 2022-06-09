@@ -15,6 +15,7 @@ const computedValue = computed({
 
 </script>
 <template>
+<div class="flex w-full">
   <div class="rounded-l-[10px] flex items-center justify-center bg-[#F4F5F7] pl-[15px]">
     <label for="file-input">
       <svg
@@ -73,4 +74,5 @@ const computedValue = computed({
       </svg>
     </div>
   </div>
+</div>
 </template>

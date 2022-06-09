@@ -5,12 +5,14 @@
   :class="{
     'bg-gray-200 dark:bg-gray-800':
       isTaskComplete &&
-      task.uid_marker !== '00000000-0000-0000-0000-000000000000',
-    'border-t-8': colors[task.uid_marker]
+      task.uid_marker !== '00000000-0000-0000-0000-000000000000'
   }"
 >
   <div class="w-1/2">
-    <div class="flex justify-between items-center mb-6">
+    <div
+      class="flex justify-between items-center mb-6 p-2 rounded-lg"
+      :style="{ backgroundColor: colors[task.uid_marker] ? colors[task.uid_marker].back_color : '', color: colors[task.uid_marker] ? colors[task.uid_marker].fore_color : '' }"
+    >
       <!-- task info/status -->
       <div class="flex items-center">
         <TaskStatus
@@ -27,12 +29,12 @@
           placeholder="Введите название задачи"
           :no-nl="false"
           :no-html="false"
+          :style="{ color: getValidForeColor(colors[task.uid_marker]?.fore_color) }"
           :class="{ 'uppercase': !task._isEditable && colors[task.uid_marker] && colors[task.uid_marker].uppercase, 'text-gray-500': task.status == 1 || task.status == 7, 'line-through': task.status == 1 || task.status == 7 }"
           @focusout="clearTaskFocus(task)"
           @dblclick.stop="editTaskName(task)"
           @keydown.enter="updateTask($event, task); this.$emit('changeValue', {_isEditable: false})"
         />
-        <!-- :style="{ color: getValidForeColor(colors[task.uid_marker]?.fore_color) }" позволяет изменить цвет названия задачи -->
       </div>
       <Popper
         class="items-center"

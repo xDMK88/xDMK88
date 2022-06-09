@@ -7,7 +7,7 @@ import { FILE_REQUEST } from '@/store/actions/cardfilesandmessages'
 let intervalId = 0
 const store = useStore()
 const router = useRouter()
-const text = ref('We are downloading card file for you')
+const text = ref('Идет загрузка файла. Пожалуйста, подождите')
 const dots = ref('.')
 
 onMounted(() => {

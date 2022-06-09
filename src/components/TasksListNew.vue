@@ -282,7 +282,7 @@
             :text="employees[props.node.info.uid_customer].name"
             :color-bg-class="{ 'border-red-500': user.current_user_email == props.node.info.email_performer, 'bg-gray-400': user.current_user_email != props.node.info.email_performer, 'bg-opacity-50': props.node.info.status == 1 || props.node.info.status == 7, 'bg-red-500': user.current_user_email == props.node.info.email_performer }"
             icon-height="15"
-            :image="employees[props.node.info.uid_customer].fotolink"
+            :image="employees[props.node.info.uid_customer] ? employees[props.node.info.uid_customer].fotolink : ''"
             class="h-[22px]"
           />
           <!-- Performer -->
@@ -293,7 +293,7 @@
             :icon-height="props.node.info.performerreaded ? performerRead.height : performerNotRead.height"
             :icon-box="props.node.info.performerreaded ? performerRead.viewBox : performerNotRead.viewBox"
             :icon-path="props.node.info.performerreaded ? performerRead.path : performerNotRead.path"
-            :image="employees[props.node.info.uid_performer].fotolink"
+            :image="employees[props.node.info.uid_performer] ? employees[props.node.info.uid_performer].fotolink : ''"
             :color-bg-class="{ 'bg-gray-400': user.current_user_email != props.node.info.email_performer, 'bg-green-500': user.current_user_uid == props.node.info.uid_customer, 'bg-opacity-50': props.node.info.status == 1 || props.node.info.status == 7 }"
             class="h-[22px]"
           />
@@ -564,7 +564,6 @@ export default {
         .then(() => {
           store.commit(TASK.ADD_LOADED_TASK, arg.id)
           store.commit(TASK.UPDATE_NEW_TASK_LIST, store.state.tasks.subtasks.tasks)
-
           // remove fake-uid from children array if subtasks are loaded
           for (let i = 0; i < arg.children.length; i++) {
             if (arg.children[i] === 'fake-uid') {

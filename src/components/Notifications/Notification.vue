@@ -13,6 +13,16 @@ const UID_TO_ACTION = {
   '511d871c-c5e9-43f0-8b4c-e8c447e1a823': TASK.DELEGATED_TO_USER_TASKS_REQUEST
 }
 
+const parentID = computed(() => {
+  return navStack.value[0].value[1].items[0].parentID
+})
+const email = computed(() => {
+  return navStack.value[0].value[1].items[0].email
+})
+const name = computed(() => {
+  return navStack.value[0].value[1].items[0].name
+})
+
 function redirect () {
   store.commit('basic', { key: 'mainSectionState', value: 'greed' })
   store.commit('basic', { key: 'greedPath', value: 'new_delegate' })
@@ -25,15 +35,6 @@ function redirect () {
   store.commit('updateStackWithInitValue', navElem)
   store.commit('basic', { key: 'greedSource', value: storeNavigator.value.new_delegate })
 
-  const parentID = computed(() => {
-    return navStack.value[0].value[1].items[0].parentID
-  })
-  const email = computed(() => {
-    return navStack.value[0].value[1].items[0].email
-  })
-  const name = computed(() => {
-    return navStack.value[0].value[1].items[0].name
-  })
   store.dispatch(UID_TO_ACTION[parentID.value], email.value)
   navElem = {
     name: name.value,

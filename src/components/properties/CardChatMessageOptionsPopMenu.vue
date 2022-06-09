@@ -6,10 +6,14 @@ export default {
     PopMenu,
     PopMenuItem
   },
-  setup () {
-
+  props: {
+    canDelete: {
+      type: Boolean,
+      default: true
+    }
   }
 }
+
 </script>
 <template>
   <PopMenu
@@ -31,6 +35,7 @@ export default {
         Копировать
       </PopMenuItem>
       <PopMenuItem
+        v-if="canDelete"
         icon="delete"
         @click="clickDeleteColumn(column, $event)"
       >

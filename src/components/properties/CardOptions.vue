@@ -16,9 +16,9 @@ const cardDateCreate = computed(() => {
 
 </script>
 <template>
-  <div class="flex items-center bg-[#F4F5F7] rounded-[6px] text-[#575758] text-[12px] px-[13px] py-[5px] cursor-pointer font-[500]">
+  <div class="flex items-center bg-[#F4F5F7] rounded-[6px] text-[#575758] text-[12px] cursor-pointer font-[500]">
     <PopMenu>
-      <div class="">
+      <div class="px-[13px] py-[5px]">
         <svg
           width="4"
           height="16"

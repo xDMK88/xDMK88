@@ -1,6 +1,6 @@
 <template>
 <div
-  class="bg-white py-6 px-5 rounded-lg flex justify-between"
+  class="bg-white py-6 px-5 rounded-lg flex justify-between max-h-[700px] overflow-auto scroll-style"
   :style="{ borderColor: colors[task.uid_marker] ? colors[task.uid_marker].back_color : ''}"
   :class="{
     'bg-gray-200 dark:bg-gray-800':
@@ -8,7 +8,7 @@
       task.uid_marker !== '00000000-0000-0000-0000-000000000000'
   }"
 >
-  <div class="w-1/2">
+  <div class="w-5/6">
     <div
       class="flex justify-between items-center mb-6 p-2 rounded-lg"
       :style="{ backgroundColor: colors[task.uid_marker] ? colors[task.uid_marker].back_color : '', color: colors[task.uid_marker] ? colors[task.uid_marker].fore_color : '' }"
@@ -152,7 +152,7 @@
     </div>
     <TaskPropsCommentEditor
       v-show="task.comment.length || task.uid_customer === user.current_user_uid"
-      class="mt-3 max-h-[200px] min-h-[50px] scroll-style overflow-auto"
+      class="mt-3"
       :comment="task.comment"
       :can-edit="task.uid_customer === user.current_user_uid"
       @endChangeComment="endChangeComment"
@@ -170,23 +170,23 @@
       class="flex flex-col max-w-1/2 border-t mt-2 pt-2"
       :class="task.uid_marker !== '00000000-0000-0000-0000-000000000000' ? 'bg-white p-1 mt-1 rounded-lg' : ''"
     >
-      <p
+      <!-- <p
         v-if="taskMessages.length > 2 && !showAllMessages"
         class="text-gray-500 dark:text-gray-100 text-sm text-center cursor-pointer"
         style="border-bottom: 1px dashed; padding-bottom: 0; width: 125px; margin: 0 auto;"
         @click="scrollDown"
       >
         ПОКАЗАТЬ ВСЕ
-      </p>
+      </p> -->
       <!-- chat -->
       <TaskPropsChatMessages
         v-if="taskMessages?.length"
         id="content"
-        class="mt-3 h-[300px] scroll-style overflow-auto"
+        class="mt-3"
         :task="task"
         :task-messages="taskMessages"
         :current-user-uid="user.current_user_uid"
-        :showAllMessages="showAllMessages"
+        :showAllMessages="true"
       />
       <!-- input -->
       <TaskPropsInputForm

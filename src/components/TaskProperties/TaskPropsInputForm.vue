@@ -9,7 +9,7 @@
       class="сopypastefiles"
     />
     <div class="quote-request" />
-    <div class="input-group bg-gray-100 rounded-lg">
+    <div class="input-group bg-gray-100 rounded-lg w-1/2">
       <span class="input-group-addon input-group-attach dark:bg-gray-800 dark:text-gray-100">
         <div class="example-1">
           <label class="label">

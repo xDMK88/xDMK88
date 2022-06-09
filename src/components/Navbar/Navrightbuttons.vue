@@ -79,7 +79,17 @@ const updateSettings = () => {
     requestLastVisitedNav()
   })
 }
-const searchshow = ref(true)
+const searchshow = ref(false)
+const IconSearchHide = ref(true)
+
+function searchClick () {
+  searchshow.value = true
+  IconSearchHide.value = false
+}
+function HideSearch () {
+  searchshow.value = false
+  IconSearchHide.value = true
+}
 const requestLastVisitedNav = () => {
   if (store.state.auth.token) {
     // Process saved last visited nav
@@ -173,12 +183,12 @@ const requestLastVisitedNav = () => {
 </script>
 <template>
 <div
-  v-if="navStack[0] && navStack[0].greedPath !== 'new_private_projects' && navStack[0].greedPath !== 'new_delegate' && navStack[0].name !== 'Рабочий стол' && navStack[0].name !== 'Очередь'"
-  class="transition-position flex-none items-stretch lg:items-center flex h-14 relative right-0 mr-32"
+  v-if="navStack[0] && navStack[0].greedPath !== 'new_private_projects' && navStack[0].greedPath !== 'new_delegate' && navStack[0].name !== 'Рабочий стол' && navStack[0].name !== 'Очередь' && navStack[0].greedPath !== 'new_private_boards'"
+  class="transition-position flex-none items-stretch lg:items-center flex h-14 w-[300px] relative mr-0"
 >
-
 <!-- Search -->
-<!-- <nav-bar-item class="rounded-lg hover:text-gray-700 cursor-auto px-0" @click="searchClick">
+<nav-bar-item class="duration-200 right-0
+ease-out transition transform origin-top-right right-[-35%] rounded-lg hover:text-gray-700 cursor-auto px-0" @click="searchClick" v-if="IconSearchHide">
   <svg class="cursor-pointer"
     width="21"
     height="21"
@@ -194,10 +204,14 @@ const requestLastVisitedNav = () => {
       stroke-linecap="round"
     />
   </svg>
-</nav-bar-item> -->
-<nav-bar-item class="px-0" v-show="searchshow">
+  <span class="text-sm text-[#7E7E80] font-normal ml-1">{{localization.search}}</span>
+</nav-bar-item>
+
+<nav-bar-item class="px-0 relative mr-7 right-[12%] duration-200
+ease-out transition transform" @mouseleave="HideSearch" v-if="searchshow">
   <nav-bar-search :placeholder="localization.search" />
 </nav-bar-item>
+  <div class="flex absolute right-6">
   <nav-bar-item class="px-3 mt-1">
     <Popper
       class="items-center z-[99]"
@@ -255,5 +269,6 @@ const requestLastVisitedNav = () => {
       :box="filters.viewBox"
     />
   </nav-bar-item>
+  </div>
 </div>
 </template>

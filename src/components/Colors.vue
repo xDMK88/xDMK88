@@ -3,6 +3,7 @@ import Icon from '@/components/Icon.vue'
 import { computed, ref } from 'vue'
 import { useStore } from 'vuex'
 import * as TASK from '@/store/actions/tasks'
+import { setLocalStorageItem } from '@/store/helpers/functions'
 import { SELECT_COLOR } from '@/store/actions/colors'
 import properties from '@/icons/properties.js'
 import gridView from '@/icons/grid-view.js'
@@ -26,7 +27,7 @@ const focusedColor = ref('')
 
 const updateGridView = (value) => {
   store.commit('basic', { key: 'isGridView', value: value })
-  localStorage.setItem('isGridView', value)
+  setLocalStorageItem('isGridView', value)
 }
 
 const openProperties = (color) => {

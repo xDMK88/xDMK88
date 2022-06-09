@@ -1,6 +1,7 @@
 <script setup>
 import { computed, ref } from 'vue'
 import Icon from '@/components/Icon.vue'
+import { setLocalStorageItem } from '@/store/helpers/functions'
 import { useStore } from 'vuex'
 import properties from '@/icons/properties.js'
 import subArrow from '@/icons/arrow-sub.js'
@@ -25,7 +26,7 @@ const isGridView = computed(() => store.state.isGridView)
 
 const updateGridView = (value) => {
   store.commit('basic', { key: 'isGridView', value: value })
-  localStorage.setItem('isGridView', value)
+  setLocalStorageItem('isGridView', value)
 }
 
 const isPropertiesMobileExpanded = computed(() => store.state.isPropertiesMobileExpanded)

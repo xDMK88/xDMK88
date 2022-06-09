@@ -7,6 +7,7 @@ import calendar from './modules/calendar'
 import navbar from './modules/navbar'
 import user from './modules/user'
 import tasks from './modules/tasks'
+import { setLocalStorageItem } from '@/store/helpers/functions'
 import taskfilesandmessages from './modules/taskfilesandmessages'
 import cardfilesandmessages from './modules/cardfilesandmessages'
 import employees from './modules/employees'
@@ -111,7 +112,7 @@ export default createStore({
     darkMode ({ commit, state }) {
       const value = !state.darkMode
       document.documentElement.classList[value ? 'add' : 'remove']('dark')
-      localStorage.setItem(darkModeKey, value ? '1' : '0')
+      setLocalStorageItem(darkModeKey, value ? '1' : '0')
 
       commit('basic', {
         key: 'darkMode',

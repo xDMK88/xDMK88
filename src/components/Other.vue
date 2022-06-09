@@ -71,6 +71,7 @@
 import Icon from '@/components/Icon.vue'
 import ListBlocItem from '@/components/Common/ListBlocItem.vue'
 import gridView from '@/icons/grid-view.js'
+import { setLocalStorageItem } from '@/store/helpers/functions'
 import listView from '@/icons/list-view.js'
 import * as TASK from '@/store/actions/tasks.js'
 
@@ -201,7 +202,7 @@ export default {
   methods: {
     updateGridView (value) {
       this.$store.commit('basic', { key: 'isGridView', value: value })
-      localStorage.setItem('isGridView', value)
+      setLocalStorageItem('isGridView', value)
     },
     gotoChildren (value) {
       if (value.path) {

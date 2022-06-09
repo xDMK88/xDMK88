@@ -1261,7 +1261,6 @@ export default {
       </div>
       <div
         class="user_child_customer_custom"
-        @click="editTaskName"
       >
         <strong>
           <div
@@ -1270,10 +1269,9 @@ export default {
             class="form-control taskName-custom dark:bg-gray-900 dark:text-gray-100 dark:border-gray-900"
             data-placeholder="Task Name"
             style="font-weight: bold; font-size: 18px"
-            :contenteditable="isEditableTaskName"
+            :contenteditable="selectedTask.uid_customer === user.current_user_uid"
             @blur="changeName($event)"
             @keyup="changeName($event)"
-            @click="editable"
             @focus="$refs.TaskName.focus()"
             @focusout="removeEditTaskName($event)"
             @keydown.enter.prevent

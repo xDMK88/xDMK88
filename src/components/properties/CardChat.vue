@@ -9,7 +9,8 @@ import CardChatSelfFileMessage from '@/components/properties/CardChatSelfFileMes
 const props = defineProps({
   messages: Array,
   currentUserUid: String,
-  employees: Object
+  employees: Object,
+  showFilesOnly: Boolean
 })
 
 const messages = computed(() => {
@@ -82,7 +83,7 @@ const getMessageWeekDateString = (dateCreate) => {
       </div>
 
       <card-chat-interlocutor-message
-        v-if="!message.isMyMessage && message.isMessage"
+        v-if="!message.isMyMessage && message.isMessage && !props.showFilesOnly"
         :message="message"
         :employee="props.employees[message.uid_creator]"
       />
@@ -93,7 +94,7 @@ const getMessageWeekDateString = (dateCreate) => {
       />
 
       <card-chat-self-message
-        v-if="message.isMyMessage && message.isMessage"
+        v-if="message.isMyMessage && message.isMessage && !props.showFilesOnly"
         :message="message"
         :employee="props.employees[message.uid_creator]"
       />

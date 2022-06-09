@@ -3,9 +3,10 @@ import { computed } from 'vue'
 import PopMenu from '@/components/modals/PopMenu.vue'
 import PopMenuItem from '@/components/modals/PopMenuItem.vue'
 import PopMenuHeader from '@/components/modals/PopMenuHeader.vue'
-defineEmits(['clickRemoveButton'])
+defineEmits(['clickRemoveButton', 'toggleShowOnlyFiles'])
 const props = defineProps({
   dateCreate: String,
+  showFilesOnly: Boolean,
   canEdit: Boolean
 })
 
@@ -45,8 +46,17 @@ const cardDateCreate = computed(() => {
         >
           {{ cardDateCreate }}
         </PopMenuHeader>
-        <PopMenuItem>
+        <PopMenuItem
+          v-if="!props.showFilesOnly"
+          @click="$emit('toggleShowOnlyFiles')"
+        >
           Показать только файлы
+        </PopMenuItem>
+        <PopMenuItem
+          v-if="props.showFilesOnly"
+          @click="$emit('toggleShowOnlyFiles')"
+        >
+          Отображать файлы и сообщения
         </PopMenuItem>
         <PopMenuItem>
           Копировать как ссылку

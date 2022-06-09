@@ -2,7 +2,7 @@
 import { onBeforeMount, computed, ref } from 'vue'
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
-import { visitChildren } from '@/store/helpers/functions'
+import { visitChildren, setLocalStorageItem } from '@/store/helpers/functions'
 import TasksListNew from '@/components/TasksListNew.vue'
 import MainSection from '@/components/MainSection.vue'
 import Projects from '@/components/Projects.vue'
@@ -61,12 +61,12 @@ const UID_TO_ACTION = {
 }
 
 const setShouldShowModalValue = (value) => {
-  localStorage.setItem('shouldShowModal', value)
+  setLocalStorageItem('shouldShowModal', value)
   Notification.requestPermission().then(function (permission) {
     if (permission === 'granted') {
-      localStorage.setItem('shouldShowModal', '0')
+      setLocalStorageItem('shouldShowModal', '0')
     } else if (permission === 'denied') {
-      localStorage.setItem('shouldShowModal', '0')
+      setLocalStorageItem('shouldShowModal', '0')
     }
   })
 }
@@ -78,13 +78,13 @@ const requestNotificationPermissionOrShowModalBox = () => {
 
   if (!('Notification' in window)) {
     alert('This browser does not support desktop notification')
-    localStorage.setItem('shouldShowModal', '0')
+    setLocalStorageItem('shouldShowModal', '0')
   } else if (Notification.permission === 'granted') {
-    localStorage.setItem('shouldShowModal', '0')
+    setLocalStorageItem('shouldShowModal', '0')
   } else if (Notification.permission === 'default') {
-    localStorage.setItem('shouldShowModal', '1')
+    setLocalStorageItem('shouldShowModal', '1')
   } else if (Notification.permission === 'denied') { // handle denied case
-    localStorage.setItem('shouldShowModal', '1')
+    setLocalStorageItem('shouldShowModal', '1')
   }
 
   if (parseInt(localStorage.getItem('shouldShowModal')) === 1) {

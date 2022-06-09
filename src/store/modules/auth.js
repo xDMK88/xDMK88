@@ -7,6 +7,7 @@ import {
   AUTH_RESET
 } from '../actions/auth'
 import { RESET_STATE_NAVIGATOR } from '../actions/navigator'
+import { setLocalStorageItem } from '@/store/helpers/functions'
 import { RESET_STATE_TASKS, PROJECT_TASKS_REQUEST } from '../actions/tasks'
 import { RESET_STATE_PROJECT } from '../actions/projects'
 import { notify } from 'notiwind'
@@ -30,8 +31,8 @@ const actions = {
       commit(AUTH_REQUEST)
       axios({ url: uri, method: 'POST' })
         .then(resp => {
-          localStorage.setItem('user-token', resp.data.access_token)
-          localStorage.setItem('user-refresh-token', resp.data.refresh_token)
+          setLocalStorageItem('user-token', resp.data.access_token)
+          setLocalStorageItem('user-refresh-token', resp.data.refresh_token)
           axios.defaults.headers.common.Authorization = resp.data.access_token
           commit(AUTH_SUCCESS, resp)
           resolve(resp)
@@ -55,8 +56,8 @@ const actions = {
       axios({ url: uri, data: user, method: 'POST' })
         .then(resp => {
           console.log(resp)
-          localStorage.setItem('user-token', resp.data.access_token)
-          localStorage.setItem('user-refresh-token', resp.data.refresh_token)
+          setLocalStorageItem('user-token', resp.data.access_token)
+          setLocalStorageItem('user-refresh-token', resp.data.refresh_token)
           axios.defaults.headers.common.Authorization = resp.data.access_token
           commit(AUTH_SUCCESS, resp)
           resolve(resp)
@@ -128,7 +129,7 @@ const mutations = {
     }
     console.log(state.navStack)
     state.navStack.splice(index + 1, (state.navStack.length - 1) - index)
-    localStorage.setItem('navStack', JSON.stringify(state.navStack))
+    setLocalStorageItem('navStack', JSON.stringify(state.navStack))
   }
 }
 

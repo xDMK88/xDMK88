@@ -19,11 +19,21 @@ export function showNotify (notification, notificationSound = true) {
 }
 
 function wipeCachedFilesFromLocalStorage () {
-  const regexExp = /^[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$/gi
+  const regexExp =
+    /^[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$/gi
   for (const key in localStorage) {
     if (regexExp.test(key)) {
       localStorage.removeItem(key)
     }
+  }
+}
+
+export function setLocalStorageItem (key, value) {
+  try {
+    localStorage.setItem(key, value)
+  } catch (e) {
+    wipeCachedFilesFromLocalStorage()
+    localStorage.setItem(key, value)
   }
 }
 
@@ -33,17 +43,12 @@ export function writeCache (key, blob) {
   reader.readAsDataURL(blob)
   reader.onloadend = function () {
     const base64data = reader.result
-    try {
-      localStorage.setItem(key, base64data)
-    } catch (e) {
-      wipeCachedFilesFromLocalStorage()
-      localStorage.setItem(key, base64data)
-    }
+    setLocalStorageItem(key, base64data)
   }
 }
 
 export function recursiveRemove (arr, uid) {
-  return arr.filter(item => {
+  return arr.filter((item) => {
     if ('children' in item) {
       item.children = recursiveRemove(item.children, uid)
     }

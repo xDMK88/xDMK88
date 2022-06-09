@@ -26,6 +26,7 @@ const employeesByEmail = computed(() => store.state.employees.employeesByEmail)
 const cardMessages = computed(() => store.state.cardfilesandmessages.messages)
 
 const showChangeCardBudget = ref(false)
+const showFilesOnly = ref(false)
 
 const scrollDown = () => {
   const asideRight = document.getElementById('aside-right')
@@ -44,7 +45,6 @@ const changeName = (arg) => {
 }
 
 const changeCardBudget = (budget) => {
-  console.log('changing card budget: ', budget)
   const data = { cardUid: selectedCard.value.uid, budget: budget * 100 }
   store.dispatch(CHANGE_CARD_BUDGET, data).then((resp) => {
     selectedCard.value.cost = resp.data.cost
@@ -205,11 +205,14 @@ const removeCard = () => {
         :budget="selectedCard.cost"
         :can-edit="canEdit"
         @click="showChangeCardBudget = true"
+        @onWipeBudget="changeCardBudget"
       />
       <card-options
         :date-create="selectedCard.date_create"
         :can-edit="canEdit"
+        :show-files-only="showFilesOnly"
         @clickRemoveButton="showDeleteCard = true"
+        @toggleShowOnlyFiles="showFilesOnly = !showFilesOnly"
       />
     </div>
 
@@ -225,6 +228,7 @@ const removeCard = () => {
       :messages="cardMessages"
       :current-user-uid="user.current_user_uid"
       :employees="employees"
+      :show-files-only="showFilesOnly"
     />
 
     <!-- Card chat input -->

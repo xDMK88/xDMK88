@@ -191,6 +191,7 @@ import ListBlocItem from '@/components/Common/ListBlocItem.vue'
 import ListBlocAdd from '@/components/Common/ListBlocAdd.vue'
 import BoardModalBoxRename from '@/components/Board/BoardModalBoxRename.vue'
 import BoardModalBoxDelete from '@/components/Board/BoardModalBoxDelete.vue'
+import { setLocalStorageItem } from '@/store/helpers/functions'
 import EmployeesModalBoxAdd from '@/components/Employees/EmployeesModalBoxAdd.vue'
 import EmployeesModalBoxMove from '@/components/Employees/EmployeesModalBoxMove.vue'
 import PopMenu from '@/components/modals/PopMenu.vue'
@@ -305,7 +306,7 @@ export default {
     },
     updateGridView (value) {
       this.$store.commit('basic', { key: 'isGridView', value: value })
-      localStorage.setItem('isGridView', value)
+      setLocalStorageItem('isGridView', value)
     },
     empIcon (user) {
       if (user.type === 1) return 'cup'

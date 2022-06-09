@@ -77,6 +77,7 @@
 <script>
 import Icon from '@/components/Icon.vue'
 import ListBlocItem from '@/components/Common/ListBlocItem.vue'
+import { setLocalStorageItem } from '@/store/helpers/functions'
 import * as TASK from '@/store/actions/tasks'
 
 import gridView from '@/icons/grid-view.js'
@@ -110,7 +111,7 @@ export default {
   methods: {
     updateGridView (value) {
       this.$store.commit('basic', { key: 'isGridView', value: value })
-      localStorage.setItem('isGridView', value)
+      setLocalStorageItem('isGridView', value)
     },
     gotoChildren (user) {
       const UID_TO_ACTION = {

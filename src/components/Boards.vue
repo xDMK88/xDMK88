@@ -76,6 +76,7 @@
 
 <script>
 import Icon from '@/components/Icon.vue'
+import { setLocalStorageItem } from '@/store/helpers/functions'
 import BoardModalBoxRename from '@/components/Board/BoardModalBoxRename.vue'
 import BoardBlocItem from '@/components/Board/BoardBlocItem.vue'
 import BoardBlocAdd from '@/components/Board/BoardBlocAdd.vue'
@@ -120,7 +121,7 @@ export default {
     },
     updateGridView (value) {
       this.$store.commit('basic', { key: 'isGridView', value: value })
-      localStorage.setItem('isGridView', value)
+      setLocalStorageItem('isGridView', value)
     },
     gotoChildren (board) {
       this.$store.dispatch(CARD.BOARD_CARDS_REQUEST, board.uid)

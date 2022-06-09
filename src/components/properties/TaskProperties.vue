@@ -1884,7 +1884,7 @@ export default {
         />
         <!-- Кнопка Цвет -->
         <TaskPropsButtonColor
-          v-if="(selectedTask.type !== 4) && (selectedTask.type !== 5) && (selectedTask.uid_performer !== user.current_user_uid)"
+          v-if="(selectedTask.type === 1 || selectedTask.type === 2) && !((selectedTask.uid_customer !== user.current_user_uid) && (selectedTask.status === 1))"
           :selected-color="selectedTask.uid_marker"
           :can-edit="selectedTask.type === 1 || selectedTask.type === 2"
           @changeColor="onChangeColor"

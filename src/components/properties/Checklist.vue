@@ -3,7 +3,7 @@ import contenteditable from 'vue-contenteditable'
 import * as TASK from '@/store/actions/tasks.js'
 import { useStore } from 'vuex'
 import Icon from '@/components/Icon.vue'
-import { computed, reactive, ref, watch, nextTick, onMounted } from 'vue'
+import { computed, reactive, ref, watch, nextTick } from 'vue'
 import close from '@/icons/close.js'
 
 const props = defineProps({
@@ -89,9 +89,9 @@ const removeChecklistItem = (index) => {
 }
 
 const saveChecklist = (index) => {
-  if (renderedChecklist.checklist.length === 1) {
-    return false
-  }
+  // if (renderedChecklist.checklist.length === 1) {
+  //   return false
+  // }
   if (!renderedChecklist.checklist[index].text.replace(/\r?\n|\r/g, '')) {
     renderedChecklist.checklist.splice(index, 1)
     return
@@ -112,13 +112,13 @@ const updateChecklist = (index) => {
   } else {
     renderedChecklist.checklist[index].text = renderedChecklist.checklist[index].text.replace(/\r?\n|\r/g, '')
     processChecklist()
-    addEmptyChecklist(index)
+    // addEmptyChecklist(index)
   }
 }
 
-onMounted(() => {
-  document.getElementById('check_0').focus()
-})
+// onMounted(() => {
+//   document.getElementById('check_0').focus()
+// })
 
 </script>
 

@@ -5,6 +5,7 @@ import CardChatInterlocutorMessage from '@/components/properties/CardChatInterlo
 import CardChatInterlocutorFileMessage from '@/components/properties/CardChatInterlocutorFileMessage.vue'
 import CardChatSelfMessage from '@/components/properties/CardChatSelfMessage.vue'
 import CardChatSelfFileMessage from '@/components/properties/CardChatSelfFileMessage.vue'
+import CardChatQuoteMessage from '@/components/properties/CardChatQuoteMessage.vue'
 
 const props = defineProps({
   messages: Array,
@@ -13,11 +14,20 @@ const props = defineProps({
   showFilesOnly: Boolean
 })
 
+const getMessageByUid = (uid) => {
+  for (const message of props.messages) {
+    if (message.uid === uid) return message
+  }
+  return false
+}
+
 const messages = computed(() => {
   const mutatedMessages = props.messages.map((message) => ({
     ...message,
     isFile: !!message.uid_file,
     isMessage: !message.uid_file && message.uid_creator !== 'inspector',
+    hasQuote: message.uid_quote && message.uid_quote !== '00000000-0000-0000-0000-000000000000',
+    quoteMessage: getMessageByUid(message?.uid_quote),
     isInspectorMessage: message.uid_creator === 'inspector',
     isMyMessage: message.uid_creator === props.currentUserUid
   }))
@@ -60,7 +70,7 @@ const getMessageWeekDateString = (dateCreate) => {
 </script>
 
 <template>
-  <div class="flex flex-col pb-[100px] max-h-[400px]">
+  <div class="flex flex-col pb-[100px]">
     <div
       v-for="(message, index) in messages"
       :key="index"
@@ -81,6 +91,12 @@ const getMessageWeekDateString = (dateCreate) => {
       >
         {{ props.employees[message.uid_creator].name }}
       </div>
+
+      <card-chat-quote-message
+        v-if="message.hasQuote"
+        :quote-message="message.quoteMessage"
+        :employee="props.employees[message.quoteMessage.uid_creator]"
+      />
 
       <card-chat-interlocutor-message
         v-if="!message.isMyMessage && message.isMessage && !props.showFilesOnly"

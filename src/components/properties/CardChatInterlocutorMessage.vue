@@ -33,7 +33,9 @@ const getMessageTimeString = (dateCreate) => {
         {{ getMessageTimeString(message.date_create) }}
       </p>
       <div class="self-end group-hover:flex hidden">
-        <card-chat-message-options-pop-menu>
+        <card-chat-message-options-pop-menu
+          :can-delete="false"
+        >
           <div class="min-w-[30px] min-h-[16px] flex cursor-pointer items-end justify-center w-full">
             <svg
               width="14"

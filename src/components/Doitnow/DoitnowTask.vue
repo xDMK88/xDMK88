@@ -1,12 +1,12 @@
 <template>
 <div
   class="bg-white py-6 px-5 rounded-lg flex justify-between"
-  :style="{ backgroundColor: backgroundColor, borderColor: projects[task.uid_project] ? projects[task.uid_project].color : ''}"
+  :style="{ borderColor: colors[task.uid_marker] ? colors[task.uid_marker].back_color : ''}"
   :class="{
     'bg-gray-200 dark:bg-gray-800':
       isTaskComplete &&
-      task.uid_marker == '00000000-0000-0000-0000-000000000000',
-    'border-t-8': projects[task.uid_project]
+      task.uid_marker !== '00000000-0000-0000-0000-000000000000',
+    'border-t-8': colors[task.uid_marker]
   }"
 >
   <div class="w-1/2">
@@ -28,11 +28,11 @@
           :no-nl="false"
           :no-html="false"
           :class="{ 'uppercase': !task._isEditable && colors[task.uid_marker] && colors[task.uid_marker].uppercase, 'text-gray-500': task.status == 1 || task.status == 7, 'line-through': task.status == 1 || task.status == 7 }"
-          :style="{ color: getValidForeColor(colors[task.uid_marker]?.fore_color) }"
           @focusout="clearTaskFocus(task)"
           @dblclick.stop="editTaskName(task)"
           @keydown.enter="updateTask($event, task); this.$emit('changeValue', {_isEditable: false})"
         />
+        <!-- :style="{ color: getValidForeColor(colors[task.uid_marker]?.fore_color) }" позволяет изменить цвет названия задачи -->
       </div>
       <Popper
         class="items-center"

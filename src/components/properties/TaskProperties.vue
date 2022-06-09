@@ -52,6 +52,7 @@ export default {
     const myFiles = computed(() => store.state.taskfilesandmessages.files.myFiles)
     const selectedTask = computed(() => store.state.tasks.selectedTask)
     const isPropertiesMobileExpanded = computed(() => store.state.isPropertiesMobileExpanded)
+    const lastSelectedTaskUid = ref('')
     watch(selectedTask, (currentValue, oldValue) => {
       this.showAllMessages = false
       this.checklistshow = false
@@ -68,7 +69,6 @@ export default {
       store.dispatch('asidePropertiesToggle', false)
     }
     const taskMsg = ref('')
-
     const pad2 = (n) => {
       return (n < 10 ? '0' : '') + n
     }
@@ -695,9 +695,28 @@ export default {
         selectedTask.value.SeriesType = 4
       }
     }
+    const gotoNode = () => {
+      const uid = this.selectedTask.uid
+      document.getElementById(uid).parentElement.focus({ preventScroll: true })
+      const taskName = document.getElementById(uid).querySelector('.taskName')
+      const range = document.createRange()
+      const sel = document.getSelection()
+      taskName.focus({ preventScroll: false })
+      range.setStart(taskName, 1)
+      range.collapse(true)
+      sel.removeAllRanges()
+      sel.addRange(range)
+      lastSelectedTaskUid.value = uid
+      return false
+    }
+    const selectedFalse = () => {
+      return false
+    }
     return {
       //  ресет Повтор
       moveCursorToEnd,
+      gotoNode,
+      selectedFalse,
       ispolnit,
       user,
       dayWeekMassive: [],
@@ -1004,7 +1023,6 @@ export default {
           }
           this.selectedTask.msg = decodeURIComponent(this.taskMsg)
           const wrapperElement = document.getElementById('content').lastElementChild
-          console.log(wrapperElement)
           wrapperElement.scrollIntoView({ behavior: 'smooth' })
         })
       this.currentAnswerMessageUid = ''
@@ -1229,7 +1247,7 @@ export default {
       </span>
     </p>
   </modal-box-confirm>
-  <div class="break-words">
+  <div class="break-words" @mousedown="selectedFalse">
     <div
       id="generalscroll"
       class="column-resize"

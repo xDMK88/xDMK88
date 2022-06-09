@@ -88,7 +88,6 @@ import * as NAVIGATOR from '@/store/actions/navigator'
 
 import gridView from '@/icons/grid-view.js'
 import listView from '@/icons/list-view.js'
-
 export default {
   components: {
     Icon,
@@ -109,8 +108,12 @@ export default {
       listView
     }
   },
+  created () {
+    setLocalStorageItem('isGridView', true)
+  },
   computed: {
     isGridView () {
+      setLocalStorageItem('isGridView', true)
       return this.$store.state.isGridView
     },
     isPropertiesMobileExpanded () {

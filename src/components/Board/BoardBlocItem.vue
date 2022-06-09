@@ -4,7 +4,7 @@
   >
     <div
       v-if="board.color != '#A998B6'"
-      :style="'border-top: 6px solid ' + board.color"
+      :style="'border-top: 4px solid ' + board.color"
       class="w-full h-[48px] absolute top-0 right-0 rounded-t-[8px]"
     />
     <div class="w-full">

@@ -8,7 +8,6 @@ import sharedProject from '@/icons/shared_project.js'
 import TasksListNew from '@/components/TasksListNew.vue'
 import * as TASK from '@/store/actions/tasks'
 import { SELECT_PROJECT } from '@/store/actions/projects'
-
 const store = useStore()
 defineProps({
   projects: {
@@ -18,7 +17,6 @@ defineProps({
 })
 
 const isGridView = computed(() => store.state.isGridView)
-
 const isPropertiesMobileExpanded = computed(() => store.state.isPropertiesMobileExpanded)
 const focusedProject = ref('')
 const parentProjectUid = ref('')

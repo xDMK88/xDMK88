@@ -240,7 +240,7 @@ export default {
         uid_task: selectedTask.value.uid,
         uid_creator: user.value.current_user_uid,
         uid_msg: uuidv4(),
-        date_create: dateCreate,
+        date_create: dateCreate + 'Z',
         text: taskMsg.value,
         msg: taskMsg.value
       }

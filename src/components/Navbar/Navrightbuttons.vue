@@ -28,6 +28,10 @@ const store = useStore()
 const navStack = computed(() => store.state.navbar.navStack)
 const localization = computed(() => store.state.localization.localization)
 const storeNavigator = computed(() => store.state.navigator.navigator)
+//  const employees = computed(() => store.state.employees.employees)
+//  const card = computed(() => store.state.cards.cards)
+//  const board = computed(() => store.state.boards.boards)
+//  const employeesByEmail = computed(() => store.state.employees.employeesByEmail)
 const settings = computed(() => {
   return store.state.navigator.navigator.settings
 })
@@ -182,10 +186,17 @@ const requestLastVisitedNav = () => {
 }
 </script>
 <template>
+
+  <div v-if="navStack[0] && navStack[navStack.length - 1].greedPath === 'boards_children'"
+       class="transition-position flex-none items-stretch lg:items-center flex h-14 w-[300px] relative mr-0">
+    <nav-bar-item class="rounded-lg hover:text-gray-700 mr-2 px-0 mt-0 cursor-pointer">
+    </nav-bar-item>
+  </div>
 <div
   v-if="navStack[0] && navStack[0].greedPath !== 'new_private_projects' && navStack[0].greedPath !== 'new_delegate' && navStack[0].name !== 'Рабочий стол' && navStack[0].name !== 'Очередь' && navStack[0].greedPath !== 'new_private_boards'"
   class="transition-position flex-none items-stretch lg:items-center flex h-14 w-[300px] relative mr-0"
 >
+
 <!-- Search -->
 <nav-bar-item class="duration-200 right-0
 ease-out transition transform origin-top-right right-[-35%] rounded-lg hover:text-gray-700 cursor-auto px-0" @click="searchClick" v-if="IconSearchHide">

@@ -11,7 +11,7 @@ import NavBarItem from '@/components/NavBarItem.vue'
 import Icon from '@/components/Icon.vue'
 import Popper from 'vue3-popper'
 import NavRightButtons from '@/components/Navbar/Navrightbuttons.vue'
-import properties from '@/icons/properties.js'
+import propertiesproject from '@/icons/propertiesproject.js'
 import add from '@/icons/add.js'
 import arrowForward from '@/icons/arrow-forward.js'
 import arrowDown from '@/icons/arrow-down.js'
@@ -269,25 +269,25 @@ watch(navStack, (oldVal, newVal) => {
                   @click="openProjectProperties(navItem.uid)"
                 >
                   <icon
-                    class="mr-2 text-gray-500 p-1"
-                    :path="properties.path"
-                    :width="20"
-                    :height="20"
-                    :box="properties.viewBox"
+                    class="mr-3 text-gray-500 p-1"
+                    :path="propertiesproject.path"
+                    :width="16"
+                    :height="10"
+                    :box="propertiesproject.viewBox"
                   />
                   Открыть свойства проекта
                 </div>
                 <div
                   v-if="projects[navItem.uid] && projects[navItem.uid].email_creator === user.current_user_email"
-                  class="font-medium flex cursor-pointer items-center hover:bg-gray-100 hover:dark:bg-stone-800 py-0.5 px-1 rounded-md"
+                  class="font-medium flex cursor-pointer items-center hover:bg-gray-100 hover:dark:bg-stone-800 py-0.5 px-1 mr-1 rounded-md"
                   @click="openProjectProperties(false, navItem.uid)"
                 >
 
                   <icon
                     class="mr-2 text-gray-500 p-2"
                     :path="add.path"
-                    :width="20"
-                    :height="20"
+                    :width="14"
+                    :height="13"
                     :box="add.viewBox"
                   />
                   Добавить подпроект

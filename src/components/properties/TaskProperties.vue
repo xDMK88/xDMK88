@@ -1303,7 +1303,7 @@ export default {
         />
         <!-- Кнопка Выбрать дату -->
         <TaskPropsButtonSetDate
-          v-if="(selectedTask.type !== 4) && (selectedTask.type !== 5)"
+          v-if="(selectedTask.type !== 4) && (selectedTask.type !== 5) && (selectedTask.status !== 1)"
           :date-begin="selectedTask.date_begin"
           :date-end="selectedTask.date_end"
           :date-text="selectedTask.term_user"

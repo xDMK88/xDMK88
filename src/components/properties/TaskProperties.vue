@@ -2050,7 +2050,7 @@ export default {
         </div>
       </div>
     </div>
-    <div class="input-group bg-gray-100 rounded-[10px] mt-2 h-14">
+    <div class="input-group bg-gray-100 rounded-[10px] mt-2">
       <span class="input-group-addon input-group-attach dark:bg-gray-800 dark:text-gray-100">
         <div class="example-1">
           <label class="label">
@@ -2080,7 +2080,7 @@ export default {
       <textarea
         ref="taskMsgEdit"
         v-model="taskMsg"
-        class="form-control mt-[8px] mb-[8px] text-group-design task-msg overflow-auto scroll-style dark:bg-gray-800 dark:text-gray-100 focus:ring-0"
+        class="form-control mt-[6px] mb-[8px] text-group-design task-msg overflow-auto scroll-style dark:bg-gray-800 dark:text-gray-100 focus:ring-0"
         placeholder="Напишите сообщение..."
         rows="58"
         @input="onInputTaskMsg"

@@ -113,7 +113,10 @@ const actions = {
   },
   [CARD.CHANGE_CARD_RESPONSIBLE_USER]: ({ commit }, data) => {
     return new Promise((resolve, reject) => {
-      const url = process.env.VUE_APP_LEADERTASK_API + 'api/v1/card/responsible?uid=' + data.cardUid
+      const url =
+        process.env.VUE_APP_LEADERTASK_API +
+        'api/v1/card/responsible?uid=' +
+        data.cardUid
       axios({ url: url, method: 'PATCH', data: { user: data.email } })
         .then((resp) => {
           commit('ChangeCard', resp.data)
@@ -135,7 +138,10 @@ const actions = {
   },
   [CARD.CHANGE_CARD_NAME]: ({ commit }, data) => {
     return new Promise((resolve, reject) => {
-      const url = process.env.VUE_APP_LEADERTASK_API + '/api/v1/card/name?uid=' + data.cardUid
+      const url =
+        process.env.VUE_APP_LEADERTASK_API +
+        '/api/v1/card/name?uid=' +
+        data.cardUid
       axios({ url: url, method: 'PATCH', data: { name: data.name } })
         .then((resp) => {
           commit('ChangeCard', resp.data)
@@ -157,7 +163,10 @@ const actions = {
   },
   [CARD.CHANGE_CARD_COMMENT]: ({ commit }, data) => {
     return new Promise((resolve, reject) => {
-      const url = process.env.VUE_APP_LEADERTASK_API + 'api/v1/card/comment?uid=' + data.cardUid
+      const url =
+        process.env.VUE_APP_LEADERTASK_API +
+        'api/v1/card/comment?uid=' +
+        data.cardUid
       axios({ url: url, method: 'PATCH', data: { comment: data.comment } })
         .then((resp) => {
           commit('ChangeCard', resp.data)
@@ -179,7 +188,10 @@ const actions = {
   },
   [CARD.CHANGE_CARD_BUDGET]: ({ commit }, data) => {
     return new Promise((resolve, reject) => {
-      const url = process.env.VUE_APP_LEADERTASK_API + 'api/v1/card/cost?uid=' + data.cardUid
+      const url =
+        process.env.VUE_APP_LEADERTASK_API +
+        'api/v1/card/cost?uid=' +
+        data.cardUid
       axios({ url: url, method: 'PATCH', data: { cost: data.budget } })
         .then((resp) => {
           commit('ChangeCard', resp.data)
@@ -201,7 +213,10 @@ const actions = {
   },
   [CARD.CHANGE_CARD_COLOR]: ({ commit }, data) => {
     return new Promise((resolve, reject) => {
-      const url = process.env.VUE_APP_LEADERTASK_API + 'api/v1/card/color?uid=' + data.cardUid
+      const url =
+        process.env.VUE_APP_LEADERTASK_API +
+        'api/v1/card/color?uid=' +
+        data.cardUid
       axios({ url: url, method: 'PATCH', data: { color: data.color } })
         .then((resp) => {
           commit('ChangeCard', resp.data.card)
@@ -223,7 +238,10 @@ const actions = {
   },
   [CARD.CHANGE_CARD_COVER]: ({ commit }, data) => {
     return new Promise((resolve, reject) => {
-      const url = process.env.VUE_APP_LEADERTASK_API + 'api/v1/cardsfiles/cover?uid_card=' + data.cardUid
+      const url =
+        process.env.VUE_APP_LEADERTASK_API +
+        'api/v1/cardsfiles/cover?uid_card=' +
+        data.cardUid
       axios({ url: url, method: 'PATCH', data: data.file })
         .then((resp) => {
           commit('ChangeCard', resp.data.card)
@@ -235,6 +253,31 @@ const actions = {
               group: 'api',
               title: 'REST API Error, please make screenshot',
               action: CARD.CHANGE_CARD_COVER,
+              text: err.response?.data ?? err
+            },
+            15000
+          )
+          reject(err)
+        })
+    })
+  },
+  [CARD.CHANGE_CARD_CLEAR_COVER]: ({ commit }, data) => {
+    return new Promise((resolve, reject) => {
+      const url =
+        process.env.VUE_APP_LEADERTASK_API +
+        'api/v1/card/clearcover?uid=' +
+        data.cardUid
+      axios({ url: url, method: 'PATCH' })
+        .then((resp) => {
+          commit('ChangeCard', resp.data.card)
+          resolve(resp)
+        })
+        .catch((err) => {
+          notify(
+            {
+              group: 'api',
+              title: 'REST API Error, please make screenshot',
+              action: CARD.CHANGE_CARD_CLEAR_COVER,
               text: err.response?.data ?? err
             },
             15000

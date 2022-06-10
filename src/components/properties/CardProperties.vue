@@ -2,7 +2,7 @@
 import { computed, ref, nextTick } from 'vue'
 import { useStore } from 'vuex'
 import { CREATE_MESSAGE_REQUEST, CREATE_FILES_REQUEST, ADD_MESSAGE_LOCALLY, REMOVE_MESSAGE_LOCALLY } from '@/store/actions/cardfilesandmessages'
-import { CHANGE_CARD_RESPONSIBLE_USER, CHANGE_CARD_BUDGET, CHANGE_CARD_NAME, CHANGE_CARD_COMMENT, CHANGE_CARD_COLOR, CHANGE_CARD_COVER, DELETE_CARD } from '@/store/actions/cards'
+import { CHANGE_CARD_RESPONSIBLE_USER, CHANGE_CARD_BUDGET, CHANGE_CARD_NAME, CHANGE_CARD_COMMENT, CHANGE_CARD_COLOR, CHANGE_CARD_COVER, CHANGE_CARD_CLEAR_COVER, DELETE_CARD } from '@/store/actions/cards'
 
 import CardName from '@/components/properties/CardName.vue'
 import CardCover from '@/components/properties/CardCover.vue'
@@ -121,9 +121,9 @@ const createCardMessage = () => {
   })
 }
 
-const changeCardColor = (color) => {
-  store.dispatch(CHANGE_CARD_COLOR, { cardUid: selectedCard.value.uid, color: color }).then((resp) => {
-    selectedCard.value.cover_color = color
+const changeCardClearCover = () => {
+  store.dispatch(CHANGE_CARD_CLEAR_COVER, { cardUid: selectedCard.value.uid }).then((resp) => {
+    selectedCard.value.cover_color = '#A998B6'
     selectedCard.value.cover_link = ''
     // Replacing old cover file with new cover file
     for (const message of resp.data.deletefiles) store.commit(REMOVE_MESSAGE_LOCALLY, message)
@@ -132,6 +132,23 @@ const changeCardColor = (color) => {
       for (const message of resp.data.newfiles) store.commit(ADD_MESSAGE_LOCALLY, message)
     })
   })
+}
+
+const changeCardColor = (color) => {
+  if (color) {
+    store.dispatch(CHANGE_CARD_COLOR, { cardUid: selectedCard.value.uid, color: color }).then((resp) => {
+      selectedCard.value.cover_color = color
+      selectedCard.value.cover_link = ''
+      // Replacing old cover file with new cover file
+      for (const message of resp.data.deletefiles) store.commit(REMOVE_MESSAGE_LOCALLY, message)
+      // Here I use nextTick because if we instantly start adding new files, then onMounted hook won't be triggered, MAGIC but works
+      nextTick(() => {
+        for (const message of resp.data.newfiles) store.commit(ADD_MESSAGE_LOCALLY, message)
+      })
+    })
+  } else {
+    changeCardClearCover()
+  }
 }
 
 const changeCardCover = (event) => {
@@ -195,7 +212,7 @@ const removeCard = () => {
     </div>
 
     <card-cover
-      :cover-color="selectedCard.cover_color"
+      :cover-color="selectedCard.cover_color === '#A998B6' ? '' : selectedCard.cover_color"
       :cover-link="selectedCard.cover_link"
       :can-edit="canEdit"
       @onChangeCardColor="changeCardColor"

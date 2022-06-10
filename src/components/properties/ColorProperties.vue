@@ -77,7 +77,7 @@ const removeColor = (color) => {
     @confirm="removeColor(selectedColor)"
   >
     <p class="text-center">
-      Do you really wanna delete "<strong>{{ selectedColor.name }}</strong>" color?
+      Вы действительно хотите удалить цвет "<strong>{{ selectedColor.name }}</strong>"?
     </p>
   </modal-box-confirm>
   <div>

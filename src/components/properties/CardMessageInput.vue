@@ -51,7 +51,8 @@ const computedValue = computed({
       rows="1"
       type="text"
       placeholder="Напишите сообщение..."
-      @keyup.enter="$emit('createCardMessage', computedValue.value)"
+      @keydown.enter.shift.exact.prevent="addNewLineTaskMsg"
+      @keydown.enter.exact.prevent="$emit('createCardMessage', computedValue.value)"
     />
 
     <div

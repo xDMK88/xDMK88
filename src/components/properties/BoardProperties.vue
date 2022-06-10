@@ -104,7 +104,7 @@ const copyurl = (uid) => {
     @confirm="quitBoard(selectedBoard)"
   >
     <p class="text-center">
-      Do you really wanna quit "<strong>{{ selectedBoard.name }}</strong>" project?
+      Вы действительно хотите выйти из доски "<strong>{{ selectedBoard.name }}</strong>"?
     </p>
   </modal-box-confirm>
   <modal-box-confirm
@@ -116,7 +116,7 @@ const copyurl = (uid) => {
     @confirm="removeBoard(selectedBoard)"
   >
     <p class="text-center">
-      Do you really wanna delete "<strong>{{ selectedBoard.name }}</strong>" project?
+      Вы действительно хотите удалить доску "<strong>{{ selectedBoard.name }}</strong>"?
     </p>
   </modal-box-confirm>
   <div>

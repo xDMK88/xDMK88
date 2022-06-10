@@ -38,29 +38,32 @@ export default {
 <template>
   <aside
     id="aside-right"
-    class="bg-white dark:bg-gray-900 py-5 px-5 pb-0 w-96 fixed top-0 h-full transition-position dark:border-r dark:border-gray-800 custom-column z-[2]"
-    :class="[ isPropertiesMobileExpanded ? 'right-0' : '-right-96', isPropertiesMobileExpanded ? 'block' : 'hidden']"
+    class="bg-[#f4f5f7] w-[388px] fixed top-0 h-full transition-position z-[2]"
+    :class="{ 'block right-0': isPropertiesMobileExpanded, 'hidden -right-[388px]': !isPropertiesMobileExpanded}"
   >
-    <TaskProperties
-      v-if="propertiesState == 'task'"
-    />
-    <CardProperties
-      v-if="propertiesState == 'card'"
-    />
-    <ProjectProperties
-      v-if="propertiesState == 'project'"
-    />
-    <BoardProperties
-      v-if="propertiesState == 'board'"
-    />
-    <ColorProperties
-      v-if="propertiesState == 'color'"
-    />
-    <TagProperties
-      v-if="propertiesState == 'tag'"
-    />
-    <EmployeeProperties
-      v-if="propertiesState == 'employee'"
-    />
+    <!-- серый отступ в 8px слева, чтобы когда панель налетала на белый элемент она не сливалась -->
+    <div class="bg-white pt-[20px] px-[20px] ml-[8px] h-full w-[380px]">
+      <TaskProperties
+        v-if="propertiesState == 'task'"
+      />
+      <CardProperties
+        v-if="propertiesState == 'card'"
+      />
+      <ProjectProperties
+        v-if="propertiesState == 'project'"
+      />
+      <BoardProperties
+        v-if="propertiesState == 'board'"
+      />
+      <ColorProperties
+        v-if="propertiesState == 'color'"
+      />
+      <TagProperties
+        v-if="propertiesState == 'tag'"
+      />
+      <EmployeeProperties
+        v-if="propertiesState == 'employee'"
+      />
+    </div>
   </aside>
 </template>

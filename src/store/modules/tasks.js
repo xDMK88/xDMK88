@@ -1574,7 +1574,6 @@ const mutations = {
       state.newtasks[uidParent].info.has_children = false
       state.newtasks[uidParent].children = []
     }
-
     state.newConfig.roots = arrayRemove(state.newConfig.roots, uid)
     delete state.newtasks[uid]
   },

@@ -12,10 +12,12 @@ const props = defineProps({
 const showColorCard = ref(false)
 const selectedCardColor = ref(props.coverColor)
 const onChangeCardColor = (color) => {
+  showColorCard.value = false
   selectedCardColor.value = color
   emit('onChangeCardColor', color)
 }
 </script>
+
 <template>
   <CardModalBoxColor
     v-show="showColorCard"
@@ -25,7 +27,7 @@ const onChangeCardColor = (color) => {
   />
   <div
     class="border-[1px] border-[rgba(0, 0, 0, 0.1) rounded-[8px] min-h-[93px] max-h-[93px] flex items-center justify-center relative"
-    :style="{ 'background-color': props.coverColor !== '#A998B6' ? props.coverColor : '#F4F5F7' }"
+    :style="{ 'background-color': props.coverColor ? props.coverColor : '#F4F5F7' }"
   >
     <img
       :src="coverLink"

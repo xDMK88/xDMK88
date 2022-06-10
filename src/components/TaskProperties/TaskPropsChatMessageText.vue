@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="deletedStatus===0">
     <div
       v-if="showCreator"
       class="flex"
@@ -156,6 +156,9 @@ export default {
     quote: {
       type: String,
       default: ''
+    },
+    deletedStatus: {
+      type: String
     }
   },
   emits: ['answer'],

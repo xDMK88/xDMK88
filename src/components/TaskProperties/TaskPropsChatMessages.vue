@@ -16,19 +16,19 @@
       >
         <!-- День недели -->
         <div
-          v-if="isChangedDate(index)"
+          v-if="isChangedDate(index) && message.deleted === 0"
           class="text-center"
         >
           <p class="text-xs text-gray-500 dark:text-gray-300 my-3">
             {{ getMessageWeekDateString(message.date_create) }}
           </p>
         </div>
-
         <!-- Облачко с текстом -->
         <TaskPropsChatMessageText
           :class="message.isMyMessage ? 'mr-2' : 'ml-2'"
           v-if="message.isMessage && !showOnlyFiles"
           :is-my-message="message.isMyMessage"
+          :deletedStatus="message.deleted"
           :show-creator="isChangeCreator(index)"
           :show-loader="uploadStarted && message.loading"
           :quote="getMessageQuoteString(message.uid_quote)"
@@ -38,7 +38,6 @@
           :time="getMessageTimeString(message.date_create)"
           @answer="answerMessage(message.uid)"
         />
-
         <!-- Сообщение от инспектора -->
         <div
           v-if="message.isInspectorMessage && !showOnlyFiles"
@@ -241,7 +240,6 @@ export default {
                 new Date(messageCurr.date_create).toDateString()
     },
     isChangeCreator (index) {
-      console.log(this.messages.length)
       console.log(index)
       if (this.showAllMessages === true) {
         if (index === 0) return true

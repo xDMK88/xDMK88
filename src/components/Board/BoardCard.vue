@@ -223,9 +223,9 @@
       }"
     >
       <img
-        v-if="employeesByEmail[card.user]"
+        v-if="getEmpPhotoByEmail(card.user)"
         class="w-[22px] h-[22px] rounded-[5px] border border-black/10"
-        :src="employeesByEmail[card.user].fotolink"
+        :src="getEmpPhotoByEmail(card.user)"
         alt="Avatar"
       >
       <span
@@ -393,6 +393,9 @@ export default {
     },
     selectCard () {
       this.$emit('select')
+    },
+    getEmpPhotoByEmail (userEmail) {
+      return this.employeesByEmail[userEmail.toLowerCase()]?.fotolink ?? ''
     },
     getEmpNameByEmail (userEmail) {
       return this.employeesByEmail[userEmail.toLowerCase()]?.name ?? userEmail

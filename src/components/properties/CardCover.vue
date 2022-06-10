@@ -10,10 +10,8 @@ const props = defineProps({
   canEdit: Boolean
 })
 const showColorCard = ref(false)
-const selectedCardColor = ref(props.coverColor)
 const onChangeCardColor = (color) => {
   showColorCard.value = false
-  selectedCardColor.value = color
   emit('onChangeCardColor', color)
 }
 </script>
@@ -21,7 +19,7 @@ const onChangeCardColor = (color) => {
 <template>
   <CardModalBoxColor
     v-show="showColorCard"
-    :color="selectedCardColor"
+    :color=" props.coverColor"
     @cancel="showColorCard = false"
     @changeColor="onChangeCardColor"
   />

@@ -72,7 +72,7 @@
       v-if="accessEmails.length > 0"
       style="position: relative"
     >
-      <div v-if="accessEmails.length > 1 || canEdit">
+      <div v-if="accessEmails.length > 1 || isCustomer">
         <div
           v-for="(userEmail, index) in accessEmails"
           :key="index"
@@ -96,7 +96,7 @@
           </svg>
           <span class="rounded">{{ getEmpNameByEmail(userEmail) }}</span>
           <button
-            v-if="userEmail === currentUserEmail || canEdit"
+            v-if="userEmail === currentUserEmail || isCustomer"
             class="btn-close-popover"
             @click="removeAccess(userEmail)"
             @click.stop="close"
@@ -154,6 +154,10 @@ export default {
     currentUserUid: {
       type: String,
       default: ''
+    },
+    isCustomer: {
+      type: Boolean,
+      default: false
     },
     accessEmails: {
       type: Array,

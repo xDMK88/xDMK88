@@ -61,10 +61,10 @@ export default {
         '#f5f547'
       ]
       // добавляем в конец выбранный цвет если его тут нет
-      if (!allColors.includes(this.color)) {
+      if (!allColors.includes(this.color.toLowerCase())) {
         allColors.splice(allColors.length - 1, 1, this.color)
       }
-      const colors = allColors.map(color => ({ color: color, selected: color === this.color }))
+      const colors = allColors.map(color => ({ color: color, selected: color === this.color.toLowerCase() }))
       // разбираем на ряды по 9
       const rowLength = 9
       const arrColors = []

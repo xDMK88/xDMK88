@@ -98,6 +98,7 @@
     class="mt-0.5 ml-0.5"
     @nodeOpened="nodeExpanding"
     @nodeFocus="nodeSelected"
+    @focus="focused = true"
     @nodeDragend="nodeDragEnd"
   >
     <template #before-input="props">
@@ -105,11 +106,13 @@
         :id="props.node.info.uid"
         class="pl-8 group task-node mb-1 font-['Roboto'] flex-col items-center w-full bg-white p-2 rounded-[8px] dark:bg-gray-900 dark:border-gray-700 relative border border-white"
         :style="{ backgroundColor: getValidBackColor(colors[props.node.info.uid_marker]?.back_color) }"
-        :class="{ 'bg-gray-200 dark:bg-gray-800': (props.node.info.status == 1 || props.node.info.status == 7) && props.node.info.uid_marker == '00000000-0000-0000-0000-000000000000', 'ring-0 ring-orange-400 border border-orange-400': props.node.id === lastSelectedTaskUid }"
+        :class="{ 'bg-gray-200 dark:bg-gray-800': (props.node.info.status == 1 || props.node.info.status == 7) && props.node.info.uid_marker == '00000000-0000-0000-0000-000000000000', 'ring-1 ring-orange-400 border border-orange-400': props.node.id === lastSelectedTaskUid}"
         @keydown.esc="escapEvent"
         @keyup.esc="escapEvent"
         @click.shift="clickAndShift(props.node)"
         @click.exact="selectedTasks = {}"
+        autofocus
+        ref="treetask"
       >
         <!--
         DEBUG TASK INFO, don't remove this comment
@@ -229,7 +232,7 @@
             <contenteditable
               v-model="props.node.info.name"
               tag="div"
-              class="taskName p-0.5 ring-0 outline-none max-w-7xl ml-1"
+              class="taskName p-0.5 ring-0 outline-none max-w-7xl ml-1 max-w-[80%]"
               :contenteditable="props.node.info._isEditable"
               placeholder="Введите название задачи"
               :no-nl="true"
@@ -489,7 +492,6 @@ export default {
     const showInspector = ref(false)
     const isTaskHoverPopperActive = ref(false)
     const isTaskStatusPopperActive = ref(false)
-
     const date = computed(() => {
       return lastVisitedDate.value.getDate() + '-' + lastVisitedDate.value.getMonth() + '-' + lastVisitedDate.value.getFullYear()
     })
@@ -782,7 +784,6 @@ export default {
             })
         })
     }
-
     const gotoNode = (uid) => {
       document.getElementById(uid).parentElement.focus({ preventScroll: false })
       const taskName = document.getElementById(uid).querySelector('.taskName')
@@ -915,7 +916,9 @@ export default {
           selectedTask.value.focus = value
         })
     }
+    const isActive = true
     return {
+      isActive,
       escapEvent,
       changeFocus,
       clearTaskFocus,
@@ -977,7 +980,8 @@ export default {
       'd35fe0bc-1747-4eb1-a1b2-3411e07a92a0': TASK.READY_FOR_COMPLITION_TASKS_REQUEST,
       '511d871c-c5e9-43f0-8b4c-e8c447e1a823': TASK.DELEGATED_TO_USER_TASKS_REQUEST,
       '11212e94-cedf-11ec-9d64-0242ac120002': TASK.SEARCH_TASK,
-      '47a38aa5-19c4-40d0-b8c0-56c3a420935d': TASK.ONE_TASK_REQUEST
+      '47a38aa5-19c4-40d0-b8c0-56c3a420935d': TASK.ONE_TASK_REQUEST,
+      focused: true
     }
     return {
       DONT_SHOW_TASK_INPUT_UIDS,
@@ -1077,7 +1081,6 @@ window.getSelection().removeAllRanges()
   font-size: 14px;
   outline: none
 }
-
 .node-wrapper:focus-within .task-node {
   @apply ring-0 ring-orange-400 border border-orange-400
 }

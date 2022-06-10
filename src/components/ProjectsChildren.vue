@@ -117,7 +117,7 @@ const gotoChildren = (value) => {
         />
         <div
           v-if="project.color != '#A998B6'"
-          :style="'border-top: 6px solid ' + project.color"
+          :style="'border-top: 4px solid ' + project.color"
           class="w-full h-4 absolute top-0 right-0 rounded-t-xl"
         />
         <div>

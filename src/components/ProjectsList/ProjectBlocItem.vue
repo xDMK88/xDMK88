@@ -4,7 +4,7 @@
   >
     <div
       v-if="project.color != '#A998B6'"
-      :style="'border-top: 6px solid ' + project.color"
+      :style="'border-top: 4px solid ' + project.color"
       class="w-full absolute top-0 right-0 rounded-t-xl h-[48px]"
     />
     <div class="w-full">

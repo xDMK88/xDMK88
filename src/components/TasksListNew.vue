@@ -768,6 +768,19 @@ export default {
         store.dispatch('asidePropertiesToggle', false)
       }
       store.dispatch(TASK.REMOVE_TASK, uid)
+        .then(() => {
+          store.dispatch(TASK.DAYS_WITH_TASKS)
+            .then(() => {
+              const calendarDates = computed(() => store.state.calendar[1].dates)
+              const daysWithTasks = computed(() => store.state.tasks.daysWithTasks)
+              for (let i = 0; i < calendarDates.value.length; i++) {
+                const date = calendarDates.value[i].getDate() + '-' + (calendarDates.value[i].getMonth() + 1) + '-' + calendarDates.value[i].getFullYear()
+                if (!daysWithTasks.value.includes(date)) {
+                  store.state.calendar[1].dates.splice(store.state.calendar[1].dates.indexOf(calendarDates.value[i]), 1)
+                }
+              }
+            })
+        })
     }
 
     const gotoNode = (uid) => {

@@ -5,21 +5,27 @@
 
 **Leadertask Web 2.0** next version of existing leadertask web.
 
-### Installation
+### Установка
 
-1. Clone the repo (Vue3 project)
+1. Клонируем репозиторий (Vue3 project)
    ```sh
       git clone https://github.com/LeaderTask/Web.git
     ```
-2. Install NPM packages
+2. Скачиваем все зависимости NPM packages
     ```sh
         npm install
     ```
-3. Run the development server 
+3. Запускаем в режиме разработки
     ```sh
         npm run serve 
     ```
-### Folders 
+
+Чтобы запустить в режиме подключения к локальному серверу инспектора:
+    ```sh
+        npm run serve-inspector 
+    ```
+
+### Структура проекта 
     ```sh
       Web/src:
 
@@ -51,3 +57,23 @@
 8. Если что-то пишите - пользуйтесь lint-fix и prettier, чтобы ваш код был в едином стиле, хорошо отформатирован и не содержал ошибок
 9. В `template` не должно быть никаких расчетов и никакой многострочной логики, всё это делать внутри `script` в computed, data или methods, а здесь только их вызов или отображение
 10. ЗАПРЕЩЕНО выводить отладочную информацию на экран, только консоль!
+
+### Настройки VSCode
+
+1. Обязательно должны быть установлены расширения [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) и [Prettier - Code formatter](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)
+
+1. Ставим чтобы при сохранении vue файлов запускался lint-fix (прописать в настройках):
+    ```json
+    "[vue]": {
+        "editor.codeActionsOnSave": [
+            "source.fixAll.eslint"
+        ],
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.tabSize": 2
+    },
+    ```
+
+### Полезняхи
+
+1. В консоль можно написать `document.getElementById('app').__vue_app__.config.globalProperties.$store._state.data`
+чтобы посмотреть что сейчас в сторе

@@ -9,7 +9,7 @@
       class="сopypastefiles"
     />
     <div class="quote-request" />
-    <div class="input-group bg-gray-100 rounded-lg w-1/2">
+    <div class="input-group bg-gray-100 rounded-lg w-1/2 m-auto mb-5">
       <span class="input-group-addon input-group-attach dark:bg-gray-800 dark:text-gray-100">
         <div class="example-1">
           <label class="label">
@@ -39,7 +39,7 @@
       <textarea
         ref="taskMsgEdit"
         v-model="taskMsg"
-        class="form-control mt-[7px] text-group-design task-msg overflow-auto scroll-style dark:bg-gray-800 dark:text-gray-100"
+        class="form-control mt-[7px] text-group-design task-msg overflow-auto scroll-style dark:bg-gray-800 dark:text-gray-100 focus:ring-0 "
         placeholder="Введите сообщение"
         rows="58"
         @input="onInputTaskMsg"

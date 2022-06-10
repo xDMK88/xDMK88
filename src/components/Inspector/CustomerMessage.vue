@@ -25,7 +25,7 @@ const getMessageTimeString = (dateCreate) => {
   <Transition>
   <div class="flex items-start justify-end mt-4">
     <div
-      class="bg-green-50 rounded-xl p-1 px-2 max-w-sm"
+      class="bg-green-50 rounded-xl p-1 px-2 mr-2 max-w-sm "
     >
       {{ props.message }}
       <br>

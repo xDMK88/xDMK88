@@ -1,5 +1,6 @@
 <script setup>
 import CardChatMessageOptionsPopMenu from '@/components/properties/CardChatMessageOptionsPopMenu.vue'
+defineEmits(['onQuoteMessage'])
 const props = defineProps({
   message: Object
 })
@@ -33,7 +34,9 @@ const getMessageTimeString = (dateCreate) => {
         {{ getMessageTimeString(message.date_create) }}
       </p>
       <div class="self-end group-hover:flex hidden">
-        <card-chat-message-options-pop-menu>
+        <card-chat-message-options-pop-menu
+          @onQuoteMessage="$emit('onQuoteMessage', props.message)"
+        >
           <div class="min-w-[30px] min-h-[16px] flex cursor-pointer items-end justify-center">
             <svg
               width="14"

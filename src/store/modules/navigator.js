@@ -520,7 +520,11 @@ const mutations = {
   [NAVIGATOR_PUSH_EMPLOYEE]: (state, employees) => {
     for (const employee of employees) {
       state.navigator.emps.items.push(employee)
-      const emps = state.navigator.new_emps.find((emps) => emps.uid === '')
+      const dep =
+        employee.uid_dep === '00000000-0000-0000-0000-000000000000'
+          ? ''
+          : employee.uid_dep
+      const emps = state.navigator.new_emps.find((emps) => emps.dep.uid === dep)
       emps?.items?.push(employee)
     }
   },

@@ -78,7 +78,7 @@ const getSysType = () => {
 }
 
 const login = () => {
-  const uri = process.env.VUE_APP_LEADERTASK_API + 'api/v1/users/auth?login=' + form.email + '&password=' + form.password + '&system=' + getOSName() + '&type_device=' + getSysType()
+  const uri = process.env.VUE_APP_LEADERTASK_API + 'api/v1/users/auth?login=' + form.email + '&password=' + encodeURIComponent(form.password) + '&system=' + getOSName() + '&type_device=' + getSysType()
   store.dispatch(AUTH_REQUEST, uri)
     .then(() => {
       router.push('/')

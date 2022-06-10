@@ -11,33 +11,29 @@ export default {
       type: Boolean,
       default: true
     }
-  }
+  },
+  emits: ['onQuoteMessage']
 }
 
 </script>
 <template>
-  <PopMenu
-    @openMenu="lockVisibility(column.UID)"
-    @closeMenu="unlockVisibility(column.UID)"
-  >
+  <PopMenu>
     <slot />
     <template #menu>
       <PopMenuItem
         icon="answer"
-        @click="clickRenameColumn(column, $event)"
+        @click="$emit('onQuoteMessage')"
       >
         Ответить
       </PopMenuItem>
       <PopMenuItem
         icon="copy"
-        @click="clickColorColumn(column, $event)"
       >
         Копировать
       </PopMenuItem>
       <PopMenuItem
         v-if="canDelete"
         icon="delete"
-        @click="clickDeleteColumn(column, $event)"
       >
         Удалить
       </PopMenuItem>

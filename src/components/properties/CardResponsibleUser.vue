@@ -1,14 +1,3 @@
-<script setup>
-import Popper from 'vue3-popper'
-
-defineEmits(['changeResponsible'])
-const props = defineProps({
-  responsible: String, // User's email
-  canEdit: Boolean, // Can edit or not
-  employeesByEmail: Object // Object with employees where key is email
-})
-console.log(props.responsible)
-</script>
 <template>
   <Popper
     class="light"
@@ -16,11 +5,11 @@ console.log(props.responsible)
   >
     <div
       class="rounded-[6px] text-[12px] px-[8px] py-[5px] font-[500]"
-      :class="{ 'bg-[#7B94EB] text-white': !props.responsible, 'bg-[#F4F5F7] text-[#575758]': props.responsible, 'cursor-pointer': canEdit }"
+      :class="{ 'bg-[#7B94EB] text-white': !responsible, 'bg-[#F4F5F7] text-[#575758]': responsible, 'cursor-pointer': canEdit }"
     >
       <!-- Empty label for responsible user -->
       <div
-        v-if="!props.responsible"
+        v-if="!responsible"
         class="flex items-center"
       >
         <svg
@@ -40,19 +29,20 @@ console.log(props.responsible)
       </div>
       <!-- Show response user -->
       <div
-        v-if="props.responsible"
+        v-if="responsible"
         class="flex items-center group"
       >
         <img
-          :src="props.employeesByEmail[props.responsible].fotolink"
+          v-if="userPhoto"
+          :src="userPhoto"
           class="mr-[4px] rounded-[6px] border-[1px] border-[#979799]"
-          :class="{'group-hover:hidden': props.canEdit }"
+          :class="{'group-hover:hidden': canEdit }"
           width="20"
           height="20"
         >
         <div
-          class="flex items-center justify-center p-[4.5px] mr-[4px] hidden"
-          :class="{'group-hover:block': props.canEdit }"
+          class="items-center justify-center p-[4.5px] mr-[4px] hidden"
+          :class="{'group-hover:flex': canEdit }"
           @click.stop="$emit('changeResponsible', '')"
         >
           <svg
@@ -70,7 +60,7 @@ console.log(props.responsible)
           </svg>
         </div>
 
-        {{ props.employeesByEmail[props.responsible].name }}
+        {{ userName }}
       </div>
     </div>
     <template
@@ -78,7 +68,7 @@ console.log(props.responsible)
     >
       <div class="max-h-[156px] overflow-y-scroll">
         <div
-          v-for="(employee, index) in props.employeesByEmail"
+          v-for="(employee, index) in employeesByEmail"
           :key="index"
         >
           <div
@@ -98,6 +88,40 @@ console.log(props.responsible)
     </template>
   </Popper>
 </template>
+
+<script>
+import Popper from 'vue3-popper'
+
+export default {
+  components: {
+    Popper
+  },
+  props: {
+    responsible: {
+      type: String,
+      default: ''
+    },
+    canEdit: {
+      type: Boolean,
+      default: false
+    },
+    employeesByEmail: {
+      type: Object,
+      default: () => ({})
+    }
+  },
+  emits: ['changeResponsible'],
+  computed: {
+    userName () {
+      return this.employeesByEmail[this.responsible.toLowerCase()]?.name ?? this.responsible
+    },
+    userPhoto () {
+      return this.employeesByEmail[this.responsible.toLowerCase()]?.fotolink ?? ''
+    }
+  }
+}
+</script>
+
 <style scoped>
 .light {
   --popper-theme-background-color: #ffffff;

@@ -1,14 +1,14 @@
-import { createApp } from 'vue'
 import axios from 'axios'
+import Notifications from 'notiwind'
+import { createApp } from 'vue'
+import linkify from 'vue-linkify'
 import App from './App.vue'
 import router from './router'
 import store from './store'
-import Notifications from 'notiwind'
-import linkify from 'vue-linkify'
 
 import './css/main.css'
 
-console.log(process.env)
+console.log('ENV', process.env)
 
 const token = localStorage.getItem('user-token')
 const navStack = JSON.parse(localStorage.getItem('navStack'))
@@ -60,15 +60,32 @@ router.afterEach((to) => {
 
 /* On error send error to Alex's server  */
 window.onerror = function (msg, url, lineNo, columnNo, error) {
-  console.log('Error: ', msg)
-  if (msg.indexOf('callback is not a function') !== -1) { return }
-  if (msg === 'NetworkError') { return }
-  if (!url) { url = 'https://web' }
+  if (msg.indexOf('callback is not a function') !== -1) {
+    return
+  }
+  if (msg === 'NetworkError') {
+    return
+  }
+  if (!url) {
+    url = 'https://web'
+  }
+  const data = {
+    msg: msg,
+    url: url,
+    line: lineNo,
+    column: columnNo
+  }
+  console.log('Error: ', data, error)
   axios({
     url: process.env.VUE_APP_LEADERTASK_API + 'api/v1/errors/front',
     method: 'POST',
-    data: { msg: msg, url: url, line: lineNo, column: columnNo }
+    data: data
   })
 }
 
-createApp(App).use(store).use(router).use(Notifications).directive('linkified', linkify).mount('#app')
+createApp(App)
+  .use(store)
+  .use(router)
+  .use(Notifications)
+  .directive('linkified', linkify)
+  .mount('#app')

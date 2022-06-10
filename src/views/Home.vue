@@ -319,7 +319,6 @@ onBeforeMount(() => {
   document.head.appendChild(websync)
 
   store.dispatch(USER_REQUEST).then(resp => {
-    console.log('RESP FROM USER REQUEST IN HOME.VUE: ', resp)
     store.dispatch('GET_SOUND_SETTING', resp.data.current_user_uid)
   })
   getNavigator()

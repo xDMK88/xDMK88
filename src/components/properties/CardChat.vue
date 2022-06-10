@@ -7,6 +7,7 @@ import CardChatSelfMessage from '@/components/properties/CardChatSelfMessage.vue
 import CardChatSelfFileMessage from '@/components/properties/CardChatSelfFileMessage.vue'
 import CardChatQuoteMessage from '@/components/properties/CardChatQuoteMessage.vue'
 
+const emit = defineEmits('onQuote')
 const props = defineProps({
   messages: Array,
   currentUserUid: String,
@@ -51,6 +52,10 @@ const isChangedCreator = (index) => {
   return messagePrev.uid_creator !== messageCurr.uid_creator
 }
 
+const setCurrentQuote = (quoteMessage) => {
+  emit('onQuote', quoteMessage)
+}
+
 const getMessageWeekDateString = (dateCreate) => {
   if (!dateCreate) return ''
   // добавляем Z в конец, чтобы он посчитал что это UTC время
@@ -75,7 +80,6 @@ const getMessageWeekDateString = (dateCreate) => {
       v-for="(message, index) in messages"
       :key="index"
     >
-      <!-- New date -->
       <div
         v-if="isChangedDate(index)"
         class="text-[#88888A] text-[11px] font-[400] leading-[13px] tracking-wide my-[15px] text-center"
@@ -113,6 +117,7 @@ const getMessageWeekDateString = (dateCreate) => {
         v-if="message.isMyMessage && message.isMessage && !props.showFilesOnly"
         :message="message"
         :employee="props.employees[message.uid_creator]"
+        @onQuoteMessage="setCurrentQuote"
       />
       <card-chat-self-file-message
         v-if="message.isMyMessage && message.isFile"

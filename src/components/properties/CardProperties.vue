@@ -16,6 +16,7 @@ import close from '@/icons/close.js'
 import TaskPropsCommentEditor from '@/components/TaskProperties/TaskPropsCommentEditor.vue'
 import BoardModalBoxDelete from '@/components/Board/BoardModalBoxDelete.vue'
 import CardModalBoxBudget from '@/components/properties/CardModalBoxBudget.vue'
+import CardChatQuoteMessage from '@/components/properties/CardChatQuoteMessage.vue'
 
 const store = useStore()
 const selectedCard = computed(() => store.state.cards.selectedCard)
@@ -27,10 +28,16 @@ const cardMessages = computed(() => store.state.cardfilesandmessages.messages)
 
 const showChangeCardBudget = ref(false)
 const showFilesOnly = ref(false)
+const currentQuote = ref(false)
 
 const scrollDown = () => {
   const asideRight = document.getElementById('aside-right')
   asideRight.scroll({ top: asideRight.scrollHeight + 100000, behavior: 'smooth' })
+}
+
+const focusMessageInput = () => {
+  const messageInput = document.getElementById('card-message-textarea')
+  messageInput.focus()
 }
 
 const changeResponsible = (userEmail) => {
@@ -87,6 +94,11 @@ const createCardFile = (event) => {
   })
 }
 
+const setCurrentQuote = (quote) => {
+  currentQuote.value = quote
+  focusMessageInput()
+}
+
 const createCardMessage = () => {
   const uid = uuidv4()
   const data = {
@@ -95,6 +107,7 @@ const createCardMessage = () => {
     uid: uid,
     date_create: new Date().toISOString(),
     uid_creator: user.value.current_user_uid,
+    uid_quote: currentQuote?.value?.uid ?? '',
     text: cardMessageInputValue.value,
     msg: cardMessageInputValue.value,
     order: 0,
@@ -103,6 +116,7 @@ const createCardMessage = () => {
   store.dispatch(CREATE_MESSAGE_REQUEST, data).then(() => {
     selectedCard.value.has_msgs = true
     cardMessageInputValue.value = ''
+    currentQuote.value = false
     scrollDown()
   })
 }
@@ -229,10 +243,16 @@ const removeCard = () => {
       :current-user-uid="user.current_user_uid"
       :employees="employees"
       :show-files-only="showFilesOnly"
+      @onQuote="setCurrentQuote"
     />
 
     <!-- Card chat input -->
-    <div class="flex fixed bottom-[30px] w-[340px]">
+    <div class="flex flex-col fixed bottom-[30px] w-[340px]">
+      <card-chat-quote-message
+        v-if="currentQuote"
+        :quote-message="currentQuote"
+        :employee="employees[currentQuote.uid_creator]"
+      />
       <card-message-input
         v-model="cardMessageInputValue"
         @createCardMessage="createCardMessage"

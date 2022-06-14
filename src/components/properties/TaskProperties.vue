@@ -288,10 +288,19 @@ export default {
       })
     }
     const deleteTaskMsg = (uid) => {
-      store.dispatch(DELETE_MESSAGE_REQUEST, { uid: uid })
+      store.dispatch(DELETE_MESSAGE_REQUEST, { uid: uid }).then(
+        resp => {
+          console.log(taskMessages.value)
+          selectedTask.value.has_msgs = true
+          taskMessages.value.delete = 1
+        })
     }
     const deleteFiles = (uid) => {
-      store.dispatch(DELETE_FILE_REQUEST, { uid: uid })
+      store.dispatch(DELETE_FILE_REQUEST, { uid: uid }).then(
+        resp => {
+          console.log(selectedTask.value)
+          selectedTask.value.msg.delete = 1
+        })
     }
     const changeName = (event) => {
       const data = {
@@ -2024,6 +2033,7 @@ export default {
         :show-only-files="showOnlyFiles"
         @answerMessage="onAnswerMessage"
         @sendTaskMsg="sendTaskMsg"
+        @onPasteEvent="onPasteEvent"
         @deleteFiles="deleteFiles"
         @deleteTaskMsg="deleteTaskMsg"
       />

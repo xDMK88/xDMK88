@@ -16,7 +16,7 @@
       >
         <!-- День недели -->
         <div
-          v-if="isChangedDate(index) && message.deleted === 0"
+          v-if="isChangedDate(index)"
           class="text-center"
         >
           <p class="text-xs text-gray-500 dark:text-gray-300 my-3">
@@ -144,6 +144,7 @@
           :time="getMessageTimeString(message.date_create)"
           :size="formatBytes(message.file_size)"
           :file="message"
+          @PasteEvent="PasteEvent($event)"
           @deleteFiles="deleteFiles(message.uid)"
         />
       </div>
@@ -190,7 +191,7 @@ export default {
       default: false
     }
   },
-  emits: ['answerMessage', 'sendTaskMsg', 'deleteTaskMsg', 'deleteFiles'],
+  emits: ['answerMessage', 'sendTaskMsg', 'deleteTaskMsg', 'deleteFiles', 'onPasteEvent'],
   data: () => {
     return { getInspectorMessage }
   },
@@ -241,7 +242,6 @@ export default {
                 new Date(messageCurr.date_create).toDateString()
     },
     isChangeCreator (index) {
-      console.log(index)
       if (this.showAllMessages === true) {
         if (index === 0) return true
       } else {
@@ -335,6 +335,9 @@ export default {
     },
     deleteFiles (uid) {
       this.$emit('deleteFiles', uid)
+    },
+    PasteEvent (e) {
+      this.$emit('onPasteEvent', e)
     }
   }
 }

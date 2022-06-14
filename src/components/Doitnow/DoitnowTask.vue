@@ -74,13 +74,13 @@
     <div class="flex text-sm text-left justify-between w-[200px]">
       <div class="flex flex-col" style="color: #7E7E80">
         <span
-          v-show="task.uid_customer !== task.uid_performer"
+          v-show="(task.uid_customer !== user.current_user_uid) && (task.uid_performer !== user.current_user_uid)"
           class="mb-2 w-[100px]"
         >
           Заказчик:
         </span>
         <span
-          v-show="task.uid_customer !== task.uid_performer"
+          v-show="(task.uid_customer !== user.current_user_uid) && (task.uid_performer !== user.current_user_uid)"
           class="mb-2 w-[100px]"
         >
           Исполнитель:

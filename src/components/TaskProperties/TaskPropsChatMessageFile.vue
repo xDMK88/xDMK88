@@ -74,7 +74,7 @@
                 </template>
               </PopMenu>
             <p
-              class="group-hover:hidden block font-semibold"
+              class="group-hover:hidden block font-semibold h-[14px]"
             >
               {{ time }}
             </p>

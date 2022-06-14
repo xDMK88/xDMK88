@@ -1,5 +1,6 @@
 import * as TYPES from '@/websync/types.js'
 import { updateTask } from '@/websync/task.js'
+import { updateCard } from '@/websync/card.js'
 import { updateProject } from '@/websync/project.js'
 
 export default function processUpdate (obj) {
@@ -47,6 +48,7 @@ export default function processUpdate (obj) {
     case TYPES.TYPE_OBJECT_BOARD:
       break
     case TYPES.TYPE_OBJECT_CARD:
+      updateCard(obj)
       break
     case TYPES.TYPE_OBJECT_CARD_FILE:
       break

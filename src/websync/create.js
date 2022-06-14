@@ -1,6 +1,7 @@
 import store from '@/store/index.js'
 import { createProject } from '@/websync/project.js'
 import { createTask } from '@/websync/task.js'
+import { createCard } from '@/websync/card.js'
 import { createMessage } from '@/websync/task_message.js'
 import * as TYPES from '@/websync/types.js'
 import { showNotify } from '@/store/helpers/functions'
@@ -107,6 +108,7 @@ export default function processCreate (obj) {
     case TYPES.TYPE_OBJECT_BOARD:
       break
     case TYPES.TYPE_OBJECT_CARD:
+      createCard(obj)
       break
     case TYPES.TYPE_OBJECT_CARD_FILE:
       break

@@ -186,100 +186,108 @@ const requestLastVisitedNav = () => {
 }
 </script>
 <template>
-
-  <div v-if="navStack[0] && navStack[navStack.length - 1].greedPath === 'boards_children'"
-       class="transition-position flex-none items-stretch lg:items-center flex h-14 w-[300px] relative mr-0">
-    <nav-bar-item class="rounded-lg hover:text-gray-700 mr-2 px-0 mt-0 cursor-pointer">
-    </nav-bar-item>
-  </div>
-<div
-  v-if="navStack[0] && navStack[0].greedPath !== 'new_private_projects' && navStack[0].greedPath !== 'new_delegate' && navStack[0].name !== 'Рабочий стол' && navStack[0].name !== 'Очередь' && navStack[0].greedPath !== 'new_private_boards'"
-  class="transition-position flex-none items-stretch lg:items-center flex h-14 w-[300px] relative mr-0"
->
-
-<!-- Search -->
-<nav-bar-item class="duration-200 right-0
-ease-out transition transform origin-top-right right-[-35%] rounded-lg hover:text-gray-700 cursor-auto px-0" @click="searchClick" v-if="IconSearchHide">
-  <svg class="cursor-pointer"
-    width="21"
-    height="21"
-    viewBox="0 0 21 21"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
+  <div
+    v-if="navStack[0] && navStack[navStack.length - 1].greedPath === 'boards_children'"
+    class="transition-position flex-none items-stretch lg:items-center flex h-14 w-[300px] relative mr-0"
   >
-    <path
-      d="M20 20L15.514 15.506L20 20ZM18 9.5C18 11.7543 17.1045 13.9163 15.5104 15.5104C13.9163 17.1045 11.7543 18 9.5 18C7.24566 18 5.08365 17.1045 3.48959 15.5104C1.89553 13.9163 1 11.7543 1 9.5C1 7.24566 1.89553 5.08365 3.48959 3.48959C5.08365 1.89553 7.24566 1 9.5 1C11.7543 1 13.9163 1.89553 15.5104 3.48959C17.1045 5.08365 18 7.24566 18 9.5V9.5Z"
-      stroke="black"
-      stroke-opacity="0.5"
-      stroke-width="2"
-      stroke-linecap="round"
-    />
-  </svg>
-  <span class="text-sm text-[#7E7E80] font-normal ml-1">{{localization.search}}</span>
-</nav-bar-item>
-
-<nav-bar-item class="px-0 relative mr-7 right-[12%] duration-200
-ease-out transition transform" @mouseleave="HideSearch" v-if="searchshow">
-  <nav-bar-search :placeholder="localization.search" />
-</nav-bar-item>
-  <div class="flex absolute right-6">
-  <nav-bar-item class="px-3 mt-1">
-    <Popper
-      class="items-center z-[99]"
-      arrow
-      :class="isDark ? 'dark' : 'light'"
-      placement="bottom"
-    >
-      <template #content>
-        <div
-          class="w-60 flex flex-col"
-        >
-          <div class="flex items-center justify-between">
-            <p class="text-sm font-semibold mr-1">
-              {{ localization.show_completed_tasks }}
-            </p>
-            <input
-              v-if="settings"
-              v-model="settings.show_completed_tasks"
-              class="w-6 h-6"
-              type="checkbox"
-              @change="updateSettings"
-            >
-          </div>
-        </div>
-      </template>
-      <icon
-        :path="properties.path"
-        :width="properties.width"
-        :height="properties.height"
-        :box="properties.viewBox"
-      />
-    </Popper>
-  </nav-bar-item>
-  <nav-bar-item class="rounded-lg hover:text-gray-700 mr-2 px-0 mt-0 cursor-pointer">
-    <Icon
-      :path="sortorder.path"
-      :width="sortorder.width"
-      :height="sortorder.height"
-      :box="sortorder.viewBox"
-    />
-  </nav-bar-item>
-  <nav-bar-item class="rounded-lg hover:text-gray-700 mr-2 px-0 mt-0 cursor-pointer">
-    <Icon
-      :path="sort.path"
-      :width="sort.width"
-      :height="sort.height"
-      :box="sort.viewBox"
-    />
-  </nav-bar-item>
-  <nav-bar-item class="rounded-lg hover:text-gray-700 px-0 mt-0 cursor-pointer">
-    <Icon
-      :path="filters.path"
-      :width="filters.width"
-      :height="filters.height"
-      :box="filters.viewBox"
-    />
-  </nav-bar-item>
+    <nav-bar-item class="rounded-lg hover:text-gray-700 mr-2 px-0 mt-0 cursor-pointer" />
   </div>
-</div>
+  <div
+    v-if="navStack[0] && navStack[0].greedPath !== 'new_private_projects' && navStack[0].greedPath !== 'new_delegate' && navStack[0].name !== 'Рабочий стол' && navStack[0].name !== 'Очередь' && navStack[0].greedPath !== 'new_private_boards'"
+    class="transition-position flex-none items-stretch lg:items-center flex h-14 w-[300px] relative mr-0"
+  >
+    <!-- Search -->
+    <nav-bar-item
+      v-if="IconSearchHide"
+      class="duration-200 right-0
+ease-out transition transform origin-top-right right-[-35%] rounded-lg hover:text-gray-700 cursor-auto px-0"
+      @click="searchClick"
+    >
+      <svg
+        class="cursor-pointer"
+        width="21"
+        height="21"
+        viewBox="0 0 21 21"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M20 20L15.514 15.506L20 20ZM18 9.5C18 11.7543 17.1045 13.9163 15.5104 15.5104C13.9163 17.1045 11.7543 18 9.5 18C7.24566 18 5.08365 17.1045 3.48959 15.5104C1.89553 13.9163 1 11.7543 1 9.5C1 7.24566 1.89553 5.08365 3.48959 3.48959C5.08365 1.89553 7.24566 1 9.5 1C11.7543 1 13.9163 1.89553 15.5104 3.48959C17.1045 5.08365 18 7.24566 18 9.5V9.5Z"
+          stroke="black"
+          stroke-opacity="0.5"
+          stroke-width="2"
+          stroke-linecap="round"
+        />
+      </svg>
+      <span class="text-sm text-[#7E7E80] font-normal ml-1">{{ localization.search }}</span>
+    </nav-bar-item>
+
+    <nav-bar-item
+      v-if="searchshow"
+      class="px-0 relative mr-7 right-[12%] duration-200
+ease-out transition transform"
+      @mouseleave="HideSearch"
+    >
+      <nav-bar-search :placeholder="localization.search" />
+    </nav-bar-item>
+    <div class="flex absolute right-6">
+      <nav-bar-item class="px-3 mt-1">
+        <Popper
+          class="items-center z-[99]"
+          arrow
+          :class="isDark ? 'dark' : 'light'"
+          placement="bottom"
+        >
+          <template #content>
+            <div
+              class="w-60 flex flex-col"
+            >
+              <div class="flex items-center justify-between">
+                <p class="text-sm font-semibold mr-1">
+                  {{ localization.show_completed_tasks }}
+                </p>
+                <input
+                  v-if="settings"
+                  v-model="settings.show_completed_tasks"
+                  class="w-6 h-6"
+                  type="checkbox"
+                  @change="updateSettings"
+                >
+              </div>
+            </div>
+          </template>
+          <icon
+            :path="properties.path"
+            :width="properties.width"
+            :height="properties.height"
+            :box="properties.viewBox"
+          />
+        </Popper>
+      </nav-bar-item>
+      <nav-bar-item class="rounded-lg hover:text-gray-700 mr-2 px-0 mt-0 cursor-pointer">
+        <Icon
+          :path="sortorder.path"
+          :width="sortorder.width"
+          :height="sortorder.height"
+          :box="sortorder.viewBox"
+        />
+      </nav-bar-item>
+      <nav-bar-item class="rounded-lg hover:text-gray-700 mr-2 px-0 mt-0 cursor-pointer">
+        <Icon
+          :path="sort.path"
+          :width="sort.width"
+          :height="sort.height"
+          :box="sort.viewBox"
+        />
+      </nav-bar-item>
+      <nav-bar-item class="rounded-lg hover:text-gray-700 px-0 mt-0 cursor-pointer">
+        <Icon
+          :path="filters.path"
+          :width="filters.width"
+          :height="filters.height"
+          :box="filters.viewBox"
+        />
+      </nav-bar-item>
+    </div>
+  </div>
 </template>

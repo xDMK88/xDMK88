@@ -199,11 +199,17 @@ const removeCard = () => {
   />
   <div class="relative min-h-screen">
     <!-- Close icon -->
-    <div class="flex justify-end">
+    <div class="flex items-center justify-between mb-[10px]">
+      <card-options
+        :date-create="selectedCard.date_create"
+        :can-edit="canEdit"
+        :show-files-only="showFilesOnly"
+        @clickRemoveButton="showDeleteCard = true"
+        @toggleShowOnlyFiles="showFilesOnly = !showFilesOnly"
+      />
       <Icon
-        :path="
-          close.path"
-        class="text-[#7E7E80] dark:text-white cursor-pointer mb-[15px]"
+        :path="close.path"
+        class="text-[#7E7E80] dark:text-white cursor-pointer"
         :box="close.viewBox"
         :width="close.width"
         :height="close.height"
@@ -237,13 +243,6 @@ const removeCard = () => {
         :can-edit="canEdit"
         @click="showChangeCardBudget = true"
         @onWipeBudget="changeCardBudget"
-      />
-      <card-options
-        :date-create="selectedCard.date_create"
-        :can-edit="canEdit"
-        :show-files-only="showFilesOnly"
-        @clickRemoveButton="showDeleteCard = true"
-        @toggleShowOnlyFiles="showFilesOnly = !showFilesOnly"
       />
     </div>
 

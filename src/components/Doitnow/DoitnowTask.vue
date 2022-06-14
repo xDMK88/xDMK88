@@ -74,13 +74,13 @@
     <div class="flex text-sm text-left justify-between w-[200px]">
       <div class="flex flex-col" style="color: #7E7E80">
         <span
-          v-show="task.uid_customer !== task.uid_performer"
+          v-show="(task.uid_customer !== task.uid_performer) && (task.uid_customerr !== user.current_user_uid)"
           class="mb-2 w-[100px]"
         >
           Заказчик:
         </span>
         <span
-          v-show="task.uid_customer !== task.uid_performer"
+          v-show="(task.uid_customer !== task.uid_performer) && (task.uid_customerr !== user.current_user_uid)"
           class="mb-2 w-[100px]"
         >
           Исполнитель:
@@ -107,7 +107,7 @@
       <div class="flex flex-col font-medium min-w-full">
         <!-- customer -->
         <div
-          v-show="user.current_user_uid !== task.uid_customer && task.uid_customer !== task.uid_performer"
+          v-show="(task.uid_customer !== task.uid_performer) && (task.uid_customerr !== user.current_user_uid)"
           class="flex mb-2"
         >
           <img
@@ -118,7 +118,7 @@
         </div>
         <!-- performer -->
         <div
-          v-show="user.current_user_uid !== task.uid_customer && task.uid_customer !== task.uid_performer"
+          v-show="(task.uid_customer !== task.uid_performer) && (task.uid_customerr !== user.current_user_uid)"
           class="flex mb-2"
         >
           <img

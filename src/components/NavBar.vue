@@ -1,5 +1,5 @@
 <script setup>
-import { computed, ref, watch } from 'vue'
+import { computed, ref } from 'vue'
 import { visitChildren } from '@/store/helpers/functions'
 import { useStore } from 'vuex'
 import {
@@ -10,7 +10,7 @@ import {
 import NavBarItem from '@/components/NavBarItem.vue'
 import Icon from '@/components/Icon.vue'
 import Popper from 'vue3-popper'
-import NavButtonsRight from '@/components/Navbar/NavButtonsRight.vue'
+import NavButtonsRight from '@/components/Navbar/NavBarButtonsRight.vue'
 import propertiesproject from '@/icons/propertiesproject.js'
 import add from '@/icons/add.js'
 import arrowForward from '@/icons/arrow-forward.js'
@@ -200,11 +200,12 @@ const openProjectProperties = (project, parentProjectUid = '') => {
   store.commit(SELECT_PROJECT, project)
 }
 
-watch(navStack, (oldVal, newVal) => {
-  if (document.getElementById('control-input')) {
-    document.getElementById('control-input').value = ''
+const popNavBar = () => {
+  if (navStack.value.length > 1) {
+    const index = navStack.value.length - 2
+    clickOnGridCard(navStack.value[index], index)
   }
-})
+}
 </script>
 
 <template>
@@ -317,7 +318,9 @@ watch(navStack, (oldVal, newVal) => {
       </nav-bar-item>
     </div>
     <div>
-      <NavButtonsRight />
+      <NavButtonsRight
+        @popNavBar="popNavBar"
+      />
     </div>
   </nav>
 </template>

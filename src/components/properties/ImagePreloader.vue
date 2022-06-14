@@ -11,7 +11,11 @@ const props = defineProps({
   fileName: String,
   fileExtension: String,
   fileDateCreate: String,
-  preloaderColor: String
+  preloaderColor: String,
+  canDelete: {
+    type: Boolean,
+    default: true
+  }
 })
 
 const store = useStore()
@@ -85,7 +89,9 @@ onMounted(() => {
     {{ props.fileDateCreate }}
   </p>
   <div class="group-hover:flex hidden justify-end">
-    <card-chat-message-options-pop-menu>
+    <card-chat-message-options-pop-menu
+      :can-delete="props.canDelete"
+    >
       <div class="min-w-[30px] mt-[5px] min-h-[16px] flex cursor-pointer items-end justify-center">
         <svg
           width="14"

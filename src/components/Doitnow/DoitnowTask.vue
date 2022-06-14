@@ -11,7 +11,7 @@
   <div class="w-5/6">
     <div
       class="flex justify-between items-center mb-6 p-2 rounded-lg"
-      :style="{ backgroundColor: colors[task.uid_marker] ? colors[task.uid_marker].back_color : '', color: colors[task.uid_marker] ? colors[task.uid_marker].fore_color : '' }"
+      :style="{ backgroundColor: colors[task.uid_marker] ? colors[task.uid_marker].back_color : '', color: getValidForeColor(colors[task.uid_marker]?.fore_color) }"
     >
       <!-- task info/status -->
       <div class="flex items-center">

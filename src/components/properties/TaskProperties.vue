@@ -977,7 +977,7 @@ export default {
       )
     },
     sendTaskMsg: function (msg) {
-      this.showAllMessages = true
+      // this.showAllMessages = true
       // const date = new Date()
       // const month = this.pad2(date.getUTCMonth() + 1)
       // const day = this.pad2(date.getUTCDate())
@@ -1897,27 +1897,27 @@ export default {
          </Popper>-->
         <!-- Кнопка Проект -->
         <TaskPropsButtonProject
-          v-if="(selectedTask.type === 1 || selectedTask.type === 2 || (selectedTask.uid_project !== '00000000-0000-0000-0000-000000000000')) && !((selectedTask.uid_customer !== user.current_user_uid) && (selectedTask.status === 1))"
+          v-if="(selectedTask.type === 1 || selectedTask.type === 2 || (selectedTask.uid_project !== '00000000-0000-0000-0000-000000000000')) && ((selectedTask.uid_customer === user.current_user_uid) && (selectedTask.status !== 1))"
           :selected-project="selectedTask.uid_project"
           :can-edit="selectedTask.type === 1 || selectedTask.type === 2"
           @changeProject="onChangeProject"
         />
         <!-- Кнопка Цвет -->
         <TaskPropsButtonColor
-          v-if="(selectedTask.type === 1 || selectedTask.type === 2) && !((selectedTask.uid_customer !== user.current_user_uid) && (selectedTask.status === 1))"
+          v-if="(selectedTask.type === 1 || selectedTask.type === 2) && ((selectedTask.uid_customer === user.current_user_uid) && (selectedTask.status !== 1))"
           :selected-color="selectedTask.uid_marker"
           :can-edit="selectedTask.type === 1 || selectedTask.type === 2"
           @changeColor="onChangeColor"
         />
         <!-- Кнопка Метки -->
         <TaskPropsButtonTags
-          v-if="(selectedTask.type === 1 || selectedTask.type === 2) && !((selectedTask.uid_customer !== user.current_user_uid) && (selectedTask.status === 1))"
+          v-if="(selectedTask.type === 1 || selectedTask.type === 2) && ((selectedTask.uid_customer === user.current_user_uid) && (selectedTask.status !== 1))"
           :selected-tags="selectedTask.tags"
           @changeTags="onChangeTags"
         />
         <!-- Чек лист -->
         <div
-          v-if="!selectedTask.checklist && selectedTask.type!==4 && selectedTask.type!==3 && !((selectedTask.uid_customer !== user.current_user_uid) && (selectedTask.status === 1))"
+          v-if="!selectedTask.checklist && selectedTask.type!==4 && selectedTask.type!==3 && ((selectedTask.uid_customer === user.current_user_uid) && (selectedTask.status !== 1))"
           class="mt-3 tags-custom dark:bg-gray-800 dark:text-gray-100"
           @click="createChecklist"
         >

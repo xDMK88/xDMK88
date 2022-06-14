@@ -801,7 +801,7 @@ export default {
       const newSubtask = {
         uid: uuidv4(),
         uid_customer: user.value.current_user_uid,
-        email_performer: parent.type === 2 ? parent.email_performer : '',
+        email_performer: parent.uid_customer === user.value.current_user_uid ? parent.email_performer : '',
         name: '',
         emails: '',
         comment: '',
@@ -816,6 +816,7 @@ export default {
         _isEditable: true,
         _justCreated: true
       }
+      console.log(parent)
       store.dispatch(TASK.SELECT_TASK, newSubtask)
       store.dispatch(TASK.ADD_SUBTASK, newSubtask)
         .then(() => {

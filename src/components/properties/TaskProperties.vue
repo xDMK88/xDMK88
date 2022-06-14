@@ -2020,6 +2020,7 @@ export default {
         :show-only-files="showOnlyFiles"
         @answerMessage="onAnswerMessage"
         @sendTaskMsg="sendTaskMsg"
+        @deleteTaskMsg="deleteTaskMsg"
       />
     </div>
   </div>

@@ -89,6 +89,7 @@
 import FileMessage from '@/components/properties/FileMessage.vue'
 import PopMenu from '@/components/modals/PopMenu.vue'
 import PopMenuItem from '@/components/modals/PopMenuItem.vue'
+import { ref } from 'vue'
 
 export default {
   components: {
@@ -124,6 +125,30 @@ export default {
     size: {
       type: String,
       default: ''
+    }
+  },
+  emits: ['answer'],
+  computed: {
+    messageText () {
+      let text = this.message.trim()
+      text = text.replaceAll('&amp;', '&')
+      text = text.replaceAll('&lt;', '<')
+      text = text.replaceAll('&gt;', '>')
+      return text
+    }
+  },
+  setup () {
+    const isTaskHoverPopperActive = ref(false)
+    const toggleTaskHoverPopper = (val) => {
+      isTaskHoverPopperActive.value = val
+    }
+    return {
+      toggleTaskHoverPopper
+    }
+  },
+  methods: {
+    onAnswerClick () {
+      this.$emit('answer')
     }
   }
 }

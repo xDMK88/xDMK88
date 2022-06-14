@@ -102,7 +102,6 @@ export default {
       return this.$store.state.navbar.navStack
     },
     lastGreedPath () {
-      console.log('last nav', this.navStack[this.navStack.length - 1])
       return this.navStack[this.navStack.length - 1]?.greedPath ?? ''
     },
     lastNavStackUid () {

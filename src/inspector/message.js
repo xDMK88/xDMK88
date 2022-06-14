@@ -27,7 +27,7 @@ export function getInspectorMessage (type, task) {
     case 4: return store?.state?.employees?.employees[task.uid_performer]?.name + ', как идут дела? Пожалуйста, приложите промежуточные результаты.'
     case 5: return 'Я позвонил исполнителю на номер ' + store?.state?.employees?.employees[task.uid_performer]?.phone.split(' ')[0] + '.'
     case 6: return 'Я отправил смс исполнителю на номер ' + store?.state?.employees?.employees[task.uid_performer]?.phone.split(' ')[0] + '.'
-    case 7: return 'Вы завершили задачу в срок получаете 15 баллов на ваш бонусный счет.'
+    case 7: return 'Вы завершили задачу в срок и получаете +15 баллов к вашей карме.'
     case 8: return 'Вы просрочили задачу и ничего не написали даже после дедлайна, пожалуйста позвоните руководителю и обьясните причину. С вас снимается 15 баллов за такое грубое нарушение.'
     case 9: return 'Я уже хотел связаться с ' + store?.state?.employees?.employees[task.uid_perfomer]?.name + ', но в базе нет номера телефона исполнителя. Пожалуйста, добавьте номер телефона исполнителю.'
   }

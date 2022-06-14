@@ -232,7 +232,7 @@
             <contenteditable
               v-model="props.node.info.name"
               tag="div"
-              class="taskName p-0.5 ring-0 outline-none max-w-7xl ml-1 max-w-[80%]"
+              class="taskName p-0.5 ring-0 outline-none ml-1 break-all"
               :contenteditable="props.node.info._isEditable"
               placeholder="Введите название задачи"
               :no-nl="true"
@@ -801,7 +801,7 @@ export default {
       const newSubtask = {
         uid: uuidv4(),
         uid_customer: user.value.current_user_uid,
-        email_performer: parent.type === 2 ? parent.email_performer : '',
+        email_performer: parent.uid_customer === user.value.current_user_uid ? parent.email_performer : '',
         name: '',
         emails: '',
         comment: '',
@@ -816,6 +816,7 @@ export default {
         _isEditable: true,
         _justCreated: true
       }
+      console.log(parent)
       store.dispatch(TASK.SELECT_TASK, newSubtask)
       store.dispatch(TASK.ADD_SUBTASK, newSubtask)
         .then(() => {

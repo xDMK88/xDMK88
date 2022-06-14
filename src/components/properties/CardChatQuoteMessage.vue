@@ -8,7 +8,10 @@ export default {
 </script>
 
 <template>
-  <div class="flex items-start space-x-[10px] mb-[14px] mt-[19px] w-full">
+  <div
+    class="flex items-start space-x-[10px] w-full"
+    :class="{ 'bg-white': showCloseIcon }"
+  >
     <svg
       width="14"
       height="11"

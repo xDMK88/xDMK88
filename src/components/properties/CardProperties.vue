@@ -1,5 +1,5 @@
 <script setup>
-import { computed, ref, nextTick } from 'vue'
+import { computed, ref, nextTick, watch } from 'vue'
 import { useStore } from 'vuex'
 import { CREATE_MESSAGE_REQUEST, CREATE_FILES_REQUEST, ADD_MESSAGE_LOCALLY, REMOVE_MESSAGE_LOCALLY } from '@/store/actions/cardfilesandmessages'
 import { CHANGE_CARD_RESPONSIBLE_USER, CHANGE_CARD_BUDGET, CHANGE_CARD_NAME, CHANGE_CARD_COMMENT, CHANGE_CARD_COLOR, CHANGE_CARD_COVER, CHANGE_CARD_CLEAR_COVER, DELETE_CARD } from '@/store/actions/cards'
@@ -16,7 +16,7 @@ import close from '@/icons/close.js'
 import TaskPropsCommentEditor from '@/components/TaskProperties/TaskPropsCommentEditor.vue'
 import BoardModalBoxDelete from '@/components/Board/BoardModalBoxDelete.vue'
 import CardModalBoxBudget from '@/components/properties/CardModalBoxBudget.vue'
-import CardChatQuoteMessage from '@/components/properties/CardChatQuoteMessage.vue'
+import CardMessageQuoteUnderInput from '@/components/properties/CardMessageQuoteUnderInput.vue'
 
 const store = useStore()
 const selectedCard = computed(() => store.state.cards.selectedCard)
@@ -29,6 +29,10 @@ const cardMessages = computed(() => store.state.cardfilesandmessages.messages)
 const showChangeCardBudget = ref(false)
 const showFilesOnly = ref(false)
 const currentQuote = ref(false)
+
+watch(selectedCard, (oldValue, newValue) => {
+  currentQuote.value = false
+})
 
 const scrollDown = () => {
   const asideRight = document.getElementById('aside-right')
@@ -265,10 +269,12 @@ const removeCard = () => {
 
     <!-- Card chat input -->
     <div class="flex flex-col fixed bottom-[30px] w-[340px]">
-      <card-chat-quote-message
+      <card-message-quote-under-input
         v-if="currentQuote"
+        class="mb-[14px] mt-[19px]"
         :quote-message="currentQuote"
         :employee="employees[currentQuote.uid_creator]"
+        @onClearQuote="currentQuote = false"
       />
       <card-message-input
         v-model="cardMessageInputValue"

@@ -25,10 +25,10 @@
         </div>
         <!-- Облачко с текстом -->
         <TaskPropsChatMessageText
-          :class="message.isMyMessage ? 'mr-2' : 'ml-2'"
           v-if="message.isMessage && !showOnlyFiles"
+          :class="message.isMyMessage ? 'mr-2' : 'ml-2'"
           :is-my-message="message.isMyMessage"
-          :deletedStatus="message.deleted"
+          :deleted-status="message.deleted"
           :show-creator="isChangeCreator(index)"
           :show-loader="uploadStarted && message.loading"
           :quote="getMessageQuoteString(message.uid_quote)"
@@ -39,6 +39,7 @@
           @answer="answerMessage(message.uid)"
           @delete="deleteTaskMsg(message.uid)"
         />
+
         <!-- Сообщение от инспектора -->
         <div
           v-if="message.isInspectorMessage && !showOnlyFiles"
@@ -67,7 +68,7 @@
 
               <!-- Origin message -->
               <div
-                v-if="message.type == 1"
+                v-if="message.type == 1 && message.shouldShowInspectorButtons"
                 class="flex mt-2"
               >
                 <div
@@ -90,7 +91,7 @@
 
               <!-- Ignore message -->
               <div
-                v-if="message.type == 2"
+                v-if="message.type == 2 && message.shouldShowInspectorButtons"
                 class="flex mt-2"
               >
                 <div
@@ -134,7 +135,6 @@
             </div>
           </div>
         </div>
-
         <!-- Файл -->
         <TaskPropsChatMessageFile
           v-if="message.isFile"
@@ -145,6 +145,7 @@
           :time="getMessageTimeString(message.date_create)"
           :size="formatBytes(message.file_size)"
           :file="message"
+          @deleteFiles="deleteFiles(message.uid)"
         />
       </div>
     </div>
@@ -190,7 +191,7 @@ export default {
       default: false
     }
   },
-  emits: ['answerMessage', 'sendTaskMsg', 'deleteTaskMsg'],
+  emits: ['answerMessage', 'sendTaskMsg', 'deleteTaskMsg', 'deleteFiles'],
   data: () => {
     return { getInspectorMessage }
   },
@@ -214,7 +215,8 @@ export default {
         isFile: !!message.uid_file,
         isMessage: !message.uid_file && message.uid_creator !== 'inspector',
         isInspectorMessage: message.uid_creator === 'inspector',
-        isMyMessage: message.uid_creator === this.currentUserUid
+        isMyMessage: message.uid_creator === this.currentUserUid,
+        shouldShowInspectorButtons: message?.performer_answer == null && ![1, 5, 7, 8].includes(this.task.status)
       }))
       // for (let i = 0; i < messages.length; i++) {
       //   if (messages[i].isFile) {
@@ -332,6 +334,9 @@ export default {
     },
     deleteTaskMsg (uid) {
       this.$emit('deleteTaskMsg', uid)
+    },
+    deleteFiles (uid) {
+      this.$emit('deleteFiles', uid)
     }
   }
 }

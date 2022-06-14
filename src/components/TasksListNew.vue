@@ -232,7 +232,7 @@
             <contenteditable
               v-model="props.node.info.name"
               tag="div"
-              class="taskName p-0.5 ring-0 outline-none max-w-7xl ml-1 max-w-[80%]"
+              class="taskName p-0.5 ring-0 outline-none ml-1 break-all"
               :contenteditable="props.node.info._isEditable"
               placeholder="Введите название задачи"
               :no-nl="true"

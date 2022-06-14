@@ -5,7 +5,11 @@ const props = defineProps({
   fileName: String,
   fileSize: String,
   fileExtension: String,
-  fileDateCreate: String
+  fileDateCreate: String,
+  canDelete: {
+    type: Boolean,
+    default: true
+  }
 })
 const currentLocation = window.location.href
 </script>
@@ -46,7 +50,9 @@ const currentLocation = window.location.href
           {{ props.fileDateCreate }}
         </p>
         <div class="group-hover:flex hidden justify-end">
-          <card-chat-message-options-pop-menu>
+          <card-chat-message-options-pop-menu
+            :can-delete="props.canDelete"
+          >
             <div class="min-w-[30px] min-h-[14px] flex cursor-pointer items-end justify-center">
               <svg
                 width="14"

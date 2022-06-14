@@ -44,7 +44,7 @@ const FileIsAudio = computed(() => ['mp3', 'wav', 'm4a'].includes(fileExtension.
 
 <template>
   <div
-    class="bg-[#FCEBEB] py-[12px] px-[12px] rounded-t-[12px] rounded-br-[12px] mb-[5px] float-left max-w-[300px]"
+    class="bg-[#FCEBEB] py-[12px] px-[12px] rounded-t-[12px] rounded-br-[12px] mb-[5px] float-left max-w-[300px] group"
   >
     <image-preloader
       v-if="FileIsImage"
@@ -52,6 +52,7 @@ const FileIsAudio = computed(() => ['mp3', 'wav', 'm4a'].includes(fileExtension.
       :file-extension="fileExtension"
       :file-name="props.message.file_name"
       :file-date-create="getMessageTimeString(props.message.date_create)"
+      :can-delete="false"
       preloader-color="#FCEBEB"
     />
     <audio-preloader
@@ -60,6 +61,7 @@ const FileIsAudio = computed(() => ['mp3', 'wav', 'm4a'].includes(fileExtension.
       :file-extension="fileExtension"
       :file-name="props.message.file_name"
       :file-date-create="getMessageTimeString(props.message.date_create)"
+      :can-delete="false"
     />
     <doc-preloader
       v-else-if="FileIsDoc"
@@ -68,6 +70,7 @@ const FileIsAudio = computed(() => ['mp3', 'wav', 'm4a'].includes(fileExtension.
       :file-extension="fileExtension"
       :file-size="formatBytes(props.message.file_size)"
       :file-date-create="getMessageTimeString(props.message.date_create)"
+      :can-delete="false"
     />
     <movie-preloader
       v-else-if="FileIsMovie"
@@ -76,6 +79,7 @@ const FileIsAudio = computed(() => ['mp3', 'wav', 'm4a'].includes(fileExtension.
       :file-extension="fileExtension"
       :file-size="formatBytes(props.message.file_size)"
       :file-date-create="getMessageTimeString(props.message.date_create)"
+      :can-delete="false"
     />
     <file-preloader
       v-else
@@ -84,6 +88,7 @@ const FileIsAudio = computed(() => ['mp3', 'wav', 'm4a'].includes(fileExtension.
       :file-extension="fileExtension"
       :file-size="formatBytes(props.message.file_size)"
       :file-date-create="getMessageTimeString(props.message.date_create)"
+      :can-delete="false"
     />
   </div>
 </template>

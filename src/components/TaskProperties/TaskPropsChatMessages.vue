@@ -37,6 +37,7 @@
           :message="message.msg"
           :time="getMessageTimeString(message.date_create)"
           @answer="answerMessage(message.uid)"
+          @delete="deleteTaskMsg(message.uid)"
         />
         <!-- Сообщение от инспектора -->
         <div
@@ -189,7 +190,7 @@ export default {
       default: false
     }
   },
-  emits: ['answerMessage', 'sendTaskMsg'],
+  emits: ['answerMessage', 'sendTaskMsg', 'deleteTaskMsg'],
   data: () => {
     return { getInspectorMessage }
   },
@@ -252,7 +253,6 @@ export default {
       }
       const messagePrev = this.messages[index - 1]
       const messageCurr = this.messages[index]
-      console.log(this.messages.length)
       if (!messagePrev || !messageCurr) return false
       return messagePrev.uid_creator !== messageCurr.uid_creator
     },
@@ -329,6 +329,9 @@ export default {
     },
     answerMessage (uid) {
       this.$emit('answerMessage', uid)
+    },
+    deleteTaskMsg (uid) {
+      this.$emit('deleteTaskMsg', uid)
     }
   }
 }

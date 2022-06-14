@@ -5,6 +5,8 @@ import DocPreloader from '@/components/properties/DocPreloader.vue'
 import MoviePreloader from '@/components/properties/MoviePreloader.vue'
 import FilePreloader from '@/components/properties/FilePreloader.vue'
 import { computed } from 'vue'
+
+defineEmits(['onQuoteMessage'])
 const props = defineProps({
   message: Object
 })

@@ -257,6 +257,9 @@ const mutations = {
   [CREATE_MESSAGE_REQUEST]: (state, data) => {
     state.messages.push(data)
   },
+  [DELETE_MESSAGE_REQUEST]: (state, data) => {
+    state.messages.slice(data.indexOf(), 1)
+  },
   [FILES_REQUEST]: state => {
     state.status = 'loading'
   },

@@ -5,12 +5,17 @@ import { FILE_REQUEST } from '@/store/actions/cardfilesandmessages'
 
 import CardChatMessageOptionsPopMenu from '@/components/properties/CardChatMessageOptionsPopMenu.vue'
 
+defineEmits(['onQuoteMessage'])
 const props = defineProps({
   fileUid: String,
   fileName: String,
   fileExtension: String,
   fileSize: String,
-  fileDateCreate: String
+  fileDateCreate: String,
+  canDelete: {
+    type: Boolean,
+    default: true
+  }
 })
 
 const store = useStore()
@@ -78,7 +83,10 @@ const loadFileFromInternet = () => {
           {{ props.fileDateCreate }}
         </p>
         <div class="group-hover:flex hidden justify-end">
-          <card-chat-message-options-pop-menu>
+          <card-chat-message-options-pop-menu
+            :can-delete="props.canDelete"
+            @onQuoteMessage="$emit('onQuoteMessage')"
+          >
             <div class="min-w-[30px] min-h-[14px] flex cursor-pointer items-end justify-center">
               <svg
                 width="14"

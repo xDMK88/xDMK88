@@ -6,6 +6,7 @@ import { writeCache } from '@/store/helpers/functions'
 
 import CardChatMessageOptionsPopMenu from '@/components/properties/CardChatMessageOptionsPopMenu.vue'
 
+defineEmits(['onQuoteMessage'])
 const props = defineProps({
   fileUid: String,
   fileName: String,
@@ -91,6 +92,7 @@ onMounted(() => {
   <div class="group-hover:flex hidden justify-end">
     <card-chat-message-options-pop-menu
       :can-delete="props.canDelete"
+      @onQuoteMessage="$emit('onQuoteMessage')"
     >
       <div class="min-w-[30px] mt-[5px] min-h-[16px] flex cursor-pointer items-end justify-center">
         <svg

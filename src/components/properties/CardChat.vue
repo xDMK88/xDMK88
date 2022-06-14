@@ -98,6 +98,7 @@ const getMessageWeekDateString = (dateCreate) => {
 
       <card-chat-quote-message
         v-if="message.hasQuote"
+        class="mb-[14px] mt-[19px]"
         :quote-message="message.quoteMessage"
         :employee="props.employees[message.quoteMessage.uid_creator]"
       />

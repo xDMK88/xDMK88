@@ -6,7 +6,7 @@ import { useStore } from 'vuex'
 import Checklist from '@/components/properties/Checklist.vue'
 import close from '@/icons/close.js'
 import { CREATE_MESSAGE_REQUEST, DELETE_MESSAGE_REQUEST } from '@/store/actions/taskmessages'
-import { CREATE_FILES_REQUEST } from '@/store/actions/taskfiles'
+import { CREATE_FILES_REQUEST, DELETE_FILE_REQUEST } from '@/store/actions/taskfiles'
 import * as TASK from '@/store/actions/tasks'
 import * as INSPECTOR from '@/store/actions/inspector'
 import { copyText } from 'vue3-clipboard'
@@ -289,6 +289,9 @@ export default {
     }
     const deleteTaskMsg = (uid) => {
       store.dispatch(DELETE_MESSAGE_REQUEST, { uid: uid })
+    }
+    const deleteFiles = (uid) => {
+      store.dispatch(DELETE_FILE_REQUEST, { uid: uid })
     }
     const changeName = (event) => {
       const data = {
@@ -714,6 +717,7 @@ export default {
     }
     return {
       //  ресет Повтор
+      deleteFiles,
       moveCursorToEnd,
       gotoNode,
       selectedFalse,
@@ -2020,6 +2024,7 @@ export default {
         :show-only-files="showOnlyFiles"
         @answerMessage="onAnswerMessage"
         @sendTaskMsg="sendTaskMsg"
+        @deleteFiles="deleteFiles"
         @deleteTaskMsg="deleteTaskMsg"
       />
     </div>

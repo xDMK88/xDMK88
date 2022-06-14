@@ -134,7 +134,6 @@
             </div>
           </div>
         </div>
-
         <!-- Файл -->
         <TaskPropsChatMessageFile
           v-if="message.isFile"
@@ -145,6 +144,7 @@
           :time="getMessageTimeString(message.date_create)"
           :size="formatBytes(message.file_size)"
           :file="message"
+          @deleteFiles="deleteFiles(message.uid)"
         />
       </div>
     </div>
@@ -190,7 +190,7 @@ export default {
       default: false
     }
   },
-  emits: ['answerMessage', 'sendTaskMsg', 'deleteTaskMsg'],
+  emits: ['answerMessage', 'sendTaskMsg', 'deleteTaskMsg', 'deleteFiles'],
   data: () => {
     return { getInspectorMessage }
   },
@@ -332,6 +332,9 @@ export default {
     },
     deleteTaskMsg (uid) {
       this.$emit('deleteTaskMsg', uid)
+    },
+    deleteFiles (uid) {
+      this.$emit('deleteFiles', uid)
     }
   }
 }

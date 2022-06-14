@@ -30,14 +30,17 @@ export default function initWebSync () {
   )
   client.connect({
     onSuccess: function (e) {
-      console.log('websync connected success!')
+      console.log('Websync connected success!')
     },
     onFailure: function (e) {
-      console.log('websync onfailure connect fail ' + e.getException().message)
+      console.log('Websync could not connect: ' + e.getException().message)
     },
     onStreamFailure: function (e) {
       console.log(
-        'websync on stream failer connect fail ' + e.getException().message
+        'Websync network problems: ' +
+          e.getException().message +
+          (e.getRetry() ? ' Will' : ' Will not') +
+          ' reconnect.'
       )
     }
   })
@@ -58,7 +61,7 @@ export default function initWebSync () {
         // никак не получить доступ к полю obj.obj.type
         // возвращает не то что там записано
         const obj = { ...JSON.parse(str) }
-        // console.log('websync', obj)
+        console.log('websync', obj)
 
         parseObject(obj)
       } catch (e) {

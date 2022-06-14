@@ -206,12 +206,12 @@ const actions = {
       axios({ url: url, method: 'DELETE' })
         .then(resp => {
           resolve(resp)
-          commit(DELETE_MESSAGE_REQUEST, data)
+          commit(DELETE_FILE_REQUEST, data)
         }).catch(err => {
           notify({
             group: 'api',
             title: 'REST API Error, please make screenshot',
-            action: DELETE_MESSAGE_REQUEST,
+            action: DELETE_FILE_REQUEST,
             text: err.response.data
           }, 15000)
           reject(err)
@@ -255,6 +255,12 @@ const mutations = {
     state.messages = []
   },
   [CREATE_MESSAGE_REQUEST]: (state, data) => {
+    state.messages.push(data)
+  },
+  [DELETE_MESSAGE_REQUEST]: (state, data) => {
+    state.messages.push(data)
+  },
+  [DELETE_FILE_REQUEST]: (state, data) => {
     state.messages.push(data)
   },
   [FILES_REQUEST]: state => {

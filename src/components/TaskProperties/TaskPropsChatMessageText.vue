@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="deletedStatus===0">
     <div
       v-if="showCreator"
       class="flex"
@@ -82,7 +82,7 @@
                       Копировать
                     </div>
                   </PopMenuItem>
-                  <PopMenuItem>
+                  <PopMenuItem @click="deleteMessage">
                     <div class="flex">
                       <svg class="mt-0.5 mr-2" width="12" height="14" viewBox="0 0 12 14" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M8.59059 4.96916L7.39143 4.9258L7.16897 10.9265L8.36813 10.9699L8.59059 4.96916Z" fill="#7E7E80"/>
@@ -156,9 +156,12 @@ export default {
     quote: {
       type: String,
       default: ''
+    },
+    deletedStatus: {
+      type: String
     }
   },
-  emits: ['answer'],
+  emits: ['answer', 'delete'],
   computed: {
     messageText () {
       let text = this.message.trim()
@@ -180,6 +183,9 @@ export default {
   methods: {
     onAnswerClick () {
       this.$emit('answer')
+    },
+    deleteMessage () {
+      this.$emit('delete')
     }
   }
 }

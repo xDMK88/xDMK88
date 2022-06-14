@@ -5,9 +5,15 @@ import DocPreloader from '@/components/properties/DocPreloader.vue'
 import MoviePreloader from '@/components/properties/MoviePreloader.vue'
 import FilePreloader from '@/components/properties/FilePreloader.vue'
 import { computed } from 'vue'
+
+const emit = defineEmits(['onQuoteMessage'])
 const props = defineProps({
   message: Object
 })
+
+const setCurrentQuote = () => {
+  emit('onQuoteMessage', props.message)
+}
 
 const formatBytes = (bytes, decimals = 2) => {
   if (bytes === 0) return '0 Bytes'
@@ -51,6 +57,7 @@ const FileIsAudio = computed(() => ['mp3', 'wav', 'm4a'].includes(fileExtension.
       :file-name="props.message.file_name"
       :file-date-create="getMessageTimeString(props.message.date_create)"
       preloader-color="#F4F5F7"
+      @onQuoteMessage="setCurrentQuote"
     />
     <audio-preloader
       v-else-if="FileIsAudio"
@@ -58,6 +65,7 @@ const FileIsAudio = computed(() => ['mp3', 'wav', 'm4a'].includes(fileExtension.
       :file-extension="fileExtension"
       :file-name="props.message.file_name"
       :file-date-create="getMessageTimeString(props.message.date_create)"
+      @onQuoteMessage="setCurrentQuote"
     />
     <doc-preloader
       v-else-if="FileIsDoc"
@@ -66,6 +74,7 @@ const FileIsAudio = computed(() => ['mp3', 'wav', 'm4a'].includes(fileExtension.
       :file-extension="fileExtension"
       :file-size="formatBytes(props.message.file_size)"
       :file-date-create="getMessageTimeString(props.message.date_create)"
+      @onQuoteMessage="setCurrentQuote"
     />
     <movie-preloader
       v-else-if="FileIsMovie"
@@ -74,6 +83,7 @@ const FileIsAudio = computed(() => ['mp3', 'wav', 'm4a'].includes(fileExtension.
       :file-name="props.message.file_name"
       :file-size="formatBytes(props.message.file_size)"
       :file-date-create="getMessageTimeString(props.message.date_create)"
+      @onQuoteMessage="setCurrentQuote"
     />
     <file-preloader
       v-else
@@ -82,6 +92,7 @@ const FileIsAudio = computed(() => ['mp3', 'wav', 'm4a'].includes(fileExtension.
       :file-name="props.message.file_name"
       :file-size="formatBytes(props.message.file_size)"
       :file-date-create="getMessageTimeString(props.message.date_create)"
+      @onQuoteMessage="setCurrentQuote"
     />
   </div>
 </template>

@@ -102,16 +102,16 @@ const logout = () => {
       </div>
     </form>
     <form class="text-left w-64">
-      <div class="font-semibold mb-4 text-base">Тип аккаунта</div>
-      <p v-if="user.license_type === 0" class="text-sm font-semibold">Пробный тариф</p>
-      <p v-if="user.license_type === 1" class="text-sm font-semibold">Премиум тариф</p>
-      <p v-if="user.license_type === 2" class="text-sm font-semibold">Бизнес тариф</p>
-      <p class="text-sm mt-2" v-if="user.license_type === 0" >
+      <div class="font-medium text-[roboto] mb-4 text-base">Тип аккаунта</div>
+      <p v-if="user.license_type === 0" class="text-sm font-medium">Пробный тариф</p>
+      <p v-if="user.license_type === 1" class="text-sm font-medium">Премиум тариф</p>
+      <p v-if="user.license_type === 2" class="text-sm font-medium">Бизнес тариф</p>
+      <p class="text-sm mt-2 " v-if="user.license_type === 0" >
         Обновите тарифный план ЛидерТаск для неограниченных возможностей
       </p>
       <p class="mt-1 text-base"><a>{{ user.date_expired }}({{ user.days_left }})</a></p>
       <div class="mt-2">
-        <button class="border-gray-400 border rounded-md p-2 text-gray-600 mt-2 text-base"
+        <button class="border-gray-400 font-normal border rounded-md p-2 text-gray-600 mt-2 text-sь"
               type="button"
               @click="tarif()"
       >
@@ -119,7 +119,7 @@ const logout = () => {
       </button>
       </div>
       <div class="mt-6">
-        <p class="text-base font-semibold mb-2">Имя</p>
+        <p class="text-base font-medium mb-2">Имя</p>
         <form class="mb-2">
         <div class="text-base" contenteditable="true">{{user.current_user_name}}</div>
           <button type="button" class="mt-2 text-base text-blue-600" @click="showEditname = true">Изменить имя</button>

@@ -98,6 +98,7 @@ const getMessageWeekDateString = (dateCreate) => {
 
       <card-chat-quote-message
         v-if="message.hasQuote"
+        class="mb-[14px] mt-[19px]"
         :quote-message="message.quoteMessage"
         :employee="props.employees[message.quoteMessage.uid_creator]"
       />
@@ -106,11 +107,13 @@ const getMessageWeekDateString = (dateCreate) => {
         v-if="!message.isMyMessage && message.isMessage && !props.showFilesOnly"
         :message="message"
         :employee="props.employees[message.uid_creator]"
+        @onQuoteMessage="setCurrentQuote"
       />
       <card-chat-interlocutor-file-message
         v-if="!message.isMyMessage && message.isFile"
         :message="message"
         :employee="props.employees[message.uid_creator]"
+        @onQuoteMessage="setCurrentQuote"
       />
 
       <card-chat-self-message
@@ -123,6 +126,7 @@ const getMessageWeekDateString = (dateCreate) => {
         v-if="message.isMyMessage && message.isFile"
         :message="message"
         :employee="props.employees[message.uid_creator]"
+        @onQuoteMessage="setCurrentQuote"
       />
     </div>
   </div>

@@ -60,7 +60,7 @@
                       Копировать
                     </div>
                   </PopMenuItem>
-                  <PopMenuItem>
+                  <PopMenuItem @click="DeleteFile">
                     <div class="flex">
                       <svg class="mt-0.5 mr-2" width="12" height="14" viewBox="0 0 12 14" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M8.59059 4.96916L7.39143 4.9258L7.16897 10.9265L8.36813 10.9699L8.59059 4.96916Z" fill="#7E7E80"/>
@@ -89,6 +89,7 @@
 import FileMessage from '@/components/properties/FileMessage.vue'
 import PopMenu from '@/components/modals/PopMenu.vue'
 import PopMenuItem from '@/components/modals/PopMenuItem.vue'
+import { ref } from 'vue'
 
 export default {
   components: {
@@ -124,6 +125,33 @@ export default {
     size: {
       type: String,
       default: ''
+    }
+  },
+  emits: ['answer', 'deleteFiles'],
+  computed: {
+    messageText () {
+      let text = this.message.trim()
+      text = text.replaceAll('&amp;', '&')
+      text = text.replaceAll('&lt;', '<')
+      text = text.replaceAll('&gt;', '>')
+      return text
+    }
+  },
+  setup () {
+    const isTaskHoverPopperActive = ref(false)
+    const toggleTaskHoverPopper = (val) => {
+      isTaskHoverPopperActive.value = val
+    }
+    return {
+      toggleTaskHoverPopper
+    }
+  },
+  methods: {
+    onAnswerClick () {
+      this.$emit('answer')
+    },
+    DeleteFile () {
+      this.$emit('deleteFiles')
     }
   }
 }

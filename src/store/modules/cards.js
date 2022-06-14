@@ -45,7 +45,7 @@ const actions = {
       const url = process.env.VUE_APP_LEADERTASK_API + 'api/v1/cards'
       axios({ url: url, method: 'POST', data })
         .then((resp) => {
-          commit('ChangeCard', resp.data)
+          commit(CARD.CHANGE_CARD, resp.data)
           resolve(resp)
         })
         .catch((err) => {
@@ -68,7 +68,7 @@ const actions = {
         process.env.VUE_APP_LEADERTASK_API + 'api/v1/cards?uid=' + data.uid
       axios({ url: url, method: 'DELETE' })
         .then((resp) => {
-          commit('DeleteCard', data.uid)
+          commit(CARD.DELETE_CARD, data.uid)
           resolve(resp)
         })
         .catch((err) => {
@@ -93,7 +93,7 @@ const actions = {
       if (data.newOrder !== undefined) url = url + '&order=' + data.newOrder
       axios({ url: url, method: 'PATCH' })
         .then((resp) => {
-          commit('ChangeCard', resp.data)
+          commit(CARD.CHANGE_CARD, resp.data)
           resolve(resp)
         })
         .catch((err) => {
@@ -119,7 +119,7 @@ const actions = {
         data.cardUid
       axios({ url: url, method: 'PATCH', data: { user: data.email } })
         .then((resp) => {
-          commit('ChangeCard', resp.data)
+          commit(CARD.CHANGE_CARD, resp.data)
           resolve(resp)
         })
         .catch((err) => {
@@ -144,7 +144,7 @@ const actions = {
         data.cardUid
       axios({ url: url, method: 'PATCH', data: { name: data.name } })
         .then((resp) => {
-          commit('ChangeCard', resp.data)
+          commit(CARD.CHANGE_CARD, resp.data)
           resolve(resp)
         })
         .catch((err) => {
@@ -169,7 +169,7 @@ const actions = {
         data.cardUid
       axios({ url: url, method: 'PATCH', data: { comment: data.comment } })
         .then((resp) => {
-          commit('ChangeCard', resp.data)
+          commit(CARD.CHANGE_CARD, resp.data)
           resolve(resp)
         })
         .catch((err) => {
@@ -194,7 +194,7 @@ const actions = {
         data.cardUid
       axios({ url: url, method: 'PATCH', data: { cost: data.budget } })
         .then((resp) => {
-          commit('ChangeCard', resp.data)
+          commit(CARD.CHANGE_CARD, resp.data)
           resolve(resp)
         })
         .catch((err) => {
@@ -219,7 +219,7 @@ const actions = {
         data.cardUid
       axios({ url: url, method: 'PATCH', data: { color: data.color } })
         .then((resp) => {
-          commit('ChangeCard', resp.data.card)
+          commit(CARD.CHANGE_CARD, resp.data.card)
           resolve(resp)
         })
         .catch((err) => {
@@ -244,7 +244,7 @@ const actions = {
         data.cardUid
       axios({ url: url, method: 'PATCH', data: data.file })
         .then((resp) => {
-          commit('ChangeCard', resp.data.card)
+          commit(CARD.CHANGE_CARD, resp.data.card)
           resolve(resp)
         })
         .catch((err) => {
@@ -269,7 +269,7 @@ const actions = {
         data.cardUid
       axios({ url: url, method: 'PATCH' })
         .then((resp) => {
-          commit('ChangeCard', resp.data.card)
+          commit(CARD.CHANGE_CARD, resp.data.card)
           resolve(resp)
         })
         .catch((err) => {
@@ -430,7 +430,7 @@ const mutations = {
     state.boardUid = resp.boardUid
     state.cards = stages
   },
-  DeleteCard: (state, uid) => {
+  [CARD.DELETE_CARD]: (state, uid) => {
     state.cards.forEach((stage) => {
       const index = stage.cards.findIndex((card) => card.uid === uid)
       if (index !== -1) {
@@ -439,7 +439,7 @@ const mutations = {
       }
     })
   },
-  ChangeCard: (state, card) => {
+  [CARD.CHANGE_CARD]: (state, card) => {
     // найти карточку - вырезать из того места где она сейчас
     state.cards.forEach((stage) => {
       const index = stage.cards.findIndex((crd) => crd.uid === card.uid)

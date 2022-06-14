@@ -72,7 +72,7 @@ const removeTag = (tag) => {
     @confirm="removeTag(selectedTag)"
   >
     <p class="text-center">
-      Do you really wanna delete "<strong>{{ selectedTag.name }}</strong>" tag?
+      Вы действительно хотите удалить метку "<strong>{{ selectedTag.name }}</strong>"?
     </p>
   </modal-box-confirm>
   <div>

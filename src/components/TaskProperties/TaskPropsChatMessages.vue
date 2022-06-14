@@ -16,19 +16,19 @@
       >
         <!-- День недели -->
         <div
-          v-if="isChangedDate(index)"
+          v-if="isChangedDate(index) && message.deleted === 0"
           class="text-center"
         >
           <p class="text-xs text-gray-500 dark:text-gray-300 my-3">
             {{ getMessageWeekDateString(message.date_create) }}
           </p>
         </div>
-
         <!-- Облачко с текстом -->
         <TaskPropsChatMessageText
           :class="message.isMyMessage ? 'mr-2' : 'ml-2'"
           v-if="message.isMessage && !showOnlyFiles"
           :is-my-message="message.isMyMessage"
+          :deletedStatus="message.deleted"
           :show-creator="isChangeCreator(index)"
           :show-loader="uploadStarted && message.loading"
           :quote="getMessageQuoteString(message.uid_quote)"
@@ -37,8 +37,8 @@
           :message="message.msg"
           :time="getMessageTimeString(message.date_create)"
           @answer="answerMessage(message.uid)"
+          @delete="deleteTaskMsg(message.uid)"
         />
-
         <!-- Сообщение от инспектора -->
         <div
           v-if="message.isInspectorMessage && !showOnlyFiles"
@@ -134,7 +134,6 @@
             </div>
           </div>
         </div>
-
         <!-- Файл -->
         <TaskPropsChatMessageFile
           v-if="message.isFile"
@@ -145,6 +144,7 @@
           :time="getMessageTimeString(message.date_create)"
           :size="formatBytes(message.file_size)"
           :file="message"
+          @deleteFiles="deleteFiles(message.uid)"
         />
       </div>
     </div>
@@ -190,7 +190,7 @@ export default {
       default: false
     }
   },
-  emits: ['answerMessage', 'sendTaskMsg'],
+  emits: ['answerMessage', 'sendTaskMsg', 'deleteTaskMsg', 'deleteFiles'],
   data: () => {
     return { getInspectorMessage }
   },
@@ -241,7 +241,6 @@ export default {
                 new Date(messageCurr.date_create).toDateString()
     },
     isChangeCreator (index) {
-      console.log(this.messages.length)
       console.log(index)
       if (this.showAllMessages === true) {
         if (index === 0) return true
@@ -254,7 +253,6 @@ export default {
       }
       const messagePrev = this.messages[index - 1]
       const messageCurr = this.messages[index]
-      console.log(this.messages.length)
       if (!messagePrev || !messageCurr) return false
       return messagePrev.uid_creator !== messageCurr.uid_creator
     },
@@ -331,6 +329,12 @@ export default {
     },
     answerMessage (uid) {
       this.$emit('answerMessage', uid)
+    },
+    deleteTaskMsg (uid) {
+      this.$emit('deleteTaskMsg', uid)
+    },
+    deleteFiles (uid) {
+      this.$emit('deleteFiles', uid)
     }
   }
 }

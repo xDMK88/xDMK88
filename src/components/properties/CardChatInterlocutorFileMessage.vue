@@ -7,6 +7,7 @@ import DocPreloader from '@/components/properties/DocPreloader.vue'
 import MoviePreloader from '@/components/properties/MoviePreloader.vue'
 import FilePreloader from '@/components/properties/FilePreloader.vue'
 
+const emit = defineEmits(['onQuoteMessage'])
 const props = defineProps({
   message: Object
 })
@@ -18,6 +19,10 @@ const formatBytes = (bytes, decimals = 2) => {
   const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']
   const i = Math.floor(Math.log(bytes) / Math.log(k))
   return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i]
+}
+
+const setCurrentQuote = () => {
+  emit('onQuoteMessage', props.message)
 }
 
 const getMessageTimeString = (dateCreate) => {
@@ -44,7 +49,7 @@ const FileIsAudio = computed(() => ['mp3', 'wav', 'm4a'].includes(fileExtension.
 
 <template>
   <div
-    class="bg-[#FCEBEB] py-[12px] px-[12px] rounded-t-[12px] rounded-br-[12px] mb-[5px] float-left max-w-[300px]"
+    class="bg-[#FCEBEB] py-[12px] px-[12px] rounded-t-[12px] rounded-br-[12px] mb-[5px] float-left max-w-[300px] group"
   >
     <image-preloader
       v-if="FileIsImage"
@@ -52,7 +57,9 @@ const FileIsAudio = computed(() => ['mp3', 'wav', 'm4a'].includes(fileExtension.
       :file-extension="fileExtension"
       :file-name="props.message.file_name"
       :file-date-create="getMessageTimeString(props.message.date_create)"
+      :can-delete="false"
       preloader-color="#FCEBEB"
+      @onQuoteMessage="setCurrentQuote"
     />
     <audio-preloader
       v-else-if="FileIsAudio"
@@ -60,6 +67,8 @@ const FileIsAudio = computed(() => ['mp3', 'wav', 'm4a'].includes(fileExtension.
       :file-extension="fileExtension"
       :file-name="props.message.file_name"
       :file-date-create="getMessageTimeString(props.message.date_create)"
+      :can-delete="false"
+      @onQuoteMessage="setCurrentQuote"
     />
     <doc-preloader
       v-else-if="FileIsDoc"
@@ -68,6 +77,8 @@ const FileIsAudio = computed(() => ['mp3', 'wav', 'm4a'].includes(fileExtension.
       :file-extension="fileExtension"
       :file-size="formatBytes(props.message.file_size)"
       :file-date-create="getMessageTimeString(props.message.date_create)"
+      :can-delete="false"
+      @onQuoteMessage="setCurrentQuote"
     />
     <movie-preloader
       v-else-if="FileIsMovie"
@@ -76,6 +87,8 @@ const FileIsAudio = computed(() => ['mp3', 'wav', 'm4a'].includes(fileExtension.
       :file-extension="fileExtension"
       :file-size="formatBytes(props.message.file_size)"
       :file-date-create="getMessageTimeString(props.message.date_create)"
+      :can-delete="false"
+      @onQuoteMessage="setCurrentQuote"
     />
     <file-preloader
       v-else
@@ -84,6 +97,8 @@ const FileIsAudio = computed(() => ['mp3', 'wav', 'm4a'].includes(fileExtension.
       :file-extension="fileExtension"
       :file-size="formatBytes(props.message.file_size)"
       :file-date-create="getMessageTimeString(props.message.date_create)"
+      :can-delete="false"
+      @onQuoteMessage="setCurrentQuote"
     />
   </div>
 </template>

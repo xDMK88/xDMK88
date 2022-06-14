@@ -47,7 +47,7 @@
             class="flex"
           >
             <p class="name-chat-custom dark:text-gray-100 font-bold">
-              Inspector
+              Инспектор
             </p>
           </div>
           <div class="chat-main">

@@ -1,5 +1,5 @@
 <template>
-  <div v-if="deletedStatus===0">
+  <div>
     <div
       v-if="showCreator"
       class="flex"
@@ -13,8 +13,8 @@
     </div>
     <div class="w-full inline-block min-h-[40px]">
       <div
-        class="group min-w-[60%] max-w-[80%] flex flex-col"
-        :class="!quote ? { 'bg-[#FCEBEB] rounded-tr-[12px] rounded-tl-[12px] rounded-br-[12px] float-left': !isMyMessage, 'bg-[#F4F5F7] rounded-tl-[12px] rounded-tr-[12px] rounded-bl-[12px] rounded-br-[0px] float-right': isMyMessage } : { 'rounded-tr-[12px] rounded-tl-[12px] rounded-br-[12px] float-left': !isMyMessage, 'rounded-tl-[12px] rounded-tr-[12px] rounded-bl-[12px] rounded-br-[0px] float-right': isMyMessage }"
+        class="group min-w-[60%] max-w-[80%] min-h-[40px] flex flex-col"
+        :class="!quote || deletedStatus === 1? { 'bg-[#FCEBEB] rounded-tr-[12px] rounded-tl-[12px] rounded-br-[12px] float-left': !isMyMessage, 'bg-[#F4F5F7] rounded-tl-[12px] rounded-tr-[12px] rounded-bl-[12px] rounded-br-[0px] float-right mb-1': isMyMessage} : { 'rounded-tr-[12px] rounded-tl-[12px] rounded-br-[12px] float-left': !isMyMessage, 'rounded-tl-[12px] rounded-tr-[12px] rounded-bl-[12px] rounded-br-[0px] float-right': isMyMessage}"
       >
 
         <div
@@ -35,19 +35,28 @@
             </p>
           </div>
         </div>
-        <div class="group min-w-[60%] max-w-[99%] flex flex-col" :class="{ 'bg-[#FCEBEB] rounded-tr-[12px] rounded-tl-[12px] rounded-br-[12px] float-left': !isMyMessage, 'bg-[#F4F5F7] rounded-tl-[12px] rounded-tr-[12px] rounded-bl-[12px] rounded-br-[0px] float-right': isMyMessage }">
+        <div class="group min-w-[60%] max-w-[99%] flex flex-col" :class="{ 'bg-[#FCEBEB] rounded-tr-[12px] rounded-tl-[12px] rounded-br-[12px] float-left': !isMyMessage, 'bg-[#F4F5F7] rounded-tl-[12px] rounded-tr-[12px] rounded-bl-[12px] rounded-br-[0px] float-right': isMyMessage, 'bg-[#F4F5F7] rounded-tl-[12px] rounded-tr-[12px] rounded-bl-[12px] rounded-br-[0px] float-right mb-1': isMyMessage && deletedStatus === 1, 'bg-[#F4F5F7] rounded-tr-[12px] rounded-tl-[12px] rounded-br-[12px] float-left': !isMyMessage && deletedStatus === 1 }">
         <div
           class="table-cell py-2 px-2.5 text-sm dark:bg-gray-800 dark:text-gray-100"
         >
           <ChatLoader v-if="showLoader" />
-          <div
+          <div v-if="deletedStatus === 0"
             v-linkify:options="{ className: 'text-blue-600' }"
-            class="break-all whitespace-pre-line text-[#4C4C4D]"
+            class="break-all whitespace-pre-line text-[#4C4C4D] font-normal text-[14px]"
           >
             {{ messageText }}
           </div>
+          <div class="flex break-all whitespace-pre-line text-[#7E7E80]" v-else>
+            <svg class="mr-1.5 mt-0.5" width="12" height="13" viewBox="0 0 12 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M8.59059 4.46916L7.39143 4.4258L7.16897 10.4265L8.36813 10.4699L8.59059 4.46916Z" fill="#7E7E80"/>
+              <path d="M11.52 1.99639H8.64V0.969233C8.64 0.495159 8.24 0.100098 7.76 0.100098H4.4C3.92 0.100098 3.52 0.495159 3.52 0.969233V1.99639H0.56C0.24 1.99639 0 2.23343 0 2.54948C0 2.86553 0.24 3.10257 0.56 3.10257H1.04L1.84 12.347C1.84 12.6631 2.08 12.9001 2.4 12.9001H9.6C9.92 12.9001 10.16 12.6631 10.16 12.347L10.96 3.10257H11.44C11.76 3.10257 12 2.86553 12 2.54948C12 2.23343 11.84 1.99639 11.52 1.99639ZM4.64 1.28528H7.44V1.99639H4.64V1.28528ZM9.12 11.7149H2.96L2.16 3.10257H9.76L9.12 11.7149Z" fill="#7E7E80"/>
+              <path d="M6.64 4.44578H5.44V10.4507H6.64V4.44578Z" fill="#7E7E80"/>
+              <path d="M4.88358 10.4515L4.66105 4.45076L3.46189 4.49413L3.68442 10.4949L4.88358 10.4515Z" fill="#7E7E80"/>
+            </svg>
+            Сообщение удалено
+          </div>
           <div
-            class="flex flex-row-reverse pr-2 pb-1.5 text-[12px] leading-[16px] text-[#a8afca] dark:text-gray-300"
+            class="flex flex-row-reverse pr-2 pb-1.5 text-[12px] leading-[16px] text-[#a8afca] dark:text-gray-300"  v-if="deletedStatus === 0"
           >
             <Transition>
               <PopMenu
@@ -73,7 +82,7 @@
                       Ответить
                     </div>
                   </PopMenuItem>
-                  <PopMenuItem>
+                  <PopMenuItem @click="copyMessage(messageText)">
                     <div class="flex">
                       <svg class="mt-0.5 mr-2" width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M9.36567 3.00495H2.15112C1.29779 3.00495 0.599609 3.70313 0.599609 4.55646V11.8486C0.599609 12.7019 1.29779 13.4001 2.15112 13.4001H9.44325C10.2966 13.4001 10.9948 12.7019 10.9948 11.8486V4.55646C10.8396 3.70313 10.219 3.00495 9.36567 3.00495ZM1.9184 4.55646C1.9184 4.47889 1.99597 4.32373 2.15112 4.32373H9.44325C9.52082 4.32373 9.67597 4.40131 9.67597 4.55646V11.8486C9.67597 11.9262 9.5984 12.0813 9.44325 12.0813H2.15112C2.07355 12.0813 1.9184 12.0037 1.9184 11.8486V4.55646Z" fill="#7E7E80"/>
@@ -82,7 +91,7 @@
                       Копировать
                     </div>
                   </PopMenuItem>
-                  <PopMenuItem @click="deleteMessage">
+                  <PopMenuItem @click="deleteMessage"  v-if="isMyMessage">
                     <div class="flex">
                       <svg class="mt-0.5 mr-2" width="12" height="14" viewBox="0 0 12 14" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M8.59059 4.96916L7.39143 4.9258L7.16897 10.9265L8.36813 10.9699L8.59059 4.96916Z" fill="#7E7E80"/>
@@ -97,7 +106,7 @@
               </PopMenu>
             </Transition>
             <p
-              class="group-hover:hidden block font-semibold"
+              class="group-hover:hidden block font-bold text-[11px]"
             >
               {{ time }}
             </p>
@@ -115,6 +124,7 @@ import ChatLoader from '@/components/properties/ChatLoader'
 import PopMenu from '@/components/modals/PopMenu.vue'
 import PopMenuItem from '@/components/modals/PopMenuItem.vue'
 import { ref } from 'vue'
+import { copyText } from 'vue3-clipboard'
 export default {
   directives: {
     linkify
@@ -181,6 +191,18 @@ export default {
     }
   },
   methods: {
+    copyMessage (message) {
+      copyText(message, undefined, (error, event) => {
+        // copyText('lt://planning?{' + selectedTask.value.uid.toUpperCase() + '}', undefined, (error, event) => {
+        if (error) {
+          alert('Can not copy')
+          console.log(error)
+        } else {
+          alert('Copied')
+          console.log(event)
+        }
+      })
+    },
     onAnswerClick () {
       this.$emit('answer')
     },

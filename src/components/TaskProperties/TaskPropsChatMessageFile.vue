@@ -16,7 +16,7 @@
         class="mt-1 text-sm dark:bg-gray-800 dark:text-gray-100"
         :class="{ 'bg-[#FCEBEB] msg-custom-chat-left': !isMyFile, 'bg-[#F4F5F7] msg-custom-chat-right mr-2': isMyFile }"
       >
-        <FileMessage :file="file" />
+        <FileMessage :file="file"/>
         <div class="mt-2 text-right text-[#7E7E80] font-medium mb-2">
           {{ fileName }}
         </div>
@@ -51,7 +51,7 @@
                       Ответить
                     </div>
                   </PopMenuItem>
-                  <PopMenuItem>
+                  <PopMenuItem @click="PasteEvent">
                     <div class="flex">
                       <svg class="mt-0.5 mr-2" width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M9.36567 3.00495H2.15112C1.29779 3.00495 0.599609 3.70313 0.599609 4.55646V11.8486C0.599609 12.7019 1.29779 13.4001 2.15112 13.4001H9.44325C10.2966 13.4001 10.9948 12.7019 10.9948 11.8486V4.55646C10.8396 3.70313 10.219 3.00495 9.36567 3.00495ZM1.9184 4.55646C1.9184 4.47889 1.99597 4.32373 2.15112 4.32373H9.44325C9.52082 4.32373 9.67597 4.40131 9.67597 4.55646V11.8486C9.67597 11.9262 9.5984 12.0813 9.44325 12.0813H2.15112C2.07355 12.0813 1.9184 12.0037 1.9184 11.8486V4.55646Z" fill="#7E7E80"/>
@@ -60,7 +60,7 @@
                       Копировать
                     </div>
                   </PopMenuItem>
-                  <PopMenuItem @click="DeleteFile">
+                  <PopMenuItem @click="DeleteFile" v-if="isMyFile">
                     <div class="flex">
                       <svg class="mt-0.5 mr-2" width="12" height="14" viewBox="0 0 12 14" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M8.59059 4.96916L7.39143 4.9258L7.16897 10.9265L8.36813 10.9699L8.59059 4.96916Z" fill="#7E7E80"/>
@@ -90,6 +90,7 @@ import FileMessage from '@/components/properties/FileMessage.vue'
 import PopMenu from '@/components/modals/PopMenu.vue'
 import PopMenuItem from '@/components/modals/PopMenuItem.vue'
 import { ref } from 'vue'
+import { copyText } from 'vue3-clipboard'
 
 export default {
   components: {
@@ -127,7 +128,7 @@ export default {
       default: ''
     }
   },
-  emits: ['answer', 'deleteFiles'],
+  emits: ['answer', 'deleteFiles', 'PasteEvent'],
   computed: {
     messageText () {
       let text = this.message.trim()
@@ -147,11 +148,26 @@ export default {
     }
   },
   methods: {
+    copyFile (file) {
+      copyText(file, undefined, (error, event) => {
+        // copyText('lt://planning?{' + selectedTask.value.uid.toUpperCase() + '}', undefined, (error, event) => {
+        if (error) {
+          alert('Can not copy')
+          console.log(error)
+        } else {
+          alert('Copied')
+          console.log(event)
+        }
+      })
+    },
     onAnswerClick () {
       this.$emit('answer')
     },
     DeleteFile () {
       this.$emit('deleteFiles')
+    },
+    PasteEvent () {
+      this.$emit('PasteEvent')
     }
   }
 }

@@ -10,7 +10,7 @@ import {
 import NavBarItem from '@/components/NavBarItem.vue'
 import Icon from '@/components/Icon.vue'
 import Popper from 'vue3-popper'
-import NavRightButtons from '@/components/Navbar/Navrightbuttons.vue'
+import NavRightButtons from '@/components/Navbar/NavRightButtons.vue'
 import propertiesproject from '@/icons/propertiesproject.js'
 import add from '@/icons/add.js'
 import arrowForward from '@/icons/arrow-forward.js'
@@ -317,7 +317,7 @@ watch(navStack, (oldVal, newVal) => {
       </nav-bar-item>
     </div>
     <div>
-      <NavRightButtons></NavRightButtons>
+      <NavRightButtons />
     </div>
   </nav>
 </template>

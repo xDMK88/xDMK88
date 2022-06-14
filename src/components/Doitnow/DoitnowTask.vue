@@ -1,6 +1,6 @@
 <template>
 <div
-  class="bg-white py-6 px-5 rounded-lg flex justify-between max-h-[700px] overflow-auto scroll-style"
+  class="bg-white py-6 px-5 rounded-lg flex justify-between"
   :style="{ borderColor: colors[task.uid_marker] ? colors[task.uid_marker].back_color : ''}"
   :class="{
     'bg-gray-200 dark:bg-gray-800':

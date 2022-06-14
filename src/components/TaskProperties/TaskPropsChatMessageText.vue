@@ -66,7 +66,7 @@
                 @closeMenu="toggleTaskHoverPopper(false)"
               >
             <div class="hidden group-hover:block pl-0 cursor-pointer">
-              <svg class="" width="4" height="14" viewBox="0 0 4 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <svg class="h-[14px]" width="4" height="14" viewBox="0 0 4 14" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M2.00039 10.1999C2.88405 10.1999 3.60039 10.9162 3.60039 11.7999C3.60039 12.6836 2.88405 13.3999 2.00039 13.3999C1.11673 13.3999 0.400391 12.6836 0.400391 11.7999C0.400391 10.9162 1.11673 10.1999 2.00039 10.1999Z" fill="#4C4C4D"/>
                 <path d="M2.00039 5.3999C2.88405 5.3999 3.60039 6.11625 3.60039 6.9999C3.60039 7.88356 2.88405 8.5999 2.00039 8.5999C1.11673 8.5999 0.400391 7.88356 0.400391 6.9999C0.400391 6.11625 1.11673 5.3999 2.00039 5.3999Z" fill="#4C4C4D"/>
                 <path d="M2.00039 0.599902C2.88405 0.599902 3.60039 1.31625 3.60039 2.1999C3.60039 3.08356 2.88405 3.7999 2.00039 3.7999C1.11673 3.7999 0.400391 3.08356 0.400391 2.1999C0.400391 1.31625 1.11673 0.599902 2.00039 0.599902Z" fill="#4C4C4D"/>
@@ -106,7 +106,7 @@
               </PopMenu>
             </Transition>
             <p
-              class="group-hover:hidden block font-bold text-[11px]"
+              class="group-hover:hidden block font-semibold h-[14px]"
             >
               {{ time }}
             </p>

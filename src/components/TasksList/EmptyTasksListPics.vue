@@ -72,7 +72,7 @@ setInterval(() => {
         alt="Empty task image"
       >
       <p class="text-xl text-center font-bold">
-        What for do you need projects?
+        Для чего нужны проекты?
       </p>
       <div class="flex items-center mt-10">
         <icon
@@ -83,7 +83,7 @@ setInterval(() => {
           class="cursor-pointer hover:text-gray-800 mr-2 text-green-500"
         />
         <p class="text-lg text-left text-gray-600">
-          Set goals and plans for the future
+          Ставьте цели и планы на будущее
         </p>
       </div>
       <div class="flex items-center mt-3">
@@ -95,7 +95,7 @@ setInterval(() => {
           class="cursor-pointer hover:text-gray-800 mr-2 text-green-500"
         />
         <p class="text-lg text-left text-gray-600">
-          Work on tasks with teammates
+          Работайте над задачами в команде
         </p>
       </div>
       <div class="flex items-center mt-3">
@@ -107,7 +107,7 @@ setInterval(() => {
           class="cursor-pointer hover:text-gray-800 mr-2 text-green-500"
         />
         <p class="text-lg text-left text-gray-600">
-          Keep personal files, meetings, trips etc.
+          Сохраняйте личные файлы, встречи, поездки и т.д.
         </p>
       </div>
       <div class="flex items-center mt-3">
@@ -119,7 +119,7 @@ setInterval(() => {
           class="cursor-pointer hover:text-gray-800 mr-2 text-green-500"
         />
         <p class="text-lg text-left text-gray-600">
-          Collect lists of your favorite books, movies etc.
+          Собирайте списки ваших любимых книг, фильмов и т.д.
         </p>
       </div>
       <div class="flex items-center mt-3">
@@ -131,7 +131,7 @@ setInterval(() => {
           class="cursor-pointer hover:text-gray-800 mr-2 text-green-500"
         />
         <p class="text-lg text-left text-gray-600">
-          Start working with the project by creating a task
+          Начните работу с проектом, создав задачу
         </p>
       </div>
     </div>
@@ -150,7 +150,7 @@ setInterval(() => {
         alt="Empty task image"
       >
       <p class="text-xl text-center font-bold">
-        What for do you need tags?
+        Для чего нужны метки?
       </p>
       <div class="flex items-center mt-10">
         <icon
@@ -161,7 +161,7 @@ setInterval(() => {
           class="cursor-pointer hover:text-gray-800 mr-2 text-green-500"
         />
         <p class="text-lg text-left text-gray-600">
-          Group similar tasks in to-do lists
+          Группируйте похожие задачи в списки дел
         </p>
       </div>
       <div class="flex items-center mt-3">
@@ -173,7 +173,7 @@ setInterval(() => {
           class="cursor-pointer hover:text-gray-800 mr-2 text-green-500"
         />
         <p class="text-lg text-left text-gray-600">
-          Focus your team's work on the main things
+          Сосредоточьте работу вашей команды на главном
         </p>
       </div>
       <div class="flex items-center mt-3">
@@ -185,7 +185,7 @@ setInterval(() => {
           class="cursor-pointer hover:text-gray-800 mr-2 text-green-500"
         />
         <p class="text-lg text-left text-gray-600">
-          Sort work and personal to-do lists
+          Сортируйте рабочие и личные списки дел
         </p>
       </div>
       <div class="flex items-center mt-3">
@@ -197,7 +197,7 @@ setInterval(() => {
           class="cursor-pointer hover:text-gray-800 mr-2 text-green-500"
         />
         <p class="text-lg text-left text-gray-600">
-          Visualise the order of performing tasks
+          Визуализируйте порядок выполнения задач
         </p>
       </div>
       <div class="flex items-center mt-3">
@@ -209,7 +209,7 @@ setInterval(() => {
           class="cursor-pointer hover:text-gray-800 mr-2 text-green-500"
         />
         <p class="text-lg text-left text-gray-600">
-          Start working with the tag by creating a task
+          Начинайте работу с меткой, создав задачу
         </p>
       </div>
     </div>
@@ -228,7 +228,7 @@ setInterval(() => {
         alt="Empty task image"
       >
       <p class="text-xl text-center font-bold mt-5">
-        What for do you need colors?
+        Для чего нужны цвета?
       </p>
       <div class="flex items-center mt-10">
         <icon
@@ -239,7 +239,7 @@ setInterval(() => {
           class="cursor-pointer hover:text-gray-800 mr-2 text-green-500"
         />
         <p class="text-lg text-left text-gray-600">
-          Highlight main tasks in a large to-do list
+          Выделяйте основные задачи в большом списке дел
         </p>
       </div>
       <div class="flex items-center mt-3">
@@ -251,7 +251,7 @@ setInterval(() => {
           class="cursor-pointer hover:text-gray-800 mr-2 text-green-500"
         />
         <p class="text-lg text-left text-gray-600">
-          Focus the team's attention on what is important
+          Сосредоточьте внимание команды на том, что важно
         </p>
       </div>
       <div class="flex items-center mt-3">
@@ -263,7 +263,7 @@ setInterval(() => {
           class="cursor-pointer hover:text-gray-800 mr-2 text-green-500"
         />
         <p class="text-lg text-left text-gray-600">
-          Sort personal affairs, meetings, trips etc.
+          Отсортируйте личные дела, встречи, поездки и т.д.
         </p>
       </div>
       <div class="flex items-center mt-3">
@@ -275,7 +275,7 @@ setInterval(() => {
           class="cursor-pointer hover:text-gray-800 mr-2 text-green-500"
         />
         <p class="text-lg text-left text-gray-600">
-          Enliven boring to-do lists
+          Оживите скучные списки дел
         </p>
       </div>
       <div class="flex items-center mt-3">
@@ -287,7 +287,7 @@ setInterval(() => {
           class="cursor-pointer hover:text-gray-800 mr-2 text-green-500"
         />
         <p class="text-lg text-left text-gray-600">
-          Start working with the tag by creating a task
+          Начните работу с цветом, создав задачу
         </p>
       </div>
     </div>

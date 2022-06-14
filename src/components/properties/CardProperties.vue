@@ -217,6 +217,7 @@ const removeCard = () => {
       :can-edit="canEdit"
       @onChangeCardColor="changeCardColor"
       @onChangeCardCover="changeCardCover"
+      @onChangeCardClearCover="changeCardClearCover"
     />
 
     <card-name

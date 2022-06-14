@@ -3,7 +3,7 @@ import { ref } from 'vue'
 import PopMenu from '@/components/modals/PopMenu.vue'
 import PopMenuItem from '@/components/modals/PopMenuItem.vue'
 import CardModalBoxColor from '@/components/properties/CardModalBoxColor.vue'
-const emit = defineEmits(['onChangeCardColor', 'onChangeCardCover'])
+const emit = defineEmits(['onChangeCardColor', 'onChangeCardCover', 'onChangeCardClearCover'])
 const props = defineProps({
   coverColor: String,
   coverLink: String,
@@ -58,6 +58,9 @@ const onChangeCardColor = (color) => {
               name="cover-input"
               @change="$emit('onChangeCardCover', $event)"
             >
+          </PopMenuItem>
+          <PopMenuItem @click="$emit('onChangeCardClearCover', $event)">
+            Сбросить
           </PopMenuItem>
         </template>
       </PopMenu>

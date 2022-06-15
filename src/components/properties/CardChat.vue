@@ -7,7 +7,7 @@ import CardChatSelfMessage from '@/components/properties/CardChatSelfMessage.vue
 import CardChatSelfFileMessage from '@/components/properties/CardChatSelfFileMessage.vue'
 import CardChatQuoteMessage from '@/components/properties/CardChatQuoteMessage.vue'
 
-const emit = defineEmits('onQuote')
+const emit = defineEmits('onQuote, onDeleteMessage', 'onDeleteFile')
 const props = defineProps({
   messages: Array,
   currentUserUid: String,
@@ -27,7 +27,7 @@ const messages = computed(() => {
     ...message,
     isFile: !!message.uid_file,
     isMessage: !message.uid_file && message.uid_creator !== 'inspector',
-    hasQuote: message.uid_quote && message.uid_quote !== '00000000-0000-0000-0000-000000000000',
+    hasQuote: message.uid_quote && message.uid_quote !== '00000000-0000-0000-0000-000000000000' && message.deleted !== 1,
     quoteMessage: getMessageByUid(message?.uid_quote),
     isInspectorMessage: message.uid_creator === 'inspector',
     isMyMessage: message.uid_creator === props.currentUserUid
@@ -54,6 +54,14 @@ const isChangedCreator = (index) => {
 
 const setCurrentQuote = (quoteMessage) => {
   emit('onQuote', quoteMessage)
+}
+
+const deleteMessage = (uid) => {
+  emit('onDeleteMessage', uid)
+}
+
+const deleteFile = (uid) => {
+  emit('onDeleteFile', uid)
 }
 
 const getMessageWeekDateString = (dateCreate) => {
@@ -121,12 +129,14 @@ const getMessageWeekDateString = (dateCreate) => {
         :message="message"
         :employee="props.employees[message.uid_creator]"
         @onQuoteMessage="setCurrentQuote"
+        @onDeleteMessage="deleteMessage"
       />
       <card-chat-self-file-message
         v-if="message.isMyMessage && message.isFile"
         :message="message"
         :employee="props.employees[message.uid_creator]"
         @onQuoteMessage="setCurrentQuote"
+        @onDeleteFile="deleteFile"
       />
     </div>
   </div>

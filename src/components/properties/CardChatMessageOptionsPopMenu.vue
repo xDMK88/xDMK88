@@ -34,6 +34,7 @@ export default {
       <PopMenuItem
         v-if="canDelete"
         icon="delete"
+        @click="$emit('onDeleteMessage')"
       >
         Удалить
       </PopMenuItem>

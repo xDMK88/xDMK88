@@ -4,7 +4,7 @@ import { useStore } from 'vuex'
 import { FILE_REQUEST } from '@/store/actions/cardfilesandmessages'
 import CardChatMessageOptionsPopMenu from '@/components/properties/CardChatMessageOptionsPopMenu.vue'
 
-defineEmits(['onQuoteMessage'])
+defineEmits(['onQuoteMessage', 'onDeleteMessage'])
 const props = defineProps({
   fileUid: String,
   fileName: String,
@@ -84,6 +84,7 @@ const loadFileFromInternet = () => {
           <card-chat-message-options-pop-menu
             :can-delete="props.canDelete"
             @onQuoteMessage="$emit('onQuoteMessage')"
+            @onDeleteMessage="$emit('onDeleteMessage')"
           >
             <div class="min-w-[30px] min-h-[14px] flex cursor-pointer items-end justify-center">
               <svg

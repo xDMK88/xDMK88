@@ -6,7 +6,7 @@ import { writeCache } from '@/store/helpers/functions'
 
 import CardChatMessageOptionsPopMenu from '@/components/properties/CardChatMessageOptionsPopMenu.vue'
 
-defineEmits(['onQuoteMessage'])
+defineEmits(['onQuoteMessage', 'onDeleteMessage'])
 const props = defineProps({
   fileUid: String,
   fileName: String,
@@ -66,6 +66,7 @@ onMounted(() => {
     <card-chat-message-options-pop-menu
       :can-delete="props.canDelete"
       @onQuoteMessage="$emit('onQuoteMessage')"
+      @onDeleteMessage="$emit('onDeleteMessage')"
     >
       <div class="min-w-[30px] mt-[5px] min-h-[16px] flex cursor-pointer items-end justify-center">
         <svg

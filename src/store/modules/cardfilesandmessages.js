@@ -36,6 +36,19 @@ const actions = {
         })
     })
   },
+  [CARD_FILES_AND_MESSAGES.DELETE_MESSAGE_REQUEST]: ({ commit, dispatch }, messageUid) => {
+    return new Promise((resolve, reject) => {
+      const url = process.env.VUE_APP_LEADERTASK_API + 'api/v1/cardsmsgs?uid=' + messageUid
+      axios({ url: url, method: 'DELETE' })
+        .then(resp => {
+          const data = { uid: messageUid, key: 'deleted', value: 1 }
+          commit(CARD_FILES_AND_MESSAGES.CHANGE_MESSAGE, data)
+          resolve(resp)
+        }).catch(err => {
+          reject(err)
+        })
+    })
+  },
   [CARD_FILES_AND_MESSAGES.FILES_REQUEST]: ({ commit, dispatch }, cardUid) => {
     // commit(CARD_FILES_AND_MESSAGES.REFRESH_FILES)
     return new Promise((resolve, reject) => {
@@ -78,6 +91,8 @@ const actions = {
       const url = process.env.VUE_APP_LEADERTASK_API + 'api/v1/cardsfiles?uid=' + fileUid
       axios({ url: url, method: 'DELETE' })
         .then(resp => {
+          const data = { uid: fileUid, key: 'deleted', value: 1 }
+          commit(CARD_FILES_AND_MESSAGES.CHANGE_MESSAGE, data)
           resolve(resp)
         }).catch(err => {
           reject(err)
@@ -117,6 +132,13 @@ const mutations = {
   [CARD_FILES_AND_MESSAGES.FILES_SUCCESS]: (state, resp) => {
     state.files = resp.data.files
     state.status = 'success'
+  },
+  [CARD_FILES_AND_MESSAGES.CHANGE_MESSAGE]: (state, data) => {
+    for (let i = 0; i < state.messages.length; i++) {
+      if (state.messages[i].uid === data.uid) {
+        state.messages[i][data.key] = data.value
+      }
+    }
   },
   [CARD_FILES_AND_MESSAGES.REFRESH_FILES]: (state, resp) => {
     state.files = []

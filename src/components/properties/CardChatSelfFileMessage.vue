@@ -4,15 +4,20 @@ import AudioPreloader from '@/components/properties/AudioPreloader.vue'
 import DocPreloader from '@/components/properties/DocPreloader.vue'
 import MoviePreloader from '@/components/properties/MoviePreloader.vue'
 import FilePreloader from '@/components/properties/FilePreloader.vue'
+import CardChatDeletedMessageContent from '@/components/properties/CardChatDeletedMessageContent.vue'
 import { computed } from 'vue'
 
-const emit = defineEmits(['onQuoteMessage'])
+const emit = defineEmits(['onQuoteMessage', 'onDeleteFile'])
 const props = defineProps({
   message: Object
 })
 
 const setCurrentQuote = () => {
   emit('onQuoteMessage', props.message)
+}
+
+const deleteFile = () => {
+  emit('onDeleteFile', props.message.uid)
 }
 
 const formatBytes = (bytes, decimals = 2) => {
@@ -50,14 +55,16 @@ const FileIsAudio = computed(() => ['mp3', 'wav', 'm4a'].includes(fileExtension.
   <div
     class="bg-[#F4F5F7] py-[10px] px-[12px] rounded-t-[12px] rounded-bl-[12px] mb-[5px] float-right relative max-w-[300px] group"
   >
+    <card-chat-deleted-message-content v-if="props.message.deleted"></card-chat-deleted-message-content>
     <image-preloader
-      v-if="FileIsImage"
+      v-else-if="FileIsImage"
       :file-uid="props.message.uid"
       :file-extension="fileExtension"
       :file-name="props.message.file_name"
       :file-date-create="getMessageTimeString(props.message.date_create)"
       preloader-color="#F4F5F7"
       @onQuoteMessage="setCurrentQuote"
+      @onDeleteMessage="deleteFile"
     />
     <audio-preloader
       v-else-if="FileIsAudio"
@@ -66,6 +73,7 @@ const FileIsAudio = computed(() => ['mp3', 'wav', 'm4a'].includes(fileExtension.
       :file-name="props.message.file_name"
       :file-date-create="getMessageTimeString(props.message.date_create)"
       @onQuoteMessage="setCurrentQuote"
+      @onDeleteMessage="deleteFile"
     />
     <doc-preloader
       v-else-if="FileIsDoc"
@@ -75,6 +83,7 @@ const FileIsAudio = computed(() => ['mp3', 'wav', 'm4a'].includes(fileExtension.
       :file-size="formatBytes(props.message.file_size)"
       :file-date-create="getMessageTimeString(props.message.date_create)"
       @onQuoteMessage="setCurrentQuote"
+      @onDeleteMessage="deleteFile"
     />
     <movie-preloader
       v-else-if="FileIsMovie"
@@ -84,6 +93,7 @@ const FileIsAudio = computed(() => ['mp3', 'wav', 'm4a'].includes(fileExtension.
       :file-size="formatBytes(props.message.file_size)"
       :file-date-create="getMessageTimeString(props.message.date_create)"
       @onQuoteMessage="setCurrentQuote"
+      @onDeleteMessage="deleteFile"
     />
     <file-preloader
       v-else
@@ -93,6 +103,7 @@ const FileIsAudio = computed(() => ['mp3', 'wav', 'm4a'].includes(fileExtension.
       :file-size="formatBytes(props.message.file_size)"
       :file-date-create="getMessageTimeString(props.message.date_create)"
       @onQuoteMessage="setCurrentQuote"
+      @onDeleteMessage="deleteFile"
     />
   </div>
 </template>

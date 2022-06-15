@@ -1,7 +1,7 @@
 <script setup>
 import { computed, ref, nextTick, watch } from 'vue'
 import { useStore } from 'vuex'
-import { CREATE_MESSAGE_REQUEST, CREATE_FILES_REQUEST, ADD_MESSAGE_LOCALLY, REMOVE_MESSAGE_LOCALLY } from '@/store/actions/cardfilesandmessages'
+import { CREATE_MESSAGE_REQUEST, DELETE_MESSAGE_REQUEST, CREATE_FILES_REQUEST, DELETE_FILE_REQUEST, ADD_MESSAGE_LOCALLY, REMOVE_MESSAGE_LOCALLY } from '@/store/actions/cardfilesandmessages'
 import { CHANGE_CARD_RESPONSIBLE_USER, CHANGE_CARD_BUDGET, CHANGE_CARD_NAME, CHANGE_CARD_COMMENT, CHANGE_CARD_COLOR, CHANGE_CARD_COVER, CHANGE_CARD_CLEAR_COVER, DELETE_CARD } from '@/store/actions/cards'
 
 import CardName from '@/components/properties/CardName.vue'
@@ -120,6 +120,15 @@ const createCardFile = (event) => {
 const setCurrentQuote = (quote) => {
   currentQuote.value = quote
   focusMessageInput()
+}
+
+const deleteCardMessage = (uid) => {
+  store.dispatch(DELETE_MESSAGE_REQUEST, uid)
+}
+
+const deleteCardFileMessage = (uid) => {
+  console.log('DLEETING FILE MESSAGE')
+  store.dispatch(DELETE_FILE_REQUEST, uid)
 }
 
 const createCardMessage = () => {
@@ -285,6 +294,8 @@ const removeCard = () => {
       :employees="employees"
       :show-files-only="showFilesOnly"
       @onQuote="setCurrentQuote"
+      @onDeleteMessage="deleteCardMessage"
+      @onDeleteFile="deleteCardFileMessage"
     />
 
     <!-- Card chat input -->

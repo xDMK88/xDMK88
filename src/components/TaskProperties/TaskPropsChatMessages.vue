@@ -59,7 +59,7 @@
               <div
                 v-linkify:options="{ className: 'text-blue-600' }"
                 v-html="
-                  getInspectorMessage(message.type, (task ?? selectedTask)).replaceAll(
+                  getInspectorMessage(message.type, (task.uid ? task : selectedTask)).replaceAll(
                     '\n',
                     '<br/>'
                   )

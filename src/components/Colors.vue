@@ -56,7 +56,9 @@ const clickOnGridCard = (value) => {
     const navElem = {
       name: value.name,
       key: 'taskListSource',
-      value: { uid: value.parentID, param: value.uid }
+      value: { uid: value.parentID, param: value.uid },
+      typeVal: value.uid,
+      type: 'color'
     }
     store.commit('pushIntoNavStack', navElem)
     store.commit('basic', { key: 'taskListSource', value: { uid: value.parentID, param: value.uid } })

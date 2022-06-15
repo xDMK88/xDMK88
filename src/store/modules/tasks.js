@@ -1,6 +1,4 @@
-import {
-  REFRESH_FILES
-} from '@/store/actions/taskfiles'
+import { REFRESH_FILES } from '@/store/actions/taskfiles'
 import {
   // MESSAGES_REQUEST,
   // INSPECTOR_MESSAGES_REQUEST,
@@ -125,19 +123,23 @@ const actions = {
   },
   [TASK.DAYS_WITH_TASKS]: ({ commit, dispatch }) => {
     return new Promise((resolve, reject) => {
-      const url = process.env.VUE_APP_LEADERTASK_API + 'api/v1/navigator/calendarinfo'
+      const url =
+        process.env.VUE_APP_LEADERTASK_API + 'api/v1/navigator/calendarinfo'
       axios({ url: url, method: 'GET' })
         .then((resp) => {
           commit(TASK.DAYS_WITH_TASKS, resp)
           resolve(resp)
         })
         .catch((err) => {
-          notify({
-            group: 'api',
-            title: 'REST API Error, please make screenshot',
-            action: TASK.DAYS_WITH_TASKS,
-            text: err.response.data
-          }, 15000)
+          notify(
+            {
+              group: 'api',
+              title: 'REST API Error, please make screenshot',
+              action: TASK.DAYS_WITH_TASKS,
+              text: err.response.data
+            },
+            15000
+          )
           commit(TASK.TASKS_ERROR, err)
           reject(err)
         })
@@ -785,7 +787,7 @@ const actions = {
               group: 'api',
               title: 'REST API Error, please make screenshot',
               action: TASK.CHANGE_TASK_READ,
-              text: err.response.data
+              text: err.response?.data ?? err
             },
             15000
           )
@@ -864,12 +866,15 @@ const actions = {
           resolve(resp)
         })
         .catch((err) => {
-          notify({
-            group: 'api',
-            title: 'REST API Error, please make screenshot',
-            action: TASK.REMOVE_TASK,
-            text: err.response.data
-          }, 15000)
+          notify(
+            {
+              group: 'api',
+              title: 'REST API Error, please make screenshot',
+              action: TASK.REMOVE_TASK,
+              text: err.response.data
+            },
+            15000
+          )
           reject(err)
         })
     })
@@ -1514,7 +1519,9 @@ const mutations = {
     }
   },
   [TASK.MARK_TASK_AS_READ]: (state, uid) => {
-    state.newtasks[uid].info.readed = 1
+    if (state.newtasks[uid]) {
+      state.newtasks[uid].info.readed = 1
+    }
   },
   [TASK.CHANGE_TASK_STATUS]: (state, data) => {
     state.newtasks[data.uid].info.status = data.value

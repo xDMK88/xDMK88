@@ -69,7 +69,9 @@ const currentDate = computed({
     const navElem = {
       name: dateToLabelFormat(val),
       key: 'taskListSource',
-      value: { uid: '901841d9-0016-491d-ad66-8ee42d2b496b', param: val }
+      value: { uid: '901841d9-0016-491d-ad66-8ee42d2b496b', param: val },
+      typeVal: val,
+      type: 'date'
     }
     store.commit('updateStackWithInitValue', navElem)
     store.commit('basic', { key: 'taskListSource', value: { uid: '901841d9-0016-491d-ad66-8ee42d2b496b', param: val } })
@@ -239,7 +241,7 @@ const tarifS = () => {
     class="w-[292px] fixed top-0 z-[2] h-screen transition-position lg:left-0 bg-[#f4f5f7] font-SfProDisplayNormal text-sm"
     :class="[ isAsideMobileExpanded ? 'left-0' : '-left-[292px]', isAsideLgActive ? 'block' : 'lg:hidden xl:block' ]"
   >
-    <div class="flex flex-row w-full text-dark px-[26px] mt-[22px] h-[32px] items-center">
+    <div class="flex flex-row w-full text-dark px-[16px] mt-[22px] h-[32px] items-center">
       <nav-bar-item
         type="hidden lg:flex xl:hidden"
         active-color="text-dark"
@@ -261,7 +263,7 @@ const tarifS = () => {
             :src="user.foto_link"
             width="32"
             height="32"
-            class="rounded-[8px] mr-[2px] border-2 border-white"
+            class="rounded-[8px] ml-[5px] mr-[2px] border-2 border-white"
           >
           <svg
             width="12"
@@ -291,7 +293,7 @@ const tarifS = () => {
         ref="calendarclass"
         v-model="navigatorMenu.currentDate"
         dot="true"
-        class="border-none px-[26px] calendar-nav-custom"
+        class="border-none pl-[22px] pr-[16px] calendar-nav-custom"
         :style="{ backgroundColor: datePickerBG }"
         show-weeknumbers="left"
         days="-1"

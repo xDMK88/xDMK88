@@ -1,14 +1,21 @@
 <script setup>
 import { computed } from 'vue'
+import { useStore } from 'vuex'
 import PopMenu from '@/components/modals/PopMenu.vue'
 import PopMenuItem from '@/components/modals/PopMenuItem.vue'
 import PopMenuHeader from '@/components/modals/PopMenuHeader.vue'
 defineEmits(['clickRemoveButton', 'toggleShowOnlyFiles'])
+
+const store = useStore()
+
 const props = defineProps({
   dateCreate: String,
   showFilesOnly: Boolean,
+  creator: String,
   canEdit: Boolean
 })
+
+const employees = computed(() => store.state.employees.employees)
 
 const cardDateCreate = computed(() => {
   return new Date(props.dateCreate).toLocaleString()
@@ -16,9 +23,9 @@ const cardDateCreate = computed(() => {
 
 </script>
 <template>
-  <div class="flex items-center bg-[#F4F5F7] rounded-[6px] text-[#575758] text-[12px] cursor-pointer font-[500]">
+  <div class="flex items-center bg-[#F4F5F7] rounded-[6px] text-[#575758] text-[12px] font-[500]">
     <PopMenu>
-      <div class="px-[13px] py-[5px]">
+      <div class="px-[13px] py-[5px] cursor-pointer">
         <svg
           width="4"
           height="16"
@@ -45,6 +52,17 @@ const cardDateCreate = computed(() => {
           title="Дата создания:"
         >
           {{ cardDateCreate }}
+        </PopMenuHeader>
+        <PopMenuHeader
+          title="Автор:"
+        >
+          <div class="flex items-center">
+            <img
+              class="rounded-lg h-[14px] w-[14px]"
+              :src="employees[creator]?.fotolink"
+            >
+            <span class="ml-1">{{ employees[creator]?.name }}</span>
+          </div>
         </PopMenuHeader>
         <PopMenuItem
           v-if="!props.showFilesOnly"

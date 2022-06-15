@@ -30,13 +30,32 @@ const showChangeCardBudget = ref(false)
 const showFilesOnly = ref(false)
 const currentQuote = ref(false)
 
+const onPasteEvent = (e) => {
+  const items = (e.clipboardData || e.originalEvent.clipboardData).items
+  for (const index in items) {
+    const item = items[index]
+    if (item.kind === 'file') {
+      const blob = item.getAsFile()
+      const formData = new FormData()
+      formData.append('files', blob)
+      const data = {
+        uid_card: selectedCard.value.uid,
+        name: formData
+      }
+      store.dispatch(CREATE_FILES_REQUEST, data).then(() => {
+        scrollDown()
+      })
+    }
+  }
+}
+
 watch(selectedCard, (oldValue, newValue) => {
   currentQuote.value = false
 })
 
 const scrollDown = () => {
   const asideRight = document.getElementById('aside-right')
-  asideRight.scroll({ top: asideRight.scrollHeight + 100000, behavior: 'smooth' })
+  asideRight.scroll({ top: asideRight.scrollHeight + 100000 })
 }
 
 const focusMessageInput = () => {
@@ -207,6 +226,7 @@ const removeCard = () => {
       <card-options
         :date-create="selectedCard.date_create"
         :can-edit="canEdit"
+        :creator="selectedCard.uid_creator"
         :show-files-only="showFilesOnly"
         @clickRemoveButton="showDeleteCard = true"
         @toggleShowOnlyFiles="showFilesOnly = !showFilesOnly"
@@ -227,6 +247,7 @@ const removeCard = () => {
       :can-edit="canEdit"
       @onChangeCardColor="changeCardColor"
       @onChangeCardCover="changeCardCover"
+      @onChangeCardClearCover="changeCardClearCover"
     />
 
     <card-name
@@ -279,6 +300,7 @@ const removeCard = () => {
         v-model="cardMessageInputValue"
         @createCardMessage="createCardMessage"
         @createCardFile="createCardFile"
+        @onPaste="onPasteEvent"
       />
     </div>
   </div>

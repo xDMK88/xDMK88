@@ -1337,6 +1337,7 @@ export default {
           :current-user-uid="cusers.current_user_uid"
           :access-emails="selectedTask.emails ? selectedTask.emails.split('..') : []"
           :can-edit="selectedTask.type === 1 || selectedTask.type === 2"
+          :isCustomer="selectedTask.uid_customer === user.current_user_uid"
           @changeAccess="onChangeAccess"
         />
         <!-- Кнопка Выбрать дату -->

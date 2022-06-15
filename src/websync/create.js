@@ -19,6 +19,7 @@ function currentUserEmail () {
 }
 
 export default function processCreate (obj) {
+  console.log('synced!', obj)
   switch (obj.type) {
     case TYPES.TYPE_OBJECT_TAG:
       break
@@ -47,8 +48,15 @@ export default function processCreate (obj) {
           obj: obj,
           text: obj.obj.name
         }, isNotificationSoundOn.value)
-        const websyncNotification = new Notification('Новое поручение', { body: obj.obj.name })
-        console.log(websyncNotification)
+        const websyncNotification = new Notification('Новое поручение', {
+          body: obj.obj.name,
+          icon: '/favicon.ico'
+        })
+        websyncNotification.onclick = () => {
+          const link = `${window.location.origin}/task/${obj.obj.uid}`
+          window.open(link)
+        }
+        console.log('notify', websyncNotification)
       }
       createTask(obj)
       break

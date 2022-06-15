@@ -1,6 +1,6 @@
 <template>
 <div
-  class="bg-white py-6 px-5 rounded-lg flex justify-between max-h-[700px] overflow-auto scroll-style"
+  class="bg-white py-6 px-5 rounded-lg flex justify-between"
   :style="{ borderColor: colors[task.uid_marker] ? colors[task.uid_marker].back_color : ''}"
   :class="{
     'bg-gray-200 dark:bg-gray-800':
@@ -11,7 +11,7 @@
   <div class="w-5/6">
     <div
       class="flex justify-between items-center mb-6 p-2 rounded-lg"
-      :style="{ backgroundColor: colors[task.uid_marker] ? colors[task.uid_marker].back_color : '', color: colors[task.uid_marker] ? colors[task.uid_marker].fore_color : '' }"
+      :style="{ backgroundColor: colors[task.uid_marker] ? colors[task.uid_marker].back_color : '', color: getValidForeColor(colors[task.uid_marker]?.fore_color) }"
     >
       <!-- task info/status -->
       <div class="flex items-center">
@@ -74,13 +74,13 @@
     <div class="flex text-sm text-left justify-between w-[200px]">
       <div class="flex flex-col" style="color: #7E7E80">
         <span
-          v-show="task.uid_customer !== task.uid_performer"
+          v-show="(task.uid_customer !== task.uid_performer) && (task.uid_customerr !== user.current_user_uid)"
           class="mb-2 w-[100px]"
         >
           Заказчик:
         </span>
         <span
-          v-show="task.uid_customer !== task.uid_performer"
+          v-show="(task.uid_customer !== task.uid_performer) && (task.uid_customerr !== user.current_user_uid)"
           class="mb-2 w-[100px]"
         >
           Исполнитель:
@@ -107,7 +107,7 @@
       <div class="flex flex-col font-medium min-w-full">
         <!-- customer -->
         <div
-          v-show="user.current_user_uid !== task.uid_customer && task.uid_customer !== task.uid_performer"
+          v-show="(task.uid_customer !== task.uid_performer) && (task.uid_customerr !== user.current_user_uid)"
           class="flex mb-2"
         >
           <img
@@ -118,7 +118,7 @@
         </div>
         <!-- performer -->
         <div
-          v-show="user.current_user_uid !== task.uid_customer && task.uid_customer !== task.uid_performer"
+          v-show="(task.uid_customer !== task.uid_performer) && (task.uid_customerr !== user.current_user_uid)"
           class="flex mb-2"
         >
           <img
@@ -190,6 +190,7 @@
       />
       <!-- input -->
       <TaskPropsInputForm
+        @sendTaskMsg="$emit('readTask')"
         :task="task"
       />
     </div>
@@ -203,7 +204,7 @@
       <!-- accept -->
       <button
         class="flex py-0.5 items-center justify-center text-sm hover:bg-white bg-green-100 hover:bg-opacity-90 font-medium border-green-400 min-h-[40px] w-[181px] rounded-lg border hover:text-green-500 mb-2 hover:animate-fadeIn"
-        @click="accept"
+        @click="accept(), $emit('readTask')"
       >
         <span class="ml-8 w-[70px]">{{ task.uid_customer === user.current_user_uid ? (task.uid_performer === user.current_user_uid ? 'Завершить' : 'Принять и завершить') : 'Готово к сдаче'}}</span>
         <Icon
@@ -217,7 +218,7 @@
       <!-- redo -->
       <button
         class="flex py-0.5 items-center justify-center text-sm bg-gray-100 w-[181px] hover:bg-red-200 hover:border hover:border-red-300 min-h-[40px] hover:bg-opacity-90 font-medium rounded-lg hover:text-red-500 mb-2 hover:animate-fadeIn"
-        @click="reDo"
+        @click="reDo(), $emit('readTask')"
       >
         <span class="ml-8 w-[70px]">{{ task.uid_customer === user.current_user_uid ? (task.uid_performer === user.current_user_uid ? 'Отменить' : 'На доработку') : 'Отклонить'}}</span>
         <Icon
@@ -231,7 +232,7 @@
       <!-- decline -->
       <button
         class="flex py-0.5 w-[181px] justify-center items-center text-sm bg-gray-100 hover:bg-gray-50 hover:border hover:border-gray-500 hover:bg-opacity-90 font-medium min-h-[40px] rounded-lg mb-2 hover:animate-fadeIn"
-        @click="decline"
+        @click="decline(), $emit('readTask')"
       >
         <span class="ml-8 w-[70px]">Отложить</span>
         <Icon
@@ -243,8 +244,8 @@
         />
       </button>
       <PerformButton
-        class="hover:animate-fadeIn hover:cursor-pointer"
         v-if="task.status !== 3 && task.type !== 4 && task.uid_customer === user.current_user_uid"
+        class="hover:animate-fadeIn hover:cursor-pointer"
         :task-type="task.type"
         :current-user-uid="user.current_user_uid"
         :performer-email="task.email_performer"
@@ -258,7 +259,7 @@
         :date-begin="task.date_begin"
         :date-end="task.date_end"
         :date-text="task.term_user"
-        @changeDates="onChangeDates"
+        @changeDates="onChangeDates(), $emit('readTask')"
       />
     </div>
   </div>
@@ -384,7 +385,7 @@ export default {
   directives: {
     linkify
   },
-  emits: ['clickTask', 'nextTask', 'changeValue'],
+  emits: ['clickTask', 'nextTask', 'changeValue', 'readTask'],
   props: {
     task: {
       type: Object,

@@ -30,6 +30,27 @@ const showChangeCardBudget = ref(false)
 const showFilesOnly = ref(false)
 const currentQuote = ref(false)
 
+const onPasteEvent = (e) => {
+  const items = (e.clipboardData || e.originalEvent.clipboardData).items
+  for (const index in items) {
+    const item = items[index]
+    if (item.kind === 'file') {
+      const blob = item.getAsFile()
+      const formData = new FormData()
+      formData.append('files', blob)
+      const data = {
+        uid_card: selectedCard.value.uid,
+        name: formData
+      }
+      store.dispatch(CREATE_FILES_REQUEST, data)
+      setTimeout(() => {
+        const elmnt = document.getElementById('content').lastElementChild
+        elmnt.scrollIntoView({ behavior: 'smooth' })
+      }, 300)
+    }
+  }
+}
+
 watch(selectedCard, (oldValue, newValue) => {
   currentQuote.value = false
 })
@@ -260,6 +281,7 @@ const removeCard = () => {
 
     <!-- Card chat -->
     <card-chat
+      id="content"
       :messages="cardMessages"
       :current-user-uid="user.current_user_uid"
       :employees="employees"
@@ -280,6 +302,7 @@ const removeCard = () => {
         v-model="cardMessageInputValue"
         @createCardMessage="createCardMessage"
         @createCardFile="createCardFile"
+        @onPaste="onPasteEvent"
       />
     </div>
   </div>

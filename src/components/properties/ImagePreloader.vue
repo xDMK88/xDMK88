@@ -62,7 +62,7 @@ onMounted(() => {
 <template>
   <div
     v-if="!imageLoaded"
-    class="rounded-[6px] w-[170px] h-[129px] animate-pulse"
+    class="rounded-[6px] w-[250px] h-[230px] animate-pulse"
     :style="{ 'background': props.preloaderColor }"
   />
   <a

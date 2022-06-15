@@ -1,6 +1,6 @@
 <script setup>
 import { computed } from 'vue'
-const emit = defineEmits(['update:modelValue', 'createCardMessage', 'createCardFile'])
+const emit = defineEmits(['update:modelValue', 'createCardMessage', 'createCardFile', 'onPaste'])
 
 const props = defineProps({
   modelValue: String
@@ -12,7 +12,6 @@ const computedValue = computed({
     emit('update:modelValue', value)
   }
 })
-
 </script>
 <template>
   <div class="flex w-full">
@@ -51,6 +50,7 @@ const computedValue = computed({
       rows="1"
       type="text"
       placeholder="Напишите сообщение..."
+      @paste="$emit('onPaste', $event)"
       @keydown.enter.shift.exact.prevent="addNewLineTaskMsg"
       @keydown.enter.exact.prevent="$emit('createCardMessage', computedValue.value)"
     />

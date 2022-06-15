@@ -69,7 +69,9 @@ const currentDate = computed({
     const navElem = {
       name: dateToLabelFormat(val),
       key: 'taskListSource',
-      value: { uid: '901841d9-0016-491d-ad66-8ee42d2b496b', param: val }
+      value: { uid: '901841d9-0016-491d-ad66-8ee42d2b496b', param: val },
+      typeVal: val,
+      type: 'date'
     }
     store.commit('updateStackWithInitValue', navElem)
     store.commit('basic', { key: 'taskListSource', value: { uid: '901841d9-0016-491d-ad66-8ee42d2b496b', param: val } })

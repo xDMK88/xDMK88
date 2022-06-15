@@ -47,8 +47,16 @@ export default function processCreate (obj) {
           obj: obj,
           text: obj.obj.name
         }, isNotificationSoundOn.value)
-        const websyncNotification = new Notification('Новое поручение', { body: obj.obj.name })
-        console.log(websyncNotification)
+        const websyncNotification = new Notification('Новое поручение', {
+          body: obj.obj.name,
+          icon: '/favicon.ico'
+        })
+        websyncNotification.onclick = () => {
+          const link = `${window.location.origin}/task/${obj.obj.uid}`
+          window.open(link)
+        }
+        console.log('notify', websyncNotification)
+        console.log(obj)
       }
       createTask(obj)
       break

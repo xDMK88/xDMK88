@@ -220,7 +220,6 @@ const removeCard = () => {
     @cancel="showChangeCardBudget = false"
     @save="changeCardBudget"
   />
-  <pre>{{ selectedCard }}</pre>
   <div class="relative min-h-screen">
     <!-- Close icon -->
     <div class="flex items-center justify-between mb-[10px]">

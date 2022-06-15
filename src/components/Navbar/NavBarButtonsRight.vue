@@ -213,7 +213,6 @@ export default {
         // Process saved last visited nav
         if (this.navStack.length && this.navStack.length > 0) {
           if (this.navStack[this.navStack.length - 1].key === 'taskListSource') {
-            console.log('fdsfsdf', this.navStack[this.navStack.length - 1])
             this.$store.dispatch(UID_TO_ACTION[this.navStack[this.navStack.length - 1].value.uid], this.navStack[this.navStack.length - 1].value.param)
             this.$store.commit('basic', { key: 'mainSectionState', value: 'tasks' })
             this.$store.commit('basic', { key: this.navStack[this.navStack.length - 1].key, value: this.navStack[this.navStack.length - 1].value })

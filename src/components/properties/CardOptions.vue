@@ -1,14 +1,21 @@
 <script setup>
 import { computed } from 'vue'
+import { useStore } from 'vuex'
 import PopMenu from '@/components/modals/PopMenu.vue'
 import PopMenuItem from '@/components/modals/PopMenuItem.vue'
 import PopMenuHeader from '@/components/modals/PopMenuHeader.vue'
 defineEmits(['clickRemoveButton', 'toggleShowOnlyFiles'])
+
+const store = useStore()
+
 const props = defineProps({
   dateCreate: String,
   showFilesOnly: Boolean,
+  creator: String,
   canEdit: Boolean
 })
+
+const employees = computed(() => store.state.employees.employees)
 
 const cardDateCreate = computed(() => {
   return new Date(props.dateCreate).toLocaleString()
@@ -45,6 +52,17 @@ const cardDateCreate = computed(() => {
           title="Дата создания:"
         >
           {{ cardDateCreate }}
+        </PopMenuHeader>
+        <PopMenuHeader
+          title="Автор:"
+        >
+          <div class="flex items-center">
+            <img
+              class="rounded-lg h-[14px] w-[14px]"
+              :src="employees[creator]?.fotolink"
+            >
+            <span class="ml-1">{{ employees[creator]?.name }}</span>
+          </div>
         </PopMenuHeader>
         <PopMenuItem
           v-if="!props.showFilesOnly"

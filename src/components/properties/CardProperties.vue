@@ -220,12 +220,14 @@ const removeCard = () => {
     @cancel="showChangeCardBudget = false"
     @save="changeCardBudget"
   />
+  <pre>{{ selectedCard }}</pre>
   <div class="relative min-h-screen">
     <!-- Close icon -->
     <div class="flex items-center justify-between mb-[10px]">
       <card-options
         :date-create="selectedCard.date_create"
         :can-edit="canEdit"
+        :creator="selectedCard.uid_creator"
         :show-files-only="showFilesOnly"
         @clickRemoveButton="showDeleteCard = true"
         @toggleShowOnlyFiles="showFilesOnly = !showFilesOnly"

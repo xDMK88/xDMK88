@@ -72,6 +72,13 @@
       @popNavBar="popNavBar"
       @toggleCompletedTasks="onChangeCompletedTasks"
     />
+    <NavBarButtonsTag
+      v-if="isTagTaskList"
+      :tag-uid="lastNavStackTypeVal"
+      :show-completed-tasks="showCompletedTasks"
+      @popNavBar="popNavBar"
+      @toggleCompletedTasks="onChangeCompletedTasks"
+    />
     <NavBarButtonsTasks
       v-if="isTaskList"
       :show-completed-tasks="showCompletedTasks"
@@ -89,6 +96,7 @@ import * as CARD from '@/store/actions/cards'
 import NavBarButtonsBoard from '@/components/Navbar/NavBarButtonsBoard.vue'
 import NavBarButtonsProject from '@/components/Navbar/NavBarButtonsProject.vue'
 import NavBarButtonsColor from '@/components/Navbar/NavBarButtonsColor.vue'
+import NavBarButtonsTag from '@/components/Navbar/NavBarButtonsTag.vue'
 import NavBarButtonsTasks from '@/components/Navbar/NavBarButtonsTasks.vue'
 
 export default {
@@ -96,6 +104,7 @@ export default {
     NavBarButtonsBoard,
     NavBarButtonsProject,
     NavBarButtonsColor,
+    NavBarButtonsTag,
     NavBarButtonsTasks
   },
   emits: ['popNavBar'],
@@ -130,6 +139,7 @@ export default {
     },
     isTaskList () {
       if (this.isColorTaskList) return false
+      if (this.isTagTaskList) return false
       return this.lastNavStackKey === 'taskListSource'
     },
     isColorTaskList () {

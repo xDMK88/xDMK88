@@ -1519,7 +1519,9 @@ const mutations = {
     }
   },
   [TASK.MARK_TASK_AS_READ]: (state, uid) => {
-    state.newtasks[uid].info.readed = 1
+    if (state.newtasks[uid]) {
+      state.newtasks[uid].info.readed = 1
+    }
   },
   [TASK.CHANGE_TASK_STATUS]: (state, data) => {
     state.newtasks[data.uid].info.status = data.value

@@ -35,7 +35,7 @@
     </div>
     <button
       class="border border-slate-600 py-3 px-4 rounded-lg mr-5 hover:bg-gray-300 text-sm bg-opacity-70 font-medium flex w-[181px] items-center justify-center"
-      @click="nextTask"
+      @click="nextTask(), readTask()"
     >
       <span class="pr-2">Следующая задача</span>
       <Icon
@@ -177,7 +177,6 @@ export default {
   watch: {
     firstTask (newtask, oldtask) {
       if (newtask) {
-        this.$store.dispatch(TASK.CHANGE_TASK_READ, this.firstTask.uid)
         this.$store.dispatch(MSG.MESSAGES_REQUEST, this.firstTask.uid)
           .then(() => {
             this.$store.dispatch(FILES.FILES_REQUEST, this.firstTask.uid)
@@ -254,6 +253,9 @@ export default {
           this.openedTasks = [...this.openedTasks]
         })
     },
+    readTask: function () {
+      this.$store.dispatch(TASK.CHANGE_TASK_READ, this.firstTask.uid)
+    },
     dateToLabelFormat: function (calendarDate) {
       const day = calendarDate.getDate()
       const month = calendarDate.toLocaleString('default', { month: 'short' })
@@ -263,8 +265,8 @@ export default {
       return day + ' ' + month + ', ' + weekday
     },
     nextTask: function () {
+      this.readTask()
       this.$store.dispatch('asidePropertiesToggle', false)
-
       if (this.unreadTasks.length) {
         this.unreadTasks.shift()
         return

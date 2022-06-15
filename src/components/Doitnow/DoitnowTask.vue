@@ -190,6 +190,7 @@
       />
       <!-- input -->
       <TaskPropsInputForm
+        @sendTaskMsg="$emit('readTask')"
         :task="task"
       />
     </div>
@@ -203,7 +204,7 @@
       <!-- accept -->
       <button
         class="flex py-0.5 items-center justify-center text-sm hover:bg-white bg-green-100 hover:bg-opacity-90 font-medium border-green-400 min-h-[40px] w-[181px] rounded-lg border hover:text-green-500 mb-2 hover:animate-fadeIn"
-        @click="accept"
+        @click="accept(), $emit('readTask')"
       >
         <span class="ml-8 w-[70px]">{{ task.uid_customer === user.current_user_uid ? (task.uid_performer === user.current_user_uid ? 'Завершить' : 'Принять и завершить') : 'Готово к сдаче'}}</span>
         <Icon
@@ -217,7 +218,7 @@
       <!-- redo -->
       <button
         class="flex py-0.5 items-center justify-center text-sm bg-gray-100 w-[181px] hover:bg-red-200 hover:border hover:border-red-300 min-h-[40px] hover:bg-opacity-90 font-medium rounded-lg hover:text-red-500 mb-2 hover:animate-fadeIn"
-        @click="reDo"
+        @click="reDo(), $emit('readTask')"
       >
         <span class="ml-8 w-[70px]">{{ task.uid_customer === user.current_user_uid ? (task.uid_performer === user.current_user_uid ? 'Отменить' : 'На доработку') : 'Отклонить'}}</span>
         <Icon
@@ -231,7 +232,7 @@
       <!-- decline -->
       <button
         class="flex py-0.5 w-[181px] justify-center items-center text-sm bg-gray-100 hover:bg-gray-50 hover:border hover:border-gray-500 hover:bg-opacity-90 font-medium min-h-[40px] rounded-lg mb-2 hover:animate-fadeIn"
-        @click="decline"
+        @click="decline(), $emit('readTask')"
       >
         <span class="ml-8 w-[70px]">Отложить</span>
         <Icon
@@ -243,8 +244,8 @@
         />
       </button>
       <PerformButton
-        class="hover:animate-fadeIn hover:cursor-pointer"
         v-if="task.status !== 3 && task.type !== 4 && task.uid_customer === user.current_user_uid"
+        class="hover:animate-fadeIn hover:cursor-pointer"
         :task-type="task.type"
         :current-user-uid="user.current_user_uid"
         :performer-email="task.email_performer"
@@ -258,7 +259,7 @@
         :date-begin="task.date_begin"
         :date-end="task.date_end"
         :date-text="task.term_user"
-        @changeDates="onChangeDates"
+        @changeDates="onChangeDates(), $emit('readTask')"
       />
     </div>
   </div>
@@ -384,7 +385,7 @@ export default {
   directives: {
     linkify
   },
-  emits: ['clickTask', 'nextTask', 'changeValue'],
+  emits: ['clickTask', 'nextTask', 'changeValue', 'readTask'],
   props: {
     task: {
       type: Object,

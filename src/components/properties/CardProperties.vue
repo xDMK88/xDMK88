@@ -42,11 +42,9 @@ const onPasteEvent = (e) => {
         uid_card: selectedCard.value.uid,
         name: formData
       }
-      store.dispatch(CREATE_FILES_REQUEST, data)
-      setTimeout(() => {
-        const elmnt = document.getElementById('content').lastElementChild
-        elmnt.scrollIntoView({ behavior: 'smooth' })
-      }, 300)
+      store.dispatch(CREATE_FILES_REQUEST, data).then(() => {
+        scrollDown()
+      })
     }
   }
 }
@@ -57,7 +55,7 @@ watch(selectedCard, (oldValue, newValue) => {
 
 const scrollDown = () => {
   const asideRight = document.getElementById('aside-right')
-  asideRight.scroll({ top: asideRight.scrollHeight + 100000, behavior: 'smooth' })
+  asideRight.scroll({ top: asideRight.scrollHeight + 100000 })
 }
 
 const focusMessageInput = () => {
@@ -281,7 +279,6 @@ const removeCard = () => {
 
     <!-- Card chat -->
     <card-chat
-      id="content"
       :messages="cardMessages"
       :current-user-uid="user.current_user_uid"
       :employees="employees"

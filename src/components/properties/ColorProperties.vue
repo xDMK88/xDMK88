@@ -67,7 +67,6 @@ const removeColor = (color) => {
 </script>
 
 <template>
-  hasChanged:{{ hasChanged }}
   <modal-box-confirm
     v-model="showConfirm"
     button="warning"

@@ -47,7 +47,7 @@ const onChangeCardColor = (color) => {
             Цвет
           </PopMenuItem>
           <PopMenuItem>
-            <label for="cover-input">
+            <label class="cursor-pointer" for="cover-input">
               Файл
             </label>
             <input

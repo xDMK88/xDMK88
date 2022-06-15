@@ -1,164 +1,350 @@
-<script setup>
-import { computed, ref, watch, onMounted } from 'vue'
-import { useStore } from 'vuex'
-import Toggle from '@vueform/toggle'
-import ColorPicker from '@/components/properties/ColorPicker.vue'
-import characters from '@/icons/characters.js'
-
-import ModalBoxConfirm from '@/components/modals/ModalBoxConfirm.vue'
-
-import { NAVIGATOR_PUSH_COLOR, NAVIGATOR_REMOVE_COLOR } from '@/store/actions/navigator'
-import { CREATE_COLOR_REQUEST, UPDATE_COLOR_REQUEST, REMOVE_COLOR_REQUEST } from '@/store/actions/colors'
-
-const store = useStore()
-const selectedColor = computed(() => store.state.colors.selectedColor)
-const showConfirm = ref(false)
-const hasChanged = ref(false)
-
-function uuidv4 () {
-  return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
-    (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
-  )
-}
-
-onMounted(() => {
-  hasChanged.value = false
-})
-
-watch(selectedColor, () => {
-  hasChanged.value = false
-  selectedColor.value.uppercase = !!selectedColor.value.uppercase
-})
-
-const createOrUpdateColor = (color) => {
-  if (!color.uid) {
-    color.uid = uuidv4()
-
-    // colors action uid
-    // shoudn't be hard coded TODO: create consts with all actions in uids
-    color.parentID = 'ed8039ae-f3de-4369-8f32-829d401056e9'
-    color.uppercase = color.uppercase ? 1 : 0
-    store.dispatch(CREATE_COLOR_REQUEST, color)
-      .then(() => {
-        hasChanged.value = false
-        store.dispatch('asidePropertiesToggle', false)
-        store.commit(NAVIGATOR_PUSH_COLOR, [color])
-        color.uppercase = !!color.uppercase
-      })
-  } else {
-    color.uppercase = color.uppercase ? 1 : 0
-    store.dispatch(UPDATE_COLOR_REQUEST, color)
-      .then(() => {
-        hasChanged.value = false
-        store.dispatch('asidePropertiesToggle', false)
-        color.uppercase = !!color.uppercase
-      })
-  }
-}
-
-const removeColor = (color) => {
-  store.dispatch(REMOVE_COLOR_REQUEST, color.uid)
-    .then(() => {
-      store.dispatch('asidePropertiesToggle', false)
-      store.commit(NAVIGATOR_REMOVE_COLOR, color)
-    })
-}
-
-</script>
-
 <template>
-  <modal-box-confirm
-    v-model="showConfirm"
-    button="warning"
-    has-button
-    has-cancel
-    button-label="Delete"
-    @confirm="removeColor(selectedColor)"
-  >
-    <p class="text-center">
-      Вы действительно хотите удалить цвет "<strong>{{ selectedColor.name }}</strong>"?
-    </p>
-  </modal-box-confirm>
   <div>
-    <div>
-      <p class="text-sm text-gray-500 dark:text-gray-200">
-        Свойства цвета
-      </p>
-      <p
-        class="mt-4"
-      >
-        Название
-      </p>
-      <input
-        v-model="selectedColor.name"
-        type="text"
-        placeholder="Название проекта"
-        class="mt-2 p-3 rounded-xl bg-gray-100 font-bold text-gray-700 w-full border-none ring-0 outline-none"
-        :class="{ 'uppercase': selectedColor.uppercase }"
-        @input="hasChanged = true"
-      >
+    <ModalBoxDelete
+      v-show="showConfirm"
+      title="Удалить цвет"
+      :text="`Вы действительно хотите удалить цвет ${selectedColorName}?`"
+      @cancel="showConfirm = false"
+      @yes="removeColor"
+    />
+    <div class="flex justify-between items-center">
+      <PopMenu v-if="isCanDelete">
+        <PropsButtonMenu />
+        <template #menu>
+          <PopMenuItem
+            icon="delete"
+            @click="showConfirm = true"
+          >
+            Удалить
+          </PopMenuItem>
+        </template>
+      </PopMenu>
+      <div v-else />
+      <PropsButtonClose
+        @click="closeProperties"
+      />
+    </div>
+    <input
+      v-if="isCanEdit"
+      v-model="currName"
+      type="text"
+      placeholder="Наименование"
+      class="mt-[25px] p-0 font-roboto font-bold font-[18px] leading-[21px] text-[#424242] w-full border-none focus:ring-0 focus:outline-none"
+      @blur="changeColorName"
+    >
+    <div
+      v-else
+      class="mt-[25px] w-full font-roboto font-bold font-[18px] leading-[21px] text-[#424242] overflow-hidden text-ellipsis whitespace-nowrap"
+    >
+      {{ currName }}
+    </div>
+    <div
+      class="mt-[30px] font-roboto font-[16px] leading-[19px] font-medium text-[#4c4c4d]"
+    >
+      Цвет фона
+    </div>
+    <div class="w-full mt-[15px] gap-[4px] flex flex-col">
       <div
-        class="mt-8"
+        v-for="(clrs, index) in defaultBackColors"
+        :key="index"
+        class="flex gap-[4px]"
       >
-        <ColorPicker
-          v-model="selectedColor.fore_color"
-          :update="() => hasChanged = true "
-          :label="'Цвет букв'"
-          :icon="characters"
+        <PropsColorBoxItem
+          v-for="clr in clrs"
+          :key="clr.color"
+          :class="{'cursor-pointer': isCanEdit}"
+          :color="clr.color"
+          :selected="clr.selected"
+          @select="changeColorBack"
         />
       </div>
+    </div>
+    <div
+      class="mt-[30px] font-roboto font-[16px] leading-[19px] font-medium text-[#4c4c4d]"
+    >
+      Цвет букв
+    </div>
+    <div class="w-full mt-[15px] gap-[4px] flex flex-col">
       <div
-        class="mt-8"
+        v-for="(clrs, index) in defaultTextColors"
+        :key="index"
+        class="flex gap-[4px]"
       >
-        <ColorPicker
-          v-model="selectedColor.back_color"
-          :update="() => hasChanged = true "
-          :label="'Цвет фона'"
+        <PropsColorBoxItem
+          v-for="clr in clrs"
+          :key="clr.color"
+          :class="{'cursor-pointer': isCanEdit}"
+          :color="clr.color"
+          :selected="clr.selected"
+          @select="changeColorText"
         />
       </div>
-      <hr class="my-6">
-      <div
-        class="flex items-center mb-6"
+    </div>
+    <div
+      class="mt-[45px] flex gap-[10px] items-center"
+      :class="{'cursor-pointer': isCanEdit}"
+      @click="changeColorUppercase"
+    >
+      <svg
+        v-if="selectedColorUppercase"
+        width="20"
+        height="20"
+        viewBox="0 0 20 20"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
       >
-        <p class="text-sm mr-3">
-          Все прописные
-        </p>
-        <Toggle
-          v-model="selectedColor.uppercase"
-          class="outline-none ring-0"
-          :classes="{ toggleOn: 'bg-blue-400 border-blue-400 justify-start text-white', container: 'focus:ring-0' }"
-          @change="hasChanged = true"
+        <path
+          d="M0 5C0 2.23858 2.23858 0 5 0H15C17.7614 0 20 2.23858 20 5V15C20 17.7614 17.7614 20 15 20H5C2.23858 20 0 17.7614 0 15V5Z"
+          fill="#FF9123"
         />
-      </div>
-      <p class="text-sm text-gray-500 dark:text-gray-200">
-        Предосмотр задачи
-      </p>
-      <div
-        class="p-3 rounded-xl mt-3"
-        :style="{ 'background-color': selectedColor.back_color }"
+        <path
+          d="M9.02899 14.1663C8.80147 14.1663 8.57397 14.0661 8.34645 13.9659L4.59245 11.46C4.13742 11.1593 4.02366 10.4577 4.36494 10.0567C4.70621 9.65579 5.50251 9.55555 5.95754 9.85626L8.91524 11.7607L14.7169 6.14759C15.1719 5.74665 15.8545 5.74665 16.3095 6.04735C16.7645 6.44829 16.7645 7.0497 16.4232 7.45064L9.93905 13.6652C9.71154 14.0661 9.37026 14.1663 9.02899 14.1663Z"
+          fill="white"
+        />
+      </svg>
+      <svg
+        v-else
+        width="20"
+        height="20"
+        viewBox="0 0 20 20"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
       >
-        <p
-          :class="{ 'uppercase': selectedColor.uppercase }"
-          :style="{ 'color': selectedColor.fore_color }"
+        <rect
+          width="20"
+          height="20"
+          rx="4"
+          fill="#EEEFF1"
+        />
+        <rect
+          x="0.5"
+          y="0.5"
+          width="19"
+          height="19"
+          rx="3.5"
+          stroke="black"
+          stroke-opacity="0.1"
+        />
+      </svg>
+
+      <div class="font-roboto font-[16px] leading-[20px] text-[#4c4c4d]">
+        Все буквы прописные
+      </div>
+    </div>
+    <div
+      class="mt-[30px] font-roboto font-[16px] leading-[19px] font-medium text-[#4c4c4d]"
+    >
+      Предпросмотр
+    </div>
+    <div
+      class="mt-[15px] w-full"
+    >
+      <div
+        class="w-full flex items-center justify-center h-[40px] rounded-[8px]"
+        :class="{ 'border border-black/10': !selectedColorBack}"
+        :style="{ 'background-color': selectedColorBack || 'white'}"
+      >
+        <div
+          class="font-roboto text-[#606061] text-[15px]"
+          :class="{ 'uppercase': selectedColorUppercase }"
+          :style="{ color: selectedColorText || 'black' }"
         >
-          Название задачи
-        </p>
+          Текст
+        </div>
       </div>
-      <button
-        class="w-full bg-gray-100 rounded-xl mt-4 p-3 text-gray-700 font-bold hover:bg-gray-200"
-        :class="{ 'bg-orange-400 hover:bg-orange-500': hasChanged }"
-        @click="createOrUpdateColor(selectedColor)"
-      >
-        {{ selectedColor.uid ? 'Сохранить' : 'Создать' }}
-      </button>
-      <button
-        v-if="selectedColor.uid"
-        class="w-full bg-red-600 rounded-xl mt-4 p-3 text-white font-bold hover:bg-red-800"
-        @click="showConfirm = true"
-      >
-        Удалить
-      </button>
     </div>
   </div>
 </template>
-<style src="@vueform/toggle/themes/default.css"></style>
+
+<script>
+import ModalBoxDelete from '@/components/Common/ModalBoxDelete.vue'
+import PropsColorBoxItem from '@/components/Common/PropsColorBoxItem.vue'
+import PopMenu from '@/components/modals/PopMenu.vue'
+import PopMenuItem from '@/components/modals/PopMenuItem.vue'
+import PropsButtonClose from '@/components/Common/PropsButtonClose.vue'
+import PropsButtonMenu from '@/components/Common/PropsButtonMenu.vue'
+
+import { UPDATE_COLOR_REQUEST, REMOVE_COLOR_REQUEST } from '@/store/actions/colors'
+import { NAVIGATOR_REMOVE_COLOR } from '@/store/actions/navigator'
+
+export default {
+  components: {
+    ModalBoxDelete,
+    PropsColorBoxItem,
+    PopMenu,
+    PopMenuItem,
+    PropsButtonMenu,
+    PropsButtonClose
+  },
+  data () {
+    return {
+      showConfirm: false,
+      currName: ''
+    }
+  },
+  computed: {
+    defaultBackColors () {
+      const allColors = [
+        '',
+        '#7fc870',
+        '#69c494',
+        '#dff2e1',
+        '#ffaf40',
+        '#ffd7a0',
+        '#5ba4cf',
+        '#9eedff',
+        '#b381b3',
+        '#e5e5e5',
+        '#ddd1c2',
+        '#ef7665',
+        '#ffc6b5',
+        '#ff8ed4',
+        '#f5dbf5',
+        '#6a7077',
+        '#f6dd29',
+        '#f5f547'
+      ]
+      // добавляем в конец выбранный цвет если его тут нет
+      const usedColor = this.selectedColorBack.toLowerCase()
+      if (!allColors.includes(usedColor)) {
+        allColors.splice(allColors.length - 1, 1, usedColor)
+      }
+      const colors = allColors.map(color => ({ color: color, selected: color === usedColor }))
+      // разбираем на ряды по 9
+      const rowLength = 9
+      const arrColors = []
+      while (colors.length) arrColors.push(colors.splice(0, rowLength))
+      return arrColors
+    },
+    defaultTextColors () {
+      const allColors = [
+        '',
+        '#7fc870',
+        '#69c494',
+        '#dff2e1',
+        '#ffaf40',
+        '#ffd7a0',
+        '#5ba4cf',
+        '#9eedff',
+        '#b381b3',
+        '#e5e5e5',
+        '#ddd1c2',
+        '#ef7665',
+        '#ffc6b5',
+        '#ff8ed4',
+        '#f5dbf5',
+        '#6a7077',
+        '#f6dd29',
+        '#f5f547'
+      ]
+      // добавляем в конец выбранный цвет если его тут нет
+      const usedColor = this.selectedColorText.toLowerCase()
+      if (!allColors.includes(usedColor)) {
+        allColors.splice(allColors.length - 1, 1, usedColor)
+      }
+      const colors = allColors.map(color => ({ color: color, selected: color === usedColor }))
+      // разбираем на ряды по 9
+      const rowLength = 9
+      const arrColors = []
+      while (colors.length) arrColors.push(colors.splice(0, rowLength))
+      return arrColors
+    },
+    selectedColor () {
+      return this.$store.state.colors.selectedColor
+    },
+    selectedColorUid () {
+      return this.selectedColor?.uid || ''
+    },
+    selectedColorName () {
+      return this.selectedColor?.name || ''
+    },
+    selectedColorUppercase () {
+      return !!this.selectedColor?.uppercase
+    },
+    selectedColorText () {
+      const textColor = this.selectedColor?.fore_color
+      if (textColor && textColor !== '#A998B6') return textColor
+      return ''
+    },
+    selectedColorBack () {
+      const backColor = this.selectedColor?.back_color
+      if (backColor && backColor !== '#A998B6') return backColor
+      return ''
+    },
+    isCanDelete () {
+      return this.$store.state.colors.mycolors[this.selectedColorUid] !== undefined
+    },
+    isCanEdit () {
+      return this.isCanDelete
+    }
+  },
+  watch: {
+    selectedColorName: {
+      immediate: true,
+      handler: function (val) {
+        this.currName = val
+      }
+    }
+  },
+  methods: {
+    print (msg, param) {
+      console.log(msg, param)
+    },
+    removeColor () {
+      this.showConfirm = false
+
+      this.$store.dispatch(REMOVE_COLOR_REQUEST, this.selectedColorUid)
+        .then((resp) => {
+          console.log('removeColor', resp)
+          //
+          this.$store.dispatch('asidePropertiesToggle', false)
+          this.$store.commit(NAVIGATOR_REMOVE_COLOR, this.selectedColor)
+        })
+    },
+    closeProperties () {
+      this.$store.dispatch('asidePropertiesToggle', false)
+    },
+    changeColorName () {
+      const title = this.currName.trim()
+      if (this.isCanEdit && title && this.selectedColorName !== title) {
+        this.selectedColor.name = title
+        this.$store.dispatch(UPDATE_COLOR_REQUEST, this.selectedColor)
+          .then((resp) => {
+            console.log('changeColorName', resp)
+          })
+      }
+    },
+    changeColorUppercase () {
+      if (this.isCanEdit) {
+        this.selectedColor.uppercase = this.selectedColorUppercase ? 0 : 1
+        this.$store.dispatch(UPDATE_COLOR_REQUEST, this.selectedColor)
+          .then((resp) => {
+            console.log('changeColorUppercase', resp)
+          })
+      }
+    },
+    changeColorText (color) {
+      if (this.isCanEdit && this.selectedColorText.toLowerCase() !== color) {
+        this.selectedColor.fore_color = color || '#A998B6'
+        this.$store.dispatch(UPDATE_COLOR_REQUEST, this.selectedColor)
+          .then((resp) => {
+            console.log('changeColorText', resp, color)
+          })
+      }
+    },
+    changeColorBack (color) {
+      if (this.isCanEdit && this.selectedColorBack.toLowerCase() !== color) {
+        this.selectedColor.back_color = color || '#A998B6'
+        this.$store.dispatch(UPDATE_COLOR_REQUEST, this.selectedColor)
+          .then((resp) => {
+            console.log('changeColorText', resp, color)
+          })
+      }
+    }
+  }
+}
+</script>
+
+<style scoped>
+
+</style>

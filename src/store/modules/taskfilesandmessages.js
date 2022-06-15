@@ -201,7 +201,6 @@ const actions = {
   },
   [DELETE_FILE_REQUEST]: ({ commit, dispatch }, data) => {
     return new Promise((resolve, reject) => {
-      commit(FILES_REQUEST)
       const url = process.env.VUE_APP_LEADERTASK_API + 'api/v1/tasksfiles?uid=' + data.uid
       axios({ url: url, method: 'DELETE' })
         .then(resp => {
@@ -263,7 +262,7 @@ const mutations = {
     //  state.messages = data
   },
   [DELETE_FILE_REQUEST]: (state, data) => {
-    state.messages.push(data)
+    state.messages.splice(state.messages.indexOf(data), 1)
   },
   [FILES_REQUEST]: state => {
     state.status = 'loading'

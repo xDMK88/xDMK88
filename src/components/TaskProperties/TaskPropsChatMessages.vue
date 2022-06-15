@@ -37,7 +37,7 @@
           :message="message.msg"
           :time="getMessageTimeString(message.date_create)"
           @answer="answerMessage(message.uid)"
-          @delete="deleteTaskMsg(message.uid)"
+          @deleted="deleteTaskMsg(message.uid)"
         />
 
         <!-- Сообщение от инспектора -->
@@ -144,6 +144,7 @@
           :file-name="message.msg"
           :time="getMessageTimeString(message.date_create)"
           :quote="getFileQuoteString(message.uid_quote)"
+          :quotefile="getFileQuoteString(message.uid_quote)"
           :quote-user="getMessageQuoteUser(message.uid_quote)"
           :size="formatBytes(message.file_size)"
           :file="message"
@@ -181,6 +182,10 @@ export default {
     currentUserUid: {
       type: String,
       default: ''
+    },
+    deleted: {
+      type: String,
+      default: '1'
     },
     taskMessages: {
       type: Object,
@@ -330,11 +335,8 @@ export default {
       if (!uidQuote || uidQuote === '00000000-0000-0000-0000-000000000000') return ''
       const quotedMessage = this.messages.find(message => message.uid === uidQuote)
       if (!quotedMessage) return ''
-      let msg = quotedMessage.msg.trim()
-      msg = msg.replaceAll('&amp;', '&')
-      msg = msg.replaceAll('&lt;', '<')
-      msg = msg.replaceAll('&gt;', '>')
-      return msg
+      console.log(quotedMessage)
+      return quotedMessage
     },
     getMessageQuoteUser (uidQuote) {
       if (!uidQuote || uidQuote === '00000000-0000-0000-0000-000000000000') return ''
@@ -346,6 +348,7 @@ export default {
       this.$emit('answerMessage', uid)
     },
     deleteTaskMsg (data) {
+      console.log(data)
       this.$emit('deleteTaskMsg', data)
     },
     deleteFiles (uid) {

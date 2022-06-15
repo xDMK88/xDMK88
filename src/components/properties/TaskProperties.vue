@@ -291,6 +291,7 @@ export default {
       store.dispatch(DELETE_MESSAGE_REQUEST, { uid: uid }).then(
         resp => {
           selectedTask.value.has_msgs = true
+          this.taskMessages.find(message => message.uid === uid).deleted = 1
         })
     }
     const deleteFiles = (uid) => {
@@ -941,7 +942,7 @@ export default {
     },
     fileQuoteString () {
       if (!this.currentAnswerMessageUid) return ''
-      const quotedFile = this.taskFiles.find(file => file.uid === this.currentAnswerMessageUid)
+      const quotedFile = this.taskMessages.find(message => message.uid === this.currentAnswerMessageUid)
       console.log(quotedFile)
       if (!quotedFile) return ''
       let msg = quotedFile.msg.trim()
@@ -1241,7 +1242,6 @@ export default {
       this.currentAnswerMessageUid = uid
       this.$nextTick(function () {
         this.onInputTaskMsg()
-        this.onPasteEvent(event)
       })
     }
   }

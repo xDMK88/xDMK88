@@ -3,7 +3,7 @@ import contenteditable from 'vue-contenteditable'
 import * as TASK from '@/store/actions/tasks.js'
 import { useStore } from 'vuex'
 import Icon from '@/components/Icon.vue'
-import { computed, reactive, ref, watch, nextTick } from 'vue'
+import { onMounted, computed, reactive, ref, watch, nextTick } from 'vue'
 import close from '@/icons/close.js'
 
 const props = defineProps({
@@ -112,13 +112,23 @@ const updateChecklist = (index) => {
   } else {
     renderedChecklist.checklist[index].text = renderedChecklist.checklist[index].text.replace(/\r?\n|\r/g, '')
     processChecklist()
+    nextTick(() => {
+      renderedChecklist.checklist.push({ checked: false, text: '' })
+    })
+    document.getElementById('check_' + index).blur()
+    console.log(renderedChecklist.checklist.length)
+    setTimeout(() => {
+      document.getElementById('check_' + (index + 1)).focus()
+    }, 200)
     // addEmptyChecklist(index)
   }
 }
 
-// onMounted(() => {
-//   document.getElementById('check_0').focus()
-// })
+onMounted(() => {
+  if (renderedChecklist.checklist.length === 1) {
+    document.getElementById('check_0').focus()
+  }
+})
 
 </script>
 
@@ -151,7 +161,7 @@ const updateChecklist = (index) => {
           :contenteditable="store.state.tasks.newtasks[props.taskUid] ? store.state.tasks.newtasks[props.taskUid].info.uid_customer === user.current_user_uid : isCustomer"
           :no-n-l="true"
           :no-h-t-m-l="true"
-          @keyup.enter="updateChecklist(index)"
+          @keydown.enter="updateChecklist(index)"
           @blur="saveChecklist(index)"
         />
         <Icon

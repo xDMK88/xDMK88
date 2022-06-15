@@ -310,23 +310,25 @@ const getNavigator = () => {
 }
 
 onBeforeMount(() => {
-  requestNotificationPermissionOrShowModalBox()
-  const fm = document.createElement('script')
-  const websync = document.createElement('script')
-  fm.setAttribute('src', process.env.VUE_APP_LEADERTASK_API + 'scripts/websync/fm.min.js')
-  websync.setAttribute('src', process.env.VUE_APP_LEADERTASK_API + 'scripts/websync/fm.websync.min.js')
-  document.head.appendChild(fm)
-  document.head.appendChild(websync)
+  setTimeout(() => {
+    requestNotificationPermissionOrShowModalBox()
+    const fm = document.createElement('script')
+    const websync = document.createElement('script')
+    fm.setAttribute('src', process.env.VUE_APP_LEADERTASK_API + 'scripts/websync/fm.min.js')
+    websync.setAttribute('src', process.env.VUE_APP_LEADERTASK_API + 'scripts/websync/fm.websync.min.js')
+    document.head.appendChild(fm)
+    document.head.appendChild(websync)
 
-  store.dispatch(USER_REQUEST).then(resp => {
-    store.dispatch('GET_SOUND_SETTING', resp.data.current_user_uid)
-  })
-  getNavigator()
-  if (router.currentRoute.value.name === 'task' && router.currentRoute.value.params.id) {
-    getTask(router.currentRoute.value.params.id)
-  } else {
-    getTasks()
-  }
+    store.dispatch(USER_REQUEST).then(resp => {
+      store.dispatch('GET_SOUND_SETTING', resp.data.current_user_uid)
+    })
+    getNavigator()
+    if (router.currentRoute.value.name === 'task' && router.currentRoute.value.params.id) {
+      getTask(router.currentRoute.value.params.id)
+    } else {
+      getTasks()
+    }
+  }, 800)
 })
 </script>
 

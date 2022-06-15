@@ -28,7 +28,7 @@
           v-if="message.isMessage && !showOnlyFiles"
           :class="message.isMyMessage ? 'mr-2' : 'ml-2'"
           :is-my-message="message.isMyMessage"
-          :deleted-status="message.deleted"
+          :deletedStatus="message.deleted"
           :show-creator="isChangeCreator(index)"
           :show-loader="uploadStarted && message.loading"
           :quote="getMessageQuoteString(message.uid_quote)"
@@ -59,7 +59,7 @@
               <div
                 v-linkify:options="{ className: 'text-blue-600' }"
                 v-html="
-                  getInspectorMessage(message.type, (task.length ? task : selectedTask)).replaceAll(
+                  getInspectorMessage(message.type, (task ?? selectedTask)).replaceAll(
                     '\n',
                     '<br/>'
                   )
@@ -143,8 +143,11 @@
           :creator-name="employees[message.uid_creator]?.name ?? '???'"
           :file-name="message.msg"
           :time="getMessageTimeString(message.date_create)"
+          :quote="getFileQuoteString(message.uid_quote)"
+          :quote-user="getMessageQuoteUser(message.uid_quote)"
           :size="formatBytes(message.file_size)"
           :file="message"
+          @answer="answerMessage(message.uid)"
           @PasteEvent="PasteEvent($event)"
           @deleteFiles="deleteFiles(message.uid)"
         />
@@ -323,6 +326,16 @@ export default {
       msg = msg.replaceAll('&gt;', '>')
       return msg
     },
+    getFileQuoteString (uidQuote) {
+      if (!uidQuote || uidQuote === '00000000-0000-0000-0000-000000000000') return ''
+      const quotedMessage = this.messages.find(message => message.uid === uidQuote)
+      if (!quotedMessage) return ''
+      let msg = quotedMessage.msg.trim()
+      msg = msg.replaceAll('&amp;', '&')
+      msg = msg.replaceAll('&lt;', '<')
+      msg = msg.replaceAll('&gt;', '>')
+      return msg
+    },
     getMessageQuoteUser (uidQuote) {
       if (!uidQuote || uidQuote === '00000000-0000-0000-0000-000000000000') return ''
       const quotedMessage = this.messages.find(message => message.uid === uidQuote)
@@ -332,8 +345,8 @@ export default {
     answerMessage (uid) {
       this.$emit('answerMessage', uid)
     },
-    deleteTaskMsg (uid) {
-      this.$emit('deleteTaskMsg', uid)
+    deleteTaskMsg (data) {
+      this.$emit('deleteTaskMsg', data)
     },
     deleteFiles (uid) {
       this.$emit('deleteFiles', uid)

@@ -258,7 +258,9 @@ const mutations = {
     state.messages.push(data)
   },
   [DELETE_MESSAGE_REQUEST]: (state, data) => {
-    state.messages.push(data)
+    console.log(state.messages[data])
+    //  state.messages.splice(state.messages.indexOf(data), 1)
+    //  state.messages = data
   },
   [DELETE_FILE_REQUEST]: (state, data) => {
     state.messages.push(data)

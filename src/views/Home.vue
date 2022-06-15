@@ -328,7 +328,7 @@ onBeforeMount(() => {
     } else {
       getTasks()
     }
-  }, 400)
+  }, 800)
 })
 </script>
 

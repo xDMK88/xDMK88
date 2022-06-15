@@ -1,6 +1,6 @@
 import store from '@/store/index.js'
 
-const NULL_MESSAGE_TYPE = 0
+// const NULL_MESSAGE_TYPE = 0
 const ORIGIN_MESSAGE_TYPE = 1
 const IGNORE_MESSAGE_TYPE = 2
 const OVERDUE_MESSAGE_TYPE = 3

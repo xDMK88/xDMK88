@@ -335,7 +335,6 @@ export default {
       if (!uidQuote || uidQuote === '00000000-0000-0000-0000-000000000000') return ''
       const quotedMessage = this.messages.find(message => message.uid === uidQuote)
       if (!quotedMessage) return ''
-      console.log(quotedMessage)
       return quotedMessage
     },
     getMessageQuoteUser (uidQuote) {
@@ -348,7 +347,6 @@ export default {
       this.$emit('answerMessage', uid)
     },
     deleteTaskMsg (data) {
-      console.log(data)
       this.$emit('deleteTaskMsg', data)
     },
     deleteFiles (uid) {

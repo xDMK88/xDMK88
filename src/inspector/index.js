@@ -35,7 +35,7 @@ function parseMessage (data) {
   try {
     const parsedData = JSON.parse(data)
     showNotify({ group: 'inspector', title: 'Инспектор', text: getInspectorMessage(parsedData.message, parsedData.task.taskJson), task: parsedData.task.taskJson }, isNotificationSoundOn.value)
-    const inspectorNotification = new Notification('Инспектор', { body: getInspectorMessage(parsedData.message, parsedData.task.taskJson) })
+    const inspectorNotification = new Notification('Инспектор', { body: getInspectorMessage(parsedData.message, parsedData.task.taskJson), icon: '/favicon.ico' })
     console.log(inspectorNotification)
   } catch (e) {
     console.log(e)

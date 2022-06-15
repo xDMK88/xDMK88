@@ -19,6 +19,7 @@ function currentUserEmail () {
 }
 
 export default function processCreate (obj) {
+  console.log('synced!', obj)
   switch (obj.type) {
     case TYPES.TYPE_OBJECT_TAG:
       break
@@ -56,7 +57,6 @@ export default function processCreate (obj) {
           window.open(link)
         }
         console.log('notify', websyncNotification)
-        console.log(obj)
       }
       createTask(obj)
       break

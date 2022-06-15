@@ -14,7 +14,7 @@
     <div class="w-full inline-block min-h-[40px]">
       <div
         class="group min-w-[60%] max-w-[80%] min-h-[40px] flex flex-col"
-        :class="!quote ? { 'bg-[#FCEBEB] rounded-tr-[12px] rounded-tl-[12px] rounded-br-[12px] float-left': !isMyMessage, 'bg-[#F4F5F7] rounded-tl-[12px] rounded-tr-[12px] rounded-bl-[12px] rounded-br-[0px] float-right mb-1': isMyMessage} : { 'rounded-tr-[12px] rounded-tl-[12px] rounded-br-[12px] float-left': !isMyMessage, 'rounded-tl-[12px] rounded-tr-[12px] rounded-bl-[12px] rounded-br-[0px] float-right': isMyMessage}"
+        :class="!quote ? { 'bg-[#FCEBEB] rounded-tr-[12px] rounded-tl-[12px] rounded-br-[12px] float-left': !isMyMessage, 'bg-[#F4F5F7] rounded-tl-[12px] rounded-tr-[12px] rounded-bl-[12px] rounded-br-[0px] float-right mb-1': isMyMessage, 'bg-[#F4F5F7] rounded-tl-[12px] rounded-tr-[12px] rounded-bl-[12px] rounded-br-[0px] float-right mb-1':isMyMessage || deletedStatus === 1, 'bg-[#F4F5F7] rounded-tr-[12px] rounded-tl-[12px] rounded-br-[12px] float-left':!isMyMessage || deletedStatus === 1} : { 'rounded-tr-[12px] rounded-tl-[12px] rounded-br-[12px] float-left': !isMyMessage, 'rounded-tl-[12px] rounded-tr-[12px] rounded-bl-[12px] rounded-br-[0px] float-right': isMyMessage}"
       >
         <div
           v-if="quote"
@@ -34,7 +34,7 @@
             </p>
           </div>
         </div>
-        <div  class="group min-w-[60%] max-w-[99%] flex flex-col" :class="{ 'bg-[#FCEBEB] rounded-tr-[12px] rounded-tl-[12px] rounded-br-[12px] float-left': !isMyMessage, 'bg-[#F4F5F7] rounded-tl-[12px] rounded-tr-[12px] rounded-bl-[12px] rounded-br-[0px] float-right': isMyMessage}">
+        <div  class="group min-w-[60%] max-w-[99%] flex flex-col" :class="{ 'bg-[#FCEBEB] rounded-tr-[12px] rounded-tl-[12px] rounded-br-[12px] float-left': !isMyMessage, 'bg-[#F4F5F7] rounded-tl-[12px] rounded-tr-[12px] rounded-bl-[12px] rounded-br-[0px] float-right': isMyMessage, 'bg-[#F4F5F7] rounded-tl-[12px] rounded-tr-[12px] rounded-bl-[12px] rounded-br-[0px] float-right mb-1':isMyMessage || deletedStatus === 1, 'bg-[#F4F5F7] rounded-tr-[12px] rounded-tl-[12px] rounded-br-[12px] float-left':!isMyMessage || deletedStatus === 1}">
         <div
           class="table-cell py-2 px-2.5 text-sm dark:bg-gray-800 dark:text-gray-100"
         >
@@ -81,7 +81,7 @@
                       Ответить
                     </div>
                   </PopMenuItem>
-                  <PopMenuItem @click="copyMessage(messageText)">
+                  <PopMenuItem @click="copyMessage(messageText)" v-if="isMyMessage">
                     <div class="flex">
                       <svg class="mt-0.5 mr-2" width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M9.36567 3.00495H2.15112C1.29779 3.00495 0.599609 3.70313 0.599609 4.55646V11.8486C0.599609 12.7019 1.29779 13.4001 2.15112 13.4001H9.44325C10.2966 13.4001 10.9948 12.7019 10.9948 11.8486V4.55646C10.8396 3.70313 10.219 3.00495 9.36567 3.00495ZM1.9184 4.55646C1.9184 4.47889 1.99597 4.32373 2.15112 4.32373H9.44325C9.52082 4.32373 9.67597 4.40131 9.67597 4.55646V11.8486C9.67597 11.9262 9.5984 12.0813 9.44325 12.0813H2.15112C2.07355 12.0813 1.9184 12.0037 1.9184 11.8486V4.55646Z" fill="#7E7E80"/>
@@ -168,9 +168,12 @@ export default {
     },
     deletedStatus: {
       type: String
+    },
+    status: {
+      type: String
     }
   },
-  emits: ['answer', 'delete'],
+  emits: ['answer', 'deleted'],
   computed: {
     messageText () {
       let text = this.message.trim()
@@ -206,7 +209,7 @@ export default {
       this.$emit('answer')
     },
     deleteMessage () {
-      this.$emit('delete')
+      this.$emit('deleted')
     }
   }
 }

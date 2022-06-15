@@ -20,6 +20,7 @@
         <div class="mt-2 text-right text-[#7E7E80] font-medium mb-2">
           {{ fileName }}
         </div>
+        {{quote}}
         <div
           v-if="quote"
           class="py-2 px-2.5 flex flex-row mt-2"
@@ -35,6 +36,7 @@
             </p>
             <p class="text-[12px] leading-[16px] font-normal overflow-hidden text-[#7E7E80] text-ellipsis whitespace-nowrap">
               {{ quote }}
+              <FileMessage :file="quote"/>
             </p>
           </div>
         </div>
@@ -142,8 +144,8 @@ export default {
       default: ''
     },
     quote: {
-      type: String,
-      default: ''
+      type: Object,
+      default: () => ({})
     },
     time: {
       type: String,

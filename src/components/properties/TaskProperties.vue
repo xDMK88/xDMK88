@@ -290,16 +290,13 @@ export default {
     const deleteTaskMsg = (uid) => {
       store.dispatch(DELETE_MESSAGE_REQUEST, { uid: uid }).then(
         resp => {
-          console.log(taskMessages.value)
           selectedTask.value.has_msgs = true
-          taskMessages.value.delete = 1
         })
     }
     const deleteFiles = (uid) => {
       store.dispatch(DELETE_FILE_REQUEST, { uid: uid }).then(
         resp => {
           console.log(selectedTask.value)
-          selectedTask.value.msg.delete = 1
         })
     }
     const changeName = (event) => {
@@ -942,6 +939,17 @@ export default {
       msg = msg.replaceAll('&gt;', '>')
       return msg
     },
+    fileQuoteString () {
+      if (!this.currentAnswerMessageUid) return ''
+      const quotedFile = this.taskFiles.find(file => file.uid === this.currentAnswerMessageUid)
+      console.log(quotedFile)
+      if (!quotedFile) return ''
+      let msg = quotedFile.msg.trim()
+      msg = msg.replaceAll('&amp;', '&')
+      msg = msg.replaceAll('&lt;', '<')
+      msg = msg.replaceAll('&gt;', '>')
+      return msg
+    },
     messageQuoteUser () {
       if (!this.currentAnswerMessageUid) return ''
       const quotedMessage = this.taskMessages.find(message => message.uid === this.currentAnswerMessageUid)
@@ -1233,6 +1241,7 @@ export default {
       this.currentAnswerMessageUid = uid
       this.$nextTick(function () {
         this.onInputTaskMsg()
+        this.onPasteEvent(event)
       })
     }
   }
@@ -2124,7 +2133,7 @@ export default {
           type="button"
           name="btn-send"
           class="btn-send-custom"
-          @click="createTaskMsg"
+          @click="sendTaskMsg()"
         >
           <!--   <svg
             width="24"

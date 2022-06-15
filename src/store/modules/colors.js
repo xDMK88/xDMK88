@@ -1,8 +1,12 @@
 import axios from 'axios'
 import { notify } from 'notiwind'
 import {
-  CREATE_COLOR_REQUEST, PUSH_COLOR,
-  PUSH_MYCOLOR, REMOVE_COLOR_REQUEST, SELECT_COLOR, UPDATE_COLOR_REQUEST
+  CREATE_COLOR_REQUEST,
+  PUSH_COLOR,
+  PUSH_MYCOLOR,
+  REMOVE_COLOR_REQUEST,
+  SELECT_COLOR,
+  UPDATE_COLOR_REQUEST
 } from '../actions/colors'
 
 const state = {
@@ -48,7 +52,7 @@ const actions = {
               group: 'api',
               title: 'REST API Error, please make screenshot',
               action: UPDATE_COLOR_REQUEST,
-              text: err.response.data
+              text: err.response?.data ?? err
             },
             30000
           )

@@ -104,15 +104,15 @@
     <template #before-input="props">
       <div
         :id="props.node.info.uid"
+        ref="treetask"
         class="pl-8 group task-node mb-1 font-['Roboto'] flex-col items-center w-full bg-white p-2 rounded-[8px] dark:bg-gray-900 dark:border-gray-700 relative border border-white"
         :style="{ backgroundColor: getValidBackColor(colors[props.node.info.uid_marker]?.back_color) }"
         :class="{ 'bg-gray-200 dark:bg-gray-800': (props.node.info.status == 1 || props.node.info.status == 7) && props.node.info.uid_marker == '00000000-0000-0000-0000-000000000000', 'ring-1 ring-orange-400 border border-orange-400': props.node.id === lastSelectedTaskUid}"
+        autofocus
         @keydown.esc="escapEvent"
         @keyup.esc="escapEvent"
         @click.shift="clickAndShift(props.node)"
         @click.exact="selectedTasks = {}"
-        autofocus
-        ref="treetask"
       >
         <!--
         DEBUG TASK INFO, don't remove this comment
@@ -150,7 +150,7 @@
 
             <Icon
               :path="panelfocus.path"
-              class="text-gray-600 dark:text-white justify-center mr-2 cursor-pointer"
+              class="text-gray-600 dark:text-white justify-center mr-2 cursor-pointer w-[20px] h-[20px]"
               :box="panelfocus.viewBox"
               :width="panelfocus.width"
               :height="panelfocus.height"

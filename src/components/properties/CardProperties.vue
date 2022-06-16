@@ -338,7 +338,6 @@ const removeCard = () => {
 
     <!-- Card chat -->
     <card-chat
-      class="overflow-visible break-words"
       :messages="cardMessages"
       :current-user-uid="user.current_user_uid"
       :employees="employees"

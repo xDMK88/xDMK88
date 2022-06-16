@@ -55,13 +55,13 @@
             <div
               v-if="deletedStatus === 0"
               v-linkify:options="{ className: 'text-blue-600' }"
-              class="break-all whitespace-pre-line text-[#4C4C4D] font-normal text-[14px]"
+              class="break-words whitespace-pre-line text-[#4C4C4D] font-normal text-[14px]"
             >
               {{ messageText }}
             </div>
             <div
               v-else
-              class="flex break-all whitespace-pre-line text-[#7E7E80]"
+              class="flex break-words whitespace-pre-line text-[#7E7E80]"
             >
               <svg
                 class="mr-1.5 mt-0.5"

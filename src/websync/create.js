@@ -3,6 +3,7 @@ import { createProject } from '@/websync/project.js'
 import { createTask } from '@/websync/task.js'
 import { createCard } from '@/websync/card.js'
 import { createMessage } from '@/websync/task_message.js'
+import { createCardMessage } from '@/websync/card_message.js'
 import * as TYPES from '@/websync/types.js'
 import { showNotify } from '@/store/helpers/functions'
 
@@ -19,7 +20,6 @@ function currentUserEmail () {
 }
 
 export default function processCreate (obj) {
-  console.log('synced!', obj)
   switch (obj.type) {
     case TYPES.TYPE_OBJECT_TAG:
       break
@@ -119,8 +119,10 @@ export default function processCreate (obj) {
       createCard(obj)
       break
     case TYPES.TYPE_OBJECT_CARD_FILE:
+      createCardMessage(obj)
       break
     case TYPES.TYPE_OBJECT_CARD_MSG:
+      createCardMessage(obj)
       break
     case TYPES.TYPE_OBJECT_CLIENT:
       break

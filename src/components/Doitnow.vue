@@ -251,6 +251,12 @@ export default {
           this.readyTasks = [...this.readyTasksReaded]
           this.todayTasks = [...result[2]]
           this.openedTasks = [...this.openedTasks]
+          // удаляем из массивов задачи со статусом "завершено"
+          this.unreadTasks = this.unreadTasks.filter(task => (task.status !== 1) && (task.status !== 8))
+          this.overdueTasks = this.overdueTasks.filter(task => (task.status !== 1) && (task.status !== 8))
+          this.readyTasks = this.readyTasks.filter(task => (task.status !== 1) && (task.status !== 8))
+          this.todayTasks = this.todayTasks.filter(task => (task.status !== 1) && (task.status !== 8))
+          this.openedTasks = this.openedTasks.filter(task => (task.status !== 1) && (task.status !== 8))
         })
     },
     readTask: function () {

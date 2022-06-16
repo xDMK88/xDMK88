@@ -87,7 +87,6 @@ export default {
       this.$emit('onChangeCardCover', e)
     },
     onSelectFile () {
-      console.log(this.$refs.coverInputLabel)
       this.$refs.coverInputLabel.click()
     }
   }

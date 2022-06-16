@@ -38,7 +38,7 @@ const updateSettings = () => {
 <template>
   <form class="px-5">
     <div class="my-2">
-      <div class="flex mt-2">
+      <div class="flex mt-[15px]">
         <div class="checkbox">
           <input
             id="opt_1"
@@ -49,7 +49,7 @@ const updateSettings = () => {
             @change="updateSettings()"
           >
           <label
-            class="text-base"
+            class="text-sm text-[#606061]"
             for="opt_1"
           >Добавлять задачи в начало списка</label>
         </div>
@@ -57,7 +57,7 @@ const updateSettings = () => {
                 <a class="ml-2" v-if="settings.add_task_to_begin === false">Выкл.</a> -->
       </div>
     </div>
-    <div class="my-2 mt-4">
+    <div class="my-2 mt-[15px]">
       <div class="flex mt-2">
         <div class="checkbox">
           <input
@@ -68,7 +68,7 @@ const updateSettings = () => {
             @change="updateSettings()"
           >
           <label
-            class="text-base"
+            class="text-sm text-[#606061]"
             for="opt_2"
           >Первая неделя с 1 января</label>
         </div>
@@ -76,7 +76,7 @@ const updateSettings = () => {
                 <a class="ml-2" v-if="settings.cal_number_of_first_week === false">Выкл.</a> -->
       </div>
     </div>
-    <div class="my-2 mt-4">
+    <div class="my-2 mt-[15px]">
       <div class="flex mt-2">
         <div class="checkbox">
           <input
@@ -87,7 +87,7 @@ const updateSettings = () => {
             @change="updateSettings()"
           >
           <label
-            class="text-base"
+            class="text-sm text-[#606061]"
             for="opt_3"
           >Показывать номера недель в календаре</label>
         </div>
@@ -95,7 +95,7 @@ const updateSettings = () => {
                 <a class="ml-2" v-if="settings.cal_show_week_number === false">Выкл.</a> -->
       </div>
     </div>
-    <div class="my-2 mt-4">
+    <div class="my-2 mt-[15px]">
       <div class="flex mt-2">
         <div class="checkbox">
           <input
@@ -106,7 +106,7 @@ const updateSettings = () => {
             @change="updateSettings()"
           >
           <label
-            class="text-base"
+            class="text-sm text-[#606061]"
             for="opt_4"
           >Показывать раздел Просрочено</label>
         </div>
@@ -114,7 +114,7 @@ const updateSettings = () => {
                 <a class="ml-2" v-if="settings.nav_show_overdue === false">Выкл.</a> -->
       </div>
     </div>
-    <div class="my-2 mt-4">
+    <div class="my-2 mt-[15px]">
       <div class="flex mt-2">
         <div class="checkbox">
           <input
@@ -125,7 +125,7 @@ const updateSettings = () => {
             @change="updateSettings()"
           >
           <label
-            class="text-base"
+            class="text-sm text-[#606061]"
             for="opt_5"
           >Показывать количество задач</label>
         </div>
@@ -133,7 +133,7 @@ const updateSettings = () => {
                 <a class="ml-2" v-if="settings.nav_show_summary === 0">Выкл.</a> -->
       </div>
     </div>
-    <div class="my-2 mt-4">
+    <div class="my-2 mt-[15px]">
       <div class="flex mt-2">
         <div class="checkbox">
           <input
@@ -144,7 +144,7 @@ const updateSettings = () => {
             @change="updateSoundSetting"
           >
           <label
-            class="text-base"
+            class="text-sm text-[#606061]"
             for="sound"
           >Сопровождать уведомления звуковым сообщением</label>
         </div>
@@ -152,14 +152,14 @@ const updateSettings = () => {
                 <a class="ml-2" v-if="settings.nav_show_summary === 0">Выкл.</a> -->
       </div>
     </div>
-    <div class="my-2 mt-10">
-      <p class="text-base font-semibold">
+    <div class="my-2 mt-[50px]">
+      <p class="text-base font-medium text-[#4C4C4D]">
         Напоминание о задаче за:
       </p>
       <div class="flex mt-2">
         <select
           v-model="settings.reminders_in_n_minutes"
-          class="border border-gray-300 p-2 w-40 rounded-md text-base custom-select"
+          class="border border-gray-300 p-2 w-40 rounded-md text-sm custom-select"
           @change="updateSettings()"
         >
           <option value="0">
@@ -180,14 +180,14 @@ const updateSettings = () => {
         </select>
       </div>
     </div>
-    <div class="my-2 mt-4">
-      <p class="text-base font-semibold">
+    <div class="my-2 mt-[30px]">
+      <p class="text-base font-medium text-[#4C4C4D]">
         Язык
       </p>
       <div class="flex mt-2">
         <select
           v-model="settings.language"
-          class="border border-gray-300 p-2 w-40 rounded-md text-base custom-select"
+          class="border border-gray-300 p-2 w-40 rounded-md text-sm custom-select"
           @change="updateSettings()"
         >
           <option value="russian">
@@ -220,8 +220,8 @@ const updateSettings = () => {
 .custom-checkbox-orange + label::before {
   content: '';
   display: inline-block;
-  width: 1.5em;
-  height: 1.5em;
+  width: 20px;
+  height: 20px;
   flex-shrink: 0;
   flex-grow: 0;
   border: 1.63582px solid rgba(0, 0, 0, 0.15);
@@ -266,11 +266,13 @@ const updateSettings = () => {
 }
 /* remove the original arrow */
 .custom-select {
-  font-size: 16px;
+  font-size: 14px;
   border: 1px solid #ccc;
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
+  height: 40px;
+  color:#606061;
   background: transparent
     url('http://cdn1.iconfinder.com/data/icons/cc_mono_icon_set/blacks/16x16/br_down.png')
     no-repeat 130px center;

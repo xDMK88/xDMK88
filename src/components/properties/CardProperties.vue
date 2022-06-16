@@ -20,19 +20,19 @@ import {
   DELETE_CARD
 } from '@/store/actions/cards'
 
-import CardName from '@/components/properties/CardName.vue'
-import CardCover from '@/components/properties/CardCover.vue'
-import CardChat from '@/components/properties/CardChat.vue'
-import CardResponsibleUser from '@/components/properties/CardResponsibleUser.vue'
-import CardOptions from '@/components/properties/CardOptions.vue'
-import CardBudget from '@/components/properties/CardBudget.vue'
-import CardMessageInput from '@/components/properties/CardMessageInput.vue'
+import CardName from '@/components/CardProperties/CardName.vue'
+import CardCover from '@/components/CardProperties/CardCover.vue'
+import CardChat from '@/components/CardProperties/CardChat.vue'
+import CardResponsibleUser from '@/components/CardProperties/CardResponsibleUser.vue'
+import CardOptions from '@/components/CardProperties/CardOptions.vue'
+import CardBudget from '@/components/CardProperties/CardBudget.vue'
+import CardMessageInput from '@/components/CardProperties/CardMessageInput.vue'
 import Icon from '@/components/Icon.vue'
 import close from '@/icons/close.js'
 import TaskPropsCommentEditor from '@/components/TaskProperties/TaskPropsCommentEditor.vue'
 import BoardModalBoxDelete from '@/components/Board/BoardModalBoxDelete.vue'
-import CardModalBoxBudget from '@/components/properties/CardModalBoxBudget.vue'
-import CardMessageQuoteUnderInput from '@/components/properties/CardMessageQuoteUnderInput.vue'
+import CardModalBoxBudget from '@/components/CardProperties/CardModalBoxBudget.vue'
+import CardMessageQuoteUnderInput from '@/components/CardProperties/CardMessageQuoteUnderInput.vue'
 
 const store = useStore()
 const selectedCard = computed(() => store.state.cards.selectedCard)

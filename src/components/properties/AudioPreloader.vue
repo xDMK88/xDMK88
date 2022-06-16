@@ -4,7 +4,7 @@ import { useStore } from 'vuex'
 import { FILE_REQUEST } from '@/store/actions/cardfilesandmessages'
 import { writeCache } from '@/store/helpers/functions'
 
-import CardChatMessageOptionsPopMenu from '@/components/properties/CardChatMessageOptionsPopMenu.vue'
+import CardChatMessageOptionsPopMenu from '@/components/CardProperties/CardChatMessageOptionsPopMenu.vue'
 
 defineEmits(['onQuoteMessage', 'onDeleteMessage'])
 const props = defineProps({

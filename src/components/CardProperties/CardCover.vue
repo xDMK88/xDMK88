@@ -2,7 +2,7 @@
 import { ref } from 'vue'
 import PopMenu from '@/components/modals/PopMenu.vue'
 import PopMenuItem from '@/components/modals/PopMenuItem.vue'
-import CardModalBoxColor from '@/components/properties/CardModalBoxColor.vue'
+import CardModalBoxColor from '@/components/CardProperties/CardModalBoxColor.vue'
 const emit = defineEmits(['onChangeCardColor', 'onChangeCardCover', 'onChangeCardClearCover'])
 const props = defineProps({
   coverColor: String,
@@ -47,7 +47,10 @@ const onChangeCardColor = (color) => {
             Цвет
           </PopMenuItem>
           <PopMenuItem>
-            <label class="cursor-pointer" for="cover-input">
+            <label
+              class="cursor-pointer"
+              for="cover-input"
+            >
               Файл
             </label>
             <input

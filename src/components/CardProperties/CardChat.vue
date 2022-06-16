@@ -1,11 +1,11 @@
 <script setup>
 import { computed } from 'vue'
 
-import CardChatInterlocutorMessage from '@/components/properties/CardChatInterlocutorMessage.vue'
-import CardChatInterlocutorFileMessage from '@/components/properties/CardChatInterlocutorFileMessage.vue'
-import CardChatSelfMessage from '@/components/properties/CardChatSelfMessage.vue'
-import CardChatSelfFileMessage from '@/components/properties/CardChatSelfFileMessage.vue'
-import CardChatQuoteMessage from '@/components/properties/CardChatQuoteMessage.vue'
+import CardChatInterlocutorMessage from '@/components/CardProperties/CardChatInterlocutorMessage.vue'
+import CardChatInterlocutorFileMessage from '@/components/CardProperties/CardChatInterlocutorFileMessage.vue'
+import CardChatSelfMessage from '@/components/CardProperties/CardChatSelfMessage.vue'
+import CardChatSelfFileMessage from '@/components/CardProperties/CardChatSelfFileMessage.vue'
+import CardChatQuoteMessage from '@/components/CardProperties/CardChatQuoteMessage.vue'
 
 const emit = defineEmits('onQuote, onDeleteMessage', 'onDeleteFile')
 const props = defineProps({

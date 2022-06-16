@@ -908,7 +908,9 @@ export default {
       everyYearRepeat: false,
       showpastefile: false,
       // Модели selectedTask.value.SeriesWeekMon selectedTask.value.SeriesWeekTue selectedTask.value.SeriesWeekWed selectedTask.value.SeriesWeekThu selectedTask.value.SeriesWeekFri selectedTask.value.SeriesWeekSat selectedTask.value.SeriesWeekSun
-      currentAnswerMessageUid: ''
+      currentAnswerMessageUid: '',
+      dragAndDropCapable: false,
+      files: []
     }
   },
   computed: {
@@ -980,6 +982,19 @@ export default {
   methods: {
     print: function (value) {
       console.log(value)
+    },
+    dragStart: function (event) {
+      event.dataTransfer.setData('Text', event.target.id)
+    },
+    dragging: function (event) {
+      document.getElementById('demo').innerHTML =
+        'The p element is being dragged'
+    },
+    allowDrop: function (event) {
+    },
+    drop: function (e) {
+      const item = e.files.clipboardData.items
+      console.log(item)
     },
     editable: function () {
       if (this.cusers.current_user_uid === this.selectedTask.uid_customer) {
@@ -2098,7 +2113,12 @@ export default {
     <div
       id="drop-area"
       class="input-group bg-gray-100 rounded-[10px] mt-2"
-      @dragstart="createTaskFile($event)"
+      v-on:drop="drop(this.$refs.file_attach)"
+      draggable="true"
+      @dragover="allowDrop(this.$refs.file_attach)"
+      @dragstart="dragStart"
+      @drag="dragging"
+
     >
       <span class="input-group-addon input-group-attach dark:bg-gray-800 dark:text-gray-100">
         <div class="example-1">
@@ -2119,6 +2139,7 @@ export default {
             <input
               ref="file_attach"
               type="file"
+              id="file_attach"
               multiple="multiple"
               name="file_attach"
               @change="createTaskFile($event)"
@@ -2133,6 +2154,11 @@ export default {
         placeholder="Напишите сообщение..."
         rows="58"
         @input="onInputTaskMsg"
+        v-on:drop="drop(this.$refs.file_attach)"
+        draggable="true"
+        @dragover="allowDrop(this.$refs.file_attach)"
+        @dragstart="dragStart"
+        @drag="dragging"
         @keydown.enter.exact.prevent="sendTaskMsg()"
         @keydown.enter.shift.exact.prevent="addNewLineTaskMsg"
       />
@@ -2583,4 +2609,12 @@ export default {
 #fileElem {
   display: none;
 } */
+.droptarget {
+  float: left;
+  width: 100px;
+  height: 35px;
+  margin: 15px;
+  padding: 10px;
+  border: 1px solid #aaaaaa;
+}
 </style>

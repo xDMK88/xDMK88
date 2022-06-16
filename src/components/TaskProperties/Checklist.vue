@@ -112,12 +112,10 @@ const updateChecklist = (index) => {
   } else {
     renderedChecklist.checklist[index].text = renderedChecklist.checklist[index].text.replace(/\r?\n|\r/g, '')
     processChecklist()
-    nextTick(() => {
-      renderedChecklist.checklist.push({ checked: false, text: '' })
-    })
-    document.getElementById('check_' + index).blur()
+    renderedChecklist.checklist.push({ checked: false, text: '' })
     console.log(renderedChecklist.checklist.length)
     setTimeout(() => {
+      document.getElementById('check_' + index).blur()
       document.getElementById('check_' + (index + 1)).focus()
     }, 200)
     // addEmptyChecklist(index)

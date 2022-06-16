@@ -2017,7 +2017,7 @@ export default {
       />
       <!-- Comment -->
       <TaskPropsCommentEditor
-        class="mt-3 h-32 scroll-style overflow-auto"
+        class="mt-3 h-32"
         :comment="selectedTask.comment ?? ''"
         :can-edit="canEditComment"
         @endChangeComment="endChangeComment"
@@ -2036,7 +2036,7 @@ export default {
       <TaskPropsChatMessages
         v-if="taskMessages?.length"
         id="content"
-        class="mt-3 h-3/6 scroll-style overflow-auto"
+        class="mt-3 h-3/6"
         :task-messages="taskMessages"
         :current-user-uid="cusers.current_user_uid"
         :show-all-messages="showAllMessages"

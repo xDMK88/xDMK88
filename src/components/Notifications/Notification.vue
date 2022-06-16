@@ -16,14 +16,11 @@ const UID_TO_ACTION = {
 const parentID = computed(() => {
   return navStack.value[0].value[1].items[0].parentID
 })
-const email = computed(() => {
-  return navStack.value[0].value[1].items[0].email
-})
 const name = computed(() => {
   return navStack.value[0].value[1].items[0].name
 })
 
-function redirect () {
+function redirect (notification) {
   store.commit('basic', { key: 'mainSectionState', value: 'greed' })
   store.commit('basic', { key: 'greedPath', value: 'new_delegate' })
   let navElem = {
@@ -35,14 +32,16 @@ function redirect () {
   store.commit('updateStackWithInitValue', navElem)
   store.commit('basic', { key: 'greedSource', value: storeNavigator.value.new_delegate })
 
-  store.dispatch(UID_TO_ACTION[parentID.value], email.value)
+  const email = employees.value[notification.obj.obj.uid_customer] ? employees.value[notification.obj.obj.uid_customer].email : employees.value[notification.obj.obj.uid_creator].email
+
+  store.dispatch(UID_TO_ACTION[parentID.value], email)
   navElem = {
     name: name.value,
     key: 'taskListSource',
-    value: { uid: parentID.value, param: email.value }
+    value: { uid: parentID.value, param: email }
   }
   store.commit('pushIntoNavStack', navElem)
-  store.commit('basic', { key: 'taskListSource', value: { uid: parentID.value, param: email.value } })
+  store.commit('basic', { key: 'taskListSource', value: { uid: parentID.value, param: email } })
   store.commit('basic', { key: 'mainSectionState', value: 'tasks' })
   store.commit(TASK.CLEAN_UP_LOADED_TASKS)
 }
@@ -88,7 +87,7 @@ function redirect () {
                 </div>
                 <div
                   class="ml-3 w-0 flex-1 pt-0.5 hover:cursor-pointer"
-                  @click="close(notification.id), redirect()"
+                  @click="close(notification.id), redirect(notification)"
                 >
                   <p class="font-semibold text-gray-800">
                     {{ notification.title }}

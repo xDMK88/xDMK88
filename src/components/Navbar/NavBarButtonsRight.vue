@@ -91,6 +91,7 @@
 import { PATCH_SETTINGS } from '@/store/actions/navigator'
 import { visitChildren } from '@/store/helpers/functions'
 import * as TASK from '@/store/actions/tasks'
+import { notify } from 'notiwind'
 import * as CARD from '@/store/actions/cards'
 
 import NavBarButtonsBoard from '@/components/Navbar/NavBarButtonsBoard.vue'
@@ -314,6 +315,16 @@ export default {
         this.$store.dispatch(TASK.SEARCH_TASK, this.searchText).then((resp) => {
           console.log('Search Taks', resp)
         })
+      } else {
+        notify(
+          {
+            group: 'api',
+            title: 'Длина запроса должна быть более 3 символов',
+            action: '',
+            text: ''
+          },
+          15000
+        )
       }
     },
     onBlurSearchInput () {

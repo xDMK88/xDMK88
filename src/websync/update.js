@@ -2,6 +2,7 @@ import * as TYPES from '@/websync/types.js'
 import { updateTask } from '@/websync/task.js'
 import { updateCard } from '@/websync/card.js'
 import { updateProject } from '@/websync/project.js'
+import { removeCardMessage } from '@/websync/card_message'
 
 export default function processUpdate (obj) {
   switch (obj.type) {
@@ -51,8 +52,12 @@ export default function processUpdate (obj) {
       updateCard(obj)
       break
     case TYPES.TYPE_OBJECT_CARD_FILE:
+      // use remove card message because we update card message with deleted property setted to 1
+      removeCardMessage(obj)
       break
     case TYPES.TYPE_OBJECT_CARD_MSG:
+      // use remove card message because we update card message with deleted property setted to 1
+      removeCardMessage(obj)
       break
     case TYPES.TYPE_OBJECT_CLIENT:
       break

@@ -2,48 +2,12 @@
 import { useStore } from 'vuex'
 import { computed } from 'vue'
 import Employee from '@/components/Notifications/Employee'
-import * as TASK from '@/store/actions/tasks'
-
 const store = useStore()
 const employees = computed(() => store.state.employees.employees)
-const navStack = computed(() => store.state.navbar.navStack)
-const storeNavigator = computed(() => store.state.navigator.navigator)
-const UID_TO_ACTION = {
-  '169d728b-b88b-462d-bd8e-3ac76806605b': TASK.DELEGATED_TASKS_REQUEST,
-  '511d871c-c5e9-43f0-8b4c-e8c447e1a823': TASK.DELEGATED_TO_USER_TASKS_REQUEST
-}
-
-const parentID = computed(() => {
-  return navStack.value[0].value[1].items[0].parentID
-})
-const name = computed(() => {
-  return navStack.value[0].value[1].items[0].name
-})
 
 function redirect (notification) {
-  store.commit('basic', { key: 'mainSectionState', value: 'greed' })
-  store.commit('basic', { key: 'greedPath', value: 'new_delegate' })
-  let navElem = {
-    name: 'Поручения',
-    key: 'greedSource',
-    greedPath: 'new_delegate',
-    value: storeNavigator.value.new_delegate
-  }
-  store.commit('updateStackWithInitValue', navElem)
-  store.commit('basic', { key: 'greedSource', value: storeNavigator.value.new_delegate })
-
-  const email = employees.value[notification.obj.obj.uid_customer] ? employees.value[notification.obj.obj.uid_customer].email : employees.value[notification.obj.obj.uid_creator].email
-
-  store.dispatch(UID_TO_ACTION[parentID.value], email)
-  navElem = {
-    name: name.value,
-    key: 'taskListSource',
-    value: { uid: parentID.value, param: email }
-  }
-  store.commit('pushIntoNavStack', navElem)
-  store.commit('basic', { key: 'taskListSource', value: { uid: parentID.value, param: email } })
-  store.commit('basic', { key: 'mainSectionState', value: 'tasks' })
-  store.commit(TASK.CLEAN_UP_LOADED_TASKS)
+  const link = `${window.location.origin}/task/${notification.obj.obj.uid}`
+  window.open(link)
 }
 </script>
 <template>

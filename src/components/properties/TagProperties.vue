@@ -1,120 +1,198 @@
-<script setup>
-import { computed, ref, watch, onMounted } from 'vue'
-import { useStore } from 'vuex'
-import ColorPicker from '@/components/properties/ColorPicker.vue'
-
-import ModalBoxConfirm from '@/components/modals/ModalBoxConfirm.vue'
-
-import {
-  CREATE_TAG_REQUEST,
-  UPDATE_TAG_REQUEST,
-  REMOVE_TAG_REQUEST
-} from '@/store/actions/tasks'
-import { NAVIGATOR_PUSH_TAG, NAVIGATOR_REMOVE_TAG } from '@/store/actions/navigator'
-
-const store = useStore()
-const selectedTag = computed(() => store.state.tasks.selectedTag)
-const showConfirm = ref(false)
-const hasChanged = ref(false)
-
-function uuidv4 () {
-  return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
-    (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
-  )
-}
-
-watch(selectedTag, () => {
-  hasChanged.value = false
-})
-
-onMounted(() => {
-  hasChanged.value = false
-})
-
-const createOrUpdateTag = (tag) => {
-  if (!tag.uid) {
-    tag.uid = uuidv4()
-    // TODO: should not be hardcoded
-    tag.global_property_uid = '00a5b3de-9474-404d-b3ba-83f488ac6d30'
-    store.dispatch(CREATE_TAG_REQUEST, tag)
-      .then(() => {
-        hasChanged.value = false
-        store.dispatch('asidePropertiesToggle', false)
-        // store.commit(PUSH_PROJECT, [tag])
-        store.commit(NAVIGATOR_PUSH_TAG, [tag])
-      })
-  } else {
-    store.dispatch(UPDATE_TAG_REQUEST, tag)
-      .then(() => {
-        hasChanged.value = false
-        store.dispatch('asidePropertiesToggle', false)
-      })
-  }
-}
-
-const removeTag = (tag) => {
-  store.dispatch(REMOVE_TAG_REQUEST, tag.uid)
-    .then(() => {
-      store.dispatch('asidePropertiesToggle', false)
-      store.commit(NAVIGATOR_REMOVE_TAG, tag)
-    })
-}
-
-</script>
-
 <template>
-  <modal-box-confirm
-    v-model="showConfirm"
-    button="warning"
-    has-button
-    has-cancel
-    button-label="Delete"
-    @confirm="removeTag(selectedTag)"
-  >
-    <p class="text-center">
-      Вы действительно хотите удалить метку "<strong>{{ selectedTag.name }}</strong>"?
-    </p>
-  </modal-box-confirm>
   <div>
-    <div>
-      <p class="text-sm text-gray-500 dark:text-gray-200">
-        Свойства метки
-      </p>
-      <p
-        class="mt-4"
-      >
-        Название
-      </p>
-      <input
-        v-model="selectedTag.name"
-        type="text"
-        placeholder="Название проекта"
-        class="mt-2 p-3 rounded-xl bg-gray-100 font-bold text-gray-700 w-full border-none ring-0 outline-none"
-        @input="hasChanged = true"
-      >
+    <ModalBoxDelete
+      v-show="showConfirm"
+      title="Удалить метку"
+      :text="`Вы действительно хотите удалить метку ${selectedTagName}?`"
+      @cancel="showConfirm = false"
+      @yes="removeTag"
+    />
+    <div class="flex justify-between items-center">
+      <PopMenu v-if="isCanDelete">
+        <PropsButtonMenu />
+        <template #menu>
+          <PopMenuItem
+            icon="delete"
+            @click="showConfirm = true"
+          >
+            Удалить
+          </PopMenuItem>
+        </template>
+      </PopMenu>
+      <div v-else />
+      <PropsButtonClose
+        @click="closeProperties"
+      />
+    </div>
+    <input
+      v-if="isCanEdit"
+      v-model="currName"
+      type="text"
+      placeholder="Наименование"
+      class="mt-[25px] p-0 font-roboto font-bold font-[18px] leading-[21px] text-[#424242] w-full border-none focus:ring-0 focus:outline-none"
+      @blur="changeTagName"
+    >
+    <div
+      v-else
+      class="mt-[25px] w-full font-roboto font-bold font-[18px] leading-[21px] text-[#424242] overflow-hidden text-ellipsis whitespace-nowrap"
+    >
+      {{ currName }}
+    </div>
+    <div
+      class="mt-[30px] font-roboto font-[16px] leading-[19px] font-medium text-[#4c4c4d]"
+    >
+      Цвет
+    </div>
+    <div class="w-full mt-[15px] gap-[4px] flex flex-col">
       <div
-        class="mt-8"
+        v-for="(clrs, index) in defaultColors"
+        :key="index"
+        class="flex gap-[4px]"
       >
-        <ColorPicker
-          v-model="selectedTag.back_color"
-          :update="() => hasChanged = true "
-          :label="'Цвет метки'"
+        <PropsColorBoxItem
+          v-for="clr in clrs"
+          :key="clr.color"
+          :class="{'cursor-pointer': isCanEdit}"
+          :color="clr.color"
+          :selected="clr.selected"
+          @select="changeTagColor"
         />
       </div>
-      <button
-        class="w-full bg-gray-100 rounded-xl mt-4 p-3 text-gray-700 font-bold hover:bg-gray-200"
-        :class="{ 'bg-orange-400 hover:bg-orange-500': hasChanged }"
-        @click="createOrUpdateTag(selectedTag)"
-      >
-        {{ selectedTag.uid ? 'Сохранить' : 'Создать' }}
-      </button>
-      <button
-        v-if="selectedTag.uid"
-        class="w-full bg-red-600 rounded-xl mt-4 p-3 text-white font-bold hover:bg-red-800"
-        @click="showConfirm = true"
-      >
-        Удалить
-      </button>
     </div>
   </div>
 </template>
+
+<script>
+import ModalBoxDelete from '@/components/Common/ModalBoxDelete.vue'
+import PropsColorBoxItem from '@/components/Common/PropsColorBoxItem.vue'
+import PopMenu from '@/components/modals/PopMenu.vue'
+import PopMenuItem from '@/components/modals/PopMenuItem.vue'
+import PropsButtonClose from '@/components/Common/PropsButtonClose.vue'
+import PropsButtonMenu from '@/components/Common/PropsButtonMenu.vue'
+
+import { UPDATE_TAG_REQUEST, REMOVE_TAG_REQUEST } from '@/store/actions/tasks'
+import { NAVIGATOR_REMOVE_TAG } from '@/store/actions/navigator'
+
+export default {
+  components: {
+    ModalBoxDelete,
+    PropsColorBoxItem,
+    PopMenu,
+    PopMenuItem,
+    PropsButtonMenu,
+    PropsButtonClose
+  },
+  data () {
+    return {
+      showConfirm: false,
+      currName: ''
+    }
+  },
+  computed: {
+    defaultColors () {
+      const allColors = [
+        '',
+        '#7fc870',
+        '#69c494',
+        '#dff2e1',
+        '#ffaf40',
+        '#ffd7a0',
+        '#5ba4cf',
+        '#9eedff',
+        '#b381b3',
+        '#e5e5e5',
+        '#ddd1c2',
+        '#ef7665',
+        '#ffc6b5',
+        '#ff8ed4',
+        '#f5dbf5',
+        '#6a7077',
+        '#f6dd29',
+        '#f5f547'
+      ]
+      // добавляем в конец выбранный цвет если его тут нет
+      const usedColor = this.selectedTagColor.toLowerCase()
+      if (!allColors.includes(usedColor)) {
+        allColors.splice(allColors.length - 1, 1, usedColor)
+      }
+      const colors = allColors.map(color => ({ color: color, selected: color === usedColor }))
+      // разбираем на ряды по 9
+      const rowLength = 9
+      const arrColors = []
+      while (colors.length) arrColors.push(colors.splice(0, rowLength))
+      return arrColors
+    },
+    selectedTag () {
+      return this.$store.state.tasks.selectedTag
+    },
+    selectedTagUid () {
+      return this.selectedTag?.uid || ''
+    },
+    selectedTagName () {
+      return this.selectedTag?.name || ''
+    },
+    selectedTagColor () {
+      const backColor = this.selectedTag?.back_color
+      if (backColor && backColor !== '#A998B6') return backColor
+      return ''
+    },
+    isCanDelete () {
+      const user = this.$store.state.user.user
+      return this.selectedTag?.email_creator === user.current_user_email
+    },
+    isCanEdit () {
+      return this.isCanDelete
+    }
+  },
+  watch: {
+    selectedTagName: {
+      immediate: true,
+      handler: function (val) {
+        this.currName = val
+      }
+    }
+  },
+  methods: {
+    print (msg, param) {
+      console.log(msg, param)
+    },
+    removeTag () {
+      this.showConfirm = false
+
+      this.$store.dispatch(REMOVE_TAG_REQUEST, this.selectedTagUid)
+        .then((resp) => {
+          console.log('removeTag', resp)
+          //
+          this.$store.dispatch('asidePropertiesToggle', false)
+          this.$store.commit(NAVIGATOR_REMOVE_TAG, this.selectedTag)
+        })
+    },
+    closeProperties () {
+      this.$store.dispatch('asidePropertiesToggle', false)
+    },
+    changeTagName () {
+      const title = this.currName.trim()
+      if (this.isCanEdit && title && this.selectedTagName !== title) {
+        this.selectedTag.name = title
+        this.$store.dispatch(UPDATE_TAG_REQUEST, this.selectedTag)
+          .then((resp) => {
+            console.log('changeColorName', resp)
+          })
+      }
+    },
+    changeTagColor (color) {
+      if (this.isCanEdit && this.selectedTagColor.toLowerCase() !== color) {
+        this.selectedTag.back_color = color || '#A998B6'
+        this.$store.dispatch(UPDATE_TAG_REQUEST, this.selectedTag)
+          .then((resp) => {
+            console.log('changeTagColor', resp, color)
+          })
+      }
+    }
+  }
+}
+</script>
+
+<style>
+
+</style>

@@ -1,38 +1,20 @@
-<script setup>
-import { ref } from 'vue'
-import PopMenu from '@/components/modals/PopMenu.vue'
-import PopMenuItem from '@/components/modals/PopMenuItem.vue'
-import CardModalBoxColor from '@/components/CardProperties/CardModalBoxColor.vue'
-const emit = defineEmits(['onChangeCardColor', 'onChangeCardCover', 'onChangeCardClearCover'])
-const props = defineProps({
-  coverColor: String,
-  coverLink: String,
-  canEdit: Boolean
-})
-const showColorCard = ref(false)
-const onChangeCardColor = (color) => {
-  showColorCard.value = false
-  emit('onChangeCardColor', color)
-}
-</script>
-
 <template>
   <CardModalBoxColor
     v-show="showColorCard"
-    :color=" props.coverColor"
+    :color="coverColor"
     @cancel="showColorCard = false"
     @changeColor="onChangeCardColor"
   />
   <div
     class="border-[1px] border-[rgba(0, 0, 0, 0.1) rounded-[8px] min-h-[93px] max-h-[93px] flex items-center justify-center relative"
-    :style="{ 'background-color': props.coverColor ? props.coverColor : '#F4F5F7' }"
+    :style="{ 'background-color': coverColor ? coverColor : '#F4F5F7' }"
   >
     <img
       :src="coverLink"
       class="max-h-[91px]"
     >
     <div
-      v-if="props.canEdit"
+      v-if="canEdit"
       class="absolute bottom-[10px] right-[10px]"
     >
       <PopMenu>
@@ -46,8 +28,9 @@ const onChangeCardColor = (color) => {
           <PopMenuItem @click="showColorCard = true">
             Цвет
           </PopMenuItem>
-          <PopMenuItem>
+          <PopMenuItem @click="onSelectFile">
             <label
+              ref="coverInputLabel"
               class="cursor-pointer"
               for="cover-input"
             >
@@ -59,10 +42,10 @@ const onChangeCardColor = (color) => {
               accept="image/png, image/gif, image/jpeg"
               style="display: none;"
               name="cover-input"
-              @change="$emit('onChangeCardCover', $event)"
+              @change="onChangeCardCover"
             >
           </PopMenuItem>
-          <PopMenuItem @click="$emit('onChangeCardClearCover', $event)">
+          <PopMenuItem @click="onChangeCardClearCover">
             Сбросить
           </PopMenuItem>
         </template>
@@ -70,3 +53,46 @@ const onChangeCardColor = (color) => {
     </div>
   </div>
 </template>
+
+<script>
+import PopMenu from '@/components/modals/PopMenu.vue'
+import PopMenuItem from '@/components/modals/PopMenuItem.vue'
+import CardModalBoxColor from '@/components/CardProperties/CardModalBoxColor.vue'
+
+export default {
+  components: {
+    CardModalBoxColor,
+    PopMenu,
+    PopMenuItem
+  },
+  props: {
+    coverColor: String,
+    coverLink: String,
+    canEdit: Boolean
+  },
+  emits: ['onChangeCardColor', 'onChangeCardClearCover', 'onChangeCardCover'],
+  data () {
+    return {
+      showColorCard: false
+    }
+  },
+  methods: {
+    onChangeCardColor (color) {
+      this.$emit('onChangeCardColor', color)
+    },
+    onChangeCardClearCover (e) {
+      this.$emit('onChangeCardClearCover', e)
+    },
+    onChangeCardCover (e) {
+      this.$emit('onChangeCardCover', e)
+    },
+    onSelectFile () {
+      this.$refs.coverInputLabel.click()
+    }
+  }
+}
+</script>
+
+<style scoped>
+
+</style>

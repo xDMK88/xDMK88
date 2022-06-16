@@ -276,7 +276,7 @@ const removeCard = () => {
     @cancel="showChangeCardBudget = false"
     @save="changeCardBudget"
   />
-  <div class="relative min-h-screen">
+  <div class="relative min-h-full">
     <!-- Close icon -->
     <div class="flex items-center justify-between mb-[10px]">
       <card-options

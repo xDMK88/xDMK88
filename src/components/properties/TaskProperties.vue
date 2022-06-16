@@ -3,7 +3,7 @@
 import Popper from 'vue3-popper'
 import { computed, ref, watch } from 'vue'
 import { useStore } from 'vuex'
-import Checklist from '@/components/properties/Checklist.vue'
+import Checklist from '@/components/TaskProperties/Checklist.vue'
 import close from '@/icons/close.js'
 import { CREATE_MESSAGE_REQUEST, DELETE_MESSAGE_REQUEST } from '@/store/actions/taskmessages'
 import { CREATE_FILES_REQUEST, DELETE_FILE_REQUEST } from '@/store/actions/taskfiles'
@@ -1269,7 +1269,10 @@ export default {
       </span>
     </p>
   </modal-box-confirm>
-  <div class="break-words" @mousedown="selectedFalse">
+  <div
+    class="break-words"
+    @mousedown="selectedFalse"
+  >
     <div
       id="generalscroll"
       class="column-resize"
@@ -1337,7 +1340,7 @@ export default {
           :current-user-uid="cusers.current_user_uid"
           :access-emails="selectedTask.emails ? selectedTask.emails.split('..') : []"
           :can-edit="selectedTask.type === 1 || selectedTask.type === 2"
-          :isCustomer="selectedTask.uid_customer === user.current_user_uid"
+          :is-customer="selectedTask.uid_customer === user.current_user_uid"
           @changeAccess="onChangeAccess"
         />
         <!-- Кнопка Выбрать дату -->
@@ -2092,7 +2095,11 @@ export default {
         </div>
       </div>
     </div>
-    <div class="input-group bg-gray-100 rounded-[10px] mt-2" @dragstart="createTaskFile($event)" id="drop-area">
+    <div
+      id="drop-area"
+      class="input-group bg-gray-100 rounded-[10px] mt-2"
+      @dragstart="createTaskFile($event)"
+    >
       <span class="input-group-addon input-group-attach dark:bg-gray-800 dark:text-gray-100">
         <div class="example-1">
           <label class="label">

@@ -3,7 +3,7 @@
 import Popper from 'vue3-popper'
 import { computed, ref, watch } from 'vue'
 import { useStore } from 'vuex'
-import Checklist from '@/components/properties/Checklist.vue'
+import Checklist from '@/components/TaskProperties/Checklist.vue'
 import close from '@/icons/close.js'
 import { CREATE_MESSAGE_REQUEST, DELETE_MESSAGE_REQUEST } from '@/store/actions/taskmessages'
 import { CREATE_FILES_REQUEST, DELETE_FILE_REQUEST } from '@/store/actions/taskfiles'
@@ -1269,7 +1269,10 @@ export default {
       </span>
     </p>
   </modal-box-confirm>
-  <div class="break-words" @mousedown="selectedFalse">
+  <div
+    class="break-words"
+    @mousedown="selectedFalse"
+  >
     <div
       id="generalscroll"
       class="column-resize"
@@ -1337,7 +1340,7 @@ export default {
           :current-user-uid="cusers.current_user_uid"
           :access-emails="selectedTask.emails ? selectedTask.emails.split('..') : []"
           :can-edit="selectedTask.type === 1 || selectedTask.type === 2"
-          :isCustomer="selectedTask.uid_customer === user.current_user_uid"
+          :is-customer="selectedTask.uid_customer === user.current_user_uid"
           @changeAccess="onChangeAccess"
         />
         <!-- Кнопка Выбрать дату -->
@@ -2017,7 +2020,7 @@ export default {
       />
       <!-- Comment -->
       <TaskPropsCommentEditor
-        class="mt-3 h-32 scroll-style overflow-auto"
+        class="mt-3 h-32"
         :comment="selectedTask.comment ?? ''"
         :can-edit="canEditComment"
         @endChangeComment="endChangeComment"
@@ -2036,7 +2039,7 @@ export default {
       <TaskPropsChatMessages
         v-if="taskMessages?.length"
         id="content"
-        class="mt-3 h-3/6 scroll-style overflow-auto"
+        class="mt-3 h-3/6"
         :task-messages="taskMessages"
         :current-user-uid="cusers.current_user_uid"
         :show-all-messages="showAllMessages"
@@ -2092,7 +2095,11 @@ export default {
         </div>
       </div>
     </div>
-    <div class="input-group bg-gray-100 rounded-[10px] mt-2">
+    <div
+      id="drop-area"
+      class="input-group bg-gray-100 rounded-[10px] mt-2"
+      @dragstart="createTaskFile($event)"
+    >
       <span class="input-group-addon input-group-attach dark:bg-gray-800 dark:text-gray-100">
         <div class="example-1">
           <label class="label">
@@ -2539,4 +2546,41 @@ export default {
 .width100without20 {
   width: calc(100% - 20px);
 }
+/*  #drop-area {
+  border: 2px dashed #ccc;
+  border-radius: 20px;
+  width: 480px;
+  font-family: sans-serif;
+  margin: 100px auto;
+  padding: 20px;
+}
+#drop-area.highlight {
+  border-color: purple;
+}
+.my-form {
+  margin-bottom: 10px;
+}
+#gallery {
+  margin-top: 10px;
+}
+#gallery img {
+  width: 150px;
+  margin-bottom: 10px;
+  margin-right: 10px;
+  vertical-align: middle;
+}
+.button {
+  display: inline-block;
+  padding: 10px;
+  background: #ccc;
+  cursor: pointer;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+.button:hover {
+  background: #ddd;
+}
+#fileElem {
+  display: none;
+} */
 </style>

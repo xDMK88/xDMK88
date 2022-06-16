@@ -1,12 +1,12 @@
 <script setup>
 import { computed } from 'vue'
 
-import ImagePreloader from '@/components/properties/ImagePreloader.vue'
-import AudioPreloader from '@/components/properties/AudioPreloader.vue'
-import DocPreloader from '@/components/properties/DocPreloader.vue'
-import MoviePreloader from '@/components/properties/MoviePreloader.vue'
-import FilePreloader from '@/components/properties/FilePreloader.vue'
-import CardChatDeletedMessageContent from '@/components/properties/CardChatDeletedMessageContent.vue'
+import ImagePreloader from '@/components/CardProperties/ImagePreloader.vue'
+import AudioPreloader from '@/components/CardProperties/AudioPreloader.vue'
+import DocPreloader from '@/components/CardProperties/DocPreloader.vue'
+import MoviePreloader from '@/components/CardProperties/MoviePreloader.vue'
+import FilePreloader from '@/components/CardProperties/FilePreloader.vue'
+import CardChatDeletedMessageContent from '@/components/CardProperties/CardChatDeletedMessageContent.vue'
 
 const emit = defineEmits(['onQuoteMessage'])
 const props = defineProps({
@@ -52,7 +52,7 @@ const FileIsAudio = computed(() => ['mp3', 'wav', 'm4a'].includes(fileExtension.
   <div
     class="bg-[#FCEBEB] py-[12px] px-[12px] rounded-t-[12px] rounded-br-[12px] mb-[5px] float-left max-w-[300px] group"
   >
-    <card-chat-deleted-message-content v-if="props.message.deleted"></card-chat-deleted-message-content>
+    <card-chat-deleted-message-content v-if="props.message.deleted" />
     <image-preloader
       v-else-if="FileIsImage"
       :file-uid="props.message.uid"

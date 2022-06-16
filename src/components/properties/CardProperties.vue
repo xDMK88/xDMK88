@@ -1,22 +1,38 @@
 <script setup>
 import { computed, ref, nextTick, watch } from 'vue'
 import { useStore } from 'vuex'
-import { CREATE_MESSAGE_REQUEST, DELETE_MESSAGE_REQUEST, CREATE_FILES_REQUEST, DELETE_FILE_REQUEST, ADD_MESSAGE_LOCALLY, REMOVE_MESSAGE_LOCALLY } from '@/store/actions/cardfilesandmessages'
-import { CHANGE_CARD_RESPONSIBLE_USER, CHANGE_CARD_BUDGET, CHANGE_CARD_NAME, CHANGE_CARD_COMMENT, CHANGE_CARD_COLOR, CHANGE_CARD_COVER, CHANGE_CARD_CLEAR_COVER, DELETE_CARD } from '@/store/actions/cards'
+import {
+  CREATE_MESSAGE_REQUEST,
+  DELETE_MESSAGE_REQUEST,
+  CREATE_FILES_REQUEST,
+  DELETE_FILE_REQUEST,
+  ADD_MESSAGE_LOCALLY,
+  REMOVE_MESSAGE_LOCALLY
+} from '@/store/actions/cardfilesandmessages'
+import {
+  CHANGE_CARD_RESPONSIBLE_USER,
+  CHANGE_CARD_BUDGET,
+  CHANGE_CARD_NAME,
+  CHANGE_CARD_COMMENT,
+  CHANGE_CARD_COLOR,
+  CHANGE_CARD_COVER,
+  CHANGE_CARD_CLEAR_COVER,
+  DELETE_CARD
+} from '@/store/actions/cards'
 
-import CardName from '@/components/properties/CardName.vue'
-import CardCover from '@/components/properties/CardCover.vue'
-import CardChat from '@/components/properties/CardChat.vue'
-import CardResponsibleUser from '@/components/properties/CardResponsibleUser.vue'
-import CardOptions from '@/components/properties/CardOptions.vue'
-import CardBudget from '@/components/properties/CardBudget.vue'
-import CardMessageInput from '@/components/properties/CardMessageInput.vue'
+import CardName from '@/components/CardProperties/CardName.vue'
+import CardCover from '@/components/CardProperties/CardCover.vue'
+import CardChat from '@/components/CardProperties/CardChat.vue'
+import CardResponsibleUser from '@/components/CardProperties/CardResponsibleUser.vue'
+import CardOptions from '@/components/CardProperties/CardOptions.vue'
+import CardBudget from '@/components/CardProperties/CardBudget.vue'
+import CardMessageInput from '@/components/CardProperties/CardMessageInput.vue'
 import Icon from '@/components/Icon.vue'
 import close from '@/icons/close.js'
 import TaskPropsCommentEditor from '@/components/TaskProperties/TaskPropsCommentEditor.vue'
 import BoardModalBoxDelete from '@/components/Board/BoardModalBoxDelete.vue'
-import CardModalBoxBudget from '@/components/properties/CardModalBoxBudget.vue'
-import CardMessageQuoteUnderInput from '@/components/properties/CardMessageQuoteUnderInput.vue'
+import CardModalBoxBudget from '@/components/CardProperties/CardModalBoxBudget.vue'
+import CardMessageQuoteUnderInput from '@/components/CardProperties/CardMessageQuoteUnderInput.vue'
 
 const store = useStore()
 const selectedCard = computed(() => store.state.cards.selectedCard)
@@ -64,9 +80,14 @@ const focusMessageInput = () => {
 }
 
 const changeResponsible = (userEmail) => {
-  store.dispatch(CHANGE_CARD_RESPONSIBLE_USER, { cardUid: selectedCard.value.uid, email: userEmail }).then(() => {
-    selectedCard.value.user = userEmail
-  })
+  store
+    .dispatch(CHANGE_CARD_RESPONSIBLE_USER, {
+      cardUid: selectedCard.value.uid,
+      email: userEmail
+    })
+    .then(() => {
+      selectedCard.value.user = userEmail
+    })
 }
 
 const changeName = (arg) => {
@@ -87,14 +108,19 @@ const closeProperties = () => {
 }
 
 function uuidv4 () {
-  return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
-    (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+  return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, (c) =>
+    (
+      c ^
+      (crypto.getRandomValues(new Uint8Array(1))[0] & (15 >> (c / 4)))
+    ).toString(16)
   )
 }
 
 const cardMessageInputValue = ref('')
 
-const canEdit = computed(() => boards.value[selectedCard.value.uid_board].type_access !== 0)
+const canEdit = computed(
+  () => boards.value[selectedCard.value.uid_board].type_access !== 0
+)
 const endChangeComment = (text) => {
   const data = { cardUid: selectedCard.value.uid, comment: text }
   store.dispatch(CHANGE_CARD_COMMENT, data)
@@ -154,30 +180,45 @@ const createCardMessage = () => {
 }
 
 const changeCardClearCover = () => {
-  store.dispatch(CHANGE_CARD_CLEAR_COVER, { cardUid: selectedCard.value.uid }).then((resp) => {
-    selectedCard.value.cover_color = '#A998B6'
-    selectedCard.value.cover_link = ''
-    // Replacing old cover file with new cover file
-    for (const message of resp.data.deletefiles) store.commit(REMOVE_MESSAGE_LOCALLY, message)
-    // Here I use nextTick because if we instantly start adding new files, then onMounted hook won't be triggered, MAGIC but works
-    nextTick(() => {
-      for (const message of resp.data.newfiles) store.commit(ADD_MESSAGE_LOCALLY, message)
+  store
+    .dispatch(CHANGE_CARD_CLEAR_COVER, { cardUid: selectedCard.value.uid })
+    .then((resp) => {
+      selectedCard.value.cover_color = '#A998B6'
+      selectedCard.value.cover_link = ''
+      // Replacing old cover file with new cover file
+      for (const message of resp.data.deletefiles) {
+        store.commit(REMOVE_MESSAGE_LOCALLY, message)
+      }
+      // Here I use nextTick because if we instantly start adding new files, then onMounted hook won't be triggered, MAGIC but works
+      nextTick(() => {
+        for (const message of resp.data.newfiles) {
+          store.commit(ADD_MESSAGE_LOCALLY, message)
+        }
+      })
     })
-  })
 }
 
 const changeCardColor = (color) => {
   if (color) {
-    store.dispatch(CHANGE_CARD_COLOR, { cardUid: selectedCard.value.uid, color: color }).then((resp) => {
-      selectedCard.value.cover_color = color
-      selectedCard.value.cover_link = ''
-      // Replacing old cover file with new cover file
-      for (const message of resp.data.deletefiles) store.commit(REMOVE_MESSAGE_LOCALLY, message)
-      // Here I use nextTick because if we instantly start adding new files, then onMounted hook won't be triggered, MAGIC but works
-      nextTick(() => {
-        for (const message of resp.data.newfiles) store.commit(ADD_MESSAGE_LOCALLY, message)
+    store
+      .dispatch(CHANGE_CARD_COLOR, {
+        cardUid: selectedCard.value.uid,
+        color: color
       })
-    })
+      .then((resp) => {
+        selectedCard.value.cover_color = color
+        selectedCard.value.cover_link = ''
+        // Replacing old cover file with new cover file
+        for (const message of resp.data.deletefiles) {
+          store.commit(REMOVE_MESSAGE_LOCALLY, message)
+        }
+        // Here I use nextTick because if we instantly start adding new files, then onMounted hook won't be triggered, MAGIC but works
+        nextTick(() => {
+          for (const message of resp.data.newfiles) {
+            store.commit(ADD_MESSAGE_LOCALLY, message)
+          }
+        })
+      })
   } else {
     changeCardClearCover()
   }
@@ -199,17 +240,23 @@ const changeCardCover = (event) => {
     selectedCard.value.cover_color = resp.data.card.cover_color
     selectedCard.value.cover_link = resp.data.card.cover_link
     // Replacing old cover file with new cover file
-    for (const message of resp.data.deletefiles) store.commit(REMOVE_MESSAGE_LOCALLY, message)
+    for (const message of resp.data.deletefiles) {
+      store.commit(REMOVE_MESSAGE_LOCALLY, message)
+    }
     // Here I use nextTick because if we instantly start adding new files, then onMounted hook won't be triggered, MAGIC but works
     nextTick(() => {
-      for (const message of resp.data.newfiles) store.commit(ADD_MESSAGE_LOCALLY, message)
+      for (const message of resp.data.newfiles) {
+        store.commit(ADD_MESSAGE_LOCALLY, message)
+      }
     })
   })
 }
 
 const showDeleteCard = ref(false)
 const removeCard = () => {
-  store.dispatch(DELETE_CARD, { uid: selectedCard.value.uid }).then(() => closeProperties())
+  store
+    .dispatch(DELETE_CARD, { uid: selectedCard.value.uid })
+    .then(() => closeProperties())
 }
 </script>
 
@@ -229,7 +276,7 @@ const removeCard = () => {
     @cancel="showChangeCardBudget = false"
     @save="changeCardBudget"
   />
-  <div class="relative min-h-screen">
+  <div class="relative min-h-full">
     <!-- Close icon -->
     <div class="flex items-center justify-between mb-[10px]">
       <card-options
@@ -251,7 +298,9 @@ const removeCard = () => {
     </div>
 
     <card-cover
-      :cover-color="selectedCard.cover_color === '#A998B6' ? '' : selectedCard.cover_color"
+      :cover-color="
+        selectedCard.cover_color === '#A998B6' ? '' : selectedCard.cover_color
+      "
       :cover-link="selectedCard.cover_link"
       :can-edit="canEdit"
       @onChangeCardColor="changeCardColor"
@@ -281,7 +330,7 @@ const removeCard = () => {
     </div>
 
     <TaskPropsCommentEditor
-      class="mt-3 h-32 scroll-style overflow-auto"
+      class="mt-3 h-32 break-words"
       :comment="selectedCard.comment ?? ''"
       :can-edit="canEdit"
       @endChangeComment="endChangeComment"

@@ -4,7 +4,7 @@ import { useStore } from 'vuex'
 import { FILE_REQUEST } from '@/store/actions/cardfilesandmessages'
 import { writeCache } from '@/store/helpers/functions'
 
-import CardChatMessageOptionsPopMenu from '@/components/properties/CardChatMessageOptionsPopMenu.vue'
+import CardChatMessageOptionsPopMenu from '@/components/CardProperties/CardChatMessageOptionsPopMenu.vue'
 
 defineEmits(['onQuoteMessage', 'onDeleteMessage'])
 const props = defineProps({
@@ -18,71 +18,44 @@ const props = defineProps({
     default: true
   }
 })
-
 const store = useStore()
-const imageLoaded = ref(false)
-const imageSrc = ref('')
+const audioLoaded = ref(false)
+const audioSrc = ref('')
 
-const isFileInCache = () => {
-  return !!localStorage.getItem(props.fileUid)
-}
-
-const b64toBlob = (base64) => fetch(base64).then(res => res.blob())
-
-const loadImageFromInternet = () => {
+const loadAudioFromInternet = () => {
   store.dispatch(FILE_REQUEST, props.fileUid).then((resp) => {
-    const imageBlob = new Blob([resp.data], { type: 'image/' + props.fileExtension })
+    const imageBlob = new Blob([resp.data], { type: 'audio/' + props.fileExtension })
     writeCache(props.fileUid, imageBlob)
     const urlCreator = window.URL || window.webkitURL
     const imageURL = urlCreator.createObjectURL(imageBlob)
-    imageSrc.value = imageURL
-    imageLoaded.value = true
-  })
-}
-
-const loadImageFromCache = () => {
-  const cachedImageBase64 = localStorage.getItem(props.fileUid)
-  b64toBlob(cachedImageBase64).then(imageBlob => {
-    const urlCreator = window.URL || window.webkitURL
-    const imageURL = urlCreator.createObjectURL(imageBlob)
-    imageSrc.value = imageURL
-    imageLoaded.value = true
+    audioSrc.value = imageURL
+    audioLoaded.value = true
   })
 }
 
 onMounted(() => {
-  if (isFileInCache()) {
-    loadImageFromCache()
-  } else {
-    loadImageFromInternet()
-  }
+  loadAudioFromInternet()
 })
-
 </script>
 <template>
-  <div
-    v-if="!imageLoaded"
-    class="rounded-[6px] w-[250px] h-[230px] animate-pulse"
-    :style="{ 'background': props.preloaderColor }"
-  />
-  <a
-    :href="imageSrc"
-    target="_blank"
-  >
-    <img
-      v-if="imageLoaded"
-      class="rounded-[8px]"
-      :src="imageSrc"
-      alt="chat image "
-    >
-  </a>
-  <a
-    :href="imageSrc"
-    target="_blank"
-    class="text-[#7E7E80] font-[500] leading-[15px] text-[13px] text-right mt-[8px]"
-  >
+  <div v-if="!audioLoaded">
+    Audio is loading
+  </div>
+  <div v-if="audioLoaded">
+    <figure>
+      <audio
+        class="w-full"
+        controls
+        :src="audioSrc"
+      >
+        Your browser does not support the
+        <code>audio</code> element.
+      </audio>
+    </figure>
+  </div>
+  <p class="text-[#7E7E80] font-[500] leading-[15px] text-[13px] text-right mt-[8px]">
     {{ props.fileName }}
-  </a>
+  </p>
   <p
     class="leading-[13px] text-[11px] font-[700] text-right mt-[8px] group-hover:hidden min-w-[30px]"
     style="color: rgba(0, 0, 0, 0.4);"

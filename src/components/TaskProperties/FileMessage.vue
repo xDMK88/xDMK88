@@ -2,7 +2,7 @@
 import { ref, nextTick } from 'vue'
 import { useStore } from 'vuex'
 import { GETFILES } from '@/store/actions/taskfiles'
-import ChatLoader from '@/components/properties/ChatLoader.vue'
+import ChatLoader from '@/components/CardProperties/ChatLoader.vue'
 import { writeCache } from '@/store/helpers/functions'
 // use the component
 const store = useStore()

@@ -62,7 +62,7 @@
 
 1. Обязательно должны быть установлены расширения [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) и [Prettier - Code formatter](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)
 
-1. Ставим чтобы при сохранении vue файлов запускался lint-fix (прописать в настройках):
+2. Ставим чтобы при сохранении vue файлов запускался lint-fix (прописать в настройках):
     ```json
     "[vue]": {
         "editor.codeActionsOnSave": [

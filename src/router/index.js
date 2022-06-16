@@ -28,7 +28,7 @@ const ifRouteNotExists = (to, from, next) => {
 const routes = [
   {
     meta: {
-      title: 'Application'
+      // title: 'Application'
     },
     path: '/',
     name: 'home',
@@ -37,7 +37,7 @@ const routes = [
   },
   {
     meta: {
-      title: 'Application'
+      // title: 'Application'
     },
     path: '/task/:id',
     name: 'task',
@@ -46,7 +46,7 @@ const routes = [
   },
   {
     meta: {
-      title: 'Application'
+      // title: 'Application'
     },
     path: '/project/:id',
     name: 'project',
@@ -55,7 +55,7 @@ const routes = [
   },
   {
     meta: {
-      title: 'Application'
+      // title: 'Application'
     },
     path: '/board/:id',
     name: 'board',

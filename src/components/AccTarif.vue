@@ -11,12 +11,12 @@ const user = computed(() => store.state.user.user)
 </script>
 <template>
   <form class="px-5 text-lg">
-    <div class="mt-0">
-      <p class="text-base font-semibold">
+    <div class="mt-[15px]">
+      <p class="text-base font-medium">
         {{ localization.owner_license }}
       </p>
-      <div class="flex mt-2">
-        <span class="relative mt-0.5 mr-1.5">
+      <div class="flex mt-[15px]">
+        <span class="relative mr-1.5">
           <svg
             width="20"
             height="20"
@@ -32,17 +32,17 @@ const user = computed(() => store.state.user.user)
             />
           </svg>
         </span>
-        <span class="text-base">
+        <span class="text-sm">
           {{ user.owner_title }}
         </span>
       </div>
     </div>
-    <div class="mt-4">
-      <p class="text-base font-semibold">
+    <div class="mt-[34px]">
+      <p class="text-base font-medium">
         Почта владельца лицензии
       </p>
-      <div class="flex mt-2">
-        <span class="relative mt-0.5 mr-1.5">
+      <div class="flex mt-[17px]">
+        <span class="relative mr-1.5">
           <svg
             width="20"
             height="20"
@@ -56,17 +56,17 @@ const user = computed(() => store.state.user.user)
             />
           </svg>
         </span>
-        <span class="text-base">
+        <span class="text-sm">
           {{ user.owner_email }}
         </span>
       </div>
     </div>
-    <div class="mt-4">
-      <p class="text-base font-semibold">
+    <div class="mt-[36px]">
+      <p class="text-base font-medium">
         Количество рабочих мест
       </p>
-      <div class="flex mt-2">
-        <span class="relative mt-0.5 mr-1.5">
+      <div class="flex mt-[17px]">
+        <span class="relative mr-1.5">
           <svg
             width="20"
             height="20"
@@ -88,15 +88,15 @@ const user = computed(() => store.state.user.user)
             />
           </svg>
         </span>
-        <span class="text-base">{{ user.count_workplaces }}</span>
+        <span class="text-sm">{{ user.count_workplaces }}</span>
       </div>
     </div>
-    <div class="mt-4">
-      <p class="text-base font-semibold">
+    <div class="mt-[36px]">
+      <p class="text-base font-medium">
         Занято места на сервере
       </p>
-      <div class="flex mt-2">
-        <span class="relative mt-0.5 mr-1.5">
+      <div class="flex mt-[17px]">
+        <span class="relative mr-1.5">
           <svg
             width="20"
             height="20"
@@ -113,16 +113,16 @@ const user = computed(() => store.state.user.user)
           </svg>
 
         </span>
-        <span class="text-base">{{ user.total_mb }} {{ localization.megabytes }} ({{ user.percent_mb }}%)</span>
+        <span class="text-sm">{{ user.total_mb }} {{ localization.megabytes }} ({{ user.percent_mb }}%)</span>
       </div>
     </div>
-    <div class="mt-4">
-      <p class="text-base font-semibold">
+    <div class="mt-[36px]">
+      <p class="text-base font-medium">
         Последняя синхронизация
       </p>
-      <div class="flex mt-2">
-        <span class="relative mt-0.5 mr-1.5">
-          <svg
+      <div class="flex mt-[17px]">
+        <span class="relative mr-1.5">
+          <svg class="hover:animate-spin"
             width="20"
             height="20"
             viewBox="0 0 20 20"
@@ -136,12 +136,12 @@ const user = computed(() => store.state.user.user)
           </svg>
 
         </span>
-        <span class="text-base">синхронизация</span>
+        <span class="text-sm">синхронизация</span>
       </div>
     </div>
   </form>
   <form
-    class="ml-5 text-lg"
+    class="ml-5 text-lg mt-[36px]"
     action="https://www.leadertask.ru/market"
   >
     <button

@@ -2092,7 +2092,7 @@ export default {
         </div>
       </div>
     </div>
-    <div class="input-group bg-gray-100 rounded-[10px] mt-2">
+    <div class="input-group bg-gray-100 rounded-[10px] mt-2" @dragstart="createTaskFile($event)" id="drop-area">
       <span class="input-group-addon input-group-attach dark:bg-gray-800 dark:text-gray-100">
         <div class="example-1">
           <label class="label">
@@ -2539,4 +2539,41 @@ export default {
 .width100without20 {
   width: calc(100% - 20px);
 }
+/*  #drop-area {
+  border: 2px dashed #ccc;
+  border-radius: 20px;
+  width: 480px;
+  font-family: sans-serif;
+  margin: 100px auto;
+  padding: 20px;
+}
+#drop-area.highlight {
+  border-color: purple;
+}
+.my-form {
+  margin-bottom: 10px;
+}
+#gallery {
+  margin-top: 10px;
+}
+#gallery img {
+  width: 150px;
+  margin-bottom: 10px;
+  margin-right: 10px;
+  vertical-align: middle;
+}
+.button {
+  display: inline-block;
+  padding: 10px;
+  background: #ccc;
+  cursor: pointer;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+.button:hover {
+  background: #ddd;
+}
+#fileElem {
+  display: none;
+} */
 </style>

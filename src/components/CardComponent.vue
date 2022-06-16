@@ -19,7 +19,7 @@ const props = defineProps({
   },
   rounded: {
     type: String,
-    default: 'rounded-md'
+    default: 'rounded-[20px]'
   },
   hasTable: Boolean,
   accMod: Boolean,
@@ -85,14 +85,14 @@ const submit = e => {
     <fieldset class="flex h-full">
       <form
         v-if="title"
-        class=" bg-gray-100 w-80 rounded-l-md pd-0 pl-4 pr-4 pt-7"
+        class=" bg-gray-100 w-80 rounded-l-md pd-0 pl-4 pr-4 pt-[35.5px]"
       >
-        <h1 class="pl-0.5 pb-4 font-bold">
+        <h1 class="pl-0.5 pb-4 font-bold font-[Roboto] text-[16px]">
           Настройки
         </h1>
         <div>
           <div
-            class="px-1.5 py-1 flex text-center rounded-[9px] hover:bg-white"
+            class="px-2 py-2 flex text-center rounded-[9px] hover:bg-white"
             :class="{'bg-white':navig === 0 || navig === 3 }"
             @click="acc"
           >
@@ -112,14 +112,14 @@ const submit = e => {
             </svg>
 
             <button
-              class="ml-3 text-base "
+              class="ml-3 font-[Roboto] font-medium text-[13px] "
               type="button"
             >
               Аккаунт
             </button>
           </div>
           <div
-            class="px-1.5 mt-1 py-1 flex text-center rounded-[9px] hover:bg-white"
+            class="px-2 py-2 flex text-center rounded-[9px] hover:bg-white"
             :class="{'bg-white':navig === 1}"
             @click="tarif"
           >
@@ -137,14 +137,14 @@ const submit = e => {
             </svg>
 
             <button
-              class="ml-3"
+              class="ml-3 font-[Roboto] font-medium text-[13px]"
               type="button"
             >
               Тариф
             </button>
           </div>
           <div
-            class="px-1.5 mt-1 py-1 flex text-center rounded-[9px] hover:bg-white"
+            class="px-2 py-2 flex text-center rounded-[9px] hover:bg-white"
             :class="{'bg-white':navig === 2}"
             @click="option"
           >
@@ -177,14 +177,14 @@ const submit = e => {
               </defs>
             </svg>
             <button
-              class="ml-3"
+              class="ml-3 font-[Roboto] font-medium text-[13px]"
               type="button"
             >
               Основное
             </button>
           </div>
           <div
-            class="px-1.5 mt-1 py-1 flex text-center rounded-[9px] hover:bg-white"
+            class="px-2 py-2 flex text-center rounded-[9px] hover:bg-white"
             :class="{'bg-white':navig === 4}"
             @click="karma"
           >
@@ -202,7 +202,7 @@ const submit = e => {
             </svg>
 
             <button
-              class="ml-3"
+              class="ml-3 font-[Roboto] font-medium text-[13px]"
               type="button"
             >
               Карма
@@ -227,7 +227,7 @@ const submit = e => {
         <header
           v-if="title"
           :class="{'bg-[#FFF2E0]': user.license_type == 0, 'bg-[#FFF2E0]': user.license_type == 1, 'bg-[#FFF2E0]': user.license_type == 2, 'bg-[#FFF2E0]': user.license_type == 3}"
-          class="mt-7 flex w-full h-[5%] items-stretch mb-1 w-full"
+          class="mt-[35.5px] flex w-full h-[5%] items-stretch mb-1 w-full"
         >
           <a
             v-if="computedHeaderIcon && navig === 3"
@@ -252,7 +252,7 @@ const submit = e => {
             </svg>
           </a>
           <h1
-            class=" text-left items-center w-fit pb-3 grow font-bold font-base"
+            class=" text-left items-center w-fit pb-3 grow font-bold text-[16px]"
             :class="[ icon ? 'px-4' : 'px-6' ]"
           >
             <icon

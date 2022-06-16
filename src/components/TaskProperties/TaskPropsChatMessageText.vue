@@ -14,7 +14,7 @@
     <div class="w-full inline-block min-h-[40px]">
       <div
         class="group min-w-[60%] max-w-[80%] min-h-[40px] flex flex-col"
-        :class="!quote || !deletedStatus ? { 'bg-[#FCEBEB] rounded-tr-[12px] rounded-tl-[12px] rounded-br-[12px] float-left': !isMyMessage, 'bg-[#F4F5F7] rounded-tl-[12px] rounded-tr-[12px] rounded-bl-[12px] rounded-br-[0px] float-right mb-1': isMyMessage } : { 'rounded-tr-[12px] rounded-tl-[12px] rounded-br-[12px] float-left': !isMyMessage, 'rounded-tl-[12px] rounded-tr-[12px] rounded-bl-[12px] rounded-br-[0px] float-right': isMyMessage} || deletedStatus === 1 ? { 'bg-[#F4F5F7] rounded-tr-[12px] rounded-tl-[12px] rounded-br-[12px] float-left': !isMyMessage, 'bg-[#F4F5F7] rounded-tl-[12px] rounded-tr-[12px] rounded-bl-[12px] rounded-br-[0px] float-right mb-1' : isMyMessage } : ''"
+        :class="!quote && deletedStatus === 0 ? { 'bg-[#FCEBEB] rounded-tr-[12px] rounded-tl-[12px] rounded-br-[12px] float-left': !isMyMessage, 'bg-[#F4F5F7] rounded-tl-[12px] rounded-tr-[12px] rounded-bl-[12px] rounded-br-[0px] float-right mb-1': isMyMessage } : { 'rounded-tr-[12px] rounded-tl-[12px] rounded-br-[12px] float-left': !isMyMessage, 'rounded-tl-[12px] rounded-tr-[12px] rounded-bl-[12px] rounded-br-[0px] float-right': isMyMessage} || deletedStatus === 1 ? { 'bg-[#F4F5F7] rounded-tr-[12px] rounded-tl-[12px] rounded-br-[12px] float-left': !isMyMessage, 'bg-[#F4F5F7] rounded-tl-[12px] rounded-tr-[12px] rounded-bl-[12px] rounded-br-[0px] float-right mb-1' : isMyMessage } : ''"
       >
         <div
           v-if="quote"
@@ -34,7 +34,7 @@
             </p>
           </div>
         </div>
-        <div  class="group min-w-[60%] max-w-[99%] flex flex-col" :class="{ 'bg-[#FCEBEB] rounded-tr-[12px] rounded-tl-[12px] rounded-br-[12px] float-left': !isMyMessage, 'bg-[#F4F5F7] rounded-tl-[12px] rounded-tr-[12px] rounded-bl-[12px] rounded-br-[0px] float-right': isMyMessage, 'bg-[#F4F5F7] rounded-tl-[12px] rounded-tr-[12px] rounded-bl-[12px] rounded-br-[0px] float-right mb-1':isMyMessage || deletedStatus === 1, 'bg-[#F4F5F7] rounded-tr-[12px] rounded-tl-[12px] rounded-br-[12px] float-left':!isMyMessage || deletedStatus === 1}">
+        <div  class="group min-w-[60%] max-w-[99%] flex flex-col" :class="deletedStatus === 0 ? { 'bg-[#FCEBEB] rounded-tr-[12px] rounded-tl-[12px] rounded-br-[12px] float-left': !isMyMessage, 'bg-[#F4F5F7] rounded-tl-[12px] rounded-tr-[12px] rounded-bl-[12px] rounded-br-[0px] float-right': isMyMessage} : { 'bg-[#F4F5F7] rounded-tr-[12px] rounded-tl-[12px] rounded-br-[12px] float-left': !isMyMessage, 'bg-[#F4F5F7] rounded-tl-[12px] rounded-tr-[12px] rounded-bl-[12px] rounded-br-[0px] float-right mb-1' : isMyMessage }">
         <div
           class="table-cell py-2 px-2.5 text-sm dark:bg-gray-800 dark:text-gray-100"
         >

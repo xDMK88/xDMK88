@@ -1,5 +1,5 @@
 <script setup>
-import CardChatMessageOptionsPopMenu from '@/components/properties/CardChatMessageOptionsPopMenu.vue'
+import CardChatMessageOptionsPopMenu from '@/components/CardProperties/CardChatMessageOptionsPopMenu.vue'
 
 defineEmits(['onQuoteMessage', 'onDeleteMessage'])
 const props = defineProps({

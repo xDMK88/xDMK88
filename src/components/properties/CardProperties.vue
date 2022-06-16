@@ -331,9 +331,10 @@ const removeCard = () => {
 
     <TaskPropsCommentEditor
       class="mt-3 h-32 break-words"
-      :comment="selectedCard.comment ?? ''"
+      :comment="selectedCard.comment"
       :can-edit="canEdit"
       @endChangeComment="endChangeComment"
+      @blur="endChangeComment"
     />
 
     <!-- Card chat -->

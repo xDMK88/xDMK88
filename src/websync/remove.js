@@ -2,6 +2,7 @@ import * as TYPES from '@/websync/types.js'
 import { removeTask } from '@/websync/task.js'
 import { removeCard } from '@/websync/card.js'
 import { removeProject } from '@/websync/project.js'
+import { removeCardMessage } from '@/websync/card_message'
 
 export default function processRemove (obj) {
   switch (obj.type) {
@@ -51,8 +52,10 @@ export default function processRemove (obj) {
       removeCard(obj.uid)
       break
     case TYPES.TYPE_OBJECT_CARD_FILE:
+      removeCardMessage(obj)
       break
     case TYPES.TYPE_OBJECT_CARD_MSG:
+      removeCardMessage(obj)
       break
     case TYPES.TYPE_OBJECT_CLIENT:
       break

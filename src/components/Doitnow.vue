@@ -10,8 +10,8 @@
     v-if="isLoading"
   />
   <div
-    class="flex items-center mb-5 justify-between"
     v-if="tasksCount"
+    class="flex items-center mb-5 justify-between"
   >
     <!-- header -->
     <div class="flex items-center">

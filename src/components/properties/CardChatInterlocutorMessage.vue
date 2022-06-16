@@ -1,5 +1,6 @@
 <script setup>
 import CardChatMessageOptionsPopMenu from '@/components/properties/CardChatMessageOptionsPopMenu.vue'
+import CardChatDeletedMessageContent from '@/components/properties/CardChatDeletedMessageContent.vue'
 defineEmits(['onQuoteMessage'])
 const props = defineProps({
   message: Object
@@ -21,9 +22,11 @@ const getMessageTimeString = (dateCreate) => {
 
 <template>
   <div
-    class="bg-[#FCEBEB] py-[10px] px-[15px] rounded-t-[12px] rounded-br-[12px] mb-[5px] float-left max-w-[300px] group"
+    class="py-[10px] px-[15px] rounded-t-[12px] rounded-br-[12px] mb-[5px] float-left max-w-[300px] group"
+    :class="{ 'bg-[#FCEBEB]': props.message.deleted === 0, 'bg-[#F4F5F7]': props.message.deleted === 1 }"
   >
-    <div class="flex">
+    <card-chat-deleted-message-content v-if="props.message.deleted"></card-chat-deleted-message-content>
+    <div class="flex" v-else>
       <span class="mr-[8px] font-[400] text-[14px] text-[#4C4C4D] leading-[19px]">
         {{ props.message.msg }}
       </span>

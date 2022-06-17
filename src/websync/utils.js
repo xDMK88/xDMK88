@@ -5,7 +5,7 @@ const user = computed(() => store.state.user.user)
 const employees = computed(() => store.state.employees.employees)
 
 function isTaskIsSharedForMe (task) {
-  return (task.emails.included(user.value.current_user_email) && (task.type === 1 || task.type === 2))
+  return (task.emails.includes(user.value.current_user_email) && (task.type === 1 || task.type === 2))
 }
 
 export function shouldAddTaskIntoList (task, lastNavStackElement) {
@@ -167,14 +167,12 @@ export function shouldAddTaskIntoList (task, lastNavStackElement) {
   }
   // Adding new task by access
   if (task.emails) {
-    for (const email in task.emails.split('..')) {
-      if (
-        email === user.value.current_user_email &&
-        lastNavStackElement.key === 'taskListSource' &&
-        lastNavStackElement.value.uid === 'fa042915-a3d2-469c-bd5a-708cf0339b89'
-      ) {
-        return true
-      }
+    if (
+      task.emails.split('..').includes(user.value.current_user_email) &&
+      lastNavStackElement.key === 'taskListSource' &&
+      lastNavStackElement.value.uid === 'fa042915-a3d2-469c-bd5a-708cf0339b89'
+    ) {
+      return true
     }
   }
   // Adding new task by focus flag
@@ -187,16 +185,12 @@ export function shouldAddTaskIntoList (task, lastNavStackElement) {
     }
   }
   // Adding new task by tag
-  if (task.tags.length) {
-    for (const tag in task.tags) {
-      if (
-        tag === lastNavStackElement.value.param &&
-        lastNavStackElement.key === 'taskListSource' &&
-        lastNavStackElement.value.uid === '00a5b3de-9474-404d-b3ba-83f488ac6d30'
-      ) {
-        return true
-      }
-    }
+  if (
+    task.tags.includes(lastNavStackElement.value.param) &&
+    lastNavStackElement.key === 'taskListSource' &&
+    lastNavStackElement.value.uid === '00a5b3de-9474-404d-b3ba-83f488ac6d30'
+  ) {
+    return true
   }
   // Adding new task by color
   if (

@@ -6,7 +6,7 @@ const navStack = computed(() => store.state.navbar.navStack)
 
 export function createTask (obj) {
   const lastNavStackElement = navStack.value[navStack.value.length - 1]
-  // console.log('last nav stack element in adding new task from websync: ', lastNavStackElement)
+  console.log('last nav stack element in adding new task from websync: ', lastNavStackElement)
 
   if (shouldAddTaskIntoList(obj.obj, lastNavStackElement)) {
     store.commit('ADD_TASK', obj.obj)

@@ -5,19 +5,90 @@ const navStack = computed(() => store.state.navbar.navStack)
 const employees = computed(() => store.state.employees.employees)
 const user = computed(() => store.state.user.user)
 
+function isTaskIsSharedForMe (task) {
+  return (task.emails.included(user.value.current_user_email) && (task.type === 1 || task.type === 2))
+}
+
 export function createTask (obj) {
   const lastNavStackElement = navStack.value[navStack.value.length - 1]
 
   // Adding new task by date request
+  // first look date_end in selected day
+  //  check type 2 then check date_end < than selected date then add, if date_end > then throw away
   if (
-    obj.obj.customer_date_begin &&
-    obj.obj.customer_date_begin !== '0001-01-01T00:00:00' &&
-    obj.obj.email_performer === user.value.current_user_email
+    lastNavStackElement.key === 'taskListSource' &&
+    lastNavStackElement.value.uid === '901841d9-0016-491d-ad66-8ee42d2b496b'
   ) {
     if (
+      obj.obj.date_begin &&
+      obj.obj.date_begin !== '0001-01-01T00:00:00'
+    ) {
+      const navStackDate = new Date(lastNavStackElement.value.param)
+      navStackDate.setHours(0, 0, 0, 0)
+      const taskDateEnd = new Date(obj.obj.date_end)
+      taskDateEnd.setHours(0, 0, 0, 0)
+      const currentDate = new Date()
+      currentDate.setHours(0, 0, 0, 0)
+
+      if (
+        obj.obj.type !== 2 &&
+        new Date(lastNavStackElement.value.param).toLocaleString().split(',')[0] === new Date(obj.obj.date_begin).toLocaleString().split(',')[0]
+      ) {
+        store.commit('ADD_TASK', obj.obj)
+        return 0
+      } else if (
+        navStackDate <= currentDate
+      ) {
+        const isTaskCompleted = (obj.obj.status === 1 || obj.obj.status === 7) ||
+                                (obj.obj.type === 3 && (obj.obj.status === 5 || obj.obj.status === 8))
+
+        if (!isTaskCompleted && taskDateEnd < navStackDate) {
+          store.commit('ADD_TASK', obj.obj)
+          return 0
+        }
+      }
+    } else if (
+      obj.obj.customer_date_begin &&
+      obj.obj.customer_date_begin !== '0001-01-01T00:00:00' &&
+      (isTaskIsSharedForMe(obj.obj) || obj.obj.type === 3)
+    ) {
+      const navStackDate = new Date(lastNavStackElement.value.param)
+      navStackDate.setHours(0, 0, 0, 0)
+      const taskDateEnd = new Date(obj.obj.customer_date_end)
+      taskDateEnd.setHours(0, 0, 0, 0)
+      const currentDate = new Date()
+      currentDate.setHours(0, 0, 0, 0)
+
+      if (
+        obj.obj.type !== 2 &&
+        new Date(lastNavStackElement.value.param).toLocaleString().split(',')[0] === new Date(obj.obj.customer_date_begin).toLocaleString().split(',')[0]
+      ) {
+        store.commit('ADD_TASK', obj.obj)
+        return 0
+      } else if (
+        navStackDate <= currentDate
+      ) {
+        const isTaskCompleted = (obj.obj.status === 1 || obj.obj.status === 7) ||
+                                (obj.obj.type === 3 && (obj.obj.status === 5 || obj.obj.status === 8))
+
+        if (!isTaskCompleted && taskDateEnd < navStackDate) {
+          store.commit('ADD_TASK', obj.obj)
+          return 0
+        }
+      }
+    }
+    return 0
+  }
+
+  if (
+    obj.obj.date_begin &&
+    obj.obj.date_begin !== '0001-01-01T00:00:00'
+  ) {
+    if (
+      obj.obj.type === 2 &&
       lastNavStackElement.key === 'taskListSource' &&
       lastNavStackElement.value.uid === '901841d9-0016-491d-ad66-8ee42d2b496b' &&
-      new Date(lastNavStackElement.value.param).toLocaleString().split(',')[0] === new Date(obj.obj.customer_date_begin).toLocaleString().split(',')[0]
+      new Date(lastNavStackElement.value.param).toLocaleString().split(',')[0] === new Date(obj.obj.date_begin).toLocaleString().split(',')[0]
     ) {
       store.commit('ADD_TASK', obj.obj)
       return 0
@@ -90,16 +161,6 @@ export function createTask (obj) {
     if (
       lastNavStackElement.key === 'taskListSource' &&
       lastNavStackElement.value.uid === '46418722-a720-4c9e-b255-16db4e590c34'
-    ) {
-      store.commit('ADD_TASK', obj.obj)
-      return 0
-    }
-  }
-  // Adding new task by unread flag
-  if (obj.obj.readed === 0) {
-    if (
-      lastNavStackElement.key === 'taskListSource' &&
-      lastNavStackElement.value.uid === 'fa042915-a3d2-469c-bd5a-708cf0339b89'
     ) {
       store.commit('ADD_TASK', obj.obj)
       return 0

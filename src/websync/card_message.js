@@ -12,6 +12,6 @@ export function createCardMessage (obj) {
 export function removeCardMessage (obj) {
   if ('uid_card' in obj && selectedCard.value && obj.uid_card === selectedCard.value.uid) {
     const data = { uid: obj.obj.uid, key: 'deleted', value: 1 }
-    store.commit('CARD_CHAGE_MESSAGE', data)
+    store.commit('CARD_CHANGE_MESSAGE', data)
   }
 }

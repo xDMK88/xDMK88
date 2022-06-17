@@ -472,7 +472,9 @@ const mutations = {
         })
       }
     }
-    state.selectedCard = card
+    if (state.selectedCard.uid === card.uid) {
+      state.selectedCard = card
+    }
   },
   AddStage: (state, stage) => {
     state.cards.push(stage)

@@ -720,13 +720,16 @@ const actions = {
       })
         .then((resp) => {
           resp.data._justCreated = data._justCreated
-          if (
-            resp.data.uid_parent !== '00000000-0000-0000-0000-000000000000' &&
-            !data._justCreated
-          ) {
-            commit(TASK.PASTE_TO_SUBTASK, resp.data)
-          } else {
-            commit(TASK.ADD_TASK, resp.data)
+          resp.data._addToList = data._addToList
+          if (data._addToList) {
+            if (
+              resp.data.uid_parent !== '00000000-0000-0000-0000-000000000000' &&
+              !data._justCreated
+            ) {
+              commit(TASK.PASTE_TO_SUBTASK, resp.data)
+            } else {
+              commit(TASK.ADD_TASK, resp.data)
+            }
           }
           resolve(resp)
         })

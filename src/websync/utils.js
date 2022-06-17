@@ -3,18 +3,21 @@ import { computed } from 'vue'
 
 const user = computed(() => store.state.user.user)
 const employees = computed(() => store.state.employees.employees)
+const navStack = computed(() => store.state.navbar.navStack)
 
 function isTaskIsSharedForMe (task) {
   return (task.emails.includes(user.value.current_user_email) && (task.type === 1 || task.type === 2))
 }
 
-export function shouldAddTaskIntoList (task, lastNavStackElement) {
+export function shouldAddTaskIntoList (task) {
+  const lastNavStackElement = navStack.value[navStack.value.length - 1]
   // если у задачи есть uid_parent то сначала попытаться его вставить его в родительскую задачу текущего списка
 
   // Adding new task by date request
   // first look date_end in selected day
   //  check type 2 then check date_end < than selected date then add, if date_end > then throw away
 
+  console.log('lastNavStackElement: ', lastNavStackElement)
   if (
     lastNavStackElement.key === 'taskListSource' &&
     lastNavStackElement.value.uid === '901841d9-0016-491d-ad66-8ee42d2b496b'

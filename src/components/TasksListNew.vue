@@ -631,6 +631,7 @@ export default {
         taskData.has_files = false
         taskData.has_msgs = false
         taskData.type = 1
+        taskData._addToList = true
         data = taskData
       } else {
         data = {
@@ -642,7 +643,8 @@ export default {
           email_performer: '',
           type: 1,
           name: createTaskText.value,
-          comment: ''
+          comment: '',
+          _addToList: true
         }
       }
 

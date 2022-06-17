@@ -319,7 +319,6 @@ const computedTimes = computed(() => {
     sunday: { uid: 'sunday', name: 'Воскресенье', value: getNearestDay(new Date(), 7) }
   }
 
-  console.log('before testing regular expression')
   if (re.test(inputLowerCase) && parseInt(inputMessage.value.split(' ')[0]) <= 31) {
     for (const key in russianMonths) {
       const dayNumber = inputMessage.value.split(' ')[0]

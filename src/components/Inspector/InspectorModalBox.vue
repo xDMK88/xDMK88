@@ -1,6 +1,8 @@
 <script setup>
 import { computed, ref, watch, provide } from 'vue'
 import { useStore } from 'vuex'
+import { shouldAddTaskIntoList } from '@/websync/utils'
+
 // import JbButton from '@/components/JbButton.vue'
 import CardComponent from '@/components/CardComponent.vue'
 import Overlay from '@/components/modals/Overlay.vue'
@@ -120,6 +122,7 @@ const createTask = () => {
   delegatedTask.uid_customer = user.value.current_user_uid
   delegatedTask.status = 0
   delegatedTask.type = 1
+  delegatedTask._addToList = false
   store.dispatch('CREATE_TASK', delegatedTask).then((resp) => {
     // manually setup uid_performer beacuse
     // we get empty uid_performer after CREATE_TASK request
@@ -141,6 +144,9 @@ const createTask = () => {
       uid: myself.uid,
       userJson: JSON.stringify(myself)
     })
+    if (shouldAddTaskIntoList(resp.data)) {
+      store.commit('ADD_TASK', resp.data)
+    }
   })
 }
 

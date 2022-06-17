@@ -70,7 +70,7 @@ export default {
       }
     },
     getFixedCommentText () {
-      return this.comment.replaceAll('\n', '<br/>')
+      return this.comment.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('\n', '<br/>')
     },
     placeholderComment () {
       if (this.canEdit) return 'Добавить заметку...'

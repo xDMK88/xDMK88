@@ -518,7 +518,10 @@ const computedTimes = computed(() => {
                 :box="colorIcon.viewBox"
                 class="text-gray-500 mr-0.3 mt-0.5 mb-0.5 ml-0.5"
               />
-              <span class="text-sm text-gray-600 mr-1 mt-0.5 mb-0.5 ml-1">{{
+              <span
+                :style="{ 'color': color.fore_color || 'black' }"
+                class="text-sm text-gray-600 mr-1 mt-0.5 mb-0.5 ml-1"
+              >{{
                 color.name.length > 16
                   ? color.name.slice(0, 16) + '...'
                   : color.name

@@ -507,11 +507,11 @@ const computedTimes = computed(() => {
             <div
               v-show="index < 4"
               class="flex items-center bg-white rounded-lg p-1 mr-1"
+              :style="{ 'background-color': color.back_color || 'white'}"
               @click="props.selectColor(color)"
             >
               <icon
                 v-if="color.uid !== 'no_set'"
-                :style="{ 'color': color.back_color || 'white'}"
                 :path="colorIcon.path"
                 :width="18"
                 :height="18"

@@ -93,8 +93,13 @@ const actions = {
   },
   [BOARD.QUIT_BOARD_REQUEST]: ({ commit, dispatch }, data) => {
     return new Promise((resolve, reject) => {
-      const url = process.env.VUE_APP_LEADERTASK_API + '/api/v1/board/exit'
-      axios({ url: url, method: 'POST', data: data })
+      const url =
+        process.env.VUE_APP_LEADERTASK_API +
+        '/api/v1/board/exit?uid=' +
+        data.uid +
+        '&uid_user=' +
+        data.uid_user
+      axios({ url: url, method: 'POST' })
         .then((resp) => {
           resolve(resp)
         })

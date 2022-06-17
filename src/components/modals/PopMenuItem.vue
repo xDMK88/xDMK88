@@ -1,6 +1,6 @@
 <template>
   <div
-    class="h-[30px] flex items-center gap-[10px] px-[10px] py-[6px] cursor-pointer hover:bg-[#f4f5f7] rounded-[6px] text-[#4c4c4d] text-[13px] leading-[15px] font-roboto"
+    class="h-[30px] flex items-center gap-[10px] px-[10px] cursor-pointer hover:bg-[#f4f5f7] rounded-[6px] text-[#4c4c4d] text-[13px] leading-[15px] font-roboto"
   >
     <svg
       v-if="icon === 'answer'"

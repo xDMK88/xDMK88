@@ -978,6 +978,9 @@ export default {
     })
   },
   methods: {
+    getFixedCommentName () {
+      return this.selectedTask.name.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('\n', '<br/>')
+    },
     print: function (value) {
       console.log(value)
     },
@@ -1327,7 +1330,7 @@ export default {
             @focus="$refs.TaskName.focus()"
             @focusout="removeEditTaskName($event)"
             @keydown.enter.prevent
-            v-text="selectedTask.name.replaceAll('\n','<br/>')"
+            v-html="getFixedCommentName()"
           />
         </strong>
       </div>

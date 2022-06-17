@@ -80,7 +80,7 @@
           :checked="isCheckedTag(tag.uid)"
           type="checkbox"
           name="check_tags"
-          class="check-custom-empployee custom-checkbox"
+          class="check-custom-empployee custom-checkbox-tags"
           @click="onCheckTag(tag.uid)"
         >
         <label

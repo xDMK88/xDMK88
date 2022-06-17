@@ -23,6 +23,7 @@
             {{ getMessageWeekDateString(message.date_create) }}
           </p>
         </div>
+
         <!-- Облачко с текстом -->
         <TaskPropsChatMessageText
           v-if="message.isMessage && !showOnlyFiles"
@@ -36,8 +37,8 @@
           :creator-name="employees[message.uid_creator]?.name ?? '???'"
           :message="message.msg"
           :time="getMessageTimeString(message.date_create)"
-          @answer="answerMessage(message.uid)"
-          @deleted="deleteTaskMsg(message.uid)"
+          @answer="answerMessage(message.uid_msg ? message.uid_msg : message.uid)"
+          @deleted="deleteTaskMsg(message.uid_msg ? message.uid_msg : message.uid)"
         />
 
         <!-- Сообщение от инспектора -->
@@ -346,8 +347,8 @@ export default {
     answerMessage (uid) {
       this.$emit('answerMessage', uid)
     },
-    deleteTaskMsg (data) {
-      this.$emit('deleteTaskMsg', data)
+    deleteTaskMsg (uid) {
+      this.$emit('deleteTaskMsg', uid)
     },
     deleteFiles (uid) {
       this.$emit('deleteFiles', uid)

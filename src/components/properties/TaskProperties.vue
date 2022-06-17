@@ -288,7 +288,9 @@ export default {
       })
     }
     const deleteTaskMsg = (uid) => {
-      store.dispatch(DELETE_MESSAGE_REQUEST, { uid: uid }).then(
+      console.log(this.uidMessage)
+      console.log(uid)
+      store.dispatch(DELETE_MESSAGE_REQUEST, { uid: this.uidMessage !== '' ? uid : this.uidMessage }).then(
         resp => {
           selectedTask.value.has_msgs = true
           this.taskMessages.find(message => message.uid === uid).deleted = 1
@@ -908,7 +910,10 @@ export default {
       everyYearRepeat: false,
       showpastefile: false,
       // Модели selectedTask.value.SeriesWeekMon selectedTask.value.SeriesWeekTue selectedTask.value.SeriesWeekWed selectedTask.value.SeriesWeekThu selectedTask.value.SeriesWeekFri selectedTask.value.SeriesWeekSat selectedTask.value.SeriesWeekSun
-      currentAnswerMessageUid: ''
+      currentAnswerMessageUid: '',
+      dragAndDropCapable: false,
+      uidMessage: this.uuidv4(),
+      files: []
     }
   },
   computed: {
@@ -981,6 +986,19 @@ export default {
     print: function (value) {
       console.log(value)
     },
+    dragStart: function (event) {
+      event.dataTransfer.setData('Text', event.target.id)
+    },
+    dragging: function (event) {
+      document.getElementById('demo').innerHTML =
+        'The p element is being dragged'
+    },
+    allowDrop: function (event) {
+    },
+    drop: function (e) {
+      const item = e.files.clipboardData.items
+      console.log(item)
+    },
     editable: function () {
       if (this.cusers.current_user_uid === this.selectedTask.uid_customer) {
         this.isEditableTaskName = true
@@ -1010,11 +1028,11 @@ export default {
       msgtask = msgtask.replaceAll('&', '&amp;')
       msgtask = msgtask.replaceAll('<', '&lt;')
       msgtask = msgtask.replaceAll('>', '&gt;')
-
+      const uid = this.uuidv4()
       const data = {
         uid_task: this.selectedTask.uid,
         uid_creator: this.cusers.current_user_uid,
-        uid_msg: this.uuidv4(),
+        uid_msg: uid,
         date_create: new Date().toISOString(),
         deleted: 0,
         uid_quote: this.currentAnswerMessageUid,
@@ -1023,6 +1041,8 @@ export default {
       }
       this.$store.dispatch(CREATE_MESSAGE_REQUEST, data).then(
         resp => {
+          this.uidMessage = uid
+          console.log(this.uidMessage)
           // Answer last inspector message
           const lastInspectorMessage = this.taskMessagesAndFiles[this.taskMessagesAndFiles.length - 2].uid_creator === 'inspector' ? this.taskMessagesAndFiles[this.taskMessagesAndFiles.length - 2] : false
           console.log('lastInspectorMessage: ', lastInspectorMessage)
@@ -1282,9 +1302,14 @@ export default {
     class="break-words"
     @mousedown="selectedFalse"
   >
+    <div class="inline-flex justify-center items-center text-[#7E7E80] dark:text-white cursor-pointer absolute right-3 z-1" @click="closeProperties">
+      <svg viewBox="0 0 11 11" width="12" height="12" class="cursor-pointer" >
+        <path fill="currentColor" fill-rule="evenodd" clip-rule="evenodd" d="M6.17983 5.00341L9.76317 1.42841C9.92009 1.27149 10.0082 1.05866 10.0082 0.836743C10.0082 0.614825 9.92009 0.401996 9.76317 0.245076C9.60625 0.0881567 9.39342 0 9.1715 0C8.94958 0 8.73675 0.0881567 8.57983 0.245076L5.00483 3.82841L1.42983 0.245076C1.27291 0.0881567 1.06008 -1.65342e-09 0.838165 0C0.616247 1.65342e-09 0.403418 0.0881567 0.246499 0.245076C0.0895788 0.401996 0.00142217 0.614825 0.00142217 0.836743C0.00142217 1.05866 0.0895788 1.27149 0.246499 1.42841L3.82983 5.00341L0.246499 8.57841C0.168392 8.65588 0.106397 8.74805 0.0640893 8.8496C0.0217821 8.95115 0 9.06007 0 9.17008C0 9.28009 0.0217821 9.38901 0.0640893 9.49056C0.106397 9.59211 0.168392 9.68427 0.246499 9.76174C0.323968 9.83985 0.416135 9.90185 0.517685 9.94415C0.619234 9.98646 0.728156 10.0082 0.838165 10.0082C0.948175 10.0082 1.0571 9.98646 1.15865 9.94415C1.2602 9.90185 1.35236 9.83985 1.42983 9.76174L5.00483 6.17841L8.57983 9.76174C8.6573 9.83985 8.74947 9.90185 8.85102 9.94415C8.95257 9.98646 9.06149 10.0082 9.1715 10.0082C9.28151 10.0082 9.39043 9.98646 9.49198 9.94415C9.59353 9.90185 9.6857 9.83985 9.76317 9.76174C9.84127 9.68427 9.90327 9.59211 9.94558 9.49056C9.98788 9.38901 10.0097 9.28009 10.0097 9.17008C10.0097 9.06007 9.98788 8.95115 9.94558 8.8496C9.90327 8.74805 9.84127 8.65588 9.76317 8.57841L6.17983 5.00341Z"></path>
+      </svg>
+    </div>
     <div
       id="generalscroll"
-      class="column-resize"
+      class="column-resize relative"
     >
       <div />
       <div
@@ -2107,7 +2132,12 @@ export default {
     <div
       id="drop-area"
       class="input-group bg-gray-100 rounded-[10px] mt-2"
-      @dragstart="createTaskFile($event)"
+      v-on:drop="drop(this.$refs.file_attach)"
+      draggable="true"
+      @dragover="allowDrop(this.$refs.file_attach)"
+      @dragstart="dragStart"
+      @drag="dragging"
+
     >
       <span class="input-group-addon input-group-attach dark:bg-gray-800 dark:text-gray-100">
         <div class="example-1">
@@ -2128,6 +2158,7 @@ export default {
             <input
               ref="file_attach"
               type="file"
+              id="file_attach"
               multiple="multiple"
               name="file_attach"
               @change="createTaskFile($event)"
@@ -2142,6 +2173,11 @@ export default {
         placeholder="Напишите сообщение..."
         rows="58"
         @input="onInputTaskMsg"
+        v-on:drop="drop(this.$refs.file_attach)"
+        draggable="true"
+        @dragover="allowDrop(this.$refs.file_attach)"
+        @dragstart="dragStart"
+        @drag="dragging"
         @keydown.enter.exact.prevent="sendTaskMsg()"
         @keydown.enter.shift.exact.prevent="addNewLineTaskMsg"
       />
@@ -2592,4 +2628,12 @@ export default {
 #fileElem {
   display: none;
 } */
+.droptarget {
+  float: left;
+  width: 100px;
+  height: 35px;
+  margin: 15px;
+  padding: 10px;
+  border: 1px solid #aaaaaa;
+}
 </style>

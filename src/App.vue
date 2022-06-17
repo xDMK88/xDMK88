@@ -16,7 +16,6 @@ const store = useStore()
 const router = useRouter()
 const isFileRedirect = computed(() => (router.currentRoute.value.name === 'taskfile' || router.currentRoute.value.name === 'cardfile') && router.currentRoute.value.params.id)
 
-console.log('localization request', LOCALIZATION_REQUEST)
 store.dispatch(LOCALIZATION_REQUEST)
 
 const menu = computed(() => store.state.navigator.menu)

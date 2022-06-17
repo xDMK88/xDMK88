@@ -24,7 +24,6 @@ import * as TASK from '@/store/actions/tasks'
 import * as CARD from '@/store/actions/cards'
 import initWebSync from '@/websync/index.js'
 import initInspectorSocket from '@/inspector/index.js'
-// import project from '@/icons/project'
 
 const store = useStore()
 const router = useRouter()
@@ -38,6 +37,7 @@ const navStack = computed(() => store.state.navbar.navStack)
 const storeNavigator = computed(() => store.state.navigator.navigator)
 const isPropertiesMobileExpanded = computed(() => store.state.isPropertiesMobileExpanded)
 const shouldShowModalBox = ref(false)
+
 const UID_TO_ACTION = {
   '901841d9-0016-491d-ad66-8ee42d2b496b': TASK.TASKS_REQUEST, // get today's day
   '46418722-a720-4c9e-b255-16db4e590c34': TASK.OVERDUE_TASKS_REQUEST,
@@ -163,6 +163,7 @@ const initNavStackWithFoundProjects = (projectUid) => {
   }
   store.commit('pushIntoNavStack', navElem)
 }
+
 const initNavStackWithFoundBoards = (boardUid) => {
   let board
   visitChildren(storeNavigator.value.new_private_boards[0].items, value => {
@@ -186,8 +187,8 @@ const initNavStackWithFoundBoards = (boardUid) => {
   }
   store.commit('pushIntoNavStack', navElem)
 }
+
 const getProject = (uid) => {
-  console.log(uid)
   const navElem = {
     name: 'Проекты',
     key: 'greedSource',
@@ -198,8 +199,8 @@ const getProject = (uid) => {
   initNavStackWithFoundProjects(uid)
   window.location = '/'
 }
+
 const getBoard = (uid) => {
-  console.log(uid)
   const navElem = {
     name: 'Доски',
     key: 'greedSource',
@@ -210,12 +211,12 @@ const getBoard = (uid) => {
   initNavStackWithFoundBoards(uid)
   window.location = '/'
 }
+
 const getNavigator = () => {
   if (store.state.auth.token) {
     store.dispatch(NAVIGATOR_REQUEST)
       .then(() => {
         initWebSync()
-        console.log('initInspector', process.env.VUE_APP_INSPECTOR_WS)
         initInspectorSocket()
         if (router.currentRoute.value.name === 'project' && router.currentRoute.value.params.id) {
           getProject(router.currentRoute.value.params.id)
@@ -310,16 +311,20 @@ const getNavigator = () => {
 }
 
 requestNotificationPermissionOrShowModalBox()
+
 const fm = document.createElement('script')
 const websync = document.createElement('script')
 fm.setAttribute('src', process.env.VUE_APP_LEADERTASK_API + 'scripts/websync/fm.min.js')
 websync.setAttribute('src', process.env.VUE_APP_LEADERTASK_API + 'scripts/websync/fm.websync.min.js')
 document.head.appendChild(fm)
 document.head.appendChild(websync)
+
 store.dispatch(USER_REQUEST).then(resp => {
   store.dispatch('GET_SOUND_SETTING', resp.data.current_user_uid)
 })
+
 getNavigator()
+
 if (router.currentRoute.value.name === 'task' && router.currentRoute.value.params.id) {
   getTask(router.currentRoute.value.params.id)
 } else {

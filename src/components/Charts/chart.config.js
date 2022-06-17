@@ -17,7 +17,7 @@ export const generateDaysLablesNDaysAgo = (days = 7) => {
   return data
 }
 
-export const fillDaysDataSet = arr => {
+export const fillDaysDataSet = (arr) => {
   const labels = generateDaysLablesNDaysAgo()
   const values = []
   for (const label of labels) {
@@ -57,15 +57,12 @@ export const karmaChartData = (arr, color) => {
   const data = fillDaysDataSet(arr)
 
   for (let i = 0; i < data.labels.length; i++) {
-    console.log('splitting labels: ', data.labels[i].split(' ')[0])
     data.labels[i] = data.labels[i].split(' ')[0]
   }
 
   return {
     labels: data.labels,
-    datasets: [
-      datasetObject(color, data.values)
-    ]
+    datasets: [datasetObject(color, data.values)]
   }
 }
 
@@ -78,8 +75,6 @@ export const sampleChartData = (points = 7) => {
 
   return {
     labels,
-    datasets: [
-      datasetObject('danger', points)
-    ]
+    datasets: [datasetObject('danger', points)]
   }
 }

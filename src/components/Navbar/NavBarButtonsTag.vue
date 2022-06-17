@@ -81,7 +81,7 @@ export default {
           getAllChilds(tag.children, obj)
         })
       }
-      const navigatorTagsArray = this.$store.state.navigator.navigator.tags.items
+      const navigatorTagsArray = this.$store.state.navigator?.navigator?.tags?.items ?? []
       const mytags = {}
       getAllChilds(navigatorTagsArray, mytags)
       return mytags

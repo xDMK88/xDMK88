@@ -28,20 +28,23 @@
           <PopMenuItem @click="showColorCard = true">
             Цвет
           </PopMenuItem>
-          <PopMenuItem @click="onSelectFile">
+          <PopMenuItem
+            style="padding-left: 0px; padding-right: 0px; padding-top: 0px; padding-bottom: 0px;"
+          >
             <label
               ref="coverInputLabel"
-              class="cursor-pointer"
+              class="cursor-pointer w-full h-full flex items-center"
               for="cover-input"
             >
-              Файл
+              <p class="mx-[10px]">
+                Файл
+              </p>
             </label>
             <input
               id="cover-input"
               type="file"
               accept="image/png, image/gif, image/jpeg"
               style="display: none;"
-              name="cover-input"
               @change="onChangeCardCover"
             >
           </PopMenuItem>
@@ -77,6 +80,9 @@ export default {
     }
   },
   methods: {
+    print (val) {
+      console.log(val)
+    },
     onChangeCardColor (color) {
       this.$emit('onChangeCardColor', color)
     },
@@ -85,9 +91,6 @@ export default {
     },
     onChangeCardCover (e) {
       this.$emit('onChangeCardCover', e)
-    },
-    onSelectFile () {
-      this.$refs.coverInputLabel.click()
     }
   }
 }

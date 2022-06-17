@@ -1174,6 +1174,7 @@ export default {
       }
     },
     onChangeDates: function (begin, end) {
+      const taskUid = this.selectedTask.uid
       const data = {
         uid_task: this.selectedTask.uid,
         str_date_begin: begin,
@@ -1187,6 +1188,14 @@ export default {
           this.selectedTask.date_begin = resp.str_date_begin
           this.selectedTask.date_end = resp.str_date_end
         })
+      const navStack = computed(() => this.$store.state.navbar.navStack)
+      if (navStack.value.length && navStack.value.length > 0) {
+        const navStackUid = navStack.value[0]?.value?.uid
+        if (navStackUid === '901841d9-0016-491d-ad66-8ee42d2b496b') {
+          this.$store.commit(TASK.REMOVE_TASK, taskUid)
+          this.$store.dispatch('asidePropertiesToggle', false)
+        }
+      }
     },
     onChangeAccess: function (checkEmails) {
       const emails = checkEmails.join('..')

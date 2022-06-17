@@ -1,112 +1,3 @@
-<script>
-import { ref } from 'vue'
-import Icon from '@/components/Icon.vue'
-import * as TASK from '@/store/actions/tasks'
-import { setLocalStorageItem } from '@/store/helpers/functions'
-import { SELECT_COLOR } from '@/store/actions/colors'
-// import properties from '@/icons/properties.js'
-import ColorBlock from '@/components/ColorBlock.vue'
-import ColorAdd from '@/components/ColorAdd.vue'
-import gridView from '@/icons/grid-view.js'
-import listView from '@/icons/list-view.js'
-
-export default {
-  components: {
-    Icon,
-    ColorBlock,
-    ColorAdd
-  },
-  props: {
-    colors: {
-      type: Array,
-      default: () => []
-    }
-  },
-  data () {
-    const UID_TO_ACTION = {
-      'ed8039ae-f3de-4369-8f32-829d401056e9': TASK.COLOR_TASKS_REQUEST
-    }
-    const focusedColor = ref('')
-    return {
-      UID_TO_ACTION,
-      focusedColor,
-      gridView,
-      listView
-    }
-  },
-  computed: {
-    isPropertiesMobileExpanded () {
-      return this.$store.state.isPropertiesMobileExpanded
-    },
-    isGridView () {
-      return this.$store.state.isGridView
-    }
-  },
-  methods: {
-    updateGridView (value) {
-      this.$store.commit('basic', { key: 'isGridView', value: value })
-      setLocalStorageItem('isGridView', value)
-    },
-    openProperties (color) {
-      if (!this.isPropertiesMobileExpanded.value) {
-        this.$store.dispatch('asidePropertiesToggle', true)
-      }
-      this.focusedColor = color.uid
-      this.$store.commit('basic', { key: 'propertiesState', value: 'color' })
-      if (!color) {
-        color = {
-          back_color: '',
-          fore_color: '',
-          uppercase: 0,
-          order: 0,
-          default: 0,
-          uid: '',
-          name: '',
-          bold: 0
-        }
-      }
-      this.$store.commit(SELECT_COLOR, color)
-    },
-    clickOnGridCard (value) {
-      if (this.UID_TO_ACTION[value.parentID]) {
-        this.$store.dispatch(this.UID_TO_ACTION[value.parentID], value.uid)
-        const navElem = {
-          name: value.name,
-          key: 'taskListSource',
-          value: { uid: value.parentID, param: value.uid },
-          typeVal: value.uid,
-          type: 'color'
-        }
-        this.$store.commit('pushIntoNavStack', navElem)
-        this.$store.commit('basic', { key: 'taskListSource', value: { uid: value.parentID, param: value.uid } })
-      }
-      this.$store.commit('basic', { key: 'mainSectionState', value: 'tasks' })
-      this.$store.commit(TASK.CLEAN_UP_LOADED_TASKS)
-    }
-  }
-}
-// Serves as linkage between requests from storage and tree view navigator
-// const UID_TO_ACTION = {
-//   'ed8039ae-f3de-4369-8f32-829d401056e9': TASK.COLOR_TASKS_REQUEST
-// }
-// const clickOnGridCard = (value) => {
-//   if (UID_TO_ACTION[value.parentID]) {
-//     store.dispatch(UID_TO_ACTION[value.parentID], value.uid)
-//     const navElem = {
-//       name: value.name,
-//       key: 'taskListSource',
-//       value: { uid: value.parentID, param: value.uid },
-//       typeVal: value.uid,
-//       type: 'color'
-//     }
-//     store.commit('pushIntoNavStack', navElem)
-//     store.commit('basic', { key: 'taskListSource', value: { uid: value.parentID, param: value.uid } })
-//   }
-//   store.commit('basic', { key: 'mainSectionState', value: 'tasks' })
-//   store.commit(TASK.CLEAN_UP_LOADED_TASKS)
-// }
-</script>
-
 <template>
   <div
     class="w-full flex items-center justify-between mt-3 order-1"
@@ -158,3 +49,81 @@ export default {
     </template>
   </div>
 </template>
+<script>
+import Icon from '@/components/Icon.vue'
+import * as TASK from '@/store/actions/tasks'
+import { setLocalStorageItem } from '@/store/helpers/functions'
+// import { SELECT_COLOR } from '@/store/actions/colors'
+// import properties from '@/icons/properties.js'
+import ColorBlock from '@/components/ColorBlock.vue'
+import ColorAdd from '@/components/ColorAdd.vue'
+import gridView from '@/icons/grid-view.js'
+import listView from '@/icons/list-view.js'
+
+export default {
+  components: {
+    Icon,
+    ColorBlock,
+    ColorAdd
+  },
+  props: {
+    colors: {
+      type: Array,
+      default: () => []
+    }
+  },
+  data () {
+    return {
+      gridView,
+      listView
+    }
+  },
+  computed: {
+    isPropertiesMobileExpanded () {
+      return this.$store.state.isPropertiesMobileExpanded
+    },
+    isGridView () {
+      return this.$store.state.isGridView
+    }
+  },
+  methods: {
+    updateGridView (value) {
+      this.$store.commit('basic', { key: 'isGridView', value: value })
+      setLocalStorageItem('isGridView', value)
+    },
+    openProperties (color) {
+      // if (!this.isPropertiesMobileExpanded.value) {
+      //   this.$store.dispatch('asidePropertiesToggle', true)
+      // }
+      // this.$store.commit('basic', { key: 'propertiesState', value: 'color' })
+      if (!color) {
+        color = {
+          back_color: '',
+          fore_color: '',
+          uppercase: 0,
+          order: 0,
+          default: 0,
+          uid: '',
+          name: '',
+          bold: 0
+        }
+      }
+      // this.$store.commit(SELECT_COLOR, color)
+    },
+    clickOnGridCard (value) {
+      this.$store.dispatch(TASK.COLOR_TASKS_REQUEST, value.uid)
+      const navElem = {
+        name: value.name,
+        key: 'taskListSource',
+        value: { uid: value.parentID, param: value.uid },
+        typeVal: value.uid,
+        type: 'color'
+      }
+      this.$store.commit('pushIntoNavStack', navElem)
+      this.$store.commit('basic', { key: 'taskListSource', value: { uid: value.parentID, param: value.uid } })
+      this.$store.commit('basic', { key: 'mainSectionState', value: 'tasks' })
+      this.$store.commit(TASK.CLEAN_UP_LOADED_TASKS)
+    }
+  }
+}
+</script>

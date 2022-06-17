@@ -8,8 +8,6 @@ import store from './store'
 
 import './css/main.css'
 
-console.log('ENV', process.env)
-
 const token = localStorage.getItem('user-token')
 const navStack = JSON.parse(localStorage.getItem('navStack'))
 const isGridView = JSON.parse(localStorage.getItem('isGridView'))
@@ -75,7 +73,6 @@ window.onerror = function (msg, url, lineNo, columnNo, error) {
     line: lineNo,
     column: columnNo
   }
-  console.log('Error: ', data, error)
   axios({
     url: process.env.VUE_APP_LEADERTASK_API + 'api/v1/errors/front',
     method: 'POST',

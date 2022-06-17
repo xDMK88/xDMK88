@@ -319,7 +319,6 @@ const computedTimes = computed(() => {
     sunday: { uid: 'sunday', name: 'Воскресенье', value: getNearestDay(new Date(), 7) }
   }
 
-  console.log('before testing regular expression')
   if (re.test(inputLowerCase) && parseInt(inputMessage.value.split(' ')[0]) <= 31) {
     for (const key in russianMonths) {
       const dayNumber = inputMessage.value.split(' ')[0]
@@ -507,18 +506,21 @@ const computedTimes = computed(() => {
             <div
               v-show="index < 4"
               class="flex items-center bg-white rounded-lg p-1 mr-1"
+              :style="{ 'background-color': color.back_color || 'white'}"
               @click="props.selectColor(color)"
             >
               <icon
                 v-if="color.uid !== 'no_set'"
-                :style="{ 'color': color.back_color || 'white'}"
                 :path="colorIcon.path"
                 :width="18"
                 :height="18"
                 :box="colorIcon.viewBox"
                 class="text-gray-500 mr-0.3 mt-0.5 mb-0.5 ml-0.5"
               />
-              <span class="text-sm text-gray-600 mr-1 mt-0.5 mb-0.5 ml-1">{{
+              <span
+                :style="{ 'color': color.fore_color || 'black' }"
+                class="text-sm text-gray-600 mr-1 mt-0.5 mb-0.5 ml-1"
+              >{{
                 color.name.length > 16
                   ? color.name.slice(0, 16) + '...'
                   : color.name

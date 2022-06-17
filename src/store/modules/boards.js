@@ -112,6 +112,48 @@ const actions = {
         })
     })
   },
+  [BOARD.CHANGE_BOARD_NAME]: ({ commit, dispatch }, data) => {
+    return new Promise((resolve, reject) => {
+      const board = state.boards[data.boardUid]
+      if (!board) return reject(new Error(`not find board ${data.boardUid}`))
+      board.name = data.newBoardTitle
+      dispatch(BOARD.UPDATE_BOARD_REQUEST, board)
+        .then((resp) => {
+          resolve(resp)
+        })
+        .catch((err) => {
+          reject(err)
+        })
+    })
+  },
+  [BOARD.CHANGE_BOARD_COLOR]: ({ commit, dispatch }, data) => {
+    return new Promise((resolve, reject) => {
+      const board = state.boards[data.boardUid]
+      if (!board) return reject(new Error(`not find board ${data.boardUid}`))
+      board.color = data.newBoardColor
+      dispatch(BOARD.UPDATE_BOARD_REQUEST, board)
+        .then((resp) => {
+          resolve(resp)
+        })
+        .catch((err) => {
+          reject(err)
+        })
+    })
+  },
+  [BOARD.CHANGE_BOARD_MEMBERS]: ({ commit, dispatch }, data) => {
+    return new Promise((resolve, reject) => {
+      const board = state.boards[data.boardUid]
+      if (!board) return reject(new Error(`not find board ${data.boardUid}`))
+      board.members = data.newBoardMembers
+      dispatch(BOARD.UPDATE_BOARD_REQUEST, board)
+        .then((resp) => {
+          resolve(resp)
+        })
+        .catch((err) => {
+          reject(err)
+        })
+    })
+  },
   [BOARD.ADD_STAGE_BOARD_REQUEST]: ({ commit, dispatch }, data) => {
     return new Promise((resolve, reject) => {
       const board = state.boards[data.boardUid]

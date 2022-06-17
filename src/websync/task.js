@@ -13,4 +13,7 @@ export function removeTask (uid) {
 
 export function updateTask (obj) {
   store.commit('UPDATE_TASK', obj.obj)
+  if (shouldAddTaskIntoList(obj.obj)) {
+    store.commit('ADD_TASK', obj.obj)
+  }
 }

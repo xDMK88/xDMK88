@@ -2082,7 +2082,7 @@ export default {
         @sendTaskMsg="sendTaskMsg"
         @onPasteEvent="onPasteEvent"
         @deleteFiles="deleteFiles"
-        @deleteTaskMsg="deleteTaskMsg"
+        @deleteTaskMsg="deleteTaskMsg(selectedTask.uid)"
       />
     </div>
   </div>

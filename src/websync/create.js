@@ -2,7 +2,7 @@ import store from '@/store/index.js'
 import { createProject } from '@/websync/project.js'
 import { createTask } from '@/websync/task.js'
 import { createCard } from '@/websync/card.js'
-import { createMessage, getMessage } from '@/websync/task_message.js'
+import { createMessage } from '@/websync/task_message.js'
 import { createCardMessage } from '@/websync/card_message.js'
 import * as TYPES from '@/websync/types.js'
 import { showNotify } from '@/store/helpers/functions'
@@ -90,7 +90,6 @@ export default function processCreate (obj) {
       //   })
       // }
       createMessage(obj)
-      getMessage(obj)
       break
     case TYPES.TYPE_OBJECT_TASK_TAG:
       break

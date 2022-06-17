@@ -7,7 +7,6 @@ const user = computed(() => store.state.user.user)
 
 export function createTask (obj) {
   const lastNavStackElement = navStack.value[navStack.value.length - 1]
-  console.log('last navStack Element in create Task websync', lastNavStackElement)
 
   // Adding new task by date request
   if (
@@ -21,6 +20,7 @@ export function createTask (obj) {
       new Date(lastNavStackElement.value.param).toLocaleString().split(',')[0] === new Date(obj.obj.customer_date_begin).toLocaleString().split(',')[0]
     ) {
       store.commit('ADD_TASK', obj.obj)
+      return 0
     }
   }
   // Adding new task by assigned to property
@@ -35,6 +35,7 @@ export function createTask (obj) {
       lastNavStackElement.value.param === obj.obj.email_performer
     ) {
       store.commit('ADD_TASK', obj.obj)
+      return 0
     }
   }
   // Adding new task by assigned by property
@@ -49,6 +50,7 @@ export function createTask (obj) {
       lastNavStackElement.value.param === employees.value[obj.obj.uid_customer]?.email
     ) {
       store.commit('ADD_TASK', obj.obj)
+      return 0
     }
   }
   // Adding new task by private project
@@ -62,6 +64,7 @@ export function createTask (obj) {
       lastNavStackElement.uid === obj.obj.uid_project
     ) {
       store.commit('ADD_TASK', obj.obj)
+      return 0
     }
   }
   // Adding new task by shared project
@@ -75,6 +78,7 @@ export function createTask (obj) {
       lastNavStackElement.uid === obj.obj.uid_project
     ) {
       store.commit('ADD_TASK', obj.obj)
+      return 0
     }
   }
   // Adding new task by overdue flag
@@ -88,7 +92,86 @@ export function createTask (obj) {
       lastNavStackElement.value.uid === '46418722-a720-4c9e-b255-16db4e590c34'
     ) {
       store.commit('ADD_TASK', obj.obj)
+      return 0
     }
+  }
+  // Adding new task by unread flag
+  if (obj.obj.readed === 0) {
+    if (
+      lastNavStackElement.key === 'taskListSource' &&
+      lastNavStackElement.value.uid === 'fa042915-a3d2-469c-bd5a-708cf0339b89'
+    ) {
+      store.commit('ADD_TASK', obj.obj)
+      return 0
+    }
+  }
+  // Adding new task by unread flag
+  if (obj.obj.readed === 0) {
+    if (
+      lastNavStackElement.key === 'taskListSource' &&
+      lastNavStackElement.value.uid === 'fa042915-a3d2-469c-bd5a-708cf0339b89'
+    ) {
+      store.commit('ADD_TASK', obj.obj)
+      return 0
+    }
+  }
+  // Adding new task by access
+  if (obj.obj.emails) {
+    for (const email in obj.obj.emails.split('..')) {
+      if (
+        email === user.value.current_user_email &&
+        lastNavStackElement.key === 'taskListSource' &&
+        lastNavStackElement.value.uid === 'fa042915-a3d2-469c-bd5a-708cf0339b89'
+      ) {
+        store.commit('ADD_TASK', obj.obj)
+        return 0
+      }
+    }
+  }
+  // Adding new task by focus flag
+  if (obj.obj.focus === 1) {
+    if (
+      lastNavStackElement.key === 'taskListSource' &&
+      lastNavStackElement.value.uid === '6fc44cc6-9d45-4052-917e-25b1189ab141'
+    ) {
+      store.commit('ADD_TASK', obj.obj)
+      return 0
+    }
+  }
+  // Adding new task by tag
+  if (obj.obj.tags.length) {
+    for (const tag in obj.obj.tags) {
+      if (
+        tag === lastNavStackElement.value.param &&
+        lastNavStackElement.key === 'taskListSource' &&
+        lastNavStackElement.value.uid === '00a5b3de-9474-404d-b3ba-83f488ac6d30'
+      ) {
+        store.commit('ADD_TASK', obj.obj)
+        return 0
+      }
+    }
+  }
+  // Adding new task by color
+  if (
+    obj.obj.uid_marker &&
+    obj.obj.uid_marker !== '00000000-0000-0000-0000-000000000000'
+  ) {
+    if (
+      lastNavStackElement.key === 'taskListSource' &&
+      lastNavStackElement.value.uid === 'ed8039ae-f3de-4369-8f32-829d401056e9' &&
+      lastNavStackElement.value.param === obj.obj.uid_marker
+    ) {
+      store.commit('ADD_TASK', obj.obj)
+      return 0
+    }
+  }
+  // Add to unsorted list
+  if (
+    lastNavStackElement.key === 'taskListSource' &&
+    lastNavStackElement.value.uid === '5183b619-3968-4c3a-8d87-3190cfaab014'
+  ) {
+    store.commit('ADD_TASK', obj.obj)
+    return 0
   }
 }
 

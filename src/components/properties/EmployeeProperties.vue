@@ -35,33 +35,33 @@
       v-model="currEmpName"
       type="text"
       placeholder="Имя сотрудника"
-      class="mt-[25px] p-0 font-roboto font-bold font-[18px] leading-[21px] text-[#424242] w-full border-none focus:ring-0 focus:outline-none"
+      class="mt-[25px] p-0 font-roboto font-bold text-[18px] leading-[21px] text-[#424242] w-full border-none focus:ring-0 focus:outline-none"
       @blur="changeEmpName"
     >
     <div
-      class="mt-[30px] font-roboto font-[16px] leading-[19px] font-medium text-[#4c4c4d]"
+      class="mt-[30px] font-roboto text-[16px] leading-[19px] font-medium text-[#4c4c4d]"
     >
       Email
     </div>
     <div
-      class="mt-[15px] w-full font-roboto font-[15px] leading-[18px] text-[#606061] overflow-hidden text-ellipsis whitespace-nowrap"
+      class="mt-[15px] w-full font-roboto text-[15px] leading-[18px] text-[#606061] overflow-hidden text-ellipsis whitespace-nowrap"
     >
       {{ selectedEmployee.email }}
     </div>
     <div
       v-if="selectedEmployeePhone"
-      class="mt-[30px] font-roboto font-[16px] leading-[19px] font-medium text-[#4c4c4d]"
+      class="mt-[30px] font-roboto text-[16px] leading-[19px] font-medium text-[#4c4c4d]"
     >
       Телефон
     </div>
     <div
       v-if="selectedEmployeePhone"
-      class="mt-[15px] w-full font-roboto font-[15px] leading-[18px] text-[#606061] overflow-hidden text-ellipsis whitespace-nowrap"
+      class="mt-[15px] w-full font-roboto text-[15px] leading-[18px] text-[#606061] overflow-hidden text-ellipsis whitespace-nowrap"
     >
       {{ selectedEmployeePhone }}
     </div>
     <div
-      class="mt-[30px] font-roboto font-[16px] leading-[19px] font-medium text-[#4c4c4d]"
+      class="mt-[30px] font-roboto text-[16px] leading-[19px] font-medium text-[#4c4c4d]"
     >
       Отдел
     </div>
@@ -106,7 +106,7 @@
     </div>
     <div
       v-else
-      class="mt-[15px] w-full font-roboto font-[15px] leading-[18px] text-[#606061] overflow-hidden text-ellipsis whitespace-nowrap"
+      class="mt-[15px] w-full font-roboto text-[15px] leading-[18px] text-[#606061] overflow-hidden text-ellipsis whitespace-nowrap"
     >
       {{ selectedEmployeeDep || 'Вне отдела' }}
     </div>

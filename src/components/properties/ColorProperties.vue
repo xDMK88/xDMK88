@@ -29,17 +29,17 @@
       v-model="currName"
       type="text"
       placeholder="Наименование"
-      class="mt-[25px] p-0 font-roboto font-bold font-[18px] leading-[21px] text-[#424242] w-full border-none focus:ring-0 focus:outline-none"
+      class="mt-[25px] p-0 font-roboto font-bold text-[18px] leading-[21px] text-[#424242] w-full border-none focus:ring-0 focus:outline-none"
       @blur="changeColorName"
     >
     <div
       v-else
-      class="mt-[25px] w-full font-roboto font-bold font-[18px] leading-[21px] text-[#424242] overflow-hidden text-ellipsis whitespace-nowrap"
+      class="mt-[25px] w-full font-roboto font-bold text-[18px] leading-[21px] text-[#424242] overflow-hidden text-ellipsis whitespace-nowrap"
     >
       {{ currName }}
     </div>
     <div
-      class="mt-[30px] font-roboto font-[16px] leading-[19px] font-medium text-[#4c4c4d]"
+      class="mt-[30px] font-roboto text-[16px] leading-[19px] font-medium text-[#4c4c4d]"
     >
       Цвет фона
     </div>
@@ -60,7 +60,7 @@
       </div>
     </div>
     <div
-      class="mt-[30px] font-roboto font-[16px] leading-[19px] font-medium text-[#4c4c4d]"
+      class="mt-[30px] font-roboto text-[16px] leading-[19px] font-medium text-[#4c4c4d]"
     >
       Цвет букв
     </div>
@@ -127,12 +127,12 @@
         />
       </svg>
 
-      <div class="font-roboto font-[16px] leading-[20px] text-[#4c4c4d]">
+      <div class="font-roboto text-[16px] leading-[20px] text-[#4c4c4d]">
         Все буквы прописные
       </div>
     </div>
     <div
-      class="mt-[30px] font-roboto font-[16px] leading-[19px] font-medium text-[#4c4c4d]"
+      class="mt-[30px] font-roboto text-[16px] leading-[19px] font-medium text-[#4c4c4d]"
     >
       Предпросмотр
     </div>

@@ -33,7 +33,7 @@
           :class="{ 'uppercase': !task._isEditable && colors[task.uid_marker] && colors[task.uid_marker].uppercase, 'text-gray-500': task.status == 1 || task.status == 7, 'line-through': task.status == 1 || task.status == 7 }"
           @focusout="clearTaskFocus(task)"
           @dblclick.stop="editTaskName(task)"
-          @keydown.enter="updateTask($event, task); this.$emit('changeValue', {_isEditable: false})"
+          @keydown.enter="updateTask($event, task); $emit('changeValue', {_isEditable: false})"
         />
       </div>
       <Popper
@@ -259,7 +259,7 @@
         :date-begin="task.date_begin"
         :date-end="task.date_end"
         :date-text="task.term_user"
-        @changeDates="onChangeDates(), $emit('readTask')"
+        @changeDates="onChangeDates"
       />
     </div>
   </div>
@@ -837,6 +837,7 @@ export default {
               date_end: resp.str_date_end
             }
             this.$emit('changeValue', data)
+            this.$emit('readTask')
             // this.selectedTask.term_user = resp.term
             // this.selectedTask.date_begin = resp.str_date_begin
             // this.selectedTask.date_end = resp.str_date_end

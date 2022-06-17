@@ -183,11 +183,11 @@ const copyurl = (uid) => {
                 <p>{{ email.name }}</p>
               </div>
               <input
+                ref="type"
+                v-model="email.included"
                 class="ml-2 bg-gray-300 rounded border border-gray-100"
                 type="checkbox"
-                v-model="email.included"
                 value="1"
-                ref="type"
                 :checked="selectedBoard.members[email.uid]"
                 @change="addRemoveMember(selectedBoard, email.uid, 1)"
               >
@@ -237,11 +237,11 @@ const copyurl = (uid) => {
                 <p>{{ email.name }}</p>
               </div>
               <input
+                ref="type"
+                v-model="email.included"
                 class="ml-2 bg-gray-300 rounded border border-gray-100"
                 type="checkbox"
-                v-model="email.included"
                 value="2"
-                ref="type"
                 :checked="selectedBoard.members[email.uid]"
                 @change="addRemoveMember(selectedBoard, email.uid, 2)"
               >
@@ -291,11 +291,11 @@ const copyurl = (uid) => {
                 <p>{{ email.name }}</p>
               </div>
               <input
+                ref="type"
+                v-model="email.included"
                 class="ml-2 bg-gray-300 rounded border border-gray-100"
                 type="checkbox"
                 name="type"
-                v-model="email.included"
-                ref="type"
                 value="0"
                 :checked="selectedBoard.members[email.uid]"
                 @change="addRemoveMember(selectedBoard, email.uid, 0)"

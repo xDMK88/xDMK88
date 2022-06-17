@@ -162,7 +162,7 @@ const actions = {
               group: 'api',
               title: 'REST API Error, please make screenshot',
               action: NAVIGATOR_REQUEST,
-              text: err.response.data
+              text: err.response?.data ?? err
             },
             15000
           )

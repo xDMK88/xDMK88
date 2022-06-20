@@ -7,8 +7,8 @@ import TasksListNew from '@/components/TasksListNew.vue'
 import MainSection from '@/components/MainSection.vue'
 import Projects from '@/components/Projects.vue'
 import Boards from '@/components/Boards.vue'
-import ProjectsChildren from '@/components/ProjectsChildren.vue'
 import BoardWithChildren from '@/components/Board/BoardWithChildren.vue'
+import ProjectWithChildren from '@/components/Projects/ProjectWithChildren.vue'
 import Employees from '@/components/Employees.vue'
 import Tags from '@/components/Tags.vue'
 import Colors from '@/components/Colors/Colors.vue'
@@ -228,8 +228,7 @@ const getNavigator = () => {
         // Checking if last navElement is a gridSource
         if (navStack.value.length && navStack.value.length > 0) {
           if (navStack.value[navStack.value.length - 1].key === 'greedSource') {
-            const navStackUid = navStack.value[0]?.value?.uid
-            // desktop check
+            const navStackUid = navStack.value[navStack.value.length - 1]?.value?.uid
             if (navStackUid === '2bad1413-a373-4926-8a3c-58677a680714') {
               store.commit('basic', { key: 'mainSectionState', value: 'greed' })
               store.commit('basic', { key: 'greedPath', value: 'dashboard' })
@@ -393,7 +392,7 @@ if (router.currentRoute.value.name === 'task' && router.currentRoute.value.param
       <other
         v-if="greedPath === 'other'"
       />
-      <projects-children
+      <ProjectWithChildren
         v-if="greedPath === 'projects_children'"
         :projects="greedSource"
       />

@@ -1,13 +1,12 @@
-import * as PROJECT from '../actions/projects'
 import axios from 'axios'
 import { notify } from 'notiwind'
+import * as PROJECT from '../actions/projects'
 
 const state = {
   projects: {},
   selectedProject: undefined
 }
-const getters = {
-}
+const getters = {}
 const getDefaultState = () => {
   return {
     projects: false,
@@ -23,15 +22,61 @@ const actions = {
     return new Promise((resolve, reject) => {
       const url = process.env.VUE_APP_LEADERTASK_API + 'api/v1/projects'
       axios({ url: url, method: 'POST', data: data })
-        .then(resp => {
+        .then((resp) => {
           resolve(resp)
-        }).catch(err => {
-          notify({
-            group: 'api',
-            title: 'REST API Error, please make screenshot',
-            action: PROJECT.CREATE_PROJECT_REQUEST,
-            text: err.response.data
-          }, 15000)
+        })
+        .catch((err) => {
+          notify(
+            {
+              group: 'api',
+              title: 'REST API Error, please make screenshot',
+              action: PROJECT.CREATE_PROJECT_REQUEST,
+              text: err.response.data
+            },
+            15000
+          )
+          reject(err)
+        })
+    })
+  },
+  [PROJECT.CHANGE_PROJECT_NAME]: ({ commit, dispatch }, data) => {
+    return new Promise((resolve, reject) => {
+      const project = state.projects[data.projectUid]
+      if (!project) { return reject(new Error(`not find project ${data.projectUid}`)) }
+      project.name = data.newProjectTitle
+      dispatch(PROJECT.UPDATE_PROJECT_REQUEST, project)
+        .then((resp) => {
+          resolve(resp)
+        })
+        .catch((err) => {
+          reject(err)
+        })
+    })
+  },
+  [PROJECT.CHANGE_PROJECT_COLOR]: ({ commit, dispatch }, data) => {
+    return new Promise((resolve, reject) => {
+      const project = state.projects[data.projectUid]
+      if (!project) { return reject(new Error(`not find project ${data.projectUid}`)) }
+      project.color = data.newProjectColor
+      dispatch(PROJECT.UPDATE_PROJECT_REQUEST, project)
+        .then((resp) => {
+          resolve(resp)
+        })
+        .catch((err) => {
+          reject(err)
+        })
+    })
+  },
+  [PROJECT.CHANGE_PROJECT_MEMBERS]: ({ commit, dispatch }, data) => {
+    return new Promise((resolve, reject) => {
+      const project = state.projects[data.projectUid]
+      if (!project) { return reject(new Error(`not find project ${data.projectUid}`)) }
+      project.members = data.newProjectMembers
+      dispatch(PROJECT.UPDATE_PROJECT_REQUEST, project)
+        .then((resp) => {
+          resolve(resp)
+        })
+        .catch((err) => {
           reject(err)
         })
     })
@@ -40,49 +85,67 @@ const actions = {
     return new Promise((resolve, reject) => {
       const url = process.env.VUE_APP_LEADERTASK_API + 'api/v1/projects'
       axios({ url: url, method: 'PATCH', data: data })
-        .then(resp => {
+        .then((resp) => {
           resolve(resp)
-        }).catch(err => {
-          notify({
-            group: 'api',
-            title: 'REST API Error, please make screenshot',
-            action: PROJECT.UPDATE_PROJECT_REQUEST,
-            text: err.response.data
-          }, 15000)
+        })
+        .catch((err) => {
+          notify(
+            {
+              group: 'api',
+              title: 'REST API Error, please make screenshot',
+              action: PROJECT.UPDATE_PROJECT_REQUEST,
+              text: err.response?.data || err
+            },
+            15000
+          )
           reject(err)
         })
     })
   },
   [PROJECT.REMOVE_PROJECT_REQUEST]: ({ commit, dispatch }, uid) => {
     return new Promise((resolve, reject) => {
-      const url = process.env.VUE_APP_LEADERTASK_API + 'api/v1/projects?uid=' + uid
+      const url =
+        process.env.VUE_APP_LEADERTASK_API + 'api/v1/projects?uid=' + uid
       axios({ url: url, method: 'DELETE' })
-        .then(resp => {
+        .then((resp) => {
           resolve(resp)
-        }).catch(err => {
-          notify({
-            group: 'api',
-            title: 'REST API Error, please make screenshot',
-            action: PROJECT.REMOVE_PROJECT_REQUEST,
-            text: err.response.data
-          }, 15000)
+        })
+        .catch((err) => {
+          notify(
+            {
+              group: 'api',
+              title: 'REST API Error, please make screenshot',
+              action: PROJECT.REMOVE_PROJECT_REQUEST,
+              text: err.response.data
+            },
+            15000
+          )
           reject(err)
         })
     })
   },
   [PROJECT.QUIT_PROJECT_REQUEST]: ({ commit, dispatch }, data) => {
     return new Promise((resolve, reject) => {
-      const url = process.env.VUE_APP_LEADERTASK_API + 'api/v1/projects/exit?uid=' + data.uid + '&email=' + data.value
+      const url =
+        process.env.VUE_APP_LEADERTASK_API +
+        'api/v1/projects/exit?uid=' +
+        data.uid +
+        '&email=' +
+        data.value
       axios({ url: url, method: 'POST' })
-        .then(resp => {
+        .then((resp) => {
           resolve(resp)
-        }).catch(err => {
-          notify({
-            group: 'api',
-            title: 'REST API Error, please make screenshot',
-            action: PROJECT.QUIT_PROJECT_REQUEST,
-            text: err.response.data
-          }, 15000)
+        })
+        .catch((err) => {
+          notify(
+            {
+              group: 'api',
+              title: 'REST API Error, please make screenshot',
+              action: PROJECT.QUIT_PROJECT_REQUEST,
+              text: err.response?.data || err
+            },
+            15000
+          )
           reject(err)
         })
     })

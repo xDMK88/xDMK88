@@ -1,358 +1,381 @@
-<script setup>
-import { computed, ref, watch, onMounted } from 'vue'
-import { useStore } from 'vuex'
-import { copyText } from 'vue3-clipboard'
-import Icon from '@/components/Icon.vue'
-import ColorPicker from '@/components/properties/ColorPicker.vue'
-import Toggle from '@vueform/toggle'
-import add from '@/icons/add.js'
-import close from '@/icons/close.js'
-import Popper from 'vue3-popper'
-
-import ModalBoxConfirm from '@/components/modals/ModalBoxConfirm.vue'
-
-import {
-  CREATE_PROJECT_REQUEST,
-  UPDATE_PROJECT_REQUEST,
-  PUSH_PROJECT,
-  QUIT_PROJECT_REQUEST,
-  REMOVE_PROJECT_REQUEST
-} from '@/store/actions/projects'
-import { NAVIGATOR_PUSH_PROJECT, NAVIGATOR_REMOVE_PROJECT } from '@/store/actions/navigator'
-
-const store = useStore()
-const selectedProject = computed(() => store.state.projects.selectedProject)
-const user = computed(() => store.state.user.user)
-const employeesByEmail = computed(() => store.state.employees.employeesByEmail)
-const isDark = computed(() => store.state.darkMode)
-const showConfirm = ref(false)
-const showConfirmQuit = ref(false)
-const hasChanged = ref(false)
-const showAllMembers = ref(false)
-const closeProperties = () => {
-  store.dispatch('asidePropertiesToggle', false)
-}
-function arrayRemove (arr, value) {
-  return arr.filter(function (ele) {
-    return ele !== value
-  })
-}
-
-onMounted(() => {
-  hasChanged.value = false
-})
-
-watch(selectedProject, () => {
-  showAllMembers.value = false
-  selectedProject.value.quiet = !!selectedProject.value.quiet
-  hasChanged.value = false
-})
-
-const addRemoveMember = (email) => {
-  hasChanged.value = true
-  if (email.included) {
-    selectedProject.value.members.push(email.email)
-  } else {
-    selectedProject.value.members = arrayRemove(selectedProject.value.members, email.email)
-  }
-}
-
-const removeMember = (member) => {
-  selectedProject.value.members = arrayRemove(selectedProject.value.members, member.email)
-}
-
-function uuidv4 () {
-  return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
-    (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
-  )
-}
-
-const createOrUpdateProject = (project) => {
-  project.quiet = project.quiet ? 1 : 0
-  // TODO: should not be hardcoded
-  project.global_property_uid = '431a3531-a77a-45c1-8035-f0bf75c32641'
-  if (!project.uid) {
-    project.uid = uuidv4()
-    store.dispatch(CREATE_PROJECT_REQUEST, project)
-      .then(() => {
-        hasChanged.value = false
-        project.quiet = !!project.quiet
-        store.dispatch('asidePropertiesToggle', false)
-        store.commit(PUSH_PROJECT, [project])
-        store.commit(NAVIGATOR_PUSH_PROJECT, [project])
-      })
-  } else {
-    store.dispatch(UPDATE_PROJECT_REQUEST, project)
-      .then(() => {
-        hasChanged.value = false
-        project.quiet = !!project.quiet
-        store.dispatch('asidePropertiesToggle', false)
-      })
-  }
-}
-
-const quitProject = (project) => {
-  store.dispatch(QUIT_PROJECT_REQUEST, { uid: project.uid, value: user.value.current_user_email })
-    .then(() => {
-      store.dispatch('asidePropertiesToggle', false)
-      store.commit(NAVIGATOR_REMOVE_PROJECT, project)
-    })
-}
-
-const removeProject = (project) => {
-  store.dispatch(REMOVE_PROJECT_REQUEST, project.uid)
-    .then(() => {
-      store.dispatch('asidePropertiesToggle', false)
-      store.commit(NAVIGATOR_REMOVE_PROJECT, project)
-    })
-}
-
-const copyurl = (uid) => {
-  copyText(`${window.location.origin}/project/${uid}`, undefined, (error, event) => {
-    if (error) {
-      console.log(error)
-    } else {
-      console.log(event)
-    }
-  })
-}
-</script>
-
 <template>
-  <modal-box-confirm
-    v-model="showConfirmQuit"
-    button="warning"
-    has-button
-    has-cancel
-    button-label="Quit"
-    @confirm="quitProject(selectedProject)"
-  >
-    <p class="text-center">
-      Вы действительно хотите выйти из проекта "<strong>{{ selectedProject.name }}</strong>"?
-    </p>
-  </modal-box-confirm>
-  <modal-box-confirm
-    v-model="showConfirm"
-    button="warning"
-    has-button
-    has-cancel
-    button-label="Delete"
-    @confirm="removeProject(selectedProject)"
-  >
-    <p class="text-center">
-      Вы действительно хотите удалить проект "<strong>{{ selectedProject.name }}</strong>"?
-    </p>
-  </modal-box-confirm>
   <div>
-    <div class="inline-flex justify-center items-center text-[#7E7E80] dark:text-white cursor-pointer absolute right-3 mr-1.5 mt-1 z-1" @click="closeProperties">
-      <svg viewBox="0 0 11 11" width="12" height="12" class="cursor-pointer" >
-        <path fill="currentColor" fill-rule="evenodd" clip-rule="evenodd" d="M6.17983 5.00341L9.76317 1.42841C9.92009 1.27149 10.0082 1.05866 10.0082 0.836743C10.0082 0.614825 9.92009 0.401996 9.76317 0.245076C9.60625 0.0881567 9.39342 0 9.1715 0C8.94958 0 8.73675 0.0881567 8.57983 0.245076L5.00483 3.82841L1.42983 0.245076C1.27291 0.0881567 1.06008 -1.65342e-09 0.838165 0C0.616247 1.65342e-09 0.403418 0.0881567 0.246499 0.245076C0.0895788 0.401996 0.00142217 0.614825 0.00142217 0.836743C0.00142217 1.05866 0.0895788 1.27149 0.246499 1.42841L3.82983 5.00341L0.246499 8.57841C0.168392 8.65588 0.106397 8.74805 0.0640893 8.8496C0.0217821 8.95115 0 9.06007 0 9.17008C0 9.28009 0.0217821 9.38901 0.0640893 9.49056C0.106397 9.59211 0.168392 9.68427 0.246499 9.76174C0.323968 9.83985 0.416135 9.90185 0.517685 9.94415C0.619234 9.98646 0.728156 10.0082 0.838165 10.0082C0.948175 10.0082 1.0571 9.98646 1.15865 9.94415C1.2602 9.90185 1.35236 9.83985 1.42983 9.76174L5.00483 6.17841L8.57983 9.76174C8.6573 9.83985 8.74947 9.90185 8.85102 9.94415C8.95257 9.98646 9.06149 10.0082 9.1715 10.0082C9.28151 10.0082 9.39043 9.98646 9.49198 9.94415C9.59353 9.90185 9.6857 9.83985 9.76317 9.76174C9.84127 9.68427 9.90327 9.59211 9.94558 9.49056C9.98788 9.38901 10.0097 9.28009 10.0097 9.17008C10.0097 9.06007 9.98788 8.95115 9.94558 8.8496C9.90327 8.74805 9.84127 8.65588 9.76317 8.57841L6.17983 5.00341Z"></path>
-      </svg>
+    <ModalBoxDelete
+      v-show="showConfirm"
+      title="Удалить проект"
+      :text="`Вы действительно хотите удалить проект ${selectedProjectName}?`"
+      @cancel="showConfirm = false"
+      @yes="removeProject"
+    />
+    <ModalBoxDelete
+      v-show="showConfirmQuit"
+      title="Покинуть проект"
+      :text="`Вы действительно хотите покинуть проект ${selectedProjectName}? Обратно можно попасть, только если владелец проекта опять вас добавит.`"
+      @cancel="showConfirmQuit = false"
+      @yes="quitProject"
+    />
+    <div class="flex justify-between items-center">
+      <PopMenu>
+        <PropsButtonMenu />
+        <template #menu>
+          <PopMenuItem @click="copyLinkToProject">
+            Копировать ссылку на проект
+          </PopMenuItem>
+          <PopMenuItem
+            v-if="isCanDelete"
+            icon="delete"
+            @click="showConfirm = true"
+          >
+            Удалить
+          </PopMenuItem>
+          <PopMenuItem
+            v-else
+            icon="delete"
+            @click="showConfirmQuit = true"
+          >
+            Покинуть проект
+          </PopMenuItem>
+        </template>
+      </PopMenu>
+      <PropsButtonClose @click="closeProperties" />
     </div>
-    <div>
-      <p class="text-sm text-gray-500 dark:text-gray-200">
-        <svg width="4" height="16" viewBox="0 0 4 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M2 12C3.10457 12 4 12.8954 4 14C4 15.1046 3.10457 16 2 16C0.89543 16 0 15.1046 0 14C0 12.8954 0.89543 12 2 12Z" fill="#7E7E80"/>
-          <path d="M2 6C3.10457 6 4 6.89543 4 8C4 9.10457 3.10457 10 2 10C0.89543 10 0 9.10457 0 8C0 6.89543 0.89543 6 2 6Z" fill="#7E7E80"/>
-          <path d="M2 0C3.10457 0 4 0.895431 4 2C4 3.10457 3.10457 4 2 4C0.89543 4 0 3.10457 0 2C0 0.895431 0.89543 0 2 0Z" fill="#7E7E80"/>
+    <input
+      v-if="isCanEdit"
+      v-model="currName"
+      type="text"
+      placeholder="Наименование"
+      class="mt-[25px] p-0 font-roboto font-bold font-[18px] leading-[21px] text-[#424242] w-full border-none focus:ring-0 focus:outline-none"
+      @blur="changeProjectName"
+    >
+    <div
+      v-else
+      class="mt-[25px] w-full font-roboto font-bold font-[18px] leading-[21px] text-[#424242] overflow-hidden text-ellipsis whitespace-nowrap"
+    >
+      {{ currName }}
+    </div>
+    <div
+      class="mt-[30px] font-roboto text-[16px] leading-[19px] font-medium text-[#4c4c4d]"
+    >
+      Цвет
+    </div>
+    <div class="w-full mt-[15px] gap-[4px] flex flex-col">
+      <div
+        v-for="(clrs, index) in defaultColors"
+        :key="index"
+        class="flex gap-[4px]"
+      >
+        <PropsColorBoxItem
+          v-for="clr in clrs"
+          :key="clr.color"
+          :class="{ 'cursor-pointer': isCanEdit }"
+          :color="clr.color"
+          :selected="clr.selected"
+          @select="changeProjectColor"
+        />
+      </div>
+    </div>
+    <div
+      class="mt-[30px] mb-[8px] font-roboto text-[16px] leading-[19px] font-medium text-[#4c4c4d]"
+    >
+      Доступ
+    </div>
+    <PopMenu
+      v-if="isCanEdit && usersCanAddToAccess.length"
+      class="w-full"
+    >
+      <div
+        class="w-full h-[34px] gap-[5px] flex items-center text-[#4c4c4d] hover:text-[#4c4c4d]/75 cursor-pointer"
+      >
+        <svg
+          width="16"
+          height="16"
+          viewBox="0 0 16 16"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M8.66824 7.3379L8.67295 3.28854C8.67295 3.111 8.60243 2.94074 8.47689 2.8152C8.35135 2.68967 8.18109 2.61914 8.00356 2.61914C7.82602 2.61914 7.65576 2.68967 7.53022 2.8152C7.40469 2.94074 7.33416 3.111 7.33416 3.28853L7.33888 7.3379L3.28951 7.33319C3.11198 7.33319 2.94171 7.40371 2.81618 7.52925C2.69064 7.65478 2.62012 7.82505 2.62012 8.00258C2.62012 8.18011 2.69064 8.35038 2.81618 8.47591C2.94171 8.60145 3.11198 8.67197 3.28951 8.67197L7.33888 8.66726L7.33416 12.7166C7.3338 12.8046 7.35087 12.8918 7.38438 12.9732C7.41789 13.0546 7.46719 13.1285 7.52942 13.1908C7.59165 13.253 7.66559 13.3023 7.74696 13.3358C7.82834 13.3693 7.91555 13.3864 8.00356 13.386C8.09156 13.3864 8.17877 13.3693 8.26015 13.3358C8.34153 13.3023 8.41546 13.253 8.47769 13.1908C8.53993 13.1285 8.58922 13.0546 8.62273 12.9732C8.65624 12.8918 8.67331 12.8046 8.67295 12.7166L8.66824 8.66726L12.7176 8.67197C12.8056 8.67233 12.8928 8.65527 12.9742 8.62176C13.0556 8.58824 13.1295 8.53895 13.1917 8.47672C13.254 8.41449 13.3033 8.34055 13.3368 8.25917C13.3703 8.17779 13.3874 8.09059 13.387 8.00258C13.3874 7.91457 13.3703 7.82736 13.3368 7.74599C13.3033 7.66461 13.254 7.59067 13.1917 7.52844C13.1295 7.46621 13.0556 7.41692 12.9742 7.3834C12.8928 7.34989 12.8056 7.33283 12.7176 7.33319L8.66824 7.3379Z"
+            fill="currentColor"
+          />
         </svg>
 
-      </p>
-      <p
-        class="mt-4"
-      >
-        Название
-      </p>
-      <input
-        v-model="selectedProject.name"
-        type="text"
-        maxlength="100"
-        placeholder="Название проекта"
-        class="mt-2 rounded-xl bg-gray-100 font-bold text-gray-700 dark:text-gray-100 w-full border-none ring-0 outline-none p-3 bg-transparent"
-        :disabled="selectedProject.email_creator.toLowerCase() != user.current_user_email.toLowerCase()"
-        @input="hasChanged = true"
-      >
-      <div
-        class="mt-8"
-      >
-        <ColorPicker
-          v-model="selectedProject.color"
-          :update="() => hasChanged = true "
-          :label="'Цвет проекта'"
-          :disabled="selectedProject.email_creator.toLowerCase() != user.current_user_email.toLowerCase()"
-        />
-      </div>
-      <hr class="my-6">
-      <div
-        class="flex items-center mb-6"
-      >
-        <p class="text-sm mr-3">
-          Не следить за изменениями
-        </p>
-        <Toggle
-          v-model="selectedProject.quiet"
-          class="outline-none ring-0"
-          :classes="{ toggleOn: 'bg-blue-400 border-blue-400 justify-start text-white', container: 'focus:ring-0' }"
-          @change="hasChanged = true"
-        />
-      </div>
-      <p class="dark:text-gray-200">
-        Доступ
-      </p>
-      <Popper
-        arrow
-        :z-index="999999999999999999"
-        class="z-auto"
-        :class="isDark ? 'dark' : 'light'"
-        placement="top"
-      >
-        <template #content>
-          <div
-            style="max-height: 15rem;"
-            class="overflow-scroll"
-          >
-            <div
-              v-for="(email, index) in employeesByEmail"
-              :key="index"
-              class="px-3 py-1 bg-gray-50 rounded-xl mt-1 flex items-center justify-between border border-gray-100"
-            >
-              <div class="flex items-center">
-                <img
-                  :src="email.fotolink"
-                  class="rounded-xl mr-2"
-                  width="35"
-                  height="35"
-                >
-                <p>{{ email.name }}</p>
-              </div>
-              <input
-                v-model="email.included"
-                class="ml-2 bg-gray-300 rounded border border-gray-100"
-                :checked="selectedProject.members.includes(email.email)"
-                type="checkbox"
-                @change="addRemoveMember(email)"
-              >
-            </div>
-          </div>
-        </template>
         <div
-          v-if="selectedProject.email_creator.toLowerCase() == user.current_user_email.toLowerCase()"
-          class="flex items-center justify-center my-6 cursor-pointer"
+          class="font-roboto text-[13px] leading-[15px] font-medium"
         >
-          <Icon
-            :path="add.path"
-            :box="add.viewBox"
-            :width="add.width"
-            :height="add.height"
-            class="text-gray-500 dark:text-gray-100 mx-3"
-          />
-          <p class="text-gray-600 dark:text-gray-100">
-            Добавить участника проекта
-          </p>
+          Добавить сотрудника
         </div>
-      </Popper>
-      <div
-        class="grid grid-cols-1"
-      >
-        <template
-          v-for="(employee, pindex) in selectedProject.members"
-          :key="pindex"
-        >
-          <div
-            v-if="employeesByEmail[employee.toLowerCase()]"
-            v-show="pindex < 4 || showAllMembers"
-            class="flex items-center bg-white dark:bg-gray-700 rounded-xl shadow h-30 px-3 py-5 mt-1"
-          >
-            <img
-              :src="employeesByEmail[employee.toLowerCase()].fotolink"
-              class="rounded-lg mx-2 my-auto"
-              width="38"
-              height="38"
-            >
-            <div class="w-full">
-              <div class="flex items-start justify-between">
-                <p
-                  class="font-normal cursor-pointer"
-                >
-                  {{ employeesByEmail[employee.toLowerCase()].name }}
-                </p>
-                <icon
-                  v-if="employeesByEmail[employee.toLowerCase()].uid !== user.current_user_uid && selectedProject.email_creator.toLowerCase() == user.current_user_email.toLowerCase()"
-                  :path="close.path"
-                  :width="10"
-                  :height="10"
-                  :box="close.viewBox"
-                  class="text-grayemployeesByEmail[employee]-400 cursor-pointer hover:text-gray-800"
-                  @click="removeMember(employeesByEmail[employee.toLowerCase()])"
-                />
-              </div>
-              <p class="font-light text-xs break-all">
-                {{ employeesByEmail[employee.toLowerCase()].email }}
-              </p>
-            </div>
-          </div>
-        </template>
-        <p
-          v-if="selectedProject.members && selectedProject.members.length > 4 && !showAllMembers"
-          class="text-gray-500 text-center decoration-dashed underline mt-3 cursor-pointer"
-          @click="showAllMembers = true"
-        >
-          Показать всех участников
-        </p>
       </div>
-      <button
-        v-if="selectedProject.email_creator.toLowerCase() == user.current_user_email.toLowerCase()"
-        class="w-full bg-gray-100 dark:bg-gray-800 rounded-xl mt-4 p-3 text-gray-700 dark:text-gray-100 font-bold hover:bg-gray-200 hover:dark:bg-gray-700"
-        :class="{ 'bg-orange-400 dark:bg-orange-400 hover:bg-orange-500 hover:dark:bg-orange-500': hasChanged }"
-        @click="createOrUpdateProject(selectedProject)"
-      >
-        {{ selectedProject.uid ? 'Сохранить' : 'Создать' }}
-      </button>
-      <button
-        v-if="selectedProject.email_creator.toLowerCase() == user.current_user_email.toLowerCase() && selectedProject.uid"
-        class="w-full bg-red-600 rounded-xl mt-4 p-3 text-white font-bold hover:bg-red-800"
-        @click="showConfirm = true"
-      >
-        Удалить
-      </button>
-      <button
-        v-if="selectedProject.email_creator.toLowerCase() !== user.current_user_email.toLowerCase()"
-        class="w-full bg-gray-100 rounded-xl mt-4 p-3 text-gray-700 font-bold hover:bg-gray-200"
-        @click="showConfirmQuit = true"
-      >
-        Выйти из проекта
-      </button>
-      <button
-        class="w-full bg-gray-100 rounded-xl mt-4 p-3 text-gray-700 font-bold hover:bg-gray-200"
-        @click="copyurl(selectedProject.uid)"
-      >
-        Скопировать как ссылку
-      </button>
-    </div>
+      <template #menu>
+        <div class="max-h-[220px] overflow-y-auto w-[220px]">
+          <ProjectPropsMenuItemUser
+            v-for="user in usersCanAddToAccess"
+            :key="user.email"
+            :user-email="user.email"
+            @click="addProjectMember(user.email)"
+          />
+        </div>
+      </template>
+    </PopMenu>
+    <ProjectPropsUserButton
+      class="mt-[8px]"
+      :user-email="selectedProjectCreatorEmail"
+      status="Владелец"
+      disabled
+    />
+    <ProjectPropsUserButton
+      v-for="user in usersBoard"
+      :key="user.email"
+      :user-email="user.email"
+      :disabled="!isCanEdit"
+      @delete="deleteMember(user.email)"
+    />
   </div>
 </template>
 
-<style>
-.dark {
-  --popper-theme-background-color: #333333;
-  --popper-theme-background-color-hover: #333333;
-  --popper-theme-text-color: white;
-  --popper-theme-border-width: 0px;
-  --popper-theme-border-radius: 0.75rem;
-  --popper-theme-padding: 10px;
-  --popper-theme-box-shadow: 0 6px 30px -6px rgba(0, 0, 0, 0.25);
-}
+<script>
+import ProjectPropsUserButton from '@/components/Projects/ProjectPropsUserButton.vue'
+import ProjectPropsMenuItemUser from '@/components/Projects/ProjectPropsMenuItemUser.vue'
+import ModalBoxDelete from '@/components/Common/ModalBoxDelete.vue'
+import PropsColorBoxItem from '@/components/Common/PropsColorBoxItem.vue'
+import PopMenu from '@/components/modals/PopMenu.vue'
+import PopMenuItem from '@/components/modals/PopMenuItem.vue'
+import PropsButtonClose from '@/components/Common/PropsButtonClose.vue'
+import PropsButtonMenu from '@/components/Common/PropsButtonMenu.vue'
 
-.light {
-  --popper-theme-background-color: #ffffff;
-  --popper-theme-background-color-hover: #ffffff;
-  --popper-theme-text-color: #333333;
-  --popper-theme-border-width: 1px;
-  --popper-theme-border-style: solid;
-  --popper-theme-border-color: #eeeeee;
-  --popper-theme-border-radius: 0.75rem;
-  --popper-theme-padding: 10px;
-  --popper-theme-box-shadow: 0 6px 30px -6px rgba(0, 0, 0, 0.25);
-}
+import * as PROJECT from '@/store/actions/projects'
+import { NAVIGATOR_REMOVE_PROJECT } from '@/store/actions/navigator'
+import { copyText } from 'vue3-clipboard'
 
+export default {
+  components: {
+    ModalBoxDelete,
+    ProjectPropsUserButton,
+    ProjectPropsMenuItemUser,
+    PropsColorBoxItem,
+    PopMenu,
+    PopMenuItem,
+    PropsButtonClose,
+    PropsButtonMenu
+  },
+  data () {
+    return {
+      showConfirm: false,
+      showConfirmQuit: false,
+      currName: ''
+    }
+  },
+  computed: {
+    defaultColors () {
+      const allColors = [
+        '',
+        '#7fc870',
+        '#69c494',
+        '#dff2e1',
+        '#ffaf40',
+        '#ffd7a0',
+        '#5ba4cf',
+        '#9eedff',
+        '#b381b3',
+        '#e5e5e5',
+        '#ddd1c2',
+        '#ef7665',
+        '#ffc6b5',
+        '#ff8ed4',
+        '#f5dbf5',
+        '#6a7077',
+        '#f6dd29',
+        '#f5f547'
+      ]
+      // добавляем в конец выбранный цвет если его тут нет
+      const usedColor = this.selectedProjectColor.toLowerCase()
+      if (!allColors.includes(usedColor)) {
+        allColors.splice(allColors.length - 1, 1, usedColor)
+      }
+      const colors = allColors.map((color) => ({
+        color: color,
+        selected: color === usedColor
+      }))
+      // разбираем на ряды по 9
+      const rowLength = 9
+      const arrColors = []
+      while (colors.length) arrColors.push(colors.splice(0, rowLength))
+      return arrColors
+    },
+    employeesByEmail () {
+      return this.$store.state.employees.employeesByEmail
+    },
+    selectedProject () {
+      return this.$store.state.projects.selectedProject
+    },
+    selectedProjectUid () {
+      return this.selectedProject?.uid || ''
+    },
+    selectedProjectName () {
+      return this.selectedProject?.name || ''
+    },
+    selectedProjectCreatorEmail () {
+      return this.selectedProject?.email_creator || ''
+    },
+    selectedProjectColor () {
+      const backColor = this.selectedProject?.color
+      if (backColor && backColor !== '#A998B6') return backColor
+      return ''
+    },
+    isCanDelete () {
+      const user = this.$store.state.user.user
+      return this.selectedProjectCreatorEmail === user.current_user_email
+    },
+    isCanEdit () {
+      return this.isCanDelete
+    },
+    usersBoard () {
+      const users = []
+      const members = this.selectedProject?.members || []
+      for (const userEmail of members) {
+        const emp = this.employeesByEmail[userEmail.toLowerCase()]
+        if (emp && emp?.email !== this.selectedProjectCreatorEmail) {
+          users.push({
+            uid: emp?.uid,
+            email: emp?.email
+          })
+        }
+      }
+      return users
+    },
+    selectedProjectMembers () {
+      return this.selectedProject?.members.reduce((acc, userEmail) => {
+        acc[userEmail.toLowerCase()] = userEmail
+        return acc
+      }, {}) || {}
+    },
+    usersCanAddToAccess () {
+      const users = []
+      const employees = Object.values(this.$store.state.employees.employees)
+      for (const emp of employees) {
+        if (this.selectedProjectMembers[emp.email.toLowerCase()] === undefined) {
+          users.push({
+            uid: emp.uid,
+            email: emp.email
+          })
+        }
+      }
+      return users
+    }
+  },
+  watch: {
+    selectedProjectName: {
+      immediate: true,
+      handler: function (val) {
+        this.currName = val
+      }
+    }
+  },
+  methods: {
+    print (msg, param) {
+      console.log(msg, param)
+    },
+    removeProject () {
+      this.showConfirm = false
+
+      this.$store
+        .dispatch(PROJECT.REMOVE_PROJECT_REQUEST, this.selectedProjectUid)
+        .then((resp) => {
+          console.log('quitProject', resp)
+          this.$store.dispatch('asidePropertiesToggle', false)
+          this.$store.commit(NAVIGATOR_REMOVE_PROJECT, this.selectedProject)
+        })
+    },
+    quitProject () {
+      this.showConfirmQuit = false
+
+      this.$store.dispatch(PROJECT.QUIT_PROJECT_REQUEST, {
+        uid: this.selectedProjectUid,
+        value: this.$store.state.user.user.current_user_email
+      })
+        .then((resp) => {
+          console.log('quitProject', resp)
+          this.$store.dispatch('asidePropertiesToggle', false)
+          this.$store.commit(NAVIGATOR_REMOVE_PROJECT, this.selectedProject)
+        })
+    },
+    closeProperties () {
+      this.$store.dispatch('asidePropertiesToggle', false)
+    },
+    changeProjectName () {
+      const title = this.currName.trim()
+      if (this.isCanEdit && title && this.selectedProjectName !== title) {
+        this.selectedProject.name = title
+        this.$store
+          .dispatch(PROJECT.CHANGE_PROJECT_NAME, {
+            projectUid: this.selectedProjectUid,
+            newProjectTitle: title
+          })
+          .then((resp) => {
+            console.log('changeProjectName', resp, title)
+          })
+      }
+    },
+    changeProjectColor (color) {
+      if (this.isCanEdit && this.selectedProjectColor.toLowerCase() !== color) {
+        this.selectedProject.color = color || '#A998B6'
+        const data = {
+          projectUid: this.selectedProjectUid,
+          newProjectColor: color || '#A998B6'
+        }
+        this.$store.dispatch(PROJECT.CHANGE_PROJECT_COLOR, data).then((resp) => {
+          console.log('changeProjectColor', resp, color)
+        })
+      }
+    },
+    addProjectMember (userEmail) {
+      if (
+        this.isCanEdit &&
+        this.selectedProjectMembers[userEmail.toLowerCase()] === undefined
+      ) {
+        const users = [...this.selectedProject.members]
+        users.push(userEmail)
+        this.selectedProject.members = users
+        const data = {
+          projectUid: this.selectedProjectUid,
+          newProjectMembers: users
+        }
+        this.$store.dispatch(PROJECT.CHANGE_PROJECT_MEMBERS, data).then((resp) => {
+          console.log('changeProjectMembers', resp, users)
+        })
+      }
+    },
+    deleteMember (userEmail) {
+      if (
+        this.isCanEdit &&
+        this.selectedProjectMembers[userEmail.toLowerCase()] !== undefined
+      ) {
+        const users = this.selectedProject.members.filter((email) => email.toLowerCase() !== userEmail.toLowerCase())
+        this.selectedProject.members = users
+        const data = {
+          projectUid: this.selectedProjectUid,
+          newProjectMembers: users
+        }
+        this.$store.dispatch(PROJECT.CHANGE_PROJECT_MEMBERS, data).then((resp) => {
+          console.log('changeProjectMembers', resp, users)
+        })
+      }
+    },
+    copyLinkToProject () {
+      copyText(
+        `${window.location.origin}/project/${this.selectedProjectUid}`,
+        undefined,
+        (error, event) => {
+          if (error) {
+            console.log('copyLinkToProject error', error)
+          } else {
+            console.log('copyLinkToProject', event)
+          }
+        }
+      )
+    }
+  }
+}
+</script>
+
+<style scoped>
 </style>

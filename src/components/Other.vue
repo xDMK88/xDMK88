@@ -171,7 +171,7 @@ export default {
             width: 30,
             height: 30
           },
-          link: 'ed8039ae-f3de-4369-8f32-829d401056e9',
+          link: '00a5b3de-9474-404d-b3ba-83f488ac6d30',
           path: 'tags'
         },
         color: {
@@ -185,7 +185,7 @@ export default {
             width: 30,
             height: 30
           },
-          link: '00a5b3de-9474-404d-b3ba-83f488ac6d30',
+          link: 'ed8039ae-f3de-4369-8f32-829d401056e9',
           path: 'colors'
         }
       }

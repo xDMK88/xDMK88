@@ -228,8 +228,7 @@ const getNavigator = () => {
         // Checking if last navElement is a gridSource
         if (navStack.value.length && navStack.value.length > 0) {
           if (navStack.value[navStack.value.length - 1].key === 'greedSource') {
-            const navStackUid = navStack.value[0]?.value?.uid
-            // desktop check
+            const navStackUid = navStack.value[navStack.value.length - 1]?.value?.uid
             if (navStackUid === '2bad1413-a373-4926-8a3c-58677a680714') {
               store.commit('basic', { key: 'mainSectionState', value: 'greed' })
               store.commit('basic', { key: 'greedPath', value: 'dashboard' })

@@ -1,6 +1,6 @@
 import axios from 'axios'
 import { notify } from 'notiwind'
-import { USER_ERROR, USER_REQUEST, USER_SUCCESS } from '../actions/user'
+import { USER_ERROR, USER_REQUEST, USER_SUCCESS, USER_CHANGE_PHOTO } from '../actions/user'
 
 const state = {
   user: false,
@@ -34,10 +34,44 @@ const actions = {
           reject(err)
         })
     })
+  },
+  [USER_CHANGE_PHOTO]: ({ commit, dispatch }, data) => {
+    return new Promise((resolve, reject) => {
+      const url = process.env.VUE_APP_LEADERTASK_API + 'api/v1/account/foto'
+      axios({
+        data: data.file,
+        url: url,
+        method: 'PATCH'
+      })
+        .then((resp) => {
+          console.log(resp)
+          dispatch(USER_REQUEST).then((resp) => {
+            commit(USER_CHANGE_PHOTO)
+            resolve(resp)
+          })
+        })
+        .catch((err) => {
+          notify(
+            {
+              group: 'api',
+              title: 'REST API Error, please make screenshot',
+              action: USER_CHANGE_PHOTO,
+              text: '123'
+            },
+            15000
+          )
+          reject(err)
+        })
+    })
   }
 }
 
 const mutations = {
+  [USER_CHANGE_PHOTO]: (state, data) => {
+    console.log(state.user)
+    state.user.foto_link = state.user.foto_link + '&Z=' + Date.now()
+    console.log(state.user.foto_link)
+  },
   [USER_REQUEST]: (state) => {
     state.status = 'loading'
   },

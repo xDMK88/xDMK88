@@ -59,11 +59,11 @@
         </div>
       </div>
       <TaskListEdit
+        id="task"
         ref="root"
         v-model="createTaskText"
         bg-transperant
         class="w-full text-black"
-        id="task"
         placeholder="Добавить задачу"
         @keyup.enter="createTask($event)"
       />
@@ -123,15 +123,13 @@
        hidden -->
         <Transition>
           <div
-            class="absolute hidden group-hover:flex right-2 bg-gray-200 bg-center my-auto rounded-[8px] h-[36px] items-center justify-center py-0.5 px-3"
-            style="top:25%;"
+            class="absolute hidden group-hover:flex right-2 bottom-1 mb-[2.5px] bg-gray-200 bg-center my-auto rounded-[8px] h-[36px] items-center justify-center py-0.5 px-3"
           >
             <Icon
               :path="subtask.path"
               class="text-gray-600 dark:text-white mr-3 cursor-pointer"
               :box="subtask.viewBox"
               :width="subtask.width"
-              :style="{ color: getValidForeColor(colors[props.node.info.uid_marker]?.fore_color) }"
               :height="subtask.height"
               @click.stop="addSubtask(props.node.info);"
             />
@@ -156,7 +154,6 @@
                 class="text-gray-600 dark:text-white cursor-pointer h-full relative top-1"
                 :box="taskoptions.viewBox"
                 :width="taskoptions.width"
-                :style="{ color: getValidForeColor(colors[props.node.info.uid_marker]?.fore_color) }"
                 :height="taskoptions.height"
               />
               <template #menu>

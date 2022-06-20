@@ -2,6 +2,7 @@
 
 import { computed, ref } from 'vue'
 import { useStore } from 'vuex'
+import { USER_CHANGE_PHOTO } from '@/store/actions/user.js'
 import ModalBoxConfirm from '@/components/modals/ModalBoxCard.vue'
 const emit = defineEmits(['AccLogout'])
 const store = useStore()
@@ -17,6 +18,16 @@ const tarif = () => {
 }  */
 const logout = () => {
   emit('AccLogout')
+}
+const changeUserPhoto = (event) => {
+  const files = event.target.files
+  const formData = new FormData()
+  const file = files[0]
+  formData.append('files[0]', file)
+  const data = {
+    file: formData
+  }
+  store.dispatch(USER_CHANGE_PHOTO, data)
 }
 </script>
 
@@ -108,6 +119,8 @@ const logout = () => {
               id="iconfile"
               type="file"
               class="hidden"
+              accept="image/png, image/jpeg"
+              @change="changeUserPhoto"
             >
             <label
               for="iconfile"

@@ -1,6 +1,7 @@
 <script setup>
 import { computed, ref } from 'vue'
 import Icon from '@/components/Icon.vue'
+import AddTag from '@/components/Tags/AddTag.vue'
 import { setLocalStorageItem } from '@/store/helpers/functions'
 import { useStore } from 'vuex'
 import properties from '@/icons/properties.js'
@@ -97,15 +98,15 @@ const goToChildren = (value) => {
 
 <template class="w-full">
   <div
-    class="flex items-center w-full justify-between mt-3 order-1"
+    class="w-full flex items-center justify-between mt-3 order-1"
   >
-    <p class="text-2xl text-gray-800 font-bold second dark:text-gray-100">
+    <p class="text-2xl text-gray-800 font-bold second dark:text-gray-100 font-['Roboto']">
       Метки
     </p>
     <div
       class="flex"
     >
-      <icon
+      <Icon
         :path="listView.path"
         :width="listView.width"
         :height="listView.height"
@@ -114,7 +115,7 @@ const goToChildren = (value) => {
         :class="{ 'text-gray-800': !isGridView, 'text-gray-400': isGridView }"
         @click="updateGridView(false)"
       />
-      <icon
+      <Icon
         :path="gridView.path"
         :width="gridView.width"
         :height="gridView.height"
@@ -129,6 +130,7 @@ const goToChildren = (value) => {
     class="grid gap-4 mt-3 order-2"
     :class="{ 'md:grid-cols-2 lg:grid-cols-4': isGridView, 'grid-cols-1': !isGridView, 'grid-cols-1': isPropertiesMobileExpanded && !isGridView, 'lg:grid-cols-2': isPropertiesMobileExpanded && isGridView }"
   >
+    <AddTag @click="openProperties(false)" />
     <template
       v-for="(tag, pindex) in tags"
       :key="pindex"
@@ -206,27 +208,5 @@ const goToChildren = (value) => {
         </div>
       </div>
     </template>
-    <div
-      class="flex items-center justify-center bg-gray-50 dark:bg-gray-700 rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-500 cursor-pointer px-5 py-7 order-3"
-      @click="openProperties(false)"
-    >
-      <div class="flex items-center justify-center w-10 h-10 bg-gray-200 dark:bg-gray-600 rounded-xl">
-        <svg
-          width="16"
-          height="16"
-          viewBox="0 0 16 16"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          class="dark:text-gray-100"
-        >
-          <path
-            d="M8.00011 2.3457V8.4034M8.00011 8.4034V14.4611M8.00011 8.4034H14.4617M8.00011 8.4034H1.53857"
-            stroke="#3E3D3B"
-            stroke-width="3"
-            stroke-linecap="round"
-          />
-        </svg>
-      </div>
-    </div>
   </div>
 </template>

@@ -2,11 +2,11 @@
   <div
     class="group flex items-center bg-white rounded-[8px] shadow hover:shadow-md px-[15px] relative h-[48px] cursor-pointer"
     :style="{ backgroundColor: getValidBackColor(color.back_color) }"
+    @click="$emit('goto')"
   >
     <div class="w-full flex justify-between">
       <div
         class="flex items-center relative"
-        @click="$emit('goto')"
       >
         <ColorIcon :color="getValidForeColor(color.fore_color)" />
         <p
@@ -16,22 +16,16 @@
           {{ color.name }}
         </p>
       </div>
-      <ColorProps
-        class="hidden group-hover:block"
-        @click="$emit('props')"
-      />
     </div>
   </div>
 </template>
 
 <script>
 import ColorIcon from '@/components/Colors/Icons/ColorIcon.vue'
-import ColorProps from '@/components/Colors/Icons/ColorProps.vue'
 
 export default {
   components: {
-    ColorIcon,
-    ColorProps
+    ColorIcon
   },
   props: {
     color: {
@@ -39,7 +33,7 @@ export default {
       default: () => ({})
     }
   },
-  emits: ['props', 'goto'],
+  emits: ['goto'],
   methods: {
     getValidForeColor (foreColor) {
       if (foreColor && foreColor !== '#A998B6') return foreColor

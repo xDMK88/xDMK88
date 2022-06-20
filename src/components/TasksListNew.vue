@@ -102,105 +102,22 @@
         @click.shift="clickAndShift(props.node)"
         @click.exact="selectedTasks = {}"
       >
-        <!--
-        DEBUG TASK INFO, don't remove this comment
-        <pre class="text-[10px] leading-none font-bold text-green-900">state: {{ props.node.info.has_children }}</pre>
-        <p class="text-[10px] leading-none">
-          parent: {{ props.node.parent }}
-        </p>
-        <pre class="text-[10px] leading-none font-bold text-rose-500">state: {{ props.node.state }}</pre>
-        <p class="text-[10px] leading-none">
-          type: {{ props.node.info.type }}
-        </p>
-        <p class="text-[10px] leading-none mb-5">
-          order_new: <strong>{{ props.node.info.order_new }}</strong>
-        </p>
-        <p class="text-[10px] leading-none">
-          id: <strong>{{ props.node.id }}</strong>
-        </p>
-        <pre class="text-[10px] leading-none font-bold text-yellow-500">children: {{ props.node.children }}</pre>
-        <pre class="text-[10px] leading-none font-bold text-yellow-500">tags: {{ props.node.tags }}</pre>
-       hidden -->
-        <Transition>
-          <div
-            class="absolute hidden group-hover:flex right-2 bottom-1 mb-[2.5px] bg-gray-200 bg-center my-auto rounded-[8px] h-[36px] items-center justify-center py-0.5 px-3"
-          >
-            <Icon
-              :path="subtask.path"
-              class="text-gray-600 dark:text-white mr-3 cursor-pointer"
-              :box="subtask.viewBox"
-              :width="subtask.width"
-              :height="subtask.height"
-              @click.stop="addSubtask(props.node.info);"
-            />
-
-            <Icon
-              :path="panelfocus.path"
-              class="text-gray-600 dark:text-white justify-center mr-2 cursor-pointer w-[20px] h-[20px]"
-              :box="panelfocus.viewBox"
-              :width="panelfocus.width"
-              :height="panelfocus.height"
-              @click="changeFocus(props.node.info.uid, props.node.info.focus === 1 ? 0 : 1)"
-            />
-            <!-- Task action popper -->
-            <PopMenu
-              placement="auto"
-              @click.stop="toggleTaskHoverPopper(true)"
-              @openMenu="toggleTaskHoverPopper(true)"
-              @closeMenu="toggleTaskHoverPopper(false)"
-            >
-              <Icon
-                :path="taskoptions.path"
-                class="text-gray-600 dark:text-white cursor-pointer h-full relative top-1"
-                :box="taskoptions.viewBox"
-                :width="taskoptions.width"
-                :height="taskoptions.height"
-              />
-              <template #menu>
-                <PopMenuItem
-                  v-if="props.node.info.uid_customer == user.current_user_uid"
-                  icon="tomorrow"
-                  @click="moveTaskTomorrow(props.node.info)"
-                >
-                  {{ localization.Tomorrow }}
-                </PopMenuItem>
-                <PopMenuItem
-                  icon="copy"
-                  @click="copyTaskName(props.node.info)"
-                >
-                  {{ props.node.info.taskNameCopied ? 'Скопировано!' : localization.copy_taskname }}
-                </PopMenuItem>
-                <PopMenuItem
-                  icon="copy"
-                  @click="copyTask(props.node.info)"
-                >
-                  {{ copiedTasks[props.node.info.uid] ? 'Скопировано' : 'Копировать' }}
-                </PopMenuItem>
-                <PopMenuItem
-                  v-if="props.node.info.uid_customer == user.current_user_uid"
-                  icon="cut"
-                  @click="cutTask(props.node.info)"
-                >
-                  Вырезать
-                </PopMenuItem>
-                <PopMenuItem
-                  v-if="Object.keys(copiedTasks).length"
-                  icon="copy"
-                  @click="pasteCopiedTasks(props.node.id)"
-                >
-                  Вставить
-                </PopMenuItem>
-                <PopMenuItem
-                  v-if="props.node.info.uid_customer == user.current_user_uid"
-                  icon="delete"
-                  @click="showConfirm = true; lastSelectedTaskUid = props.node.id"
-                >
-                  {{ localization.remove }}
-                </PopMenuItem>
-              </template>
-            </PopMenu>
-          </div>
-        </Transition>
+        <TaskListActionHoverPanel
+          class="absolute right-[8px] hidden group-hover:flex my-auto"
+          :is-my-task="props.node.info.uid_customer == user.current_user_uid"
+          :can-paste="Object.keys(copiedTasks).length"
+          @click.stop
+          @addSubtask="addSubtask(props.node.info)"
+          @changeFocus="changeFocus(props.node.info)"
+          @openMenu="toggleTaskHoverPopper(true)"
+          @closeMenu="toggleTaskHoverPopper(false)"
+          @tomorrow="moveTaskTomorrow(props.node.info)"
+          @copyName="copyTaskName(props.node.info)"
+          @copy="copyTask(props.node.info)"
+          @cut="cutTask(props.node.info)"
+          @paste="pasteCopiedTasks(props.node.id)"
+          @delete="clickDeleteTask"
+        />
 
         <!-- Name, Status -->
         <div
@@ -371,16 +288,14 @@
 import { computed, ref, nextTick } from 'vue'
 import treeview from 'vue3-treeview'
 import { useStore } from 'vuex'
-import Icon from '@/components/Icon.vue'
 import TaskStatus from '@/components/TasksList/TaskStatus.vue'
 import EmptyTasksListPics from '@/components/TasksList/EmptyTasksListPics.vue'
-import PopMenu from '@/components/modals/PopMenu.vue'
-import PopMenuItem from '@/components/modals/PopMenuItem.vue'
 import ModalBoxDelete from './Common/ModalBoxDelete.vue'
 import InspectorModalBox from '@/components/Inspector/InspectorModalBox.vue'
 import contenteditable from 'vue-contenteditable'
 import TaskListIconLabel from '@/components/TasksList/TaskListIconLabel.vue'
 import TaskListTagLabel from '@/components/TasksList/TaskListTagLabel.vue'
+import TaskListActionHoverPanel from '@/components/TasksList/TaskListActionHoverPanel.vue'
 import TaskListEdit from '@/components/TasksList/TaskListEdit.vue'
 import TasksSkeleton from '@/components/TasksList/TasksSkeleton.vue'
 
@@ -411,18 +326,16 @@ import bin from '@/icons/bin.js'
 export default {
   components: {
     tree: treeview,
-    Icon,
     TaskListIconLabel,
     TaskListTagLabel,
     TaskListEdit,
     TasksSkeleton,
-    PopMenu,
-    PopMenuItem,
     ModalBoxDelete,
     InspectorModalBox,
     EmptyTasksListPics,
     TaskStatus,
-    contenteditable
+    contenteditable,
+    TaskListActionHoverPanel
   },
   setup (props) {
     const store = useStore()
@@ -437,7 +350,6 @@ export default {
     const user = computed(() => store.state.user.user)
     const newConfig = computed(() => store.state.tasks.newConfig)
     const storeTasks = computed(() => store.state.tasks.newtasks)
-    const selectedTask = computed(() => store.state.tasks.selectedTask)
     const overdue = computed(() => store.state.tasks.overdue)
     const isDark = computed(() => store.state.darkMode)
     const navStack = computed(() => store.state.navbar.navStack)
@@ -905,10 +817,11 @@ export default {
         }
       )
     }
-    const changeFocus = (uid, value) => {
-      store.dispatch(TASK.CHANGE_TASK_FOCUS, { uid: uid, value: value }).then(
+    const changeFocus = (task) => {
+      const newFocus = task.focus === 1 ? 0 : 1
+      store.dispatch(TASK.CHANGE_TASK_FOCUS, { uid: task.uid, value: newFocus }).then(
         resp => {
-          selectedTask.value.focus = value
+          task.focus = newFocus
         })
     }
     const isActive = true
@@ -1030,6 +943,10 @@ export default {
     },
     getStoreTasks () {
       return this.storeTasks
+    },
+    clickDeleteTask (uid) {
+      this.lastSelectedTaskUid = uid
+      this.showConfirm = true
     }
   }
 }

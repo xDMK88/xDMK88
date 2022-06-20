@@ -2,12 +2,11 @@
 import { onMounted, ref } from 'vue'
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
-import { FILES_REQUEST } from '@/store/actions/taskfiles'
+import { GETFILES } from '@/store/actions/taskfiles'
 
 let intervalId = 0
 const store = useStore()
 const router = useRouter()
-const fileHasBeenLoaded = ref(false)
 const text = ref('Идет загрузка файла. Пожалуйста, подождите')
 const dots = ref('.')
 
@@ -15,14 +14,17 @@ onMounted(() => {
   // Start dots blinking
   intervalId = setInterval(() => {
     dots.value.length < 3 ? dots.value += '.' : dots.value = '.'
-  }, 600)
+  }, 500)
 
-  store.dispatch(FILES_REQUEST, router.currentRoute.value.params.id).then((resp) => {
-    const fileBlob = new Blob([resp.data], { type: 'image/png' })
+  const type = router.currentRoute.value.query.type
+  const format = router.currentRoute.value.query.format
+
+  store.dispatch(GETFILES, router.currentRoute.value.params.id).then((resp) => {
+    const fileBlob = new Blob([resp.data], { type: type + '/' + format })
     const urlCreator = window.URL || window.webkitURL
     const fileURL = urlCreator.createObjectURL(fileBlob)
-    window.location.href = fileURL
     dots.value = '.'
+    window.location.href = fileURL
     clearInterval(intervalId)
   }).catch((err) => {
     text.value = err

@@ -23,7 +23,6 @@
             {{ getMessageWeekDateString(message.date_create) }}
           </p>
         </div>
-
         <!-- Облачко с текстом -->
         <TaskPropsChatMessageText
           v-if="message.isMessage && !showOnlyFiles"

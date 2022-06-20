@@ -3,16 +3,10 @@
   <ModalBoxDelete
     v-show="showConfirm"
     title="Удалить задачу"
-    :text="`Вы действительно хотите удалить задачу?`"
+    :text="modalBoxDeleteText"
     @cancel="showConfirm = false"
     @yes="removeTask(lastSelectedTaskUid)"
   />
-
-  <!-- <span
-        v-if="storeTasks[lastSelectedTaskUid].info.has_children"
-      >
-        (с подзадачами) в количестве: {{ storeTasks[lastSelectedTaskUid].children.length }}
-      </span> -->
   <inspector-modal-box
     v-model="showInspector"
     button="warning"
@@ -999,6 +993,13 @@ export default {
     }
   },
   computed: {
+    modalBoxDeleteText () {
+      let text = 'Вы действительно хотите удалить задачу?'
+      if (this.storeTasks[this.lastSelectedTaskUid]?.info.has_children) {
+        text = 'Вы действительно хотите удалить задачу с подзадачами в количестве: ' + this.storeTasks[this.lastSelectedTaskUid].children.length + '?'
+      }
+      return text
+    },
     isInFocus () {
       return this.props.node.info.focus === 1
     }

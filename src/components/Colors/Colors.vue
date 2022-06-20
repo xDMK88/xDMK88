@@ -113,6 +113,9 @@ export default {
     },
     user () {
       return this.$store.state.user.user
+    },
+    greed () {
+      return this.$store.state.greedSource
     }
   },
   methods: {
@@ -140,6 +143,7 @@ export default {
       this.$store.dispatch(CREATE_COLOR_REQUEST, color)
         .then(() => {
           this.visibleModal = false
+          this.$store.state.greedSource.unshift(color)
         })
     },
     updateGridView (value) {

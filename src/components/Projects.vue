@@ -79,8 +79,8 @@
 import Icon from '@/components/Icon.vue'
 import BoardModalBoxRename from '@/components/Board/BoardModalBoxRename.vue'
 import { setLocalStorageItem } from '@/store/helpers/functions'
-import ProjectBlocItem from '@/components/ProjectsList/ProjectBlocItem.vue'
-import ProjectBlocAdd from '@/components/ProjectsList/ProjectBlocAdd.vue'
+import ProjectBlocItem from '@/components/Projects/ProjectBlocItem.vue'
+import ProjectBlocAdd from '@/components/Projects/ProjectBlocAdd.vue'
 
 import * as TASK from '@/store/actions/tasks'
 import * as PROJECT from '@/store/actions/projects'
@@ -108,9 +108,6 @@ export default {
       listView
     }
   },
-  created () {
-    setLocalStorageItem('isGridView', true)
-  },
   computed: {
     isGridView () {
       setLocalStorageItem('isGridView', true)
@@ -119,6 +116,9 @@ export default {
     isPropertiesMobileExpanded () {
       return this.$store.state.isPropertiesMobileExpanded
     }
+  },
+  created () {
+    setLocalStorageItem('isGridView', true)
   },
   methods: {
     updateGridView (value) {

@@ -133,8 +133,8 @@
 </template>
 
 <script>
-import ProjectPropsUserButton from '@/components/ProjectsList/ProjectPropsUserButton.vue'
-import ProjectPropsMenuItemUser from '@/components/ProjectsList/ProjectPropsMenuItemUser.vue'
+import ProjectPropsUserButton from '@/components/Projects/ProjectPropsUserButton.vue'
+import ProjectPropsMenuItemUser from '@/components/Projects/ProjectPropsMenuItemUser.vue'
 import ModalBoxDelete from '@/components/Common/ModalBoxDelete.vue'
 import PropsColorBoxItem from '@/components/Common/PropsColorBoxItem.vue'
 import PopMenu from '@/components/modals/PopMenu.vue'

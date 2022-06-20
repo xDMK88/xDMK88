@@ -23,23 +23,28 @@ const getMessageTimeString = (dateCreate) => {
 </script>
 <template>
   <Transition>
-  <div class="flex items-start justify-end mt-4">
-    <div
-      class="bg-green-50 rounded-xl p-1 px-2 mr-2 max-w-sm "
-    >
-      {{ props.message }}
-      <br>
-      <span class="text-sm text-gray-500">
-        {{ getMessageTimeString(props.date) }}
-      </span>
+    <div class="flex items-start justify-end mb-4 space-x-[8px]">
+      <div
+        class="bg-[#EAF2FC] max-w-sm py-[12px] px-[15px]"
+        style="border-radius: 11px 11px 0px 11px;"
+      >
+        <p class="text-[#4C4C4D] font-[500] text-[14px] leading-[19px]">
+          {{ props.message }}
+        </p>
+        <span
+          class="leading-[13px] font-[700] text-[11px] text-right float-right"
+          style="color: rgba(0, 0, 0, 0.4);"
+        >
+          {{ getMessageTimeString(props.date) }}
+        </span>
+      </div>
+      <img
+        :src="user.foto_link"
+        width="30"
+        height="30"
+        class="rounded-[8px]"
+      >
     </div>
-    <img
-      :src="user.foto_link"
-      width="50"
-      height="50"
-      class="rounded-full ml-1"
-    >
-  </div>
   </Transition>
 </template>
 

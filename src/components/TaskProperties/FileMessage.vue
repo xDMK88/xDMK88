@@ -10,15 +10,6 @@ const props = defineProps({
   file: {
     type: Object,
     default: () => ({})
-  },
-  data: function () {
-    return {
-      items: [
-        'https://cosmos-images2.imgix.net/file/spina/photo/20565/191010_nature.jpg?ixlib=rails-2.1.4&auto=format&ch=Width%2CDPR&fit=max&w=835',
-        'https://hips.hearstapps.com/hmg-prod.s3.amazonaws.com/images/nature-quotes-1557340276.jpg?crop=0.666xw:1.00xh;0.168xw,0&resize=640:*'
-      ],
-      index: null
-    }
   }
 })
 
@@ -70,6 +61,7 @@ const getMovUrl = (uid, extension, filename) => {
 }
 
 const getDocUrl = (uid, extension, filename) => {
+  console.log('GETMOVEURL')
   store.dispatch(GETFILES, uid).then(resp => {
     const fileURL = window.URL.createObjectURL(new Blob([resp.data], { type: 'text/plain' }))
     document.getElementById('doc_' + uid).setAttribute('href', fileURL)
@@ -80,7 +72,7 @@ const getDocUrl = (uid, extension, filename) => {
 
 const getAudioUrl = (uid, extension, filename) => {
   store.dispatch(GETFILES, uid).then(resp => {
-    const fileURL = window.URL.createObjectURL(new Blob([resp.data], { type: 'text/plain' }))
+    const fileURL = window.URL.createObjectURL(new Blob([resp.data], { type: 'audio/' + extension }))
     const myAudio = new Audio()
     myAudio.src = fileURL
     document.getElementById('audio_' + uid).appendChild(myAudio)
@@ -91,6 +83,7 @@ const getAudioUrl = (uid, extension, filename) => {
 }
 
 const getAnyUrl = (uid, extension, filename) => {
+  console.log('GETANYURL')
   store.dispatch(GETFILES, uid).then(resp => {
     const fileURL = window.URL.createObjectURL(new Blob([resp.data]))
     document.getElementById('any_' + uid).setAttribute('href', fileURL)
@@ -155,8 +148,9 @@ const getAnyUrl = (uid, extension, filename) => {
   >
     <a
       :id="'doc_' + props.file.uid"
-      :href="'https://web.leadertask.com/User/Files/GetFile?uid=' + props.file.uid"
       target="_blank"
+      download
+      @click="getDocUrl(props.file.uid, props.file.file_name.split('.').pop(), props.file.file_name)"
     >
       <svg
         v-if="props.file.file_name.split('.').pop() === 'pdf'"
@@ -188,7 +182,6 @@ const getAnyUrl = (uid, extension, filename) => {
           fill="#757575"
         />
       </svg>
-      {{ getDocUrl(props.file.uid, props.file.file_name.split('.').pop(), props.file.file_name) }}
     </a>
   </span>
 
@@ -214,8 +207,9 @@ const getAnyUrl = (uid, extension, filename) => {
   >
     <a
       :id="'any_' + props.file.uid"
-      :href="'https://web.leadertask.com/User/Files/GetFile?uid=' + props.file.uid"
       target="_blank"
+      download
+      @click="getAnyUrl(props.file.uid, props.file.file_name.split('.').pop(), props.file.file_name)"
     >
       <svg
         v-if="!docs.includes(props.file.file_name.split('.').pop()) && !audio.includes(props.file.file_name.split('.').pop()) && !movies.includes(props.file.file_name.split('.').pop()) && !pics.includes(props.file.file_name.split('.').pop())"
@@ -232,7 +226,6 @@ const getAnyUrl = (uid, extension, filename) => {
           fill="#757575"
         />
       </svg>
-      {{ getAnyUrl(props.file.uid, props.file.file_name.split('.').pop(), props.file.file_name) }}
     </a>
   </span>
 </template>

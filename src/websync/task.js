@@ -1,3 +1,4 @@
+/* eslint-disable indent */
 import store from '@/store/index.js'
 import { shouldAddTaskIntoList } from './utils'
 
@@ -16,4 +17,7 @@ export function updateTask (obj) {
   if (shouldAddTaskIntoList(obj.obj)) {
     store.commit('ADD_TASK', obj.obj)
   }
+}
+export function task (obj) {
+  store.commit('SELECT_TASK', obj.obj)
 }

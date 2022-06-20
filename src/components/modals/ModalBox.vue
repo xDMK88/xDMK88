@@ -13,7 +13,7 @@
         </div>
         <!-- кнопка закрыть -->
         <div
-          class="flex-none"
+          class="flex-none hover:cursor-pointer"
           @click="onCancel"
         >
           <svg

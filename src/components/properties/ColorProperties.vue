@@ -249,6 +249,9 @@ export default {
       while (colors.length) arrColors.push(colors.splice(0, rowLength))
       return arrColors
     },
+    user () {
+      return this.$store.state.user.user
+    },
     selectedColor () {
       return this.$store.state.colors.selectedColor
     },
@@ -272,7 +275,7 @@ export default {
       return ''
     },
     isCanDelete () {
-      return this.$store.state.colors.mycolors[this.selectedColorUid] !== undefined
+      return this.user.current_user_email === this.selectedColor.email_creator
     },
     isCanEdit () {
       return this.isCanDelete
@@ -292,7 +295,6 @@ export default {
     },
     removeColor () {
       this.showConfirm = false
-
       this.$store.dispatch(REMOVE_COLOR_REQUEST, this.selectedColorUid)
         .then((resp) => {
           console.log('removeColor', resp)

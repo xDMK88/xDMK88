@@ -502,7 +502,8 @@ const actionConfirmDelegate = (confirmed) => {
       v-show="value"
       has-table
       :title="title"
-      class="shadow-xl border border-gray-300 md:w-2/5 lg:w-3/12 z-50 px-1 pb-1 rounded-2xl"
+      class="shadow-xl  md:w-2/5 lg:w-3/12 z-50 px-[25px] py-[30px] rounded-[20px]"
+      style="box-shadow: 0px 0px 24px rgba(27, 29, 37, 0.08), 0px 2px 6px rgba(27, 29, 37, 0.06);"
       @header-icon-click="cancel"
       @header-icon2-click="logout"
     >
@@ -529,7 +530,8 @@ const actionConfirmDelegate = (confirmed) => {
           v-model="inputMessage"
           :disabled="currentState === 'end'"
           type="text"
-          class="bg-gray-50 rounded-xl border border-gray-300 w-full p-2"
+          class="bg-[#F2F4F7] w-full px-[15px] py-[16px] rounded-[10px] font-[400] text-[15px] leading-[18px] focus:ring-0"
+          style="color: rgba(0, 0, 0, 0.5); border: none"
           placeholder="Написать сообщение..."
           @keyup.enter="addCustomerMessage"
           @keyup.esc="cancel"

@@ -27,11 +27,11 @@ const getMessageTimeString = (dateCreate) => {
     <card-chat-deleted-message-content v-if="props.message.deleted" />
     <div
       v-else
-      class="flex"
+      class="flex break-words"
     >
       <span
         v-linkified:options="{ className: 'text-blue-600', tagName: 'a' }"
-        class="mr-[8px] font-[400] text-[14px] text-[#4C4C4D] leading-[19px] break-words whitespace-pre-line"
+        class="mr-[8px] font-[400] text-[14px] text-[#4C4C4D] leading-[19px] whitespace-pre-line break-words max-w-[230px]"
       >
         {{ props.message.msg }}
       </span>

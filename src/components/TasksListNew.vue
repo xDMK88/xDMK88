@@ -130,7 +130,6 @@
               class="text-gray-600 dark:text-white mr-3 cursor-pointer"
               :box="subtask.viewBox"
               :width="subtask.width"
-              :style="{ color: getValidForeColor(colors[props.node.info.uid_marker]?.fore_color) }"
               :height="subtask.height"
               @click.stop="addSubtask(props.node.info);"
             />
@@ -155,7 +154,6 @@
                 class="text-gray-600 dark:text-white cursor-pointer h-full relative top-1"
                 :box="taskoptions.viewBox"
                 :width="taskoptions.width"
-                :style="{ color: getValidForeColor(colors[props.node.info.uid_marker]?.fore_color) }"
                 :height="taskoptions.height"
               />
               <template #menu>

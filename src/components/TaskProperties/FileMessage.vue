@@ -63,12 +63,9 @@ const getImgUrl = (uid, extension, filename) => {
 }
 
 const getMovUrl = (uid, extension, filename) => {
-  store.dispatch(GETFILES, uid).then(resp => {
-    const fileURL = window.URL.createObjectURL(new Blob([resp.data], { type: 'video/' + extension }))
-    // document.getElementById('mov_' + uid).setAttribute('href', fileURL)
-    document.getElementById('video_' + uid).setAttribute('src', fileURL)
-    // document.getElementById('mov_' + uid).setAttribute('download', filename)
-    return fileURL
+  const fileURL = window.location.href + 'taskfile/' + uid + '?type=video&format=' + extension
+  nextTick(() => {
+    document.getElementById('video_' + uid).setAttribute('href', fileURL)
   })
 }
 
@@ -129,22 +126,9 @@ const getAnyUrl = (uid, extension, filename) => {
   <span
     v-if="movies.includes(props.file.file_name.split('.').pop())"
   >
-
-    <video
+    {{ getMovUrl(props.file.uid, props.file.file_name.split('.').pop(), props.file.file_name) }}
+    <a
       :id="'video_' + props.file.uid"
-      width="400"
-      controls="controls"
-      preload="metadata"
-    >
-      {{ getMovUrl(props.file.uid, props.file.file_name.split('.').pop(), props.file.file_name) }}
-      <source
-        :src="'https://web.leadertask.com/User/Files/GetFile?uid=' + props.file.uid + '#t=0.5'"
-        type="video/mp4"
-      >
-    </video>
-    <br>
-  <!--  <a
-      :id="'mov_' + props.file.uid"
       :href="'https://web.leadertask.com/User/Files/GetFile?uid=' + props.file.uid"
       target="_blank"
     >
@@ -162,8 +146,7 @@ const getAnyUrl = (uid, extension, filename) => {
           fill="#757575"
         />
       </svg>
-
-    </a> -->
+    </a>
   </span>
 
   <!-- Docs -->

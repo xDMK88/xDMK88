@@ -17,7 +17,6 @@ export function shouldAddTaskIntoList (task) {
   // first look date_end in selected day
   //  check type 2 then check date_end < than selected date then add, if date_end > then throw away
 
-  console.log('lastNavStackElement: ', lastNavStackElement)
   if (
     lastNavStackElement.key === 'taskListSource' &&
     lastNavStackElement.value.uid === '901841d9-0016-491d-ad66-8ee42d2b496b'

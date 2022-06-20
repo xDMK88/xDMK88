@@ -3,6 +3,13 @@ import { computed, ref } from 'vue'
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
 import { visitChildren, setLocalStorageItem } from '@/store/helpers/functions'
+import AsideMenu from '@/components/AsideMenu.vue'
+import NavBar from '@/components/NavBar.vue'
+import PropertiesRight from '@/components/PropertiesRight.vue'
+import ErrorNotification from '@/components/Notifications/ErrorNotification.vue'
+import Notification from '@/components/Notifications/Notification.vue'
+import InspectorNotification from '@/components/Notifications/InspectorNotification.vue'
+
 import TasksListNew from '@/components/TasksListNew.vue'
 import MainSection from '@/components/MainSection.vue'
 import Projects from '@/components/Projects.vue'
@@ -31,6 +38,8 @@ const mainSectionState = computed(() => store.state.mainSectionState)
 const greedPath = computed(() => store.state.greedPath)
 const greedSource = computed(() => store.state.greedSource)
 
+const isFileRedirect = computed(() => (router.currentRoute.value.name === 'taskfile' || router.currentRoute.value.name === 'cardfile') && router.currentRoute.value.params.id)
+const menu = computed(() => store.state.navigator.menu)
 const storeTasks = computed(() => store.state.tasks.newtasks)
 const newConfig = computed(() => store.state.tasks.newConfig)
 const navStack = computed(() => store.state.navbar.navStack)
@@ -368,6 +377,15 @@ if (router.currentRoute.value.name === 'task' && router.currentRoute.value.param
     >Firefox</a>
   </modal-box-notification-instruction>
   <main-section>
+    <aside-menu
+      v-if="!isFileRedirect"
+      :menu="menu"
+    />
+    <nav-bar v-if="!isFileRedirect" />
+    <properties-right v-if="!isFileRedirect" />
+    <ErrorNotification v-if="!isFileRedirect" />
+    <Notification v-if="!isFileRedirect" />
+    <InspectorNotification v-if="!isFileRedirect" />
     <TasksListNew
       v-if="mainSectionState === 'tasks'"
       :store-tasks="storeTasks"

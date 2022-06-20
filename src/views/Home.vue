@@ -7,8 +7,8 @@ import TasksListNew from '@/components/TasksListNew.vue'
 import MainSection from '@/components/MainSection.vue'
 import Projects from '@/components/Projects.vue'
 import Boards from '@/components/Boards.vue'
-import ProjectsChildren from '@/components/ProjectsChildren.vue'
 import BoardWithChildren from '@/components/Board/BoardWithChildren.vue'
+import ProjectWithChildren from '@/components/Projects/ProjectWithChildren.vue'
 import Employees from '@/components/Employees.vue'
 import Tags from '@/components/Tags.vue'
 import Colors from '@/components/Colors/Colors.vue'
@@ -392,7 +392,7 @@ if (router.currentRoute.value.name === 'task' && router.currentRoute.value.param
       <other
         v-if="greedPath === 'other'"
       />
-      <projects-children
+      <ProjectWithChildren
         v-if="greedPath === 'projects_children'"
         :projects="greedSource"
       />

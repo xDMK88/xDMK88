@@ -59,7 +59,7 @@ const props = defineProps({
   },
   id: {
     type: String,
-    default: null
+    default: 'task'
   },
   autocomplete: {
     type: String,

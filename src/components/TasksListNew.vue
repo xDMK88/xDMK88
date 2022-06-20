@@ -1,25 +1,12 @@
 <template>
   <!-- Confirm modal -->
-  <modal-box-confirm
-    v-model="showConfirm"
-    button="warning"
-    has-button
-    has-cancel
-    button-label="Delete"
-    @confirm="removeTask(lastSelectedTaskUid)"
-  >
-    <p
-      v-if="storeTasks[lastSelectedTaskUid]"
-      class="text-center"
-    >
-      Вы действительно хотите удалить выбраную <strong>"{{ storeTasks[lastSelectedTaskUid].info.name.substr(0,255) }}"</strong> задачу?
-      <span
-        v-if="storeTasks[lastSelectedTaskUid].info.has_children"
-      >
-        (с подзадачами) в количестве: {{ storeTasks[lastSelectedTaskUid].children.length }}
-      </span>
-    </p>
-  </modal-box-confirm>
+  <ModalBoxDelete
+    v-show="showConfirm"
+    title="Удалить задачу"
+    :text="modalBoxDeleteText"
+    @cancel="showConfirm = false"
+    @yes="removeTask(lastSelectedTaskUid)"
+  />
   <inspector-modal-box
     v-model="showInspector"
     button="warning"
@@ -76,8 +63,9 @@
         v-model="createTaskText"
         bg-transperant
         class="w-full text-black"
+        id="task"
         placeholder="Добавить задачу"
-        @keyup.enter="createTask"
+        @keyup.enter="createTask($event)"
       />
     </div>
   </div>
@@ -391,7 +379,7 @@ import TaskStatus from '@/components/TasksList/TaskStatus.vue'
 import EmptyTasksListPics from '@/components/TasksList/EmptyTasksListPics.vue'
 import PopMenu from '@/components/modals/PopMenu.vue'
 import PopMenuItem from '@/components/modals/PopMenuItem.vue'
-import ModalBoxConfirm from '@/components/modals/ModalBoxConfirm.vue'
+import ModalBoxDelete from './Common/ModalBoxDelete.vue'
 import InspectorModalBox from '@/components/Inspector/InspectorModalBox.vue'
 import contenteditable from 'vue-contenteditable'
 import TaskListIconLabel from '@/components/TasksList/TaskListIconLabel.vue'
@@ -433,7 +421,7 @@ export default {
     TasksSkeleton,
     PopMenu,
     PopMenuItem,
-    ModalBoxConfirm,
+    ModalBoxDelete,
     InspectorModalBox,
     EmptyTasksListPics,
     TaskStatus,
@@ -688,8 +676,12 @@ export default {
       store.commit(TASK.RESET_COPY_TASK)
     }
 
-    const createTask = () => {
+    const createTask = (e) => {
       const data = handleTaskSource()
+      e.preventDefault()
+      e.target.value = ''
+      e.target.blur()
+      e.target.focus()
       store.dispatch(TASK.CREATE_TASK, data)
         .then((resp) => {
           // выделяем добавленную задачу
@@ -698,12 +690,14 @@ export default {
           if (navStack.value && navStack.value[navStack.value.length - 1].value.uid === '901841d9-0016-491d-ad66-8ee42d2b496b') {
             store.commit('addDot', new Date(navStack.value[navStack.value.length - 1].value.param))
           }
+          document.getElementById('task').firstElementChild.focus({ preventScroll: false })
           setTimeout(() => {
             document.getElementById(data.uid).parentNode.draggable = false
             gotoNode(data.uid)
           }, 200)
         })
       createTaskText.value = ''
+      return false
     }
 
     const updateTask = (event, task) => {
@@ -773,6 +767,7 @@ export default {
       }
       store.dispatch(TASK.REMOVE_TASK, uid)
         .then(() => {
+          showConfirm.value = false
           store.dispatch(TASK.DAYS_WITH_TASKS)
             .then(() => {
               const calendarDates = computed(() => store.state.calendar[1].dates)
@@ -1005,6 +1000,13 @@ export default {
     }
   },
   computed: {
+    modalBoxDeleteText () {
+      let text = 'Вы действительно хотите удалить задачу?'
+      if (this.storeTasks[this.lastSelectedTaskUid]?.info.has_children) {
+        text = 'Вы действительно хотите удалить задачу с подзадачами в количестве: ' + this.storeTasks[this.lastSelectedTaskUid].children.length + '?'
+      }
+      return text
+    },
     isInFocus () {
       return this.props.node.info.focus === 1
     }

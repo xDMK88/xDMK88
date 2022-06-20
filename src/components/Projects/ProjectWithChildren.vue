@@ -1,129 +1,82 @@
 <template>
   <div class="w-full">
     <BoardModalBoxRename
-      v-show="showAddProject"
-      :show="showAddProject"
+      v-show="showAdd"
+      :show="showAdd"
       title="Добавить проект"
-      @cancel="showAddProject = false"
+      @cancel="showAdd = false"
       @save="onAddNewProject"
     />
-    <div
-      v-for="(value, index) in items"
-      :key="index"
-    >
-      <div
-        class="flex items-center w-full"
-        :class="{ 'justify-between': index == 0, 'mt-[28px]': index == 1 }"
+    <div class="grid gap-2 mt-3 md:grid-cols-2 lg:grid-cols-4">
+      <template
+        v-for="project in projects"
+        :key="project.uid"
       >
-        <p class="font-['Roboto'] text-[#424242] text-[19px] leading-[22px] font-bold">
-          {{ value.dep }}
-        </p>
-        <div
-          v-if="index == 0"
-          class="flex"
-        >
-          <icon
-            :path="listView.path"
-            :width="listView.width"
-            :height="listView.height"
-            :box="listView.viewBox"
-            class="cursor-pointer hover:text-gray-800 mr-2"
-            :class="{
-              'text-gray-800': !isGridView,
-              'text-gray-400': isGridView
-            }"
-            @click="updateGridView(false)"
-          />
-          <icon
-            :path="gridView.path"
-            :width="gridView.width"
-            :height="gridView.height"
-            :box="gridView.viewBox"
-            class="cursor-pointer hover:text-gray-800 mr-2"
-            :class="{
-              'text-gray-800': isGridView,
-              'text-gray-400': !isGridView
-            }"
-            @click="updateGridView(true)"
-          />
-        </div>
-      </div>
-      <div
-        class="grid gap-2 mt-3"
-        :class="{
-          'md:grid-cols-2 lg:grid-cols-4': isGridView,
-          'grid-cols-1': !isGridView,
-          'grid-cols-1': isPropertiesMobileExpanded && !isGridView,
-          'lg:grid-cols-2': isPropertiesMobileExpanded && isGridView
-        }"
-      >
-        <template
-          v-for="project in value.items"
-          :key="project.uid"
-        >
-          <ProjectBlocItem
-            :project="project"
-            @click.stop="gotoChildren(project)"
-          />
-        </template>
-        <ProjectBlocAdd
-          v-if="index == 0"
-          @click.stop="showAddProject = true"
+        <ProjectBlocItem
+          :project="project"
+          @click.stop="gotoChildren(project)"
         />
-      </div>
+      </template>
+      <ProjectBlocAdd
+        v-if="canAddChild"
+        @click.stop="showAdd = true"
+      />
+    </div>
+    <div class="mt-5">
+      <TasksListNew
+        :store-tasks="storeTasks"
+        :new-config="newConfig"
+      />
     </div>
   </div>
 </template>
 
 <script>
-import Icon from '@/components/Icon.vue'
 import BoardModalBoxRename from '@/components/Board/BoardModalBoxRename.vue'
-import { setLocalStorageItem } from '@/store/helpers/functions'
 import ProjectBlocItem from '@/components/Projects/ProjectBlocItem.vue'
 import ProjectBlocAdd from '@/components/Projects/ProjectBlocAdd.vue'
-
+import TasksListNew from '@/components/TasksListNew.vue'
 import * as TASK from '@/store/actions/tasks'
 import * as PROJECT from '@/store/actions/projects'
 import * as NAVIGATOR from '@/store/actions/navigator'
 
-import gridView from '@/icons/grid-view.js'
-import listView from '@/icons/list-view.js'
 export default {
   components: {
-    Icon,
     BoardModalBoxRename,
     ProjectBlocItem,
-    ProjectBlocAdd
+    ProjectBlocAdd,
+    TasksListNew
   },
   props: {
-    items: {
+    projects: {
       type: Array,
       default: () => []
     }
   },
   data () {
     return {
-      showAddProject: false,
-      gridView,
-      listView
+      showAdd: false
     }
   },
   computed: {
-    isGridView () {
-      setLocalStorageItem('isGridView', true)
-      return this.$store.state.isGridView
+    currentProject () {
+      const projects = this.$store.state.projects.projects
+      const navStack = this.$store.state.navbar.navStack
+      const currProjectUid = navStack[navStack.length - 1].uid
+      const project = projects[currProjectUid]
+      return project
     },
-    isPropertiesMobileExpanded () {
-      return this.$store.state.isPropertiesMobileExpanded
+    canAddChild () {
+      const user = this.$store.state.user.user
+      return this.currentProject?.email_creator === user.current_user_email
+    },
+    storeTasks () {
+      return this.$store.state.tasks.newtasks
     }
   },
-  created () {
-    setLocalStorageItem('isGridView', true)
-  },
   methods: {
-    updateGridView (value) {
-      this.$store.commit('basic', { key: 'isGridView', value: value })
-      setLocalStorageItem('isGridView', value)
+    print (msg, val) {
+      console.log(msg, val)
     },
     gotoChildren (project) {
       this.$store.dispatch(TASK.PROJECT_TASKS_REQUEST, project.uid)
@@ -156,21 +109,22 @@ export default {
       )
     },
     onAddNewProject (name) {
-      this.showAddProject = false
+      this.showAdd = false
       const title = name.trim()
       if (title) {
         // добавляем новый проект и переходим в него
         const maxOrder =
-          this.items[0]?.items?.reduce(
+          this.currentProject?.children?.reduce(
             (maxOrder, child) =>
               child.order > maxOrder ? child.order : maxOrder,
             0
-          ) || 0
+          ) ?? 0
         const user = this.$store.state.user.user
+
         const project = {
           uid: this.uuidv4(),
           name: title,
-          uid_parent: '00000000-0000-0000-0000-000000000000',
+          uid_parent: this.currentProject?.uid ?? '00000000-0000-0000-0000-000000000000',
           email_creator: user.current_user_email,
           order: maxOrder + 1,
           comment: '',

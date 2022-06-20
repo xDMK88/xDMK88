@@ -27,11 +27,6 @@ export default {
         Ответить
       </PopMenuItem>
       <PopMenuItem
-        icon="copy"
-      >
-        Копировать
-      </PopMenuItem>
-      <PopMenuItem
         v-if="canDelete"
         icon="delete"
         @click="$emit('onDeleteMessage')"

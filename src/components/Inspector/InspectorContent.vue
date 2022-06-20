@@ -56,6 +56,7 @@ watch(props.messages, (oldValue, newValue) => {
     >
       <InspectorMessage
         v-if="message.messageFromInspector"
+        class="max-w-[334px]"
         :message="message.message"
         :type="message.type"
         :date="message.createDate"

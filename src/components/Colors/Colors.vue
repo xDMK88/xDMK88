@@ -51,7 +51,6 @@
     >
       <ColorBlock
         :color="color"
-        @props="openProperties(color)"
         @goto="clickOnGridCard(color)"
       />
     </template>
@@ -144,6 +143,7 @@ export default {
         .then(() => {
           this.visibleModal = false
           this.$store.state.greedSource.unshift(color)
+          this.clickOnGridCard(color)
         })
     },
     updateGridView (value) {

@@ -1,4 +1,11 @@
 <template>
+  <BoardModalBoxRename
+    v-show="visibleModal"
+    :show="visibleModal"
+    :title="'Добавить цвет'"
+    @cancel="visibleModal = false"
+    @save="createColor"
+  />
   <div
     class="w-full flex items-center justify-between mt-3 order-1"
   >
@@ -37,23 +44,26 @@
       'lg:grid-cols-2': isPropertiesMobileExpanded && isGridView
     }"
   >
-    <ColorAdd @click="openProperties(false)" />
+    <ColorAdd @click="visibleModal = true" />
     <template
       v-for="(color, pindex) in colors"
       :key="pindex"
     >
       <ColorBlock
         :color="color"
-        @click="openProperties(color), clickOnGridCard(color)"
+        @props="openProperties(color)"
+        @goto="clickOnGridCard(color)"
       />
     </template>
   </div>
 </template>
 <script>
+import { ref } from 'vue'
+import BoardModalBoxRename from '@/components/Board/BoardModalBoxRename.vue'
 import Icon from '@/components/Icon.vue'
 import * as TASK from '@/store/actions/tasks'
 import { setLocalStorageItem } from '@/store/helpers/functions'
-// import { SELECT_COLOR } from '@/store/actions/colors'
+import { SELECT_COLOR, CREATE_COLOR_REQUEST } from '@/store/actions/colors'
 // import properties from '@/icons/properties.js'
 import ColorBlock from '@/components/Colors/ColorBlock.vue'
 import ColorAdd from '@/components/Colors/ColorAdd.vue'
@@ -64,7 +74,8 @@ export default {
   components: {
     Icon,
     ColorBlock,
-    ColorAdd
+    ColorAdd,
+    BoardModalBoxRename
   },
   props: {
     colors: {
@@ -73,9 +84,24 @@ export default {
     }
   },
   data () {
+    const visibleModal = ref(false)
+    const randomColors = [
+      '#F5F5DC',
+      '#FFE5B4',
+      '#FFC0CB',
+      '#D0F0C0',
+      '#C9A0DC',
+      '#D8BFD8',
+      '#FFCC00',
+      '#F4A460',
+      '#FFDB58',
+      '#E6E6FA'
+    ]
     return {
       gridView,
-      listView
+      listView,
+      visibleModal,
+      randomColors
     }
   },
   computed: {
@@ -84,31 +110,48 @@ export default {
     },
     isGridView () {
       return this.$store.state.isGridView
+    },
+    user () {
+      return this.$store.state.user.user
     }
   },
   methods: {
+    uuidv4 () {
+      return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, (c) =>
+        (
+          c ^
+          (crypto.getRandomValues(new Uint8Array(1))[0] & (15 >> (c / 4)))
+        ).toString(16)
+      )
+    },
+    createColor (name) {
+      const color = {
+        back_color: this.randomColors[Math.floor(Math.random() * this.randomColors.length - 1)],
+        fore_color: '',
+        uppercase: 0,
+        order: 0,
+        default: 0,
+        email_creator: this.user.current_user_email,
+        uid: this.uuidv4(),
+        name: name,
+        bold: 0,
+        parentID: 'ed8039ae-f3de-4369-8f32-829d401056e9'
+      }
+      this.$store.dispatch(CREATE_COLOR_REQUEST, color)
+        .then(() => {
+          this.visibleModal = false
+        })
+    },
     updateGridView (value) {
       this.$store.commit('basic', { key: 'isGridView', value: value })
       setLocalStorageItem('isGridView', value)
     },
     openProperties (color) {
-      // if (!this.isPropertiesMobileExpanded.value) {
-      //   this.$store.dispatch('asidePropertiesToggle', true)
-      // }
-      // this.$store.commit('basic', { key: 'propertiesState', value: 'color' })
-      if (!color) {
-        color = {
-          back_color: '',
-          fore_color: '',
-          uppercase: 0,
-          order: 0,
-          default: 0,
-          uid: '',
-          name: '',
-          bold: 0
-        }
+      if (!this.isPropertiesMobileExpanded.value) {
+        this.$store.dispatch('asidePropertiesToggle', true)
       }
-      // this.$store.commit(SELECT_COLOR, color)
+      this.$store.commit('basic', { key: 'propertiesState', value: 'color' })
+      this.$store.commit(SELECT_COLOR, color)
     },
     clickOnGridCard (value) {
       this.$store.dispatch(TASK.COLOR_TASKS_REQUEST, value.uid)

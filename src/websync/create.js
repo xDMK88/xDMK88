@@ -1,6 +1,6 @@
 import store from '@/store/index.js'
 import { createProject } from '@/websync/project.js'
-import { createTask } from '@/websync/task.js'
+import { createTask, Task } from '@/websync/task.js'
 import { createCard } from '@/websync/card.js'
 import { createMessage } from '@/websync/task_message.js'
 import { createCardMessage } from '@/websync/card_message.js'
@@ -90,6 +90,7 @@ export default function processCreate (obj) {
       //   })
       // }
       createMessage(obj)
+      Task(obj)
       break
     case TYPES.TYPE_OBJECT_TASK_TAG:
       break

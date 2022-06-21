@@ -30,7 +30,10 @@ const getMessageTimeString = (dateCreate) => {
       v-else
       class="flex"
     >
-      <span class="mr-[8px] font-[400] text-[14px] text-[#4C4C4D] leading-[19px]">
+      <span
+        v-linkified:options="{ className: 'text-blue-600', tagName: 'a' }"
+        class="mr-[8px] font-[400] text-[14px] text-[#4C4C4D] leading-[19px] break-words max-w-[230px]"
+      >
         {{ props.message.msg }}
       </span>
       <p

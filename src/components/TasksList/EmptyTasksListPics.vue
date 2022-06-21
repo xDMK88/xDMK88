@@ -82,7 +82,7 @@ const goToNextDay = function () {
       </p>
       <div class="grid grid-cols-1">
         <button
-          class="bg-[#FF912380] px-2 rounded-[8px] text-black text-sm mr-1 hover:bg-orange-500 w-[156px] h-[51px] mr-auto ml-auto mt-[35px]"
+          class="bg-[#FF912380] px-2 rounded-[8px] text-black text-sm mr-1 hover:bg-[#F5DEB3] w-[156px] h-[51px] mr-auto ml-auto mt-[35px]"
           @click="goToNextDay"
         >
           Запланировать

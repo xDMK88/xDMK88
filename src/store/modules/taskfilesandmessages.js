@@ -312,8 +312,7 @@ const mutations = {
   [MERGE_FILES_WITH_MESSAGES]: state => {
     state.inspectorMessages.forEach(item => {
       item.uid_creator = 'inspector'
-      // remove 'Z' for further chat displaying
-      item.date_create = item.creation_date.slice(0, -1)
+      item.date_create = item.creation_date
     })
 
     state.files.forEach(item => {

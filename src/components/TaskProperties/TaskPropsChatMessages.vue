@@ -28,7 +28,7 @@
           v-if="message.isMessage && !showOnlyFiles"
           :class="message.isMyMessage ? 'mr-2' : 'ml-2'"
           :is-my-message="message.isMyMessage"
-          :deletedStatus="message.deleted"
+          :deleted-status="message.deleted"
           :show-creator="isChangeCreator(index)"
           :show-loader="uploadStarted && message.loading"
           :quote="getMessageQuoteString(message.uid_quote)"
@@ -41,38 +41,43 @@
         />
 
         <!-- Сообщение от инспектора -->
-        <div
-          v-if="message.isInspectorMessage && !showOnlyFiles"
-        >
+        <div>
           <div
-            v-if="isChangeCreator(index)"
-            class="flex"
+            v-if="message.isInspectorMessage && !showOnlyFiles"
           >
-            <p class="name-chat-custom dark:text-gray-100 font-bold">
-              Инспектор
-            </p>
-          </div>
-          <div class="chat-main">
             <div
-              class="mt-1 msg-custom-chat-left font-semibold text-sm bg-blue-50 dark:bg-gray-800 dark:text-gray-100"
+              v-if="isChangeCreator(index)"
+              class="flex"
             >
+              <p class="name-chat-custom dark:text-gray-100">
+                Инспектор
+              </p>
+            </div>
+            <div class="flex flex-col w-full mt-[10px]">
               <div
-                v-linkify:options="{ className: 'text-blue-600' }"
-                v-html="
-                  getInspectorMessage(message.type, (task.uid ? task : selectedTask)).replaceAll(
-                    '\n',
-                    '<br/>'
-                  )
-                "
-              />
+                class="text-[#4C4C4D] font-[400] text-[14px] leading-[19px] py-[12px] px-[15px]"
+                style="border: 2px solid rgba(0, 0, 0, 0.12); border-radius: 14px 14px 14px 0px;"
+              >
+                <div
+                  v-linkify:options="{ className: 'text-blue-600' }"
+                  v-html="getInspectorMessage(message.type, (task.uid ? task : selectedTask)).replaceAll('\n', '<br/>')"
+                />
+
+                <div
+                  v-if="message.date_create"
+                  class="time-chat dark:text-gray-300"
+                >
+                  {{ getMessageTimeString(message.date_create) }}
+                </div>
+              </div>
 
               <!-- Origin message -->
               <div
                 v-if="message.type == 1 && message.shouldShowInspectorButtons"
-                class="flex mt-2"
+                class="flex space-x-[4px] mt-[10px]"
               >
                 <div
-                  class="flex items-center bg-white rounded-lg p-1 px-2 mt-1 cursor-pointer mr-1"
+                  class="flex items-center bg-[#F2F3F5] cursor-pointer py-[10px] px-[14px] rounded-[5px]"
                   @click="
                     answerInspectorMessage(message, 1, 'Да')
                   "
@@ -80,7 +85,7 @@
                   <span class="text-sm text-gray-600"> Да </span>
                 </div>
                 <div
-                  class="flex items-center bg-white rounded-lg p-1 px-2 mt-1 cursor-pointer mr-1"
+                  class="flex items-center bg-[#F2F3F5] cursor-pointer py-[10px] px-[14px] rounded-[5px]"
                   @click="
                     answerInspectorMessage(message, 0, 'Нет')
                   "
@@ -95,7 +100,7 @@
                 class="flex mt-2"
               >
                 <div
-                  class="flex items-center bg-white rounded-lg p-1 px-2 mt-1 cursor-pointer mr-1"
+                  class="flex items-center bg-[#F2F3F5] cursor-pointer py-[10px] px-[14px] rounded-[5px]"
                   @click="
                     answerInspectorMessage(
                       message,
@@ -125,33 +130,26 @@
                   </span>
                 </div>
               </div>
-
-              <div
-                v-if="message.date_create"
-                class="time-chat dark:text-gray-300"
-              >
-                {{ getMessageTimeString(message.date_create) }}
-              </div>
             </div>
           </div>
+          <!-- Файл -->
+          <TaskPropsChatMessageFile
+            v-if="message.isFile"
+            :is-my-file="message.isMyMessage"
+            :show-creator="isChangeCreator(index)"
+            :creator-name="employees[message.uid_creator]?.name ?? '???'"
+            :file-name="message.msg"
+            :time="getMessageTimeString(message.date_create)"
+            :quote="getFileQuoteString(message.uid_quote)"
+            :quotefile="getFileQuoteString(message.uid_quote)"
+            :quote-user="getMessageQuoteUser(message.uid_quote)"
+            :size="formatBytes(message.file_size)"
+            :file="message"
+            @answer="answerMessage(message.uid)"
+            @PasteEvent="PasteEvent($event)"
+            @deleteFiles="deleteFiles(message.uid)"
+          />
         </div>
-        <!-- Файл -->
-        <TaskPropsChatMessageFile
-          v-if="message.isFile"
-          :is-my-file="message.isMyMessage"
-          :show-creator="isChangeCreator(index)"
-          :creator-name="employees[message.uid_creator]?.name ?? '???'"
-          :file-name="message.msg"
-          :time="getMessageTimeString(message.date_create)"
-          :quote="getFileQuoteString(message.uid_quote)"
-          :quotefile="getFileQuoteString(message.uid_quote)"
-          :quote-user="getMessageQuoteUser(message.uid_quote)"
-          :size="formatBytes(message.file_size)"
-          :file="message"
-          @answer="answerMessage(message.uid)"
-          @PasteEvent="PasteEvent($event)"
-          @deleteFiles="deleteFiles(message.uid)"
-        />
       </div>
     </div>
   </div>

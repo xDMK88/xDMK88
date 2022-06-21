@@ -1,5 +1,5 @@
 <script>
-import { computed, ref } from 'vue'
+import { ref } from 'vue'
 import TasksListNew from '@/components/TasksListNew.vue'
 import ListBlocItem from '@/components/Common/ListBlocItem.vue'
 import TagIcon from '@/components/Tags/Icons/TagIcon.vue'
@@ -38,6 +38,9 @@ export default {
     },
     isPropertiesMobileExpanded () {
       return this.$store.state.isPropertiesMobileExpanded
+    },
+    storeTasks () {
+      return this.$store.state.tasks.newtasks
     }
   },
   methods: {
@@ -45,27 +48,29 @@ export default {
       this.$store.commit('basic', { key: 'isGridView', value: value })
       setLocalStorageItem('isGridView', value)
     },
-    clickOnGridCard (value) {
-      this.$store.dispatch()
-    }
-  }
-}
+    gotoChildren (value) {
+      this.$store.dispatch(TASK.TAG_TASKS_REQUEST, value.uid)
+      this.$store.commit('basic', {
+        key: 'taskListSource',
+        value: { uid: value.global_property_uid, param: value.uid }
+      })
 
-const clickOnGridCard = (value) => {
-  if (UID_TO_ACTION[value.global_property_uid]) {
-    store.dispatch(UID_TO_ACTION[value.global_property_uid], value.uid)
-    const navElem = {
-      name: value.name,
-      key: 'taskListSource',
-      value: { uid: value.global_property_uid, param: value.uid },
-      typeVal: value.uid,
-      type: 'tag'
+      this.$store.commit(TASK.CLEAN_UP_LOADED_TASKS)
+
+      const navElem = {
+        name: value.name,
+        key: 'greedSource',
+        uid: value.uid,
+        global_property_uid: value.global_property_uid,
+        greedPath: 'tags',
+        value: value.children
+      }
+
+      this.$store.commit('pushIntoNavStack', navElem)
+      this.$store.commit('basic', { key: 'greedSource', value: value.children })
+      this.$store.commit('basic', { key: 'greedPath', value: 'tags' })
     }
-    store.commit('pushIntoNavStack', navElem)
-    store.commit('basic', { key: 'taskListSource', value: { uid: value.global_property_uid, param: value.uid } })
   }
-  store.commit('basic', { key: 'mainSectionState', value: 'tasks' })
-  store.commit(TASK.CLEAN_UP_LOADED_TASKS)
 }
 
 // const openProperties = (tag, parentTagUid = '') => {
@@ -156,7 +161,7 @@ const clickOnGridCard = (value) => {
       <ListBlocItem
         :color="tag.back_color"
         :title="tag.name"
-        @click="clickOnGridCard(tag)"
+        @click="gotoChildren(tag)"
       >
         <TagIcon />
       </ListBlocItem>

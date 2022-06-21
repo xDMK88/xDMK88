@@ -359,11 +359,13 @@ export default {
       return this.$store.state.cards.selectedCard
     },
     columnsNames () {
-      return this.usersColumns.map(column => column.Name)
+      return this.usersColumns.map((column) => column.Name)
     },
     currentCardColumnOrder () {
       if (!this.currentCard) return -1
-      return this.usersColumns.findIndex(column => column.UID === this.currentCard.uid_stage)
+      return this.usersColumns.findIndex(
+        (column) => column.UID === this.currentCard.uid_stage
+      )
     }
   },
   methods: {
@@ -548,11 +550,22 @@ export default {
           console.log('Card is moved')
         })
     },
+    getNewMinCardsOrderAtColumn (columnUid) {
+      const column = this.storeCards.find((stage) => stage.UID === columnUid)
+      if (!column || !column.cards.length) return 1.0
+      const minOrder = column.cards.reduce(
+        (minOrder, card) => (card.order < minOrder ? card.order : minOrder),
+        Number.MAX_VALUE
+      )
+      return Math.floor(minOrder) - 1
+    },
     moveSuccessCard (card) {
-      this.moveCard(card.uid, 'f98d6979-70ad-4dd5-b3f8-8cd95cb46c67')
+      const successStage = 'f98d6979-70ad-4dd5-b3f8-8cd95cb46c67'
+      this.moveCard(card.uid, successStage, this.getNewMinCardsOrderAtColumn(successStage))
     },
     moveRejectCard (card) {
-      this.moveCard(card.uid, 'e70af5e2-6108-4c02-9a7d-f4efee78d28c')
+      const rejectStage = 'e70af5e2-6108-4c02-9a7d-f4efee78d28c'
+      this.moveCard(card.uid, rejectStage, this.getNewMinCardsOrderAtColumn(rejectStage))
     },
     moveColumnCard (card) {
       this.showMoveCard = true
@@ -606,10 +619,14 @@ export default {
           const targetOrder = this.dragCardParam.move.targetCard.order
           if (this.dragCardParam.move.willInsertAfter) {
             const nextCard = targetColumn.cards[end.newIndex + 1] || null
-            newOrder = nextCard ? (nextCard.order + targetOrder) / 2 : targetOrder + 1
+            newOrder = nextCard
+              ? (nextCard.order + targetOrder) / 2
+              : targetOrder + 1
           } else {
             const prevCard = targetColumn.cards[end.newIndex - 1] || null
-            newOrder = prevCard ? (prevCard.order + targetOrder) / 2 : targetOrder - 1
+            newOrder = prevCard
+              ? (prevCard.order + targetOrder) / 2
+              : targetOrder - 1
           }
         }
         // сохраняем изменение

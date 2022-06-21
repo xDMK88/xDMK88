@@ -172,12 +172,7 @@
                         type="radio"
                         :value="pad2(value) + ':00'"
                         name="radio"
-                        :checked="
-                          pad2(new Date(dateBegin).getHours()) +
-                            ':' +
-                            pad2(new Date(dateBegin).getMinutes()) ===
-                            pad2(value) + ':00'
-                        "
+                        :checked="isCheckedTime(value)"
                         @change="calendarTimeChange"
                       >
                       <label :for="'c1' + value">{{ pad2(value) }}:00</label>
@@ -194,12 +189,7 @@
                         type="radio"
                         :value="pad2(value + 6) + ':00'"
                         name="radio"
-                        :checked="
-                          pad2(new Date(dateBegin).getHours()) +
-                            ':' +
-                            pad2(new Date(dateBegin).getMinutes()) ===
-                            pad2(value + 6) + ':00'
-                        "
+                        :checked="isCheckedTime(value + 6)"
                         @change="calendarTimeChange"
                       >
                       <label
@@ -218,12 +208,7 @@
                         type="radio"
                         :value="value + 12 + ':00'"
                         name="radio"
-                        :checked="
-                          pad2(new Date(dateBegin).getHours()) +
-                            ':' +
-                            pad2(new Date(dateBegin).getMinutes()) ===
-                            value + 12 + ':00'
-                        "
+                        :checked="isCheckedTime(value + 12)"
                         @change="calendarTimeChange"
                       >
                       <label :for="'c3' + value">{{ value + 12 }}:00</label>
@@ -240,12 +225,7 @@
                         type="radio"
                         :value="value + 18 + ':00'"
                         name="radio"
-                        :checked="
-                          pad2(new Date(dateBegin).getHours()) +
-                            ':' +
-                            pad2(new Date(dateBegin).getMinutes()) ===
-                            value + 18 + ':00'
-                        "
+                        :checked="isCheckedTime(value + 18)"
                         @change="calendarTimeChange"
                       >
                       <label :for="'c4' + value">{{ value + 18 }}:00</label>
@@ -583,6 +563,7 @@ export default {
       this.$refs.datePicker.updateValue(new Date(this.date))
       // устанавливаем время
       this.time = this.getTimeValue()
+      this.showTimeSelector = false
     },
     onDayClick (day) {
       // не даём развыделять календарь
@@ -614,6 +595,10 @@ export default {
       const begin = '0001-01-01T00:00:00'
       const end = '0001-01-01T00:00:00'
       this.$emit('changeDates', begin, end)
+    },
+    isCheckedTime (value) {
+      const valueString = this.pad2(value) + ':00'
+      return this.getTimeValue() === valueString
     }
   }
 }

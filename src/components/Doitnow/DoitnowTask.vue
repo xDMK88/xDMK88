@@ -542,7 +542,11 @@ export default {
       return this.colors[this.task.uid_marker]?.uppercase ?? false
     },
     plural () {
-      const date = Math.floor((new Date() - new Date(this.task.date_end)) / (60 * 60 * 24 * 1000))
+      const todayDate = new Date()
+      const dateEnd = new Date(this.task.date_end)
+      todayDate.setHours(0, 0, 0, 0)
+      dateEnd.setHours(0, 0, 0, 0)
+      const date = Math.floor((todayDate - dateEnd) / (60 * 60 * 24 * 1000))
       const dayName = date % 10 === 1 && date % 100 !== 11 ? 'день' : (((date >= 2) && (date % 10 <= 4)) && (date % 100 < 10 || date % 100 >= 20) ? 'дня' : 'дней')
       if (date < 0) {
         return date

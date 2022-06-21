@@ -1362,7 +1362,7 @@ export default {
             @keyup="changeName($event)"
             @focus="$refs.TaskName.focus()"
             @focusout="removeEditTaskName($event)"
-            @keydown.enter.prevent
+            @keydown.enter.exact.prevent
             v-html="getFixedCommentName()"
           />
         </strong>

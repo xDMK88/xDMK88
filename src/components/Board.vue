@@ -144,14 +144,14 @@
             :style="{ color: getContrastYIQ(column.Color) }"
           >
             <div
-              v-if="column.cards.length"
+              v-if="getColumnCards(column).length"
               class="flex items-center justify-between h-[16px]"
             >
               <p class="text-[12px] leading-[14px]">
-                Карточек: {{ column.cards.length }}
+                Карточек: {{ getColumnCards(column).length }}
               </p>
               <div
-                v-if="totalItem(column.cards)"
+                v-if="totalItem(getColumnCards(column))"
                 class="flex items-center"
               >
                 <svg
@@ -181,7 +181,7 @@
                   />
                 </svg>
                 <p class="ml-1 text-[10px] leading-[12px]">
-                  {{ totalItem(column.cards) }}
+                  {{ totalItem(getColumnCards(column)) }}
                 </p>
               </div>
             </div>
@@ -196,7 +196,7 @@
           <!--карточки -->
           <draggable
             :data-column-id="column.UID"
-            :list="column.cards"
+            :list="getColumnCards(column)"
             ghost-class="ghost-card"
             item-key="uid"
             group="cards"
@@ -225,7 +225,7 @@
           </draggable>
           <!--кнопка добавить карточку -->
           <div
-            v-if="column.AddCard"
+            v-if="column.AddCard && !showOnlyMyCards"
             class="mt-2 h-[40px]"
           >
             <button
@@ -255,7 +255,7 @@
       </template>
       <!-- кнопка Добавить колонку -->
       <div
-        v-if="board.type_access === 1"
+        v-if="board.type_access === 1 && !showArchive"
         class="flex-none bg-white rounded-xl w-[246px] h-[48px] mr-[10px]"
       >
         <div
@@ -325,7 +325,6 @@ export default {
   },
   data () {
     return {
-      isShowArchive: false,
       showAddCard: false,
       showAddColumn: false,
       showRenameColumn: false,
@@ -359,11 +358,27 @@ export default {
       return this.$store.state.cards.selectedCard
     },
     columnsNames () {
-      return this.usersColumns.map(column => column.Name)
+      return this.usersColumns.map((column) => column.Name)
     },
     currentCardColumnOrder () {
       if (!this.currentCard) return -1
-      return this.usersColumns.findIndex(column => column.UID === this.currentCard.uid_stage)
+      return this.usersColumns.findIndex(
+        (column) => column.UID === this.currentCard.uid_stage
+      )
+    },
+    showArchive () {
+      return this.$store.state.boards.showArchive
+    },
+    showOnlyMyCards () {
+      return this.$store.state.boards.showOnlyMyCards
+    }
+  },
+  watch: {
+    board: {
+      immediate: true,
+      handler: function (val) {
+        this.$store.commit(BOARD.BOARD_CLEAR_FILTER)
+      }
     }
   },
   methods: {
@@ -380,7 +395,7 @@ export default {
       return yiq >= 128 ? 'black' : 'white'
     },
     isColumnVisible (column) {
-      if (this.isShowArchive) {
+      if (this.showArchive) {
         // показываем только архив
         return column.Archive
       }
@@ -409,6 +424,13 @@ export default {
         return valString
       }
       return ''
+    },
+    getColumnCards (column) {
+      if (this.showOnlyMyCards) {
+        const currentUserEmail = this.$store.state.user.user.current_user_email.toLowerCase()
+        return column.cards.filter(card => card.user.toLowerCase() === currentUserEmail)
+      }
+      return column.cards
     },
     addCard (column) {
       this.showAddCard = true
@@ -548,11 +570,22 @@ export default {
           console.log('Card is moved')
         })
     },
+    getNewMinCardsOrderAtColumn (columnUid) {
+      const column = this.storeCards.find((stage) => stage.UID === columnUid)
+      if (!column || !column.cards.length) return 1.0
+      const minOrder = column.cards.reduce(
+        (minOrder, card) => (card.order < minOrder ? card.order : minOrder),
+        Number.MAX_VALUE
+      )
+      return Math.floor(minOrder) - 1
+    },
     moveSuccessCard (card) {
-      this.moveCard(card.uid, 'f98d6979-70ad-4dd5-b3f8-8cd95cb46c67')
+      const successStage = 'f98d6979-70ad-4dd5-b3f8-8cd95cb46c67'
+      this.moveCard(card.uid, successStage, this.getNewMinCardsOrderAtColumn(successStage))
     },
     moveRejectCard (card) {
-      this.moveCard(card.uid, 'e70af5e2-6108-4c02-9a7d-f4efee78d28c')
+      const rejectStage = 'e70af5e2-6108-4c02-9a7d-f4efee78d28c'
+      this.moveCard(card.uid, rejectStage, this.getNewMinCardsOrderAtColumn(rejectStage))
     },
     moveColumnCard (card) {
       this.showMoveCard = true
@@ -606,10 +639,14 @@ export default {
           const targetOrder = this.dragCardParam.move.targetCard.order
           if (this.dragCardParam.move.willInsertAfter) {
             const nextCard = targetColumn.cards[end.newIndex + 1] || null
-            newOrder = nextCard ? (nextCard.order + targetOrder) / 2 : targetOrder + 1
+            newOrder = nextCard
+              ? (nextCard.order + targetOrder) / 2
+              : targetOrder + 1
           } else {
             const prevCard = targetColumn.cards[end.newIndex - 1] || null
-            newOrder = prevCard ? (prevCard.order + targetOrder) / 2 : targetOrder - 1
+            newOrder = prevCard
+              ? (prevCard.order + targetOrder) / 2
+              : targetOrder - 1
           }
         }
         // сохраняем изменение

@@ -506,6 +506,7 @@ const mutations = {
         // adding projects recursively to subarrays
         visitChildren(state.navigator.tags.items, (value) => {
           if (value.uid === tag.uid_parent) {
+            console.log(value)
             value.children.push(tag)
           }
         })
@@ -516,6 +517,23 @@ const mutations = {
     for (const color of colors) {
       state.navigator.colors.items.push(color)
     }
+  },
+  NAVIGATOR_UPDATE_COLOR: (state, colors) => {
+    visitChildren(
+      state.navigator.colors.items,
+      (value, index) => {
+        if (value.uid === colors.uid) {
+          Object.assign(value, colors)
+        }
+      }
+    )
+  },
+  NAVIGATOR_UPDATE_TAG: (state, tag) => {
+    visitChildren(state.navigator.tags.items, (value) => {
+      if (value.uid === tag.uid) {
+        Object.assign(value, tag)
+      }
+    })
   },
   [NAVIGATOR_PUSH_EMPLOYEE]: (state, employees) => {
     for (const employee of employees) {

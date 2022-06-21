@@ -33,7 +33,7 @@
             :class="{ 'uppercase': !task._isEditable && colors[task.uid_marker] && colors[task.uid_marker].uppercase, 'text-gray-500': task.status == 1 || task.status == 7, 'line-through': task.status == 1 || task.status == 7 }"
             @focusout="clearTaskFocus(task)"
             @dblclick.stop="editTaskName(task)"
-            @keydown.enter="updateTask($event, task); $emit('changeValue', {_isEditable: false})"
+            @keydown.enter="updateTask($event, task)"
           />
         </div>
         <Popper
@@ -134,10 +134,10 @@
           </div>
           <!-- days -->
           <div
-            v-show="dateClear(task.date_end) !== '1.1.1'"
+            v-show="dateClear !== '1.1.1'"
             class="flex mb-2"
           >
-            <span class="ml-1 text-black">{{ dateClearWords(task.date_end) }}</span>
+            <span class="ml-1 text-black">{{ dateClearWords + getTime }}</span>
           </div>
           <!-- overdue -->
           <div
@@ -209,7 +209,7 @@
         <!-- accept -->
         <button
           class="flex py-0.5 items-center justify-center text-sm hover:bg-white bg-green-100 hover:bg-opacity-90 font-medium border-green-400 min-h-[40px] w-[181px] rounded-lg border hover:text-green-500 mb-2 hover:animate-fadeIn"
-          @click="accept(), $emit('readTask')"
+          @click="accept "
         >
           <span class="ml-8 w-[70px]">{{ task.uid_customer === user.current_user_uid ? (task.uid_performer === user.current_user_uid ? 'Завершить' : 'Принять и завершить') : 'Готово к сдаче' }}</span>
           <Icon
@@ -223,7 +223,7 @@
         <!-- redo -->
         <button
           class="flex py-0.5 items-center justify-center text-sm bg-gray-100 w-[181px] hover:bg-red-200 hover:border hover:border-red-300 min-h-[40px] hover:bg-opacity-90 font-medium rounded-lg hover:text-red-500 mb-2 hover:animate-fadeIn"
-          @click="reDo(), $emit('readTask')"
+          @click="reD "
         >
           <span class="ml-8 w-[70px]">{{ task.uid_customer === user.current_user_uid ? (task.uid_performer === user.current_user_uid ? 'Отменить' : 'На доработку') : 'Отклонить' }}</span>
           <Icon
@@ -237,7 +237,7 @@
         <!-- decline -->
         <button
           class="flex py-0.5 w-[181px] justify-center items-center text-sm bg-gray-100 hover:bg-gray-50 hover:border hover:border-gray-500 hover:bg-opacity-90 font-medium min-h-[40px] rounded-lg mb-2 hover:animate-fadeIn"
-          @click="decline(), $emit('readTask')"
+          @click="decline"
         >
           <span class="ml-8 w-[70px]">Отложить</span>
           <Icon
@@ -269,60 +269,6 @@
       </div>
     </div>
   </div>
-  <!-- subtasks -->
-  <!-- <div
-    v-if="subTasks.length"
-    class="flex flex-col items-end"
-  >
-    <div
-      class="group task-node flex-col items-center w-[99%] bg-white p-2 rounded-lg dark:bg-gray-900 dark:border-gray-700 border border-gray-300 my-0.5 relative font-SfProTextNormal"
-      v-for="(subTask, i) in subTasks"
-      :key="i - 1"
-      @click="showChat"
-    >
-      <div class="flex flex-col">
-        <div
-          class="flex items-center"
-        >
-          <TaskStatus :task="subTask"/>
-          <span>{{ subTask.name }}</span>
-          <Icon
-            @click="onClick(subTask)"
-            :path="taskoptions.path"
-            class="text-gray-600 dark:text-white cursor-pointer h-full ml-2"
-            :box="taskoptions.viewBox"
-            :width="taskoptions.width"
-            :style="{ color: 'gray' }"
-            :height="taskoptions.height"
-          />
-        </div>
-        <article
-          v-if="subTask.comment.length"
-          class="flex flex-col break-words text-sm"
-        >
-          <span class="font-semibold">Описание подзадачи:</span>
-          {{ subTask.comment }}
-        </article>
-      </div>
-      <div
-        class="flex flex-col max-w-1/2"
-        v-if="isChatVisible"
-      >
-         subtask chat -->
-  <!-- <TaskPropsChatMessages
-          v-if="taskMessages?.length"
-          id="content"
-          class="mt-3"
-          :task-messages="taskMessages"
-          :current-user-uid="user.current_user_uid"
-        /> -->
-  <!-- input -->
-  <!-- <TaskPropsInputForm
-          :task="subTask"
-        />
-      </div>
-    </div>
-  </div> -->
 </template>
 
 <script>
@@ -492,6 +438,28 @@ export default {
     }
   },
   computed: {
+    getTime () {
+      const time = new Date(this.task.customer_date_end)
+      let hours = String(time.getHours())
+      let minutes = String(time.getMinutes())
+      if (hours === '0') {
+        hours += '0'
+      } else if (minutes === '0') {
+        minutes += '0'
+      }
+      if (!this.task.customer_date_end.includes('23:59:59')) {
+        return '(' + hours + ':' + minutes + ')'
+      } else {
+        return ''
+      }
+    },
+    dateClearWords () {
+      const time = this.task.customer_date_end
+      const month = new Date(time).getMonth() + 1
+      const months = [' Января ', ' Февраля ', ' Марта ', ' Апреля ', ' Мая ', ' Июня ', ' Июля ', ' Августа ', ' Сентября ', ' Октября ', ' Ноября ', ' Декабря ']
+      const date = new Date(time).getDate() + months[month - 1] + (new Date().getFullYear() === new Date(time).getUTCFullYear() ? '' : new Date(time).getUTCFullYear())
+      return date
+    },
     isAccessVisible () {
       if (this.task.emails) return true
       if (this.task.type === 1 || this.task.type === 2) return true
@@ -542,7 +510,11 @@ export default {
       return this.colors[this.task.uid_marker]?.uppercase ?? false
     },
     plural () {
-      const date = Math.floor((new Date() - new Date(this.task.date_end)) / (60 * 60 * 24 * 1000))
+      const todayDate = new Date()
+      const dateEnd = new Date(this.task.date_end)
+      todayDate.setHours(0, 0, 0, 0)
+      dateEnd.setHours(0, 0, 0, 0)
+      const date = Math.floor((todayDate - dateEnd) / (60 * 60 * 24 * 1000))
       const dayName = date % 10 === 1 && date % 100 !== 11 ? 'день' : (((date >= 2) && (date % 10 <= 4)) && (date % 100 < 10 || date % 100 >= 20) ? 'дня' : 'дней')
       if (date < 0) {
         return date
@@ -591,12 +563,6 @@ export default {
     },
     dateClear (time) {
       return new Date(time).getDate() + '.' + (new Date(time).getMonth() + 1) + '.' + new Date(time).getFullYear()
-    },
-    dateClearWords (time) {
-      const month = new Date(time).getMonth() + 1
-      const months = [' Января ', ' Февраля ', ' Марта ', ' Апреля ', ' Мая ', ' Июня ', ' Июля ', ' Августа ', ' Сентября ', ' Октября ', ' Ноября ', ' Декабря ']
-      const date = new Date(time).getDate() + months[month - 1] + (new Date().getFullYear() === new Date(time).getUTCFullYear() ? '' : new Date(time).getUTCFullYear())
-      return date
     },
     removeTask (uid) {
       if (this.isPropertiesMobileExpanded) {
@@ -757,6 +723,7 @@ export default {
       this.$emit('clickTask', task)
     },
     reDo () {
+      this.$emit('readTask')
       if (this.task.uid_performer === this.user.current_user_uid && this.task.uid_customer === this.user.current_user_uid) {
         this.$store.dispatch(TASK.CHANGE_TASK_STATUS, { uid: this.task.uid, value: 7 })
       }
@@ -769,6 +736,7 @@ export default {
       this.nextTask()
     },
     accept () {
+      this.$emit('readTask')
       if ((this.task.uid_performer === this.user.current_user_uid && this.task.uid_customer === this.user.current_user_uid) ||
       (this.task.uid_performer !== this.user.current_user_uid && this.task.uid_customer === this.user.current_user_uid)) {
         this.$store.dispatch(TASK.CHANGE_TASK_STATUS, { uid: this.task.uid, value: 1 })
@@ -778,6 +746,7 @@ export default {
       this.nextTask()
     },
     decline () {
+      this.$emit('readTask')
       this.$store.dispatch(TASK.CHANGE_TASK_STATUS, { uid: this.task.uid, value: 6 })
       this.nextTask()
     },

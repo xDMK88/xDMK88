@@ -13,8 +13,11 @@ function uuidv4 () {
 
 const state = {
   boards: {},
-  selectedBoard: undefined
+  selectedBoard: undefined,
+  showArchive: false,
+  showOnlyMyCards: false
 }
+
 const getters = {}
 // const getDefaultState = () => {
 //   return {
@@ -318,6 +321,16 @@ const mutations = {
   },
   [BOARD.SELECT_BOARD]: (state, board) => {
     state.selectedBoard = board
+  },
+  [BOARD.SHOW_BOARD_ARCHIVE]: (state, showArchive) => {
+    state.showArchive = showArchive
+  },
+  [BOARD.SHOW_BOARD_MY_CARDS]: (state, showMyCards) => {
+    state.showOnlyMyCards = showMyCards
+  },
+  [BOARD.BOARD_CLEAR_FILTER]: (state) => {
+    state.showArchive = false
+    state.showOnlyMyCards = false
   }
 }
 

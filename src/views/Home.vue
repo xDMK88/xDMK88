@@ -24,6 +24,7 @@ import ModalBoxNotificationInstruction from '@/components/modals/ModalBoxNotific
 import Dashboard from '@/components/Dashboard.vue'
 import Other from '@/components/Other.vue'
 import Doitnow from '@/components/Doitnow.vue'
+import TagWithChildren from '@/components/Tags/TagWithChildren.vue'
 
 import { NAVIGATOR_REQUEST } from '@/store/actions/navigator'
 import { USER_REQUEST } from '@/store/actions/user'
@@ -267,6 +268,13 @@ const getNavigator = () => {
             } else if (['tags_children', 'projects_children', 'boards_children'].includes(navStack.value[navStack.value.length - 1].greedPath)) {
               if (navStack.value[navStack.value.length - 1].greedPath === 'tags_children') {
                 // nested lookup for tags
+                store.dispatch(UID_TO_ACTION[navStack.value[navStack.value.length - 1].global_property_uid], navStack.value[navStack.value.length - 1].uid)
+                  .then(() => {
+                    store.commit('basic', {
+                      key: 'taskListSource',
+                      value: { uid: navStack.value[navStack.value.length - 1].global_property_uid, param: navStack.value[navStack.value.length - 1].uid }
+                    })
+                  })
                 visitChildren(storeNavigator.value.tags.items, value => {
                   if (value.uid === navStack.value[navStack.value.length - 1].uid) {
                     store.commit('basic', { key: navStack.value[navStack.value.length - 1].key, value: value.children })
@@ -410,6 +418,14 @@ if (router.currentRoute.value.name === 'task' && router.currentRoute.value.param
       <other
         v-if="greedPath === 'other'"
       />
+      <tags
+        v-if="greedPath === 'tags'"
+        :tags="greedSource"
+      />
+      <TagWithChildren
+        v-if="greedPath === 'tags_children'"
+        :tags="greedSource"
+      />
       <ProjectWithChildren
         v-if="greedPath === 'projects_children'"
         :projects="greedSource"
@@ -421,10 +437,6 @@ if (router.currentRoute.value.name === 'task' && router.currentRoute.value.param
       <employees
         v-if="greedPath === 'new_emps'"
         :employees="greedSource"
-      />
-      <tags
-        v-if="greedPath === 'tags' || greedPath === 'tags_children'"
-        :tags="greedSource"
       />
       <colors
         v-if="greedPath === 'colors'"

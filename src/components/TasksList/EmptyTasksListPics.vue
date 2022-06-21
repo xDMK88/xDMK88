@@ -92,7 +92,7 @@ const goToNextDay = function () {
   </div>
 
   <!-- PROJECT -->
-  <div v-if="navStack[navStack.length - 1].value.uid == PRIVATE_PROJECT_UID">
+  <div v-if="navStack[navStack.length - 1].value?.uid == PRIVATE_PROJECT_UID">
     <div
       class="pointer-events-none max-w-xl mx-auto"
     >
@@ -170,7 +170,7 @@ const goToNextDay = function () {
   </div>
 
   <!-- TAG -->
-  <div v-if="navStack[navStack.length - 1].value.uid == TAG_UID">
+  <div v-if="navStack[navStack.length - 1].value?.uid == TAG_UID">
     <div
       class="pointer-events-none max-w-xl mx-auto"
     >
@@ -236,7 +236,7 @@ const goToNextDay = function () {
   </div>
 
   <!-- COLOR  -->
-  <div v-if="navStack[navStack.length - 1].value.uid == COLOR_UID">
+  <div v-if="navStack[navStack.length - 1].value?.uid == COLOR_UID">
     <div
       class="pointer-events-none max-w-xl mx-auto"
     >

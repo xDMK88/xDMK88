@@ -165,6 +165,8 @@ export default {
           //
           this.$store.dispatch('asidePropertiesToggle', false)
           this.$store.commit(NAVIGATOR_REMOVE_TAG, this.selectedTag)
+          // выходим выше на один уровень навигации (надеемся что эта метка последняя в стеке)
+          this.$store.dispatch('popNavStack')
         })
     },
     closeProperties () {
@@ -185,6 +187,7 @@ export default {
         this.selectedTag.back_color = color || '#A998B6'
         this.$store.dispatch(UPDATE_TAG_REQUEST, this.selectedTag)
           .then((resp) => {
+            console.log(this.$store.state.greedSource)
             console.log('changeTagColor', resp, color)
           })
       }

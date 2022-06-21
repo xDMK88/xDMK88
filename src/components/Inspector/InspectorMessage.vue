@@ -325,8 +325,13 @@ const computedTimes = computed(() => {
       times[key + dayNumber] = { uid: key + dayNumber, name: dayNumber + ' ' + key, value: new Date(2022, russianMonths[key], parseInt(dayNumber)) }
     }
   }
+  let foundExact = false
   for (const key in times) {
-    if (times[key].name.toLowerCase().includes(inputLowerCase)) {
+    if (times[key].name.toLowerCase() === inputLowerCase) {
+      newTimes[key] = times[key]
+      foundExact = true
+    }
+    if (times[key].name.toLowerCase().includes(inputLowerCase) && !foundExact) {
       newTimes[key] = times[key]
     }
   }
@@ -351,7 +356,7 @@ const computedTimes = computed(() => {
       <div class="flex flex-col">
         <div
           class="bg-white py-[12px] px-[15px]"
-          style="border: 2px solid rgba(0, 0, 0, 0.12); border-radius: 14px 14px 14px 0px;"
+          style="border: 2px solid rgba(0, 0, 0, 0.12); border-radius: 0px 14px 14px 14px;"
         >
           <p
             class="font-[400] text-[14px] leading-[19px] text-[#4C4C4D]"

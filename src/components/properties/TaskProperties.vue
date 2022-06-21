@@ -1042,13 +1042,13 @@ export default {
       this.$store.dispatch(CREATE_MESSAGE_REQUEST, data).then(
         resp => {
           // Answer last inspector message
-          const lastInspectorMessage = this.taskMessagesAndFiles[this.taskMessagesAndFiles.length - 2].uid_creator === 'inspector' ? this.taskMessagesAndFiles[this.taskMessagesAndFiles.length - 2] : false
-          console.log('lastInspectorMessage: ', lastInspectorMessage)
-          if (lastInspectorMessage) {
+          const lastInspectorMessage = this.taskMessagesAndFiles.slice().reverse().find(message => message.uid_creator === 'inspector')
+          if (lastInspectorMessage && this.selectedTask.uid_performer === this.cusers.current_user_uid) {
             this.$store.dispatch(INSPECTOR.ANSWER_INSPECTOR_TASK, { id: lastInspectorMessage.id, answer: 1 }).then(() => {
               lastInspectorMessage.performer_answer = 1
             })
           }
+
           this.selectedTask.has_msgs = true
           if (this.selectedTask.type === 2 || this.selectedTask.type === 3) {
             if ([1, 5, 7, 8].includes(this.selectedTask.status)) {

@@ -1200,6 +1200,7 @@ const actions = {
       const url = process.env.VUE_APP_LEADERTASK_API + 'api/v1/tag'
       axios({ url: url, method: 'POST', data: data })
         .then((resp) => {
+          commit(TASK.PUSH_TAG, resp)
           resolve(resp)
         })
         .catch((err) => {
@@ -1384,6 +1385,9 @@ const actions = {
 const mutations = {
   [TASK.HAS_MSGS]: (state, uid, value) => {
     state.tasks[uid].has_msgs = value
+  },
+  [TASK.PUSH_TAG]: (state, resp) => {
+    state.tags[resp.data.uid] = resp.data
   },
   [TASK.MSG_EQUAL]: (state, uid, value) => {
     state.tasks[uid].msg = value

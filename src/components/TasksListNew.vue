@@ -1,5 +1,4 @@
 <template>
-  lastSelectedTaskUid {{ lastSelectedTaskUid }}
   <!-- Confirm modal -->
   <ModalBoxDelete
     v-show="showConfirm"

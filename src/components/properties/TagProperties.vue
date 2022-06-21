@@ -25,19 +25,18 @@
       />
     </div>
     <input
-      v-if="isCanEdit"
       v-model="currName"
       type="text"
       placeholder="Наименование"
       class="mt-[25px] p-0 font-roboto font-bold text-[18px] leading-[21px] text-[#424242] w-full border-none focus:ring-0 focus:outline-none"
       @blur="changeTagName"
     >
-    <div
+  <!--  <div
       v-else
       class="mt-[25px] w-full font-roboto font-bold text-[18px] leading-[21px] text-[#424242] overflow-hidden text-ellipsis whitespace-nowrap"
     >
       {{ currName }}
-    </div>
+    </div> -->
     <div
       class="mt-[30px] font-roboto text-[16px] leading-[19px] font-medium text-[#4c4c4d]"
     >
@@ -52,7 +51,6 @@
         <PropsColorBoxItem
           v-for="clr in clrs"
           :key="clr.color"
-          :class="{'cursor-pointer': isCanEdit}"
           :color="clr.color"
           :selected="clr.selected"
           @select="changeTagColor"
@@ -70,7 +68,7 @@ import PopMenuItem from '@/components/modals/PopMenuItem.vue'
 import PropsButtonClose from '@/components/Common/PropsButtonClose.vue'
 import PropsButtonMenu from '@/components/Common/PropsButtonMenu.vue'
 
-import { UPDATE_TAG_REQUEST, REMOVE_TAG_REQUEST } from '@/store/actions/tasks'
+import { UPDATE_TAG_REQUEST, REMOVE_TAG_REQUEST, CREATE_TAG_REQUEST } from '@/store/actions/tasks'
 import { NAVIGATOR_REMOVE_TAG } from '@/store/actions/navigator'
 
 export default {
@@ -138,7 +136,8 @@ export default {
     },
     isCanDelete () {
       const user = this.$store.state.user.user
-      return this.selectedTag?.email_creator === user.current_user_email
+      console.log(this.selectedTag)
+      return this.selectedTag.email_creator === user.current_user_email
     },
     isCanEdit () {
       return this.isCanDelete
@@ -153,6 +152,14 @@ export default {
     }
   },
   methods: {
+    uuidv4 () {
+      return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, (c) =>
+        (
+          c ^
+          (crypto.getRandomValues(new Uint8Array(1))[0] & (15 >> (c / 4)))
+        ).toString(16)
+      )
+    },
     print (msg, param) {
       console.log(msg, param)
     },
@@ -173,22 +180,57 @@ export default {
       this.$store.dispatch('asidePropertiesToggle', false)
     },
     changeTagName () {
-      const title = this.currName.trim()
-      if (this.isCanEdit && title && this.selectedTagName !== title) {
-        this.selectedTag.name = title
-        this.$store.dispatch(UPDATE_TAG_REQUEST, this.selectedTag)
-          .then((resp) => {
-            console.log('changeColorName', resp)
-          })
+      if (this.selectedTagUid) {
+        const title = this.currName.trim()
+        if (title && this.selectedTagName !== title) {
+          this.selectedTag.name = title
+          this.$store.dispatch(UPDATE_TAG_REQUEST, this.selectedTag)
+            .then((resp) => {
+              console.log('changeColorName', resp)
+            })
+        }
+      } else {
+        const data = {
+          uid_parent: '00000000-0000-0000-0000-000000000000',
+          back_color: this.selectedTag.back_color,
+          comment: '',
+          collapsed: 0,
+          order: 1,
+          group: 0,
+          show: 0,
+          favorite: 0,
+          uid: this.uuidv4(),
+          name: this.selectedTagName,
+          bold: 0
+        }
+        this.$store.dispatch(CREATE_TAG_REQUEST, data)
       }
     },
     changeTagColor (color) {
-      if (this.isCanEdit && this.selectedTagColor.toLowerCase() !== color) {
-        this.selectedTag.back_color = color || '#A998B6'
-        this.$store.dispatch(UPDATE_TAG_REQUEST, this.selectedTag)
-          .then((resp) => {
-            console.log('changeTagColor', resp, color)
-          })
+      console.log(this.selectedTag)
+      if (this.selectedTagUid) {
+        if (this.selectedTagColor.toLowerCase() !== color) {
+          this.selectedTag.back_color = color || '#A998B6'
+          this.$store.dispatch(UPDATE_TAG_REQUEST, this.selectedTag)
+            .then((resp) => {
+              console.log('changeTagColor', resp, color)
+            })
+        }
+      } else {
+        const data = {
+          uid_parent: '00000000-0000-0000-0000-000000000000',
+          back_color: this.selectedTag.back_color,
+          comment: '',
+          collapsed: 0,
+          order: 1,
+          group: 0,
+          show: 0,
+          favorite: 0,
+          uid: this.uuidv4(),
+          name: this.selectedTagName,
+          bold: 0
+        }
+        this.$store.dispatch(CREATE_TAG_REQUEST, data)
       }
     }
   }

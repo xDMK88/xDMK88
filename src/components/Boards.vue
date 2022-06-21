@@ -65,7 +65,7 @@
             @click.stop="gotoChildren(board)"
           />
         </template>
-        <BoardBlocAdd
+        <ListBlocAdd
           v-if="index == 0"
           @click.stop="showAddBoard = true"
         />
@@ -79,7 +79,7 @@ import Icon from '@/components/Icon.vue'
 import { setLocalStorageItem } from '@/store/helpers/functions'
 import BoardModalBoxRename from '@/components/Board/BoardModalBoxRename.vue'
 import BoardBlocItem from '@/components/Board/BoardBlocItem.vue'
-import BoardBlocAdd from '@/components/Board/BoardBlocAdd.vue'
+import ListBlocAdd from '@/components/Common/ListBlocAdd.vue'
 import * as CARD from '@/store/actions/cards.js'
 import * as BOARD from '@/store/actions/boards'
 import * as NAVIGATOR from '@/store/actions/navigator'
@@ -92,7 +92,7 @@ export default {
     Icon,
     BoardModalBoxRename,
     BoardBlocItem,
-    BoardBlocAdd
+    ListBlocAdd
   },
   props: {
     boards: {

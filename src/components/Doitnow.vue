@@ -21,7 +21,7 @@
         В очереди задач: {{ tasksCount }}
       </div>
       <button
-        class="bg-amber-500 px-2 rounded-[8px] text-black text-sm h-[35px] ml-2 hover:bg-orange-500"
+        class="bg-[#FF912380] px-2 rounded-[8px] text-black text-sm h-[35px] ml-2 hover:bg-orange-500"
         @click="showInspector = true"
       >
         Поручить
@@ -87,6 +87,11 @@ export default {
     Icon,
     TasksSkeleton
   },
+  setup () {
+    return {
+      arrowForw
+    }
+  },
   data: () => ({
     unreadTasks: [],
     overdueTasks: [],
@@ -102,11 +107,6 @@ export default {
     overdueReaded: [],
     showInspector: ref(false)
   }),
-  setup () {
-    return {
-      arrowForw
-    }
-  },
   computed: {
     tasksCount () {
       return (

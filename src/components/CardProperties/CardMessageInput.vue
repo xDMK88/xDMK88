@@ -51,7 +51,6 @@ const computedValue = computed({
       type="text"
       placeholder="Напишите сообщение..."
       @paste="$emit('onPaste', $event)"
-      @keydown.enter.shift.exact.prevent="addNewLineTaskMsg"
       @keydown.enter.exact.prevent="$emit('createCardMessage', computedValue.value)"
     />
 

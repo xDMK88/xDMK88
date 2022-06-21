@@ -1,5 +1,5 @@
 <template>
-<div class="form-send-message">
+  <div class="form-send-message">
     <img
       v-if="isloading"
       src="/ajaxloader.gif"
@@ -79,17 +79,17 @@ import * as FILES from '@/store/actions/taskfiles.js'
 import * as MSG from '@/store/actions/taskmessages'
 
 export default {
-  data: () => ({
-    isloading: false,
-    files: [],
-    taskMsg: ref('')
-  }),
   props: {
     task: {
       type: Object,
       default: () => ({})
     }
   },
+  data: () => ({
+    isloading: false,
+    files: [],
+    taskMsg: ref('')
+  }),
   computed: {
     user () {
       return this.$store.state.user.user
@@ -98,15 +98,15 @@ export default {
       return this.$store.state.taskfilesandmessages.messages
     }
   },
-  mounted: function () {
-    this.$nextTick(function () {
-      this.$refs.taskMsgEdit.addEventListener('paste', this.onPasteEvent, { once: true })
-    })
-  },
   watch: {
     task (newval, oldval) {
       this.taskMsg = ''
     }
+  },
+  mounted: function () {
+    this.$nextTick(function () {
+      this.$refs.taskMsgEdit.addEventListener('paste', this.onPasteEvent, { once: true })
+    })
   },
   methods: {
     pad2: function (n) {

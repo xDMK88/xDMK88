@@ -5,8 +5,8 @@
   >
     <div
       v-if="haveColor"
-      :style="{ backgroundColor: color }"
-      class="w-full h-[4px] absolute top-0 right-0 rounded-t-[8px]"
+      :style="{ 'border-color': color }"
+      class="w-full h-full border-t-4 absolute top-0 right-0 rounded-t-[8px]"
     />
     <div class="w-full">
       <div class="flex items-center relative">

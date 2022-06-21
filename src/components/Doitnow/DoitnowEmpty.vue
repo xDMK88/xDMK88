@@ -3,18 +3,18 @@
     <div class="max-w-xl mx-auto">
       <img
         class="mx-auto mt-10"
-        width="300"
-        height="300"
-        src="@/assets/images/emptytask.png"
+        width="320"
+        height="314"
+        src="@/assets/images/emptydoitnow.png"
         alt="Empty task image"
       >
-      <p class="text-xl text-center font-bold mt-10">
-        Поздравляем, вы успешно обработали все задачи. Не хотите запланировать
-        дела на завтра?
+      <p class="text-xl text-center font-bold mt-[17px]">
+        Отличная работа! В Очереди пусто.<br>
+        Запланируем еще дела?
       </p>
       <div class="grid grid-cols-1">
         <button
-          class="bg-orange-500 px-2 py-1 mx-auto rounded-xl text-white mt-10 hover:bg-orange-500 bg-opacity-70"
+          class="bg-[#FF912380] px-2 rounded-[8px] text-black text-sm mr-1 hover:bg-orange-500 w-[156px] h-[51px] mr-auto ml-auto mt-[35px]"
           @click="goToNextDay"
         >
           Запланировать

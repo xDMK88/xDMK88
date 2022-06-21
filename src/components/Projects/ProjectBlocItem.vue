@@ -2,8 +2,7 @@
   <ListBlocItem
     :title="project.name"
     :color="project.color"
-    :count="project.members?.length ?? 0"
-    @click.stop="gotoChildren(project)"
+    :count="project.children?.length ?? 0"
   >
     <svg
       v-if="project.members?.length > 1"

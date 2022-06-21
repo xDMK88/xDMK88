@@ -66,7 +66,7 @@
             @click.stop="gotoChildren(project)"
           />
         </template>
-        <ProjectBlocAdd
+        <ListBlocAdd
           v-if="index == 0"
           @click.stop="showAddProject = true"
         />
@@ -80,7 +80,7 @@ import Icon from '@/components/Icon.vue'
 import BoardModalBoxRename from '@/components/Board/BoardModalBoxRename.vue'
 import { setLocalStorageItem } from '@/store/helpers/functions'
 import ProjectBlocItem from '@/components/Projects/ProjectBlocItem.vue'
-import ProjectBlocAdd from '@/components/Projects/ProjectBlocAdd.vue'
+import ListBlocAdd from '@/components/Common/ListBlocAdd.vue'
 
 import * as TASK from '@/store/actions/tasks'
 import * as PROJECT from '@/store/actions/projects'
@@ -93,7 +93,7 @@ export default {
     Icon,
     BoardModalBoxRename,
     ProjectBlocItem,
-    ProjectBlocAdd
+    ListBlocAdd
   },
   props: {
     items: {

@@ -17,7 +17,7 @@
           @click.stop="gotoChildren(project)"
         />
       </template>
-      <ProjectBlocAdd
+      <ListBlocAdd
         v-if="canAddChild"
         @click.stop="showAdd = true"
       />
@@ -34,7 +34,7 @@
 <script>
 import BoardModalBoxRename from '@/components/Board/BoardModalBoxRename.vue'
 import ProjectBlocItem from '@/components/Projects/ProjectBlocItem.vue'
-import ProjectBlocAdd from '@/components/Projects/ProjectBlocAdd.vue'
+import ListBlocAdd from '@/components/Common/ListBlocAdd.vue'
 import TasksListNew from '@/components/TasksListNew.vue'
 import * as TASK from '@/store/actions/tasks'
 import * as PROJECT from '@/store/actions/projects'
@@ -44,7 +44,7 @@ export default {
   components: {
     BoardModalBoxRename,
     ProjectBlocItem,
-    ProjectBlocAdd,
+    ListBlocAdd,
     TasksListNew
   },
   props: {

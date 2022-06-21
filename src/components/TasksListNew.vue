@@ -21,7 +21,7 @@
     class="fixed-create flex mb-1 ml-0.5 bg-[#f4f5f7] z-1"
   >
     <button
-      class="bg-amber-500 px-2 rounded-[8px] text-black text-sm mr-1 hover:bg-orange-500"
+      class="bg-[#FF912380] px-2 rounded-[8px] text-black text-sm mr-1 hover:bg-orange-500"
       @click="showInspector = true"
     >
       Поручить

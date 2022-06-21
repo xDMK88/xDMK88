@@ -2,7 +2,7 @@
   <ListBlocItem
     :title="project.name"
     :color="project.color"
-    :count="project.members?.length ?? 0"
+    :count="project.children?.length ?? 0"
   >
     <svg
       v-if="project.members?.length > 1"

@@ -39,7 +39,7 @@ export function getInspectorMessage (type, task) {
     case OVERDUE_MESSAGE_TYPE: return 'Вы просрочили задачу - напишите причину почему задача еще не выполнена и когда ожидать выполнения? А лучше свяжитесь с заказачиком и обсудите эту ситуацию'
     case BETWEEN_MESSAGE_TYPE: return store?.state?.employees?.employees[task.uid_performer]?.name + ', как идут дела? Пожалуйста, приложите промежуточные результаты.'
     case CALL_MESSAGE_TYPE: return 'Я позвонил исполнителю на номер ' + store?.state?.employees?.employees[task.uid_performer]?.phone.split(' ')[0] + '.'
-    case PERFOMER_DOESNT_HAVE_PHONE_NUMBER_MESSAGE_TYPE: return 'Я уже хотел связаться с ' + store?.state?.employees?.employees[task.uid_perfomer]?.name + ', но в базе нет номера телефона исполнителя. Пожалуйста, добавьте номер телефона исполнителю.'
+    case PERFOMER_DOESNT_HAVE_PHONE_NUMBER_MESSAGE_TYPE: return 'Я уже хотел связаться с ' + store?.state?.employees?.employees[task.uid_performer]?.name + ', но в базе нет номера телефона исполнителя или что-то не так с данными timezone. Пожалуйста, добавьте номер телефона исполнителя.'
     case SMS_MESSAGE_TYPE: return 'Я отправил смс исполнителю на номер ' + store?.state?.employees?.employees[task.uid_performer]?.phone.split(' ')[0] + '.'
     case BEFORE_DEADLINE_MESSAGE_TYPE: return 'Вы завершили задачу в срок и получаете +15 баллов к вашей карме.'
     case AFTER_DEADLINE_MESSAGE_TYPE: return 'Вы просрочили задачу и ничего не написали даже после дедлайна, пожалуйста позвоните руководителю и обьясните причину. С вас снимается 15 баллов за такое грубое нарушение.'

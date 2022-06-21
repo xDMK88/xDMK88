@@ -144,14 +144,14 @@
             :style="{ color: getContrastYIQ(column.Color) }"
           >
             <div
-              v-if="column.cards.length"
+              v-if="getColumnCards(column).length"
               class="flex items-center justify-between h-[16px]"
             >
               <p class="text-[12px] leading-[14px]">
-                Карточек: {{ column.cards.length }}
+                Карточек: {{ getColumnCards(column).length }}
               </p>
               <div
-                v-if="totalItem(column.cards)"
+                v-if="totalItem(getColumnCards(column))"
                 class="flex items-center"
               >
                 <svg
@@ -181,7 +181,7 @@
                   />
                 </svg>
                 <p class="ml-1 text-[10px] leading-[12px]">
-                  {{ totalItem(column.cards) }}
+                  {{ totalItem(getColumnCards(column)) }}
                 </p>
               </div>
             </div>
@@ -196,7 +196,7 @@
           <!--карточки -->
           <draggable
             :data-column-id="column.UID"
-            :list="column.cards"
+            :list="getColumnCards(column)"
             ghost-class="ghost-card"
             item-key="uid"
             group="cards"
@@ -225,7 +225,7 @@
           </draggable>
           <!--кнопка добавить карточку -->
           <div
-            v-if="column.AddCard"
+            v-if="column.AddCard && !showOnlyMyCards"
             class="mt-2 h-[40px]"
           >
             <button
@@ -424,6 +424,13 @@ export default {
         return valString
       }
       return ''
+    },
+    getColumnCards (column) {
+      if (this.showOnlyMyCards) {
+        const currentUserEmail = this.$store.state.user.user.current_user_email.toLowerCase()
+        return column.cards.filter(card => card.user.toLowerCase() === currentUserEmail)
+      }
+      return column.cards
     },
     addCard (column) {
       this.showAddCard = true

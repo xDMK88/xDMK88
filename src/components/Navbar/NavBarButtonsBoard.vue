@@ -13,17 +13,27 @@
         :colored="showOnlyMyCards || showArchive"
       />
       <template #menu>
-        <!-- <PopMenuItem
+        <PopMenuItem
           :icon="showOnlyMyCards ? 'check' : 'uncheck'"
           @click="clickBoardMyCards"
         >
           Ответственный я
-        </PopMenuItem> -->
+        </PopMenuItem>
         <PopMenuItem
           :icon="showArchive ? 'check' : 'uncheck'"
           @click="clickBoardArchive"
         >
           Архив
+        </PopMenuItem>
+        <PopMenuDivider
+          v-if="showOnlyMyCards || showArchive"
+        />
+        <PopMenuItem
+          v-if="showOnlyMyCards || showArchive"
+          icon="uncheck"
+          @click="clickBoardFilterClear"
+        >
+          Сбросить
         </PopMenuItem>
       </template>
     </PopMenu>
@@ -52,6 +62,7 @@
 import NavBarButtonIcon from '@/components/Navbar/NavBarButtonIcon.vue'
 import PopMenu from '@/components/modals/PopMenu.vue'
 import PopMenuItem from '@/components/modals/PopMenuItem.vue'
+import PopMenuDivider from '@/components/modals/PopMenuDivider.vue'
 import BoardModalBoxDelete from '@/components/Board/BoardModalBoxDelete.vue'
 
 import * as BOARD from '@/store/actions/boards'
@@ -62,6 +73,7 @@ export default {
     NavBarButtonIcon,
     PopMenu,
     PopMenuItem,
+    PopMenuDivider,
     BoardModalBoxDelete
   },
   props: {
@@ -119,6 +131,9 @@ export default {
     },
     clickBoardArchive () {
       this.$store.commit(BOARD.SHOW_BOARD_ARCHIVE, !this.showArchive)
+    },
+    clickBoardFilterClear () {
+      this.$store.commit(BOARD.BOARD_CLEAR_FILTER)
     }
   }
 }

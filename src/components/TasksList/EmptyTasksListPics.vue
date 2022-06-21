@@ -54,7 +54,7 @@ setInterval(() => {
         alt="Empty task image"
       >
       <p class="text-xl text-center font-bold mt-10">
-        Create tasks for today or go to another day to stay up to date
+        Создайте задачи на сегодня или перейдите в другой день, чтобы запланировать предстоящие дела
       </p>
     </div>
   </div>
@@ -185,18 +185,6 @@ setInterval(() => {
           class="cursor-pointer hover:text-gray-800 mr-2 text-green-500"
         />
         <p class="text-lg text-left text-gray-600">
-          Сортируйте рабочие и личные списки дел
-        </p>
-      </div>
-      <div class="flex items-center mt-3">
-        <icon
-          :path="ready.path"
-          :width="ready.width"
-          :height="ready.height"
-          :box="ready.viewBox"
-          class="cursor-pointer hover:text-gray-800 mr-2 text-green-500"
-        />
-        <p class="text-lg text-left text-gray-600">
           Визуализируйте порядок выполнения задач
         </p>
       </div>
@@ -252,18 +240,6 @@ setInterval(() => {
         />
         <p class="text-lg text-left text-gray-600">
           Сосредоточьте внимание команды на том, что важно
-        </p>
-      </div>
-      <div class="flex items-center mt-3">
-        <icon
-          :path="ready.path"
-          :width="ready.width"
-          :height="ready.height"
-          :box="ready.viewBox"
-          class="cursor-pointer hover:text-gray-800 mr-2 text-green-500"
-        />
-        <p class="text-lg text-left text-gray-600">
-          Отсортируйте личные дела, встречи, поездки и т.д.
         </p>
       </div>
       <div class="flex items-center mt-3">

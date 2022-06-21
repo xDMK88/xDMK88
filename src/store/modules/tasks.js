@@ -882,32 +882,6 @@ const actions = {
         })
     })
   },
-  [TASK.ACCOUNT_CHANGE_PHOTO]: ({ commit, dispatch }, data) => {
-    return new Promise((resolve, reject) => {
-      const url = process.env.VUE_APP_LEADERTASK_API + 'api/v1/account/foto'
-      axios({
-        data: data.file,
-        url: url,
-        method: 'PATCH'
-      })
-        .then((resp) => {
-          commit(TASK.ACCOUNT_CHANGE_PHOTO, data)
-          resolve(resp)
-        })
-        .catch((err) => {
-          notify(
-            {
-              group: 'api',
-              title: 'REST API Error, please make screenshot',
-              action: TASK.ACCOUNT_CHANGE_PHOTO,
-              text: '123'
-            },
-            15000
-          )
-          reject(err)
-        })
-    })
-  },
   [TASK.ADD_SUBTASK]: ({ commit }, task) => {
     return new Promise((resolve) => {
       commit(TASK.ADD_SUBTASK, task)
@@ -1408,10 +1382,6 @@ const actions = {
 }
 
 const mutations = {
-  [TASK.ACCOUNT_CHANGE_PHOTO]: (state, data) => {
-    console.log(this.$store.state)
-    state.user.user.foto_link = data.file
-  },
   [TASK.HAS_MSGS]: (state, uid, value) => {
     state.tasks[uid].has_msgs = value
   },

@@ -20,7 +20,6 @@ export default function processUpdate (obj) {
       break
     case TYPES.TYPE_OBJECT_TASK_MSG:
       getMessage(obj)
-      task(obj)
       break
     case TYPES.TYPE_OBJECT_CONTACT_GROUP:
       break

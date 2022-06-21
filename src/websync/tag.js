@@ -15,3 +15,6 @@ export function removeTag (obj) {
 export function removeParentTag (obj) {
   store.commit('NAVIGATOR_REMOVE_TAG', { uid: obj.uid })
 }
+export function updateTag (obj) {
+  store.commit('NAVIGATOR_UPDATE_TAG', obj.obj)
+}

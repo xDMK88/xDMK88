@@ -517,6 +517,23 @@ const mutations = {
       state.navigator.colors.items.push(color)
     }
   },
+  NAVIGATOR_UPDATE_COLOR: (state, colors) => {
+    visitChildren(
+      state.navigator.colors.items,
+      (value, index) => {
+        if (value.uid === colors.uid) {
+          Object.assign(value, colors)
+        }
+      }
+    )
+  },
+  NAVIGATOR_UPDATE_TAG: (state, tag) => {
+    visitChildren(state.navigator.tags.items, (value) => {
+      if (value.uid === tag.uid) {
+        Object.assign(value, tag)
+      }
+    })
+  },
   [NAVIGATOR_PUSH_EMPLOYEE]: (state, employees) => {
     for (const employee of employees) {
       state.navigator.emps.items.push(employee)

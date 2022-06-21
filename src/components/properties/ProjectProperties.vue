@@ -280,9 +280,11 @@ export default {
       this.$store
         .dispatch(PROJECT.REMOVE_PROJECT_REQUEST, this.selectedProjectUid)
         .then((resp) => {
-          console.log('quitProject', resp)
+          console.log('removeProject', resp)
           this.$store.dispatch('asidePropertiesToggle', false)
           this.$store.commit(NAVIGATOR_REMOVE_PROJECT, this.selectedProject)
+          // выходим выше на один уровень навигации (надеемся что этот проект последний в стеке)
+          this.$store.dispatch('popNavStack')
         })
     },
     quitProject () {
@@ -296,6 +298,8 @@ export default {
           console.log('quitProject', resp)
           this.$store.dispatch('asidePropertiesToggle', false)
           this.$store.commit(NAVIGATOR_REMOVE_PROJECT, this.selectedProject)
+          // выходим выше на один уровень навигации (надеемся что этот проект последний в стеке)
+          this.$store.dispatch('popNavStack')
         })
     },
     closeProperties () {

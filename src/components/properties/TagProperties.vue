@@ -165,6 +165,8 @@ export default {
           //
           this.$store.dispatch('asidePropertiesToggle', false)
           this.$store.commit(NAVIGATOR_REMOVE_TAG, this.selectedTag)
+          // выходим выше на один уровень навигации (надеемся что эта метка последняя в стеке)
+          this.$store.dispatch('popNavStack')
         })
     },
     closeProperties () {

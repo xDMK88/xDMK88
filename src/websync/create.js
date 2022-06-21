@@ -6,6 +6,7 @@ import { createMessage } from '@/websync/task_message.js'
 import { createCardMessage } from '@/websync/card_message.js'
 import * as TYPES from '@/websync/types.js'
 import { showNotify } from '@/store/helpers/functions'
+import { createColor } from '@/websync/colors_dop.js'
 
 function currentUserUid () {
   return store?.state?.user?.user?.current_user_uid
@@ -20,6 +21,7 @@ function currentUserEmail () {
 }
 
 export default function processCreate (obj) {
+  console.log(obj.type)
   switch (obj.type) {
     case TYPES.TYPE_OBJECT_TAG:
       break
@@ -71,6 +73,7 @@ export default function processCreate (obj) {
     case TYPES.TYPE_OBJECT_FILTER:
       break
     case TYPES.TYPE_OBJECT_MARKER:
+      createColor(obj)
       break
     case TYPES.TYPE_OBJECT_PERIOD:
       break

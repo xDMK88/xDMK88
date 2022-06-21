@@ -285,6 +285,8 @@ export default {
         .then(() => {
           this.$store.dispatch('asidePropertiesToggle', false)
           this.$store.commit(NAVIGATOR_REMOVE_BOARD, this.selectedBoard)
+          // выходим выше на один уровень навигации (надеемся что эта доска последняя в стеке)
+          this.$store.dispatch('popNavStack')
         })
     },
     quitBoard () {
@@ -298,6 +300,8 @@ export default {
           console.log('quitBoard', resp)
           this.$store.dispatch('asidePropertiesToggle', false)
           this.$store.commit(NAVIGATOR_REMOVE_BOARD, this.selectedBoard)
+          // выходим выше на один уровень навигации (надеемся что эта доска последняя в стеке)
+          this.$store.dispatch('popNavStack')
         })
     },
     closeProperties () {

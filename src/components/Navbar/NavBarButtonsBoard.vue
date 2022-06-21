@@ -7,7 +7,26 @@
       @cancel="showDeleteBoard = false"
       @yes="onDeleteBoard"
     />
-    <!-- <NavBarButtonIcon icon="filter" /> -->
+    <PopMenu>
+      <NavBarButtonIcon
+        icon="filter"
+        :colored="showOnlyMyCards || showArchive"
+      />
+      <template #menu>
+        <!-- <PopMenuItem
+          :icon="showOnlyMyCards ? 'check' : 'uncheck'"
+          @click="clickBoardMyCards"
+        >
+          Ответственный я
+        </PopMenuItem> -->
+        <PopMenuItem
+          :icon="showArchive ? 'check' : 'uncheck'"
+          @click="clickBoardArchive"
+        >
+          Архив
+        </PopMenuItem>
+      </template>
+    </PopMenu>
     <PopMenu>
       <NavBarButtonIcon icon="menu" />
       <template #menu>
@@ -35,7 +54,7 @@ import PopMenu from '@/components/modals/PopMenu.vue'
 import PopMenuItem from '@/components/modals/PopMenuItem.vue'
 import BoardModalBoxDelete from '@/components/Board/BoardModalBoxDelete.vue'
 
-import { SELECT_BOARD, REMOVE_BOARD_REQUEST } from '@/store/actions/boards'
+import * as BOARD from '@/store/actions/boards'
 import { NAVIGATOR_REMOVE_BOARD } from '@/store/actions/navigator'
 
 export default {
@@ -63,6 +82,12 @@ export default {
     },
     canDelete () {
       return this.board?.email_creator === this.$store.state.user.user.current_user_email
+    },
+    showArchive () {
+      return this.$store.state.boards.showArchive
+    },
+    showOnlyMyCards () {
+      return this.$store.state.boards.showOnlyMyCards
     }
   },
   methods: {
@@ -71,7 +96,7 @@ export default {
         this.$store.dispatch('asidePropertiesToggle', true)
       }
       this.$store.commit('basic', { key: 'propertiesState', value: 'board' })
-      this.$store.commit(SELECT_BOARD, this.board)
+      this.$store.commit(BOARD.SELECT_BOARD, this.board)
     },
     clickDeleteBoard () {
       this.showDeleteBoard = true
@@ -79,15 +104,21 @@ export default {
     onDeleteBoard () {
       this.showDeleteBoard = false
       //
-      this.$store.dispatch(REMOVE_BOARD_REQUEST, this.boardUid)
+      this.$store.dispatch(BOARD.REMOVE_BOARD_REQUEST, this.boardUid)
         .then(() => {
           this.$store.dispatch('asidePropertiesToggle', false)
-          this.$store.commit(SELECT_BOARD, undefined)
+          this.$store.commit(BOARD.SELECT_BOARD, undefined)
           //
           this.$store.commit(NAVIGATOR_REMOVE_BOARD, this.board)
           //
           this.$emit('popNavBar')
         })
+    },
+    clickBoardMyCards () {
+      this.$store.commit(BOARD.SHOW_BOARD_MY_CARDS, !this.showOnlyMyCards)
+    },
+    clickBoardArchive () {
+      this.$store.commit(BOARD.SHOW_BOARD_ARCHIVE, !this.showArchive)
     }
   }
 }

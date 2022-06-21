@@ -44,6 +44,7 @@
         rows="58"
         @input="onInputTaskMsg"
         @keydown.enter.exact.prevent="sendTaskMsg()"
+        @keydown.enter.shift.exact.prevent="addNewLineTaskMsg"
       />
       <span class="table-cell text-center rounded-[8px] items-center align-middle justify-center max-w-[15px] max-h-[30px] cursor-pointer">
         <button

@@ -255,7 +255,7 @@
       </template>
       <!-- кнопка Добавить колонку -->
       <div
-        v-if="board.type_access === 1"
+        v-if="board.type_access === 1 && !showArchive"
         class="flex-none bg-white rounded-xl w-[246px] h-[48px] mr-[10px]"
       >
         <div
@@ -325,7 +325,6 @@ export default {
   },
   data () {
     return {
-      isShowArchive: false,
       showAddCard: false,
       showAddColumn: false,
       showRenameColumn: false,
@@ -366,6 +365,20 @@ export default {
       return this.usersColumns.findIndex(
         (column) => column.UID === this.currentCard.uid_stage
       )
+    },
+    showArchive () {
+      return this.$store.state.boards.showArchive
+    },
+    showOnlyMyCards () {
+      return this.$store.state.boards.showOnlyMyCards
+    }
+  },
+  watch: {
+    board: {
+      immediate: true,
+      handler: function (val) {
+        this.$store.commit(BOARD.BOARD_CLEAR_FILTER)
+      }
     }
   },
   methods: {
@@ -382,7 +395,7 @@ export default {
       return yiq >= 128 ? 'black' : 'white'
     },
     isColumnVisible (column) {
-      if (this.isShowArchive) {
+      if (this.showArchive) {
         // показываем только архив
         return column.Archive
       }

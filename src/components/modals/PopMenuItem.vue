@@ -163,6 +163,38 @@
         fill="#757575"
       />
     </svg>
+    <svg
+      v-if="icon === 'check'"
+      class="flex-none m-[2px]"
+      width="16"
+      height="16"
+      viewBox="0 0 16 16"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M13.3334 4L6.00008 11.3333L2.66675 8"
+        stroke="#757575"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+    </svg>
+    <svg
+      v-if="icon === 'uncheck'"
+      class="flex-none"
+      width="20"
+      height="20"
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <rect
+        width="20"
+        height="20"
+        fill="none"
+      />
+    </svg>
     <slot />
   </div>
 </template>

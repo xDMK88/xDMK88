@@ -1,4 +1,5 @@
 <template>
+  lastSelectedTaskUid {{ lastSelectedTaskUid }}
   <!-- Confirm modal -->
   <ModalBoxDelete
     v-show="showConfirm"
@@ -116,7 +117,7 @@
           @copy="copyTask(props.node.info)"
           @cut="cutTask(props.node.info)"
           @paste="pasteCopiedTasks(props.node.id)"
-          @delete="clickDeleteTask"
+          @delete="clickDeleteTask(props.node.id)"
         />
 
         <!-- Name, Status -->

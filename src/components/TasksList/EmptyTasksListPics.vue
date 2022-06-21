@@ -17,7 +17,7 @@ const DATE_UID = '901841d9-0016-491d-ad66-8ee42d2b496b'
 const TAG_UID = '00a5b3de-9474-404d-b3ba-83f488ac6d30'
 const COLOR_UID = 'ed8039ae-f3de-4369-8f32-829d401056e9'
 const PRIVATE_PROJECT_UID = '7af232ff-0e29-4c27-a33b-866b5fd6eade'
-const currentImageIndex = ref(0)
+const currentImageIndex = ref(Math.floor(Math.random() * 3))
 const dateToLabelFormat = function (calendarDate) {
   const day = calendarDate.getDate()
   const month = calendarDate.toLocaleString('default', { month: 'short' })
@@ -45,15 +45,6 @@ const goToNextDay = function () {
   })
   store.commit(TASK.CLEAN_UP_LOADED_TASKS)
 }
-
-setInterval(() => {
-  if (currentImageIndex.value === 2) {
-    currentImageIndex.value = 0
-    return
-  }
-  currentImageIndex.value++
-}, 15000)
-
 </script>
 
 <template>
@@ -87,7 +78,7 @@ setInterval(() => {
         alt="Empty task image"
       >
       <p class="text-xl text-center font-bold mt-10">
-        Отличная работа! Все задачи выполнены. Запланируем дела на завтра?
+        Отличная работа! Все задачи выполнены.<br> Запланируем дела на завтра?
       </p>
       <div class="grid grid-cols-1">
         <button

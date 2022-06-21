@@ -8,7 +8,6 @@ import { selectColor } from '@/websync/colors_dop'
 import { selectTag } from '@/websync/tag'
 
 export default function processUpdate (obj) {
-  console.log(obj.type)
   switch (obj.type) {
     case TYPES.TYPE_OBJECT_TAG:
       selectTag(obj)

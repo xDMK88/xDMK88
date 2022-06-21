@@ -53,7 +53,7 @@
                 Инспектор
               </p>
             </div>
-            <div class="flex flex-col w-full mt-[10px]">
+            <div class="flex flex-col w-full my-[10px]">
               <div
                 class="text-[#4C4C4D] font-[400] text-[14px] leading-[19px] py-[12px] px-[15px]"
                 style="border: 2px solid rgba(0, 0, 0, 0.12); border-radius: 14px 14px 14px 0px;"
@@ -223,12 +223,8 @@ export default {
         isMessage: !message.uid_file && message.uid_creator !== 'inspector',
         isInspectorMessage: message.uid_creator === 'inspector',
         isMyMessage: message.uid_creator === this.currentUserUid,
-        shouldShowInspectorButtons: message?.performer_answer == null && ![1, 5, 7, 8].includes(this.task.status)
+        shouldShowInspectorButtons: message?.performer_answer == null && ![1, 5, 7, 8].includes(this.task.status) && (this.selectedTask.uid_performer === this.currentUserUid)
       }))
-      // for (let i = 0; i < messages.length; i++) {
-      //   if (messages[i].isFile) {
-      //     messages[i].date_create += 'Z'
-      //   }
       return messages
     }
   },

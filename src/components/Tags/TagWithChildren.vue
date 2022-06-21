@@ -4,9 +4,13 @@ import BoardModalBoxRename from '@/components/Board/BoardModalBoxRename.vue'
 import TasksListNew from '@/components/TasksListNew.vue'
 import ListBlocItem from '@/components/Common/ListBlocItem.vue'
 import TagIcon from '@/components/Tags/Icons/TagIcon.vue'
+import Icon from '@/components/Icon.vue'
 import AddTag from '@/components/Tags/AddTag.vue'
+import { setLocalStorageItem } from '@/store/helpers/functions'
 // import properties from '@/icons/properties.js'
 // import subArrow from '@/icons/arrow-sub.js'
+import gridView from '@/icons/grid-view.js'
+import listView from '@/icons/list-view.js'
 import * as TASK from '@/store/actions/tasks'
 import * as NAVIGATOR from '@/store/actions/navigator'
 
@@ -16,6 +20,7 @@ export default {
     ListBlocItem,
     BoardModalBoxRename,
     TagIcon,
+    Icon,
     AddTag
   },
   props: {
@@ -42,7 +47,9 @@ export default {
     return {
       focusedTag,
       showModal,
-      randomColors
+      randomColors,
+      gridView,
+      listView
     }
   },
   computed: {
@@ -89,6 +96,10 @@ export default {
           (crypto.getRandomValues(new Uint8Array(1))[0] & (15 >> (c / 4)))
         ).toString(16)
       )
+    },
+    updateGridView (value) {
+      this.$store.commit('basic', { key: 'isGridView', value: value })
+      setLocalStorageItem('isGridView', value)
     },
     createTag (name) {
       this.showModal = false
@@ -169,6 +180,26 @@ export default {
     @cancel="showModal = false"
     @save="createTag"
   />
+  <div class="w-full flex items-center justify-end mt-3 order-1">
+    <Icon
+      :path="listView.path"
+      :width="listView.width"
+      :height="listView.height"
+      :box="listView.viewBox"
+      class="cursor-pointer hover:text-gray-800 mr-2 mt-0.5"
+      :class="{ 'text-gray-800': !isGridView, 'text-gray-400': isGridView }"
+      @click="updateGridView(false)"
+    />
+    <Icon
+      :path="gridView.path"
+      :width="gridView.width"
+      :height="gridView.height"
+      :box="gridView.viewBox"
+      class="cursor-pointer hover:text-gray-800 mr-2 mt-0.5"
+      :class="{ 'text-gray-800': isGridView, 'text-gray-400': !isGridView }"
+      @click="updateGridView(true)"
+    />
+  </div>
   <div
     class="grid gap-4 mt-3 order-2"
     :class="{ 'md:grid-cols-2 lg:grid-cols-4': isGridView, 'grid-cols-1': !isGridView, 'grid-cols-1': isPropertiesMobileExpanded && !isGridView, 'lg:grid-cols-2': isPropertiesMobileExpanded && isGridView }"

@@ -426,6 +426,7 @@ if (router.currentRoute.value.name === 'task' && router.currentRoute.value.param
         v-if="greedPath === 'tags_children'"
         :tags="greedSource"
       />
+      <pre>{{ greedSource }}</pre>
       <ProjectWithChildren
         v-if="greedPath === 'projects_children'"
         :projects="greedSource"

@@ -5,10 +5,12 @@ import { useStore } from 'vuex'
 const store = useStore()
 const props = defineProps({
   message: {
-    type: String
+    type: String,
+    default: ''
   },
   date: {
-    type: String
+    type: String,
+    default: ''
   }
 })
 const user = computed(() => store.state.user.user)
@@ -26,7 +28,7 @@ const getMessageTimeString = (dateCreate) => {
     <div class="flex items-start justify-end mb-4 space-x-[8px]">
       <div
         class="bg-[#EAF2FC] max-w-sm py-[12px] px-[15px]"
-        style="border-radius: 11px 11px 0px 11px;"
+        style="border-radius: 11px 0px 11px 11px;"
       >
         <p class="text-[#4C4C4D] font-[500] text-[14px] leading-[19px]">
           {{ props.message }}

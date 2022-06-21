@@ -502,7 +502,7 @@ const actionConfirmDelegate = (confirmed) => {
       v-show="value"
       has-table
       :title="title"
-      class="shadow-xl  md:w-2/5 lg:w-3/12 z-50 px-[25px] py-[30px] rounded-[20px]"
+      class="shadow-xl  md:w-2/5 lg:w-[440px] z-50 px-[25px] py-[30px] rounded-[12px]"
       style="box-shadow: 0px 0px 24px rgba(27, 29, 37, 0.08), 0px 2px 6px rgba(27, 29, 37, 0.06);"
       @header-icon-click="cancel"
       @header-icon2-click="logout"

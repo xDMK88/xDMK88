@@ -524,6 +524,9 @@ export default {
             uid_stage: this.selectedColumn.UID
           })
           .then((resp) => {
+            if (this.$store.state.isPropertiesMobileExpanded) {
+              this.selectCard(resp.data)
+            }
             console.log('onAddNewCard ok', resp)
           })
       }

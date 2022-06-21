@@ -156,7 +156,7 @@ const popNavBar = () => {
           :class="index === 0 ? 'text-[#7E7E80] font-medium' : index+1 === navStack.length ? 'text-[#4C4C4D] font-medium' : 'text-[#7E7E80] font-medium'"
           @click.stop="clickOnGridCard(navItem, index), closeProperties()"
         >
-          {{ navItem.name.length > 15 ? navItem.name.slice(0, 15) + '...' : (((new Date(navItem.value.param).getDate() + new Date(navItem.value.param).getMonth() + new Date(navItem.value.param).getMonth()) === (new Date().getDate() + new Date().getMonth() + new Date().getMonth()) && navItem.value.uid === '901841d9-0016-491d-ad66-8ee42d2b496b') ? 'Сегодня' : navItem.name) }}
+          {{ navItem.name.length > 15 ? navItem.name.slice(0, 15) + '...' : (((new Date(navItem.value?.param).getDate() + new Date(navItem.value?.param).getMonth() + new Date(navItem.value?.param).getMonth()) === (new Date().getDate() + new Date().getMonth() + new Date().getMonth()) && navItem.value.uid === '901841d9-0016-491d-ad66-8ee42d2b496b') ? 'Сегодня' : navItem.name) }}
           <Popper
             class="items-center"
             :class="isDark ? 'dark' : 'light'"

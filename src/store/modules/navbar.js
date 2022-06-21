@@ -64,6 +64,13 @@ const actions = {
       )
     ) {
       if (item.greedPath === 'tags_children') {
+        dispatch(UID_TO_ACTION[item.global_property_uid], item.uid)
+          .then(() => {
+            commit('basic', {
+              key: 'taskListSource',
+              value: { uid: item.global_property_uid, param: item.uid }
+            })
+          })
         visitChildren(storeNavigator.tags.items, (value) => {
           if (value.uid === item.uid) {
             commit('basic', { key: item.key, value: value.children })

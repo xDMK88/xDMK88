@@ -73,7 +73,7 @@
             >
               Переместить
             </PopMenuItem>
-            <PopMenuDivider />
+            <PopMenuDivider v-if="!isArchive" />
             <PopMenuItem
               v-if="!isArchive"
               @click="clickSuccess"

@@ -92,6 +92,7 @@ export default {
   },
   methods: {
     clickEditTag () {
+      console.log(this.tag)
       if (!this.$store.state.isPropertiesMobileExpanded) {
         this.$store.dispatch('asidePropertiesToggle', true)
       }

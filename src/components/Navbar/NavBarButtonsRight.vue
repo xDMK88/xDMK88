@@ -74,7 +74,7 @@
     />
     <NavBarButtonsTag
       v-if="isTagTaskList"
-      :tag-uid="lastNavStackTypeVal"
+      :tag-uid="lastTag"
       :show-completed-tasks="showCompletedTasks"
       @popNavBar="popNavBar"
       @toggleCompletedTasks="onChangeCompletedTasks"
@@ -135,6 +135,9 @@ export default {
     lastNavStackTypeVal () {
       return this.navStack[this.navStack.length - 1]?.typeVal ?? ''
     },
+    lastTag () {
+      return this.navStack[this.navStack.length - 1]?.uid
+    },
     showCompletedTasks () {
       return this.settings?.show_completed_tasks ?? false
     },
@@ -147,7 +150,7 @@ export default {
       return this.lastNavStackType === 'color'
     },
     isTagTaskList () {
-      return this.lastNavStackType === 'tag'
+      return this.navStack[this.navStack.length - 1].greedPath === 'tags_children'
     }
   },
   watch: {

@@ -1,9 +1,10 @@
 <script>
 import { ref } from 'vue'
+import BoardModalBoxRename from '@/components/Board/BoardModalBoxRename.vue'
+import TasksListNew from '@/components/TasksListNew.vue'
 import ListBlocItem from '@/components/Common/ListBlocItem.vue'
 import TagIcon from '@/components/Tags/Icons/TagIcon.vue'
 import Icon from '@/components/Icon.vue'
-import BoardModalBoxRename from '@/components/Board/BoardModalBoxRename.vue'
 import AddTag from '@/components/Tags/AddTag.vue'
 import { setLocalStorageItem } from '@/store/helpers/functions'
 // import properties from '@/icons/properties.js'
@@ -15,11 +16,12 @@ import * as NAVIGATOR from '@/store/actions/navigator'
 
 export default {
   components: {
+    TasksListNew,
     ListBlocItem,
+    BoardModalBoxRename,
     TagIcon,
-    AddTag,
     Icon,
-    BoardModalBoxRename
+    AddTag
   },
   props: {
     tags: {
@@ -43,11 +45,11 @@ export default {
       '#E6E6FA'
     ]
     return {
-      gridView,
-      listView,
       focusedTag,
       showModal,
-      randomColors
+      randomColors,
+      gridView,
+      listView
     }
   },
   computed: {
@@ -65,10 +67,6 @@ export default {
     }
   },
   methods: {
-    updateGridView (value) {
-      this.$store.commit('basic', { key: 'isGridView', value: value })
-      setLocalStorageItem('isGridView', value)
-    },
     gotoChildren (value) {
       this.$store.dispatch(TASK.TAG_TASKS_REQUEST, value.uid)
       this.$store.commit('basic', {
@@ -99,11 +97,15 @@ export default {
         ).toString(16)
       )
     },
+    updateGridView (value) {
+      this.$store.commit('basic', { key: 'isGridView', value: value })
+      setLocalStorageItem('isGridView', value)
+    },
     createTag (name) {
       this.showModal = false
       const title = name.trim()
       const tag = {
-        uid_parent: '00000000-0000-0000-0000-000000000000',
+        uid_parent: this.navStack[this.navStack.length - 1].uid,
         back_color: this.randomColors[Math.floor(Math.random() * this.randomColors.length - 1)],
         comment: '',
         collapsed: 0,
@@ -178,34 +180,25 @@ export default {
     @cancel="showModal = false"
     @save="createTag"
   />
-  <div
-    class="w-full flex items-center justify-between mt-3 order-1"
-  >
-    <p class="text-2xl text-gray-800 font-bold second dark:text-gray-100 font-['Roboto']">
-      Метки
-    </p>
-    <div
-      class="flex"
-    >
-      <Icon
-        :path="listView.path"
-        :width="listView.width"
-        :height="listView.height"
-        :box="listView.viewBox"
-        class="cursor-pointer hover:text-gray-800 mr-2 mt-0.5"
-        :class="{ 'text-gray-800': !isGridView, 'text-gray-400': isGridView }"
-        @click="updateGridView(false)"
-      />
-      <Icon
-        :path="gridView.path"
-        :width="gridView.width"
-        :height="gridView.height"
-        :box="gridView.viewBox"
-        class="cursor-pointer hover:text-gray-800 mr-2 mt-0.5"
-        :class="{ 'text-gray-800': isGridView, 'text-gray-400': !isGridView }"
-        @click="updateGridView(true)"
-      />
-    </div>
+  <div class="w-full flex items-center justify-end mt-3 order-1">
+    <Icon
+      :path="listView.path"
+      :width="listView.width"
+      :height="listView.height"
+      :box="listView.viewBox"
+      class="cursor-pointer hover:text-gray-800 mr-2 mt-0.5"
+      :class="{ 'text-gray-800': !isGridView, 'text-gray-400': isGridView }"
+      @click="updateGridView(false)"
+    />
+    <Icon
+      :path="gridView.path"
+      :width="gridView.width"
+      :height="gridView.height"
+      :box="gridView.viewBox"
+      class="cursor-pointer hover:text-gray-800 mr-2 mt-0.5"
+      :class="{ 'text-gray-800': isGridView, 'text-gray-400': !isGridView }"
+      @click="updateGridView(true)"
+    />
   </div>
   <div
     class="grid gap-4 mt-3 order-2"
@@ -224,5 +217,11 @@ export default {
         <TagIcon />
       </ListBlocItem>
     </template>
+  </div>
+  <div class="mt-5">
+    <TasksListNew
+      :store-tasks="storeTasks"
+      :new-config="newConfig"
+    />
   </div>
 </template>

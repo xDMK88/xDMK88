@@ -506,6 +506,7 @@ const mutations = {
         // adding projects recursively to subarrays
         visitChildren(state.navigator.tags.items, (value) => {
           if (value.uid === tag.uid_parent) {
+            console.log(value)
             value.children.push(tag)
           }
         })

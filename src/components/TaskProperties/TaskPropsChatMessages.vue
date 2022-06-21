@@ -106,26 +106,20 @@
                       message,
                       1,
                       'Вопросов нет - приступаю - будет готово ' +
-                        dateToLabelFormat(
-                          new Date((task.length ? task.customer_date_end : selectedTask.customer_date_end))
-                        ) +
+                        dateToLabelFormat(new Date(task.customer_date_end ?? selectedTask.customer_date_end)) +
                         ' до ' +
-                        dateToTimeFormat(
-                          new Date((task.length ? task.customer_date_end : selectedTask.customer_date_end))
-                        )
+                        dateToTimeFormat(new Date(task.customer_date_end ?? selectedTask.customer_date_end))
                     )
                   "
                 >
                   <span class="text-sm text-gray-600">
                     Вопросов нет - приступаю - будет готово
                     {{
-                      dateToLabelFormat(
-                        new Date((task.length ? task.customer_date_end : selectedTask.customer_date_end))
-                      )
+                      dateToLabelFormat(new Date(task.customer_date_end ?? selectedTask.customer_date_end))
                     }}
                     до
                     {{
-                      dateToTimeFormat(new Date((task.length ? task.customer_date_end : selectedTask.customer_date_end)))
+                      dateToTimeFormat(new Date(task.customer_date_end ?? selectedTask.customer_date_end))
                     }}
                   </span>
                 </div>
@@ -277,7 +271,7 @@ export default {
       }
     },
     pad2 (n) {
-      return n < 10 ? '0' : ''
+      return (n < 10 ? '0' : '') + n
     },
     dateToTimeFormat (date) {
       const hours = this.pad2(date.getHours())

@@ -35,7 +35,7 @@
     </div>
     <button
       class="border border-slate-600 py-3 px-4 rounded-lg mr-5 hover:bg-gray-300 text-sm bg-opacity-70 font-medium flex w-[181px] items-center justify-center"
-      @click="nextTask(), readTask()"
+      @click="nextTask"
     >
       <span class="pr-2">Следующая задача</span>
       <Icon

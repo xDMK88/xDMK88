@@ -14,8 +14,8 @@
       </p>
       <div class="grid grid-cols-1">
         <button
-          class="bg-[#FF912380] px-2 rounded-[8px] text-black text-sm mr-1 hover:bg-orange-500 w-[156px] h-[51px] mr-auto ml-auto mt-[35px]"
-          @click="goToNextDay"
+          class="bg-[#FF912380] px-2 rounded-[8px] text-black text-sm mr-1 hover:bg-[#F5DEB3] w-[156px] h-[51px] mr-auto ml-auto mt-[35px]"
+          @click="goToday"
         >
           Запланировать
         </button>
@@ -25,11 +25,20 @@
 </template>
 
 <script>
+import * as TASK from '@/store/actions/tasks'
 export default {
   emits: ['clickPlanning'],
   methods: {
-    goToNextDay: function () {
-      this.$emit('clickPlanning')
+    goToday: function () {
+      this.$store.dispatch(TASK.TASKS_REQUEST)
+      const navElem = {
+        name: 'Сегодня',
+        key: 'taskListSource',
+        value: { uid: '901841d9-0016-491d-ad66-8ee42d2b496b', param: null }
+      }
+      this.$store.commit('updateStackWithInitValue', navElem)
+      this.$store.commit('basic', { key: 'taskListSource', value: { uid: '901841d9-0016-491d-ad66-8ee42d2b496b', param: null } })
+      this.$store.commit('basic', { key: 'mainSectionState', value: 'tasks' })
     }
   }
 }

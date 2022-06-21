@@ -21,7 +21,7 @@
         В очереди задач: {{ tasksCount }}
       </div>
       <button
-        class="bg-[#FF912380] px-2 rounded-[8px] text-black text-sm h-[35px] ml-2 hover:bg-orange-500"
+        class="bg-[#FF912380] px-2 rounded-[8px] text-black text-sm h-[35px] ml-2 hover:bg-[#F5DEB3]"
         @click="showInspector = true"
       >
         Поручить

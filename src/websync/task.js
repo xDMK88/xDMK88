@@ -18,3 +18,6 @@ export function updateTask (obj) {
     store.commit('ADD_TASK', obj.obj)
   }
 }
+export function task (obj) {
+  store.commit('SELECT_TASK', obj.obj)
+}

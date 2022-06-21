@@ -4,12 +4,13 @@ import { getMessage } from '@/websync/task_message.js'
 import { updateCard } from '@/websync/card.js'
 import { updateProject } from '@/websync/project.js'
 import { removeCardMessage } from '@/websync/card_message'
-import { selectColor } from '@/websync/colors_dop'
+import { updateColor } from '@/websync/colors_dop'
+import { updateTag } from '@/websync/tag'
 
 export default function processUpdate (obj) {
-  console.log(obj.type)
   switch (obj.type) {
     case TYPES.TYPE_OBJECT_TAG:
+      updateTag(obj)
       break
     case TYPES.TYPE_OBJECT_PROJECT:
       updateProject(obj)
@@ -32,7 +33,7 @@ export default function processUpdate (obj) {
     case TYPES.TYPE_OBJECT_FILTER:
       break
     case TYPES.TYPE_OBJECT_MARKER:
-      selectColor(obj)
+      updateColor(obj)
       break
     case TYPES.TYPE_OBJECT_PERIOD:
       break

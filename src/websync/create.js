@@ -7,6 +7,7 @@ import { createCardMessage } from '@/websync/card_message.js'
 import * as TYPES from '@/websync/types.js'
 import { showNotify } from '@/store/helpers/functions'
 import { createColor } from '@/websync/colors_dop.js'
+import { createTag } from '@/websync/tag.js'
 
 function currentUserUid () {
   return store?.state?.user?.user?.current_user_uid
@@ -24,6 +25,7 @@ export default function processCreate (obj) {
   console.log(obj.type)
   switch (obj.type) {
     case TYPES.TYPE_OBJECT_TAG:
+      createTag(obj)
       break
     case TYPES.TYPE_OBJECT_PROJECT:
       console.log('TYPE_OBJECT_PROJECT', obj)

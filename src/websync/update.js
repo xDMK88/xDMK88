@@ -5,11 +5,13 @@ import { updateCard } from '@/websync/card.js'
 import { updateProject } from '@/websync/project.js'
 import { removeCardMessage } from '@/websync/card_message'
 import { selectColor } from '@/websync/colors_dop'
+import { selectTag } from '@/websync/tag'
 
 export default function processUpdate (obj) {
   console.log(obj.type)
   switch (obj.type) {
     case TYPES.TYPE_OBJECT_TAG:
+      selectTag(obj)
       break
     case TYPES.TYPE_OBJECT_PROJECT:
       updateProject(obj)

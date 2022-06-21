@@ -17,7 +17,7 @@
           @click.stop="gotoChildren(board)"
         />
       </template>
-      <BoardBlocAdd
+      <ListBlocAdd
         v-if="canAddChild"
         @click="showAddBoard = true"
       />
@@ -34,7 +34,7 @@
 <script>
 import BoardModalBoxRename from '@/components/Board/BoardModalBoxRename.vue'
 import BoardBlocItem from '@/components/Board/BoardBlocItem.vue'
-import BoardBlocAdd from '@/components/Board/BoardBlocAdd.vue'
+import ListBlocAdd from '@/components/Common/ListBlocAdd.vue'
 import Board from '@/components/Board.vue'
 import * as CARD from '@/store/actions/cards'
 import * as BOARD from '@/store/actions/boards'
@@ -44,7 +44,7 @@ export default {
   components: {
     BoardModalBoxRename,
     BoardBlocItem,
-    BoardBlocAdd,
+    ListBlocAdd,
     Board
   },
   props: {

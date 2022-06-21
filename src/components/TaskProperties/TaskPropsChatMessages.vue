@@ -100,7 +100,7 @@
                 class="flex mt-2"
               >
                 <div
-                  class="flex items-center bg-white rounded-lg p-1 px-2 mt-1 cursor-pointer mr-1"
+                  class="flex items-center bg-[#F2F3F5] cursor-pointer py-[10px] px-[14px] rounded-[5px]"
                   @click="
                     answerInspectorMessage(
                       message,

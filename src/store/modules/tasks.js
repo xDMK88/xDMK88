@@ -1222,6 +1222,7 @@ const actions = {
       const url = process.env.VUE_APP_LEADERTASK_API + 'api/v1/tag'
       axios({ url: url, method: 'PATCH', data: data })
         .then((resp) => {
+          commit(TASK.PUSH_TAG, resp)
           resolve(resp)
         })
         .catch((err) => {

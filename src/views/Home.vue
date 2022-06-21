@@ -268,6 +268,13 @@ const getNavigator = () => {
             } else if (['tags_children', 'projects_children', 'boards_children'].includes(navStack.value[navStack.value.length - 1].greedPath)) {
               if (navStack.value[navStack.value.length - 1].greedPath === 'tags_children') {
                 // nested lookup for tags
+                store.dispatch(UID_TO_ACTION[navStack.value[navStack.value.length - 1].global_property_uid], navStack.value[navStack.value.length - 1].uid)
+                  .then(() => {
+                    store.commit('basic', {
+                      key: 'taskListSource',
+                      value: { uid: navStack.value[navStack.value.length - 1].global_property_uid, param: navStack.value[navStack.value.length - 1].uid }
+                    })
+                  })
                 visitChildren(storeNavigator.value.tags.items, value => {
                   if (value.uid === navStack.value[navStack.value.length - 1].uid) {
                     store.commit('basic', { key: navStack.value[navStack.value.length - 1].key, value: value.children })

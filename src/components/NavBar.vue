@@ -69,77 +69,7 @@ const menuOpenLg = () => {
 // TODO: DRY
 
 const clickOnGridCard = (item, index) => {
-<<<<<<< HEAD
-  if (!item || !item.greedPath) {
-    return
-  }
-  store.commit('removeAllFromStackAfterIndex', index)
-
-  store.commit('basic', { key: 'greedPath', value: item.greedPath })
-  store.commit('basic', { key: 'mainSectionState', value: 'greed' })
-
-  if (['new_private_projects', 'new_emps', 'new_delegate', 'new_private_boards'].includes(item.greedPath)) {
-    store.commit('basic', { key: item.key, value: storeNavigator.value[item.greedPath] })
-  } else if (['tags_children', 'projects_children', 'boards_children'].includes(item.greedPath)) {
-    if (item.greedPath === 'tags_children') {
-      store.dispatch(UID_TO_ACTION[item.global_property_uid], item.uid)
-      store.commit('basic', { key: 'taskListSource', value: { uid: item.global_property_uid, param: item.uid } })
-      visitChildren(storeNavigator.value.tags.items, value => {
-        if (value.uid === item.uid) {
-          store.commit('basic', { key: item.key, value: value.children })
-        }
-      })
-    }
-    if (item.greedPath === 'projects_children') {
-      // Request project's tasks
-      store.dispatch(UID_TO_ACTION[item.global_property_uid], item.uid)
-      store.commit('basic', { key: 'taskListSource', value: { uid: item.global_property_uid, param: item.uid } })
-      visitChildren(storeNavigator.value.new_private_projects[0].items, value => {
-        if (value.uid === item.uid) {
-          store.commit('basic', { key: item.key, value: value.children })
-        }
-      })
-      visitChildren(storeNavigator.value.new_private_projects[1].items, value => {
-        if (value.uid === item.uid) {
-          store.commit('basic', { key: item.key, value: value.children })
-        }
-      })
-    }
-    if (item.greedPath === 'other') {
-      const navElem = {
-        name: item.label,
-        key: 'greedSource',
-        value: { uid: item.uid, param: null },
-        greedPath: 'other'
-      }
-      store.commit('updateStackWithInitValue', navElem)
-      store.commit('basic', { key: 'mainSectionState', value: 'greed' })
-      store.commit('basic', { key: 'greedPath', value: 'other' })
-      return
-    }
-    if (item.greedPath === 'boards_children') {
-      // Request boards's cards
-      store.dispatch(UID_TO_ACTION[item.global_property_uid], item.uid)
-      store.commit('basic', { key: 'cardSource', value: { uid: item.global_property_uid, param: item.uid } })
-      visitChildren(storeNavigator.value.new_private_boards[0].items, value => {
-        if (value.uid === item.uid) {
-          store.commit('basic', { key: item.key, value: value.children })
-        }
-      })
-      visitChildren(storeNavigator.value.new_private_boards[1].items, value => {
-        if (value.uid === item.uid) {
-          store.commit('basic', { key: item.key, value: value.children })
-        }
-      })
-    }
-  } else {
-    if (item.greedPath !== 'other') {
-      store.commit('basic', { key: item.key, value: storeNavigator.value[item.greedPath].items })
-    }
-  }
-=======
   store.dispatch('gotoNavStackItem', index)
->>>>>>> afc4664854cb805544720e515b9fb9243ec8b1dd
 }
 
 const openProjectProperties = (project, parentProjectUid = '') => {

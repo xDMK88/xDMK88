@@ -49,11 +49,7 @@ const goToNextDay = function () {
 
 <template>
   <!-- DATE -->
-<<<<<<< HEAD
-  <div v-if="navStack[navStack.length - 1].value?.uid == DATE_UID">
-=======
   <div v-if="shouldShowEmptyPics">
->>>>>>> afc4664854cb805544720e515b9fb9243ec8b1dd
     <div
       class="max-w-xl mx-auto"
     >

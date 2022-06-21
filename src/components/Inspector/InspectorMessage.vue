@@ -325,8 +325,13 @@ const computedTimes = computed(() => {
       times[key + dayNumber] = { uid: key + dayNumber, name: dayNumber + ' ' + key, value: new Date(2022, russianMonths[key], parseInt(dayNumber)) }
     }
   }
+  let foundExact = false
   for (const key in times) {
-    if (times[key].name.toLowerCase().includes(inputLowerCase)) {
+    if (times[key].name.toLowerCase() === inputLowerCase) {
+      newTimes[key] = times[key]
+      foundExact = true
+    }
+    if (times[key].name.toLowerCase().includes(inputLowerCase) && !foundExact) {
       newTimes[key] = times[key]
     }
   }

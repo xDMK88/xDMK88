@@ -3,7 +3,6 @@
     :title="project.name"
     :color="project.color"
     :count="project.members?.length ?? 0"
-    @click.stop="gotoChildren(project)"
   >
     <svg
       v-if="project.members?.length > 1"

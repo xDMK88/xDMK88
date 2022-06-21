@@ -4,7 +4,7 @@
       <BoardModalBoxRename
         v-show="visibleModal"
         :show="visibleModal"
-        :title="'Добавить цвет'"
+        title="Добавить цвет"
         @cancel="visibleModal = false"
         @save="createColor"
       />

@@ -1298,7 +1298,7 @@ export default {
 </script>
 
 <template>
-  <modal-box-confirm
+<!--  <modal-box-confirm
     v-model="showConfirm"
     button="warning"
     has-cancel
@@ -1317,7 +1317,7 @@ export default {
         (с подзадачами) в количестве: {{ tasks[selectedTask.uid].children.length }}
       </span>
     </p>
-  </modal-box-confirm>
+  </modal-box-confirm> -->
   <ModalBoxDelete
     v-show="showConfirm"
     title="Удалить задачу"

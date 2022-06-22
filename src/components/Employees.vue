@@ -39,6 +39,11 @@
       @cancel="showRenameDep = false"
       @save="onRenameDep"
     />
+    <EmployeesModalBoxUsersLimit
+      v-if="showUsersLimit"
+      @cancel="showUsersLimit = false"
+      @ok="showUsersLimit = false"
+    />
     <div
       v-for="(value, index) in items"
       :key="index"
@@ -191,6 +196,7 @@ import ListBlocItem from '@/components/Common/ListBlocItem.vue'
 import ListBlocAdd from '@/components/Common/ListBlocAdd.vue'
 import BoardModalBoxRename from '@/components/Board/BoardModalBoxRename.vue'
 import BoardModalBoxDelete from '@/components/Board/BoardModalBoxDelete.vue'
+import EmployeesModalBoxUsersLimit from '@/components/Employees/EmployeesModalBoxUsersLimit.vue'
 import { setLocalStorageItem } from '@/store/helpers/functions'
 import EmployeesModalBoxAdd from '@/components/Employees/EmployeesModalBoxAdd.vue'
 import EmployeesModalBoxMove from '@/components/Employees/EmployeesModalBoxMove.vue'
@@ -212,6 +218,7 @@ export default {
     BoardModalBoxDelete,
     EmployeesModalBoxAdd,
     EmployeesModalBoxMove,
+    EmployeesModalBoxUsersLimit,
     PopMenu,
     PopMenuItem
   },
@@ -231,7 +238,8 @@ export default {
       showDeleteDep: false,
       currentDepUid: '',
       showRenameDep: false,
-      showMoveDep: false
+      showMoveDep: false,
+      showUsersLimit: false
     }
   },
   computed: {
@@ -357,10 +365,19 @@ export default {
     },
     clickAddEmployee () {
       const user = this.$store.state.user.user
-      if (user.days_left === 0) {
-        alert('У вас нет рабочих мест')
+      // если лицензия истекла
+      if (user.days_left <= 0) {
+        this.showUsersLimit = true
         return
       }
+      const currentUsersCount = this.$store.state.navigator.navigator.emps.items.length
+      // если у нас куплены рабочие места
+      // проверяем на превышение лицензии
+      if (user.count_workplaces !== 0 && user.count_workplaces <= currentUsersCount) {
+        this.showUsersLimit = true
+        return
+      }
+
       this.showAddEmployee = true
     },
     onAddNewEmp (name, email) {

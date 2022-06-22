@@ -1279,14 +1279,14 @@ export default {
   <modal-box-confirm
     v-model="showConfirm"
     button="warning"
-    has-button
     has-cancel
-    button-label="Удалить"
+    has-button
+    button-label="Да"
     @confirm="delTask"
   >
     <p
       v-if="tasks[selectedTask.uid]"
-      class="text-center"
+      class="text-[#7e7e80] text-[13px] leading-[18px] font-roboto whitespace-pre-line"
     >
       Вы действительно хотите удалить выбраную <strong>"{{ selectedTask.name }}"</strong> задачу
       <span

@@ -1298,7 +1298,6 @@ export default {
 </script>
 
 <template>
-  showConfirm {{ showConfirm }}
   <ModalBoxDelete
     v-show="showConfirm"
     title="Удалить задачу"

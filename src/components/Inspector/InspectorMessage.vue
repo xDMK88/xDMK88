@@ -571,7 +571,7 @@ const computedTimes = computed(() => {
           >
             <div
               v-if="index < 3"
-              class="flex items-center bg-[#F4F5F7] rounded-[4px] space-x-[6px]"
+              class="flex items-center bg-[#F4F5F7] rounded-[4px] space-x-[6px] cursor-pointer"
               style="padding: 4px 7px 4px 6px;"
               @click="props.selectTime({ name: time.name, date: time.value.toISOString() })"
             >
@@ -689,7 +689,7 @@ const computedTimes = computed(() => {
           <div
             v-for="(confirm, _, index) in computedСonfirmParams"
             :key="index"
-            class="flex items-center bg-[#F4F5F7] rounded-[4px] py-[10px] px-[14px]"
+            class="flex items-center bg-[#F4F5F7] rounded-[4px] py-[10px] px-[14px] cursor-pointer"
             @click="props.actionConfirmNewParams(confirm.value)"
           >
             <span class="text-[#4C4C4D] font-[500] text-[13px] leading-[15px]">{{ confirm.name }}</span>
@@ -709,7 +709,7 @@ const computedTimes = computed(() => {
           <div
             v-for="(confirm, _, index) in computedСonfirmDelegate"
             :key="index"
-            class="flex items-center bg-[#F4F5F7] rounded-[4px] py-[10px] px-[14px]"
+            class="flex items-center bg-[#F4F5F7] rounded-[4px] py-[10px] px-[14px] cursor-pointer"
             @click="props.actionConfirmDelegate(confirm.value)"
           >
             <span class="text-[#4C4C4D] font-[500] text-[13px] leading-[15px]"> {{ confirm.name }} </span>

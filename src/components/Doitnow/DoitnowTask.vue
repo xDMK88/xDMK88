@@ -14,7 +14,7 @@
         :style="{ backgroundColor: colors[task.uid_marker] ? colors[task.uid_marker].back_color : '', color: getValidForeColor(colors[task.uid_marker]?.fore_color) }"
       >
         <!-- task info/status -->
-        <div class="flex items-center">
+        <div class="flex items-center -ml-2">
           <TaskStatus
             :in-doitnow="true"
             :task="task"
@@ -91,7 +91,7 @@
             Исполнитель:
           </span>
           <span
-            v-show="dateClear(task.date_end) !== '1.1.1'"
+            v-show="dateClearWords"
             class="mb-2 w-[100px]"
           >
             Срок:
@@ -123,7 +123,7 @@
           </div>
           <!-- performer -->
           <div
-            v-show="(task.uid_customer !== task.uid_performer) && (task.uid_customerr !== user.current_user_uid)"
+            v-show="(task.uid_customer !== task.uid_performer)"
             class="flex mb-2"
           >
             <img
@@ -134,7 +134,7 @@
           </div>
           <!-- days -->
           <div
-            v-show="dateClear !== '1.1.1'"
+            v-show="dateClearWords"
             class="flex mb-2"
           >
             <span class="ml-1 text-black">{{ dateClearWords + getTime }}</span>
@@ -189,6 +189,7 @@
           id="content"
           class="mt-3"
           :task="task"
+          :in-doitnow="true"
           :task-messages="taskMessages"
           :current-user-uid="user.current_user_uid"
           :show-all-messages="true"
@@ -438,8 +439,16 @@ export default {
     }
   },
   computed: {
+    isCustomer () {
+      return this.task.uid_customer === this.user.current_user_uid
+    },
     getTime () {
-      const time = new Date(this.task.customer_date_end)
+      let time
+      if (this.isCustomer) {
+        time = new Date(this.task.date_end)
+      } else {
+        time = new Date(this.task.customer_date_end)
+      }
       let hours = String(time.getHours())
       let minutes = String(time.getMinutes())
       if (hours === '0') {
@@ -454,7 +463,15 @@ export default {
       }
     },
     dateClearWords () {
-      const time = this.task.customer_date_end
+      let time
+      if (this.isCustomer) {
+        time = this.task.date_end
+      } else {
+        time = this.task.customer_date_end
+      }
+      if (time === '0001-01-01T00:00:00') {
+        return false
+      }
       const month = new Date(time).getMonth() + 1
       const months = [' Января ', ' Февраля ', ' Марта ', ' Апреля ', ' Мая ', ' Июня ', ' Июля ', ' Августа ', ' Сентября ', ' Октября ', ' Ноября ', ' Декабря ']
       const date = new Date(time).getDate() + months[month - 1] + (new Date().getFullYear() === new Date(time).getUTCFullYear() ? '' : new Date(time).getUTCFullYear())

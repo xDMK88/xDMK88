@@ -22,7 +22,7 @@ function currentUserEmail () {
 }
 
 export default function processCreate (obj) {
-  console.log(obj.type)
+  console.log('create type', obj.type)
   switch (obj.type) {
     case TYPES.TYPE_OBJECT_TAG:
       createTag(obj)

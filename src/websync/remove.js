@@ -5,8 +5,10 @@ import { removeProject } from '@/websync/project.js'
 import { removeCardMessage } from '@/websync/card_message'
 import { removeColor } from '@/websync/colors_dop.js'
 import { removeParentTag, removeTag } from '@/websync/tag'
+import { removeMessage } from '@/websync/task_message'
 
 export default function processRemove (obj) {
+  console.log('remove type', obj.type)
   switch (obj.type) {
     case TYPES.TYPE_OBJECT_TAG:
       removeTag(obj)
@@ -19,6 +21,9 @@ export default function processRemove (obj) {
       removeTask(obj.uid)
       break
     case TYPES.TYPE_OBJECT_CONTACT:
+      break
+    case TYPES.TYPE_OBJECT_TASK_MSG:
+      removeMessage(obj)
       break
     case TYPES.TYPE_OBJECT_CONTACT_GROUP:
       break

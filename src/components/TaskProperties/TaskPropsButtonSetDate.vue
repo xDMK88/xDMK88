@@ -41,8 +41,8 @@
             @dayclick="onDayClick"
           >
             <template #footer>
-              <div>
-                <div class="timestamp-custom">
+              <div >
+                <div class="timestamp-custom" >
                   Установить напоминание
                 </div>
                 <div class="form-group form-arrow">

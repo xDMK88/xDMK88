@@ -535,6 +535,13 @@ const mutations = {
       }
     })
   },
+  NAVIGATOR_UPDATE_TASK: (state, task) => {
+    visitChildren(state.navigator.tasks.items, (value) => {
+      if (value.uid === task.uid) {
+        Object.assign(value, task)
+      }
+    })
+  },
   [NAVIGATOR_PUSH_EMPLOYEE]: (state, employees) => {
     for (const employee of employees) {
       state.navigator.emps.items.push(employee)

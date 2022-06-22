@@ -8,9 +8,12 @@ export function createMessage (obj) {
     store.commit('CREATE_MESSAGE_REQUEST', obj.obj)
   }
 }
+export function removeMessage (obj) {
+  store.commit('DELETE_MESSAGE_REQUEST', [obj.obj.uid])
+}
 export function getMessage (obj) {
   if ('uid_task' in obj && selectedTask.value && obj.uid_task === selectedTask.value.uid) {
-    store.commit('MESSAGE_REQUEST', obj.obj)
+    store.commit('MESSAGES_REQUEST', obj.obj)
     store.commit('FILES_REQUEST', obj.obj)
   }
 }
